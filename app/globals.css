@@ -1,0 +1,360 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+:root {
+  /* Single accent — the only real color in the system */
+  --accent: #00c896;
+  --accent-dim: rgba(0, 200, 150, 0.12);
+  --accent-border: rgba(0, 200, 150, 0.2);
+
+  /* Surfaces */
+  --bg: #09090e;
+  --surface: rgba(255, 255, 255, 0.032);
+  --surface-hover: rgba(255, 255, 255, 0.058);
+  --border: rgba(255, 255, 255, 0.065);
+  --border-strong: rgba(255, 255, 255, 0.12);
+
+  /* Text hierarchy */
+  --text-1: #efefef;
+  --text-2: #88889a;
+  --text-3: #46465a;
+
+  /* Semantic — kept very muted, never competing with accent */
+  --warn: #c89060;      /* flagged / warning — muted amber */
+  --warn-bg: rgba(200, 144, 96, 0.08);
+  --warn-border: rgba(200, 144, 96, 0.18);
+  --danger: #c07070;    /* rejected / fail — muted rose */
+  --danger-bg: rgba(192, 112, 112, 0.08);
+  --danger-border: rgba(192, 112, 112, 0.18);
+  --info: #7090c8;      /* reviewing / info — muted blue */
+  --info-bg: rgba(112, 144, 200, 0.08);
+  --info-border: rgba(112, 144, 200, 0.18);
+
+  /* Legacy aliases (kept so recharts tooltips don't break) */
+  --glass-bg: rgba(255, 255, 255, 0.032);
+  --glass-border: rgba(255, 255, 255, 0.065);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: #090915;
+  color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Background — flat, no blobs ─────────────────────── */
+.app-bg {
+  background: #09090e;
+}
+
+/* ── Surfaces ────────────────────────────────────────── */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.glass-sm {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.glass-dark {
+  background: rgba(6, 6, 11, 0.92);
+  border: 1px solid var(--border);
+}
+
+/* ── Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+/* ── Status badges — monochromatic except accent states ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+/* Neutral pending — don't shout */
+.badge-pending {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+/* Soft blue for in-progress */
+.badge-reviewing {
+  background: var(--info-bg);
+  color: var(--info);
+  border: 1px solid var(--info-border);
+}
+/* Muted amber for flagged */
+.badge-flagged {
+  background: var(--warn-bg);
+  color: var(--warn);
+  border: 1px solid var(--warn-border);
+}
+/* Accent green for approved — this earns the color */
+.badge-approved {
+  background: rgba(0, 200, 150, 0.1);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+/* Same accent, slightly dimmer for processed */
+.badge-processed {
+  background: rgba(0, 200, 150, 0.07);
+  color: #00a880;
+  border: 1px solid rgba(0, 200, 150, 0.14);
+}
+/* Muted danger for rejected */
+.badge-rejected {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+/* Source badges — all neutral */
+.badge-portal {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+.badge-email {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+.badge-manual {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+}
+
+/* ── Validation checks ───────────────────────────────── */
+.check-pass {
+  color: #34d399;
+}
+.check-fail {
+  color: #ff6b6b;
+}
+.check-warning {
+  color: #fbbf24;
+}
+.check-pending {
+  color: #94a3b8;
+}
+
+/* ── Table rows ──────────────────────────────────────── */
+.ts-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+.ts-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.ts-row.selected {
+  background: rgba(0, 212, 165, 0.06);
+  border-left: 2px solid #00d4a5;
+}
+
+/* ── Animations ──────────────────────────────────────── */
+@keyframes orb-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 24px rgba(139, 92, 246, 0.5), 0 0 48px rgba(0, 212, 165, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.7), 0 0 80px rgba(0, 212, 165, 0.35);
+  }
+}
+@keyframes dot-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-orb-pulse {
+  animation: orb-pulse 2.5s ease-in-out infinite;
+}
+.animate-dot-blink {
+  animation: dot-blink 1.5s ease-in-out infinite;
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.25s ease-out forwards;
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* ── Validation score ring ───────────────────────────── */
+.score-ring {
+  position: relative;
+  width: 36px;
+  height: 36px;
+}
+.score-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ── Nav active indicator ────────────────────────────── */
+.nav-active-dot {
+  position: absolute;
+  left: 0;
+  width: 3px;
+  height: 20px;
+  border-radius: 0 3px 3px 0;
+  background: #00d4a5;
+}
+
+/* ── Input styles ────────────────────────────────────── */
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #f8fafc;
+  font-size: 13px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.glass-input:focus {
+  border-color: rgba(0, 212, 165, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+}
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+select.glass-input option {
+  background: #1a1030;
+  color: #f8fafc;
+}
+
+/* ── Buttons ─────────────────────────────────────────── */
+.btn-teal {
+  background: var(--accent);
+  color: #021a14;
+  border: none;
+  border-radius: 9px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.01em;
+}
+.btn-teal:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-ghost:hover {
+  background: var(--surface-hover);
+  color: var(--text-1);
+}
+.btn-coral {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+  border-radius: 9px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-coral:hover {
+  background: rgba(192, 112, 112, 0.15);
+}
+
+/* ── Login form ──────────────────────────────────────── */
+.login-card {
+  background: #0e0e16;
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+}
+.login-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text-1);
+  font-size: 14px;
+  padding: 11px 14px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+.login-input:focus {
+  border-color: var(--accent);
+}
+.login-input::placeholder {
+  color: var(--text-3);
+}

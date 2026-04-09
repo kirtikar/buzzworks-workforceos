@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# build
+dist/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Reference / design assets (not source)
+*.pdf
+screenshots/
+Screenshot*.png
+
+# logs
+*.log
+npm-debug.log*
+
+# cache
+.vercel
