@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Sidebar from "@/components/Sidebar"
 import {
   Bot, Zap, Shield, Mail, CreditCard, FileText, Activity,
   CheckCircle2, Clock, TrendingUp, AlertTriangle, Sparkles,
@@ -533,26 +534,26 @@ export default function AgentsPage() {
   const activeCount          = AGENTS.filter(a => a.status === "active").length
 
   return (
-    <div className="min-h-screen p-6 space-y-6">
-      {/* Page header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 text-[11px] text-white/30 mb-2">
-            <Bot size={11} /> AI Agents
-          </div>
-          <h1 className="text-2xl font-bold text-white mb-1">Agent Fleet</h1>
-          <p className="text-[13px] text-white/40">Six specialised AI agents powering OpsDesk automation</p>
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* Header — matches other pages */}
+      <header className="flex items-center gap-4 px-6 py-3.5 border-b flex-shrink-0"
+        style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)", borderColor: "var(--border)" }}>
+        <Bot size={18} style={{ color: "var(--accent)" }} className="flex-shrink-0" />
+        <div className="flex-1">
+          <h1 className="text-base font-bold" style={{ color: "var(--text-1)" }}>AI Agent Fleet</h1>
+          <p className="text-[11px]" style={{ color: "var(--text-3)" }}>Six specialised agents powering OpsDesk automation</p>
         </div>
-        <div className="flex items-center gap-2">
-          <div
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] font-semibold"
-            style={{ background: "rgba(0,200,150,0.1)", color: "#00C896", border: "1px solid rgba(0,200,150,0.2)" }}
-          >
-            <span className="w-2 h-2 rounded-full animate-dot-blink" style={{ background: "#00C896" }} />
-            {activeCount} agents active
-          </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-[12px] font-semibold"
+          style={{ background: "rgba(0,200,150,0.1)", color: "#00C896", border: "1px solid rgba(0,200,150,0.2)" }}>
+          <span className="w-2 h-2 rounded-full animate-dot-blink" style={{ background: "#00C896" }} />
+          {activeCount} active
         </div>
-      </div>
+      </header>
+
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
       {/* Fleet KPIs */}
       <div className="grid grid-cols-4 gap-4">
@@ -646,6 +647,8 @@ export default function AgentsPage() {
             </div>
           ))}
         </div>
+      </div>
+      </div>
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import { ThemeProvider } from "@/components/ThemeProvider"
 
 export const metadata: Metadata = {
   title: "OpsDesk — Timesheet Operations · Buzzworks",
@@ -8,8 +9,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="app-bg">{children}</body>
+    <html lang="en" data-theme="dark">
+      <body className="app-bg">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   )
 }
