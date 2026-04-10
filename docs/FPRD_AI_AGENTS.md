@@ -2,8 +2,8 @@
 ## OpsDesk — Module 9
 
 **Document ID:** FPRD-OD-009  
-**Version:** 1.0  
-**Status:** Approved  
+**Version:** 2.0  
+**Status:** Live — Phase 2 Complete  
 **Date:** 2026-04-10  
 **Module Code:** AGENT  
 **Priority:** P1  
@@ -13,156 +13,204 @@
 
 ## 1. Module Overview
 
-The AI Agent Fleet module is the operational intelligence layer of OpsDesk. It comprises six specialised AI agents — each with a defined domain, capability set, model configuration, and action authority — that collectively automate the high-volume, rule-bound work of timesheet validation, anomaly detection, email parsing, payroll pre-audit, policy recommendation, and audit logging.
+The AI Agent Fleet is the autonomous intelligence layer of OpsDesk. It comprises **five specialised agents** — each with a defined domain, capability set, model configuration, trigger conditions, and action authority — that collectively automate the high-volume, rule-bound work of timesheet validation, exit lifecycle management, manager intelligence, payroll communications, and data completeness enforcement.
 
-This module surfaces each agent as a first-class entity with a profile, activity log, real-time metrics, and ops controls (pause, resume, restart). Agents are not black boxes; every action they take is explained, logged, and reversible by the ops team.
+Every agent is a first-class entity with a profile page, capability list, trigger conditions, outputs, 8-metric live dashboard, and activity log. Agents are not black boxes — every action is explained, logged, and reversible by the ops team.
 
 ---
 
 ## 2. Agent Roster
 
-| Agent Code | Agent Name    | Domain                             | Action Authority          |
-|------------|---------------|------------------------------------|---------------------------|
-| MARK       | Agent Mark    | Timesheet Validation & Approval    | Auto-approve, escalate    |
-| NOVA       | Agent Nova    | Anomaly Detection & Patterns       | Flag, report              |
-| IRIS       | Agent Iris    | Email Parsing & Ingestion          | Parse, hand off, quarantine|
-| VAULT      | Agent Vault   | Payroll Compliance & Audit         | Pre-audit, block, clear   |
-| LUMEN      | Agent Lumen   | Policy Recommendation Engine       | Draft rules, suggest      |
-| TRACE      | Agent Trace   | Audit Trail & Risk Scoring         | Log, score, export        |
+| Code     | Name            | Domain                                         | Action Authority                         |
+|----------|-----------------|------------------------------------------------|------------------------------------------|
+| MARK     | Agent Mark      | Timesheet Ingestion · Validation · Auto-Approval | Auto-approve, escalate, flag, SLA alert |
+| ECHO     | Agent ECHO      | Exit Lifecycle · Asset Clearance · FnF         | Salary HOLD, FnF initiation, email HR   |
+| SENTINEL | Agent SENTINEL  | Manager Intelligence · Sentiment · Hidden Rating | Internal score, attrition flag          |
+| RELAY    | Agent RELAY     | Payroll Communications · Snapshots · Alerts   | Email dispatch, digest, escalation      |
+| NEXUS    | Agent NEXUS     | Data Completeness · Payroll Eligibility · Fraud | Eligibility block, fraud flag, hold     |
 
 ---
 
 ## 3. Functional Requirements
 
-### FR-AGENT-01: Agent Profile Page
+### FR-AGENT-01: Agent Profile & Detail Panel
 
-**Priority:** P0 | **Effort:** Small
+**Priority:** P0 | **Status:** ✅ Done
 
-Every agent must have a profile page / detail panel containing:
+Each agent has a sidebar entry and detail panel containing:
 
-**Sub-FR-AGENT-01-01:** Identity display  
-- Agent name, codename, version badge
-- Domain label
-- Status badge (Active / Idle / Paused) with animated indicator when active
-
-**Sub-FR-AGENT-01-02:** Key metrics display  
-- Processed today (count)
-- Processed this month (count)
-- Success rate (%)
-- Average processing latency (ms)
-- Secondary metrics: auto-approved / flagged / escalated (where applicable)
-
-**Sub-FR-AGENT-01-03:** Description and capabilities  
-- 2–3 paragraph agent description (what it does, when it acts, what it doesn't do)
-- Bullet list of specific capabilities (6–8 items)
-
-**Sub-FR-AGENT-01-04:** Activity log  
-- Last 5 actions with: timestamp, action type, outcome badge (success / flagged / escalated), detail string
-
-**Sub-FR-AGENT-01-05:** Model attribution  
-- Display: model name (claude-3-5-sonnet), provider (Anthropic), deployment context
+- **Identity:** name, codename, version badge, domain label, status badge (active / idle / paused) with pulse indicator
+- **8-metric grid:** metrics tailored per agent (not identical across all)
+- **Description + tagline:** what the agent does, when it acts, what it doesn't do
+- **Capabilities list:** 9–10 bullet capabilities per agent
+- **Triggers:** what events activate the agent (event-driven and scheduled)
+- **Outputs:** what the agent produces (hold, email, score, flag, etc.)
+- **Recent activity log:** last 5 actions with timestamp, action type, outcome badge (success / flagged / escalated / hold), detail string
+- **Model & runtime:** model attribution, last action, last action detail
+- **Fleet coordination note:** how this agent connects to the other 4
 
 **Acceptance Criteria:**
-- [ ] All 6 agent profiles render without layout shift
-- [ ] Status badge animates (dot pulse) only when status = active
-- [ ] Metrics are distinct per agent (not identical across all)
-- [ ] Activity log shows timestamped, outcome-coded entries
+- [x] All 5 agent profiles render without layout shift
+- [x] Status badge animates (dot pulse) only when status = active
+- [x] Metrics are distinct per agent
+- [x] Activity log shows timestamped, outcome-coded entries
+- [x] Fleet coordination note is agent-specific
 
 ---
 
-### FR-AGENT-02: Fleet Dashboard
+### FR-AGENT-02: Fleet Header & Sidebar Nav
 
-**Priority:** P0 | **Effort:** Small
+**Priority:** P0 | **Status:** ✅ Done
 
-**Sub-FR-AGENT-02-01:** Fleet KPI row  
-- Total processed today (sum across all agents)
-- Total processed this month
-- Fleet-average success rate
-- Active agent count (X of 6)
-
-**Sub-FR-AGENT-02-02:** Agent card grid  
-- 2-column grid of agent cards (one per agent)
-- Card: icon, name, version, domain, status badge, tagline, 3-metric row (today / success% / month), last action preview
-- Clicking a card opens the agent detail panel (right side or below)
-
-**Sub-FR-AGENT-02-03:** Active agents indicator  
-- Persistent badge in page header showing "X agents active" with pulse dot
-
-**Acceptance Criteria:**
-- [ ] Fleet KPIs are computed as aggregates from agent data
-- [ ] Selecting an agent card loads that agent's detail without page reload
-- [ ] Active count badge reflects real agent status, not hardcoded
+- Header shows: fleet name, active count, total actions today, "All systems operational" badge
+- Left sidebar lists all 5 agents with icon, codename, version, domain excerpt, status dot
+- Selecting an agent loads detail panel without page reload
+- Agent detail panel scrolls independently
 
 ---
 
-### FR-AGENT-03: Agent Mark Auto-Approval Feed
+### FR-AGENT-03: Agent Mark — Timesheet Ingestion & Auto-Approval
 
-**Priority:** P0 | **Effort:** Medium
+**Priority:** P0 | **Status:** ✅ Done
 
-This is the highest-visibility feature of the agent module — a live feed showing Agent Mark's auto-approval actions, making the AI's work visible and accountable to ops.
+The highest-visibility agent. Every timesheet submitted enters OpsDesk through Agent Mark.
 
-**Sub-FR-AGENT-03-01:** Auto-approval list  
-- Show last N timesheets auto-approved by Agent Mark today
-- Per row: employee name, client code, period, hours, confidence %, time of approval, "AUTO-APPROVED" badge
+**Ingestion:**
+- Portal syncs: 10 HRMS portals (Veltrix, OrbitHCM, PeopleHive, CloudSpire, HRLoop, TalentWeave, StaffPulse, LeafHR, PayAxis, HumanEdge)
+- Email: `candidatemanager@buzzworks.com` — NLP pipeline v3.4 (GPT-4o) extracts structured fields
+- Manual: ops-entered timesheets bypass NLP but still run policy validation
 
-**Sub-FR-AGENT-03-02:** Override notice  
-- Persistent notice: "Ops can override any auto-approval within 48h"
-- Each auto-approved timesheet in the Timesheet Inbox must show a distinct Agent Mark badge (not a human-approval badge)
+**7-check validation suite:**
+1. Weekly hours within client cap
+2. OT pre-approval check (cross-referenced with portal audit log or email thread)
+3. Daily hours cap per client policy
+4. Leave balance sufficiency
+5. Submission within SLA window
+6. Sandwich leave / consecutive OT pattern detection
+7. Employment status active (contract not expired)
 
-**Sub-FR-AGENT-03-03:** Agent Mark record in timesheets  
-- `approvedBy: "Agent Mark"` field on auto-approved timesheets
-- `approvedAt` timestamp set to the second of AI decision
-- `notes` field containing: version, checks passed, confidence, reasoning summary
+**Auto-approval logic:**
+- All 7 checks green + AI confidence ≥ 95% → auto-approve
+- Sets `approvedBy: "Agent Mark"`, `approvedAt: ISO timestamp`, `notes: reasoning string`
+- Confidence < 95% with warnings only → queue for ops review
+- Any check fails → flag + structured escalation report to ops inbox
+
+**KRA: Mark Auto-Approved count** appears on the Overview dashboard as the first KRA card (month total + vs-prior-month trend).
 
 **Acceptance Criteria:**
-- [ ] Auto-approved timesheets show "Agent Mark" as approver (not "Riya Shah" or ops name)
-- [ ] Notes field is populated with AI reasoning, not blank
-- [ ] Feed on Agents page shows at least 3 real auto-approved records from mock data
-- [ ] Override notice is visible without scrolling
+- [x] Auto-approved timesheets show "Agent Mark" as approver (distinct from human)
+- [x] Notes field populated with check count, confidence %, reasoning
+- [x] 7 Agent Mark auto-approvals seeded (ts009–ts015)
+- [x] Agent Mark count KRA on dashboard: 266 this month (+18% vs prior month)
+- [x] SLA risk events trigger Agent RELAY
 
 ---
 
-### FR-AGENT-04: Agent Controls
+### FR-AGENT-04: Agent ECHO — Exit Lifecycle Management
 
-**Priority:** P1 | **Effort:** Small
+**Priority:** P1 | **Status:** ✅ Done
 
-**Sub-FR-AGENT-04-01:** Per-agent action buttons  
-- Pause: sets agent status to "paused", stops it processing new items
-- Resume: sets paused agent back to active
-- Restart: resets agent state (simulated; in production would restart the process)
+ECHO owns the complete employee exit workflow from status change to FnF release.
 
-**Sub-FR-AGENT-04-02:** Status persistence  
-- Status change must reflect immediately on both the card (in grid) and the detail panel
-- Status badge in sidebar AI agent section must also update
+**Trigger:** `employment_status` transitions to `"notice"` or `"ended"`
+
+**Workflow:**
+1. Detect exit event
+2. Query client asset/equipment registry → calculate inventory value (replacement + depreciated)
+3. Apply client exit policy (notice period payout, garden leave, asset recovery timeline)
+4. Place salary HOLD (code `EXT-002`) immediately
+5. Draft FnF statement (salary payable, deductions, gratuity if applicable)
+6. Email exit clearance checklist to: HR + manager + account manager
+7. Track asset return and clearance confirmations
+8. Release HOLD only when all clearances confirmed
+9. Escalate if FnF not processed within client SLA (typically 45 days)
+
+**Policy codes triggered by ECHO:** `EXT-002` (exit hold)
 
 **Acceptance Criteria:**
-- [ ] Pause/Resume toggle is mutually exclusive (can't see both at once)
-- [ ] Button states are colour-coded: pause = coral/red, resume = teal
-- [ ] Status change is reflected in both card and detail panel simultaneously
+- [x] Salary HOLD placed within seconds of exit event detection
+- [x] FnF draft generated with line-item breakdown
+- [x] Exit checklist emailed to HR + manager + AM
+- [x] Hold released only on full clearance (not time-based)
+- [x] 3 active exits seeded (2 FnF pending, 1 FnF complete)
 
 ---
 
-### FR-AGENT-05: Agent Mark Integration in Timesheet Inbox
+### FR-AGENT-05: Agent SENTINEL — Manager Intelligence
 
-**Priority:** P0 | **Effort:** Medium
+**Priority:** P1 | **Status:** ✅ Done
 
-Agent Mark's decisions must be first-class in the Timesheet Inbox — not indistinguishable from human approvals.
+SENTINEL operates silently, building a behavioural intelligence layer over every manager interaction.
 
-**Sub-FR-AGENT-05-01:** Auto-approved badge in inbox  
-- Timesheets with `approvedBy: "Agent Mark"` must show a distinct teal "Agent Mark" badge in the inbox row
-- Human approvals show the approver's name in white/grey
+**What it tracks:**
+- Manager approval / rejection latency per client
+- Sentiment in manager email responses (GPT-4o analysis)
+- Bias patterns: selective fast-tracking or chronic delays by specific manager
+- Correlation between approval speed, employee tenure, attrition
+- Employee distress signals in timesheet submission notes
 
-**Sub-FR-AGENT-05-02:** Auto-approval detail in timesheet panel  
-- The timesheet detail view for Agent Mark approvals must show:
-  - A highlighted banner: "Auto-approved by Agent Mark [version] at [time]"
-  - Full validation check list (all checks shown as passed)
-  - The reasoning note from the `notes` field
-  - Override button: "Request manual review" (available within 48h)
+**Output:**
+- **Manager reliability score** (0–100, internal only — not exposed to client)
+- Feeds directly into Agent Mark's trust tier calculation
+- **Attrition risk flag** → ops + account manager alert via RELAY
+- Quarterly Manager Intelligence Report → Buzzworks leadership
+
+**Note:** SENTINEL's outputs are internal to Buzzworks. Clients do not see manager reliability scores or sentiment analysis.
 
 **Acceptance Criteria:**
-- [ ] Agent Mark approvals are visually distinct from Riya Shah / ops approvals
-- [ ] The reasoning note is readable and specific (not generic)
-- [ ] Override button is present on Agent Mark approvals (disabled or absent on manual approvals)
+- [x] SENTINEL profiles seeded with 47 managers tracked
+- [x] Attrition risk flag demonstrated (Sonia Das / FHL — 6-week sentiment drift confirmed)
+- [x] Bias alert demonstrated (MGR-HEX-014 — approves own team 40% faster)
+- [x] Fleet coordination note explains trust tier feed to Agent Mark
+
+---
+
+### FR-AGENT-06: Agent RELAY — Payroll Communications
+
+**Priority:** P1 | **Status:** ✅ Done
+
+RELAY is the communications backbone — the only agent that produces external-facing outputs.
+
+**Dispatch types:**
+- **Daily digest (18:00 IST):** payroll snapshot to ops team + all account managers; includes pending by client, holds with reasons, payroll amounts
+- **Cycle close alert (48h before deadline):** action checklist to ops team
+- **Critical escalations (out-of-cycle):** SLA breach, salary hold placed, FnF overdue → immediate dispatch regardless of digest schedule
+- **Delivery tracking:** re-send on failure with ops notification
+
+**Routing:** RELAY knows which account manager owns which client — notifications routed accordingly, not broadcast to all.
+
+**Acceptance Criteria:**
+- [x] 28 digests dispatched this month seeded
+- [x] 6 critical alerts seeded
+- [x] 14 unique recipients configured
+- [x] Delivery failure tracking (1 failure seeded — re-send triggered)
+- [x] Fleet coordination note confirms RELAY is only external-facing agent
+
+---
+
+### FR-AGENT-07: Agent NEXUS — Data Completeness & Fraud Detection
+
+**Priority:** P0 | **Status:** ✅ Done
+
+NEXUS is the last gate before any employee enters the payroll queue.
+
+**Validation checks:**
+- PAN number: presence + checksum format validation
+- Bank account + IFSC: presence + IFSC format validation
+- Work order number: presence + status (`active` or `extended`) against client registry
+- Identity consistency: `employee_id` ↔ `client_employee_id` cross-system match
+- **Banking fraud detection:** daily cross-employee scan — same `bank_account_no` claimed by multiple employees triggers urgent freeze + compliance alert
+- Payroll eligibility composite gate: `is_active` + `contract valid` + `WO valid` + `no open violations` + `manager/agent approved`
+
+**Policy codes:** `PRP-002` (bank), `WOV-003` (work order), `DCM-007` (completeness), `BFP-006` (fraud), `ICP-005` (identity), `PEP-004` (eligibility)
+
+**Acceptance Criteria:**
+- [x] 9 employees blocked (eligibility gate fails) seeded
+- [x] 3 bank detail holds seeded
+- [x] 2 work order gaps seeded
+- [x] 1 duplicate account fraud flag seeded (emp031 + emp044 / GSS)
+- [x] 0 missing PAN (all employees have PAN in current mock set)
+- [x] NEXUS triggers RELAY for urgent fraud escalation bypassing digest
 
 ---
 
@@ -170,117 +218,61 @@ Agent Mark's decisions must be first-class in the Timesheet Inbox — not indist
 
 ### 4.1 Agent Mark (MARK)
 
-**Model:** claude-3-5-sonnet  
-**Trigger:** New timesheet received (portal sync or email parse)  
-**Decision logic:**
-1. Run 5 policy checks against client's active PolicyRule set
-2. Compute confidence score (0–100)
-3. If all checks pass AND confidence ≥ 95: auto-approve
-4. If any check fails: flag and escalate to ops queue
-5. If confidence 75–94 with warnings only: queue for ops review
-
-**Confidence score formula:**
+**Model:** GPT-4o (NLP parse) + deterministic rule engine (policy validation)  
+**Trigger:** Portal sync event; email received at candidatemanager@buzzworks.com; manual reprocess  
+**Version:** v2.1  
+**Avg processing:** 1.4s per timesheet  
+**Confidence formula:**
 ```
 base = 50
-+ 20 if totalHours extracted
-+ 10 if daysPresent extracted
-+ 15 if attachment present
-+ 5  if manager CC detected
++ 20 if all structured fields extracted
++ 10 if source is portal (higher trust)
++ 15 if manager CC or pre-approval detected
 - 15 per "fail" check
 - 5  per "warning" check
-clamp to [0, 100]
+clamp [0, 100]
 ```
-
-**Output fields:**
-- `approvedBy: "Agent Mark"`
-- `approvedAt: ISO timestamp`
-- `notes: "Auto-approved by Agent Mark (v2.1) — [N]/[total] checks passed, confidence [X]%, [reasoning]"`
-- `aiConfidence: number`
-- `validationScore: number`
+**Output fields:** `approvedBy`, `approvedAt`, `notes`, `aiConfidence`, `validationScore`
 
 ---
 
-### 4.2 Agent Nova (NOVA)
+### 4.2 Agent ECHO (ECHO)
 
-**Model:** claude-3-5-sonnet  
-**Trigger:** Scheduled — runs nightly at 00:01 and intra-day at 06:00  
-**Scope:** All timesheets submitted in the rolling 30-day window  
-**Output:** Anomaly report entries pushed to AI Insights feed
-
-**Detection patterns:**
-- Consecutive weeks of OT > 8h for same employee
-- Repeated Friday under-reporting (< 6h on Fridays)
-- Leave clustering within 3 days of public holidays
-- Sudden hour spike > 20% above personal baseline
-- Client-level decline in validation score (3-week trend)
+**Model:** Deterministic rule engine + GPT-4o (FnF document generation)  
+**Trigger:** `employment_status` → `notice` or `ended`; notice period end date crossed; manual  
+**Version:** v1.3  
+**Avg FnF initiation:** 4.2s from trigger  
+**Hold codes:** `EXT-002`
 
 ---
 
-### 4.3 Agent Iris (IRIS)
+### 4.3 Agent SENTINEL (SENTINEL)
 
-**Model:** claude-3-5-sonnet  
-**Trigger:** New email at candidatemanager@buzzworks.com (5-min IMAP poll)  
-**Pipeline:**
-1. Fetch email → extract from, subject, body, CC, attachment
-2. OCR attachment if image/PDF
-3. Field extraction: employee name, period, total hours, days present, LOP
-4. Match sender to employee register
-5. Hand structured payload to Agent Mark
-
-**Handled edge cases:**
-- Forwarded email (Fwd:/FW: prefix) → reject with reason
-- Unknown sender domain → quarantine
-- No attachment on attachment-required client → flag before Mark
-- Duplicate submission (same employee, same period) → merge or flag
+**Model:** GPT-4o (sentiment analysis) + statistical pattern engine  
+**Trigger:** Any manager action; weekly scheduled scan; attrition signal from ECHO  
+**Version:** v1.0  
+**Avg analysis:** 890ms per action  
+**Output:** Manager reliability score (internal), attrition risk flag, bias alert
 
 ---
 
-### 4.4 Agent Vault (VAULT)
+### 4.4 Agent RELAY (RELAY)
 
-**Model:** claude-3-5-sonnet  
-**Trigger:** Payroll batch enters "pending_approval" status  
-**Checks:**
-- `totalAmount == sum(employee hours × rate)`
-- `overtimeAmount == OT hours × rate × client.overtimeMultiplier`
-- `lopDeduction == lopDays × (rate × 8)`
-- Leave balance used does not exceed available balance
-- All included timesheets have status "approved" (not pending/flagged)
-
-**Output:** Pre-audit report with check list; batch blocked if any check fails
+**Model:** Template engine + GPT-4o (narrative digest summary)  
+**Trigger:** Scheduled (18:00 IST daily, 48h before cycle close); event-driven (from Mark, ECHO, NEXUS)  
+**Version:** v1.1  
+**Avg compile time:** 340ms per dispatch  
+**Delivery success:** 99.8%
 
 ---
 
-### 4.5 Agent Lumen (LUMEN)
+### 4.5 Agent NEXUS (NEXUS)
 
-**Model:** claude-3-5-sonnet  
-**Trigger:** (a) Ops team uses "Create with AI" in Policy Engine; (b) Weekly analysis run  
-**NL → Rule conversion:** Input text → PolicyRule object with all fields populated  
-**Pattern library:** 20 common policy rule templates (sandwich leave, consecutive OT, hours deviation, etc.)  
-**Impact simulation:** Before accepting a new rule, Lumen estimates how many historical timesheets it would have triggered (retroactive simulation)
-
----
-
-### 4.6 Agent Trace (TRACE)
-
-**Model:** claude-3-5-sonnet (lightweight)  
-**Trigger:** Every system event (append-only)  
-**Events logged:** Timesheet submission, validation run, approval, rejection, escalation, policy create/update/delete, payroll batch status change, agent action, ops user action  
-
-**Risk score formula (Employee):**
-```
-score = 100
-- 10 per flag in last 30 days
-- 5  per late submission in last 30 days
-- 3  per LOP day in last 60 days
-+ 5  if 100% on-time submissions in last 8 weeks
-clamp to [0, 100]
-```
-
-**Risk score formula (Client):**
-```
-compliance_score = (pass_checks / total_checks) × 100
-adjusted for: OT frequency, flag rate, portal sync health, SLA breach rate
-```
+**Model:** Deterministic rule engine + fuzzy match (account deduplication)  
+**Trigger:** Pre-payroll batch run; new employee onboarded; daily 06:00 IST sweep; manual  
+**Version:** v1.0  
+**Avg check:** 210ms per employee  
+**Scope:** 4,820 employees checked this month
 
 ---
 
@@ -289,72 +281,72 @@ adjusted for: OT frequency, flag rate, portal sync health, SLA breach rate
 | NFR                      | Requirement                                                       |
 |--------------------------|-------------------------------------------------------------------|
 | Agent Mark latency       | <2s from receipt to decision (95th percentile)                    |
-| Agent Iris latency       | <3s from email receipt to structured output                       |
-| Agent Trace throughput   | >1,000 events/minute without queue backup                         |
-| Agent Nova accuracy      | <5% false positive rate on anomaly detection (measured quarterly) |
-| Explainability           | Every agent decision must include a human-readable reason string  |
-| Override capability      | Any agent action must be reversible by ops within defined window  |
+| Agent NEXUS throughput   | All active employees checked within 30 min of daily sweep trigger |
+| Agent RELAY delivery     | Digest dispatched within 60s of scheduled trigger                 |
+| Agent SENTINEL accuracy  | <5% false positive rate on attrition risk flags (quarterly audit) |
+| Explainability           | Every agent decision includes a human-readable reason string      |
+| Override capability      | Any agent hold or flag reversible by ops with reason logged       |
+| Internal-only            | SENTINEL scores and RELAY digest content never exposed to clients |
 
 ---
 
 ## 6. User Stories
 
-### Story AGENT-001 — Agent Mark Auto-Approval Visibility
-**As** an ops associate,  
-**I want** to see which timesheets were auto-approved by Agent Mark and which were approved by a human,  
-**So that** I can audit Agent Mark's decisions and intervene if needed.
-
-**Acceptance Criteria:**
-- Agent Mark approvals show distinct badge in inbox list
-- Detail panel shows Agent Mark version, timestamp, and full check list
-- A human-approved timesheet shows the approver's name without the agent badge
-
----
-
-### Story AGENT-002 — Agent Fleet Status at a Glance
+### AGENT-001 — Mark Auto-Approved Count on Dashboard
 **As** an ops lead,  
-**I want** to see the current status, today's activity, and success rate of all 6 agents on a single screen,  
-**So that** I can ensure the AI layer is healthy and no agent has silently stopped working.
+**I want** to see how many timesheets Agent Mark auto-approved this month on the overview dashboard,  
+**So that** I can track AI efficiency as a KRA alongside other process metrics.
 
 **Acceptance Criteria:**
-- Fleet page loads all 6 agent cards in one view
-- Active agent count badge at top of page
-- Each card shows: status, today's count, success rate, last action preview
-- An "idle" or "paused" agent is visually distinct from an "active" one
+- [x] "Mark Auto-Approved" card is the first KRA in the 7-card strip
+- [x] Shows current month count (266) and vs-prior-month comparison (+18%)
+- [x] Icon is distinct from the auto-approval rate % card
 
 ---
 
-### Story AGENT-003 — Pause an Agent
+### AGENT-002 — Agent Mark Visibility in Timesheet Tables
+**As** an ops associate,  
+**I want** to distinguish Agent Mark approvals from human approvals in every timesheet table,  
+**So that** I can audit the AI layer without opening each record individually.
+
+**Acceptance Criteria:**
+- [x] "⚡ Agent Mark" label in all timesheet tables (inbox, client detail, employee detail)
+- [x] Human approvals show approver name in muted colour
+- [x] Timesheets tab on client detail: filter by "Agent Mark only" or "Human approved"
+
+---
+
+### AGENT-003 — Exit Hold Notification via ECHO + RELAY
+**As** an ops associate,  
+**I want** to be automatically notified when an employee exits and their salary is held,  
+**So that** I don't need to manually monitor employment status changes.
+
+**Acceptance Criteria:**
+- [x] ECHO places hold + emails HR checklist within seconds of exit detection
+- [x] RELAY dispatches hold notification to account manager immediately (out-of-cycle)
+- [x] Hold appears in dashboard "Active Holds" breakdown
+
+---
+
+### AGENT-004 — Fraud Alert from NEXUS
+**As** compliance,  
+**I want** to receive an immediate alert when two employees share a bank account number,  
+**So that** I can investigate and freeze payroll before disbursement.
+
+**Acceptance Criteria:**
+- [x] NEXUS daily scan detects duplicate account across any two employees (cross-client)
+- [x] Both records frozen immediately
+- [x] RELAY dispatches urgent (out-of-cycle) alert to compliance + account managers
+- [x] Alert bypasses daily digest schedule
+
+---
+
+### AGENT-005 — Pause Agent Mark for Audit Week
 **As** an ops lead,  
-**I want** to pause Agent Mark when I need to review all timesheets manually (e.g., audit week),  
-**So that** no timesheets are auto-approved without human review during that period.
+**I want** to pause Agent Mark during an audit week so all timesheets are manually reviewed,  
+**So that** no approvals are made without human sign-off during that period.
 
 **Acceptance Criteria:**
-- Pause button on Agent Mark detail panel
-- After pause: status badge changes to "Paused", new timesheets join ops review queue instead of being auto-approved
-- Resume button restores normal behaviour
-
----
-
-### Story AGENT-004 — Policy Rule from Natural Language
-**As** an ops associate,  
-**I want** to type a policy requirement in plain English and have Agent Lumen convert it into a structured rule,  
-**So that** I don't need to understand the rule schema or involve engineering.
-
-**Acceptance Criteria:**
-- Text input in Policy Engine → "Create with AI" triggers Lumen
-- Preview shows: category, severity, trigger condition, action, AI badge
-- Ops can edit any field before saving
-- Saved rule immediately applies to future timesheet validations for that client
-
----
-
-### Story AGENT-005 — View Agent Reasoning for a Flagged Timesheet
-**As** an ops associate,  
-**I want** to see exactly why Agent Mark flagged a timesheet — not just a failure label,  
-**So that** I can make an informed decision to approve, reject, or escalate.
-
-**Acceptance Criteria:**
-- Flagged timesheet shows each failed/warning check with a detail string
-- Detail string is specific: "12h OT — no pre-approval on file (TCI policy v3.2 §4.2)"
-- Check list is ordered: failures first, warnings second, passes last
+- [x] Pause button in agent detail panel
+- [x] Status badge changes to "Paused"
+- [x] Resume restores normal behaviour

@@ -2,11 +2,12 @@
 ## OpsDesk — Timesheet & Payroll Operations Platform
 
 **Document ID:** PRD-OD-001  
-**Version:** 1.0  
-**Status:** In Review  
+**Version:** 2.0  
+**Status:** Live — Phase 2 Build Complete  
 **Date:** 2026-04-10  
 **Product Manager:** Buzzworks Product Team  
-**References:** BRD-OD-001, FPRD-OD-001 through FPRD-OD-007  
+**References:** BRD-OD-001, FPRD-OD-001 through FPRD-OD-009  
+**Live URL:** https://timesheetexplore.vercel.app  
 
 ---
 
@@ -40,6 +41,7 @@
 **Who:** Single team lead who oversees all clients and team output  
 **Core jobs-to-be-done:**
 - Get a daily overview of the full ops picture (KPIs, SLA health, agent activity)
+- Monitor process efficiency KRAs: auto-approval rate, SLA adherence, Mark auto-approved count, turnaround time, error rate, payroll on-time, active holds
 - Review team workload and reassign if needed
 - Approve payroll batches before they go to finance
 - Pull a compliance report for a client on demand
@@ -55,72 +57,99 @@
 
 ## 4. Feature Map
 
-### F-1: Overview Dashboard
-- Real-time KPIs: pending timesheets, today's processed, auto-approval rate, active flags
-- Trend chart: weekly timesheet volume (received vs. processed vs. auto-approved)
-- AI insights feed: anomalies and suggestions from Agent Nova and Agent Lumen
-- SLA health indicator: timesheets approaching breach
-- Portal sync status: last sync time per integration
+### F-1: Overview Dashboard ✅ Built
+- **Process Efficiency KRA strip (7 metrics):**
+  - Mark Auto-Approved (count, month) — primary Agent Mark KRA
+  - Auto-Approval Rate (% of total submitted)
+  - SLA Adherence (% within client SLA window)
+  - Avg Turnaround (hours, end-to-end)
+  - Validation Error Rate (% policy violations)
+  - Payroll On-Time (% batches released in cycle)
+  - Active Holds (count — contract / banking / data)
+- **Client-wise KPI table** with inline dropdown filters (SLA level, holds, sort)
+- **Monthly submission trend chart** (6-month: submitted / approved / flagged)
+- **Agent Mark efficiency trend** (6-month auto-approval rate)
+- **Payroll batch status donut**
+- **Active holds breakdown** by policy category (CEE / PRP / WOV)
+- **Agent fleet summary strip** (Mark / ECHO / NEXUS cards with live metrics)
 
-### F-2: Timesheet Inbox
+### F-2: Timesheet Inbox ✅ Built
 - Tabbed filter: All / Pending / Flagged / Reviewing / Approved / Rejected
-- Per-timesheet card: employee, client, period, hours summary, source badge (portal/email), AI confidence score
+- Per-timesheet card: employee, client, period, hours summary, source badge, AI confidence score
 - Quick actions: Approve / Reject / Flag / Escalate
 - Detail panel: full validation check list, daily breakdown, policy check results, AI notes
-- Agent Mark badge on auto-approved timesheets (non-editable within 48h unless override requested)
+- Agent Mark badge on auto-approved timesheets
+- 15 seeded timesheets including 7 Agent Mark auto-approvals (ts009–ts015)
 
-### F-3: Client Management
-- Client list with search, industry filter, portal filter, sort
+### F-3: Client Management ✅ Built
+- Client list with search, industry filter, portal filter, compliance score sort
 - Client card: compliance score bar, pending count, portal badge, monthly payroll
 - Client detail (5 tabs):
   - **Overview:** trend chart, status pie, integration panel, policy snapshot
-  - **Timesheets:** filtered timesheet list for this client
-  - **Employees:** employee table with generated entries
-  - **Policies in Force:** full policy rule set for this client (prominent, editable)
+  - **Timesheets:** filterable table (status / source / approver / search) ← NEW
+  - **Employees:** filterable table (department / status / search) ← NEW
+  - **Policies in Force:** full policy rule set (editable)
   - **Payroll:** batch history and approval workflow
+- 21 clients seeded (large, mid, small, email-only)
 
-### F-4: Employee Directory
-- Cross-client employee table
-- Left filter sidebar: client, job category, city, status, rate range
-- Leave balance indicators (annual / sick / casual used vs. total)
-- Employment status badges: active / notice / ended / on hold
-- Seeded deterministic generation for clients with large headcounts
+### F-4: Employee Directory ✅ Built
+- Cross-client employee table with horizontal filter bar (one row)
+- Filters: search, Client, Job Category, City, Status, Date Range (joined from/to)
+- Clickable rows → Employee Detail page
+- Leave balance indicators (annual / sick / casual)
+- Employment status badges
 
-### F-5: Policy Engine
-- Per-client policy rule list
+### F-4b: Employee Detail Page ✅ Built (NEW)
+- 4 tabs: Overview, Timesheets, Leave, Risk Profile
+- Overview: KPI cards, weekly hours bar chart, monthly earnings trend, employment details
+- Timesheets: full table with Agent Mark badge, link to inbox
+- Leave: balance cards + leave history table
+- Risk Profile: AI composite risk level (Low/Med/High), 6 signal checks, Agent Mark recommendations
+
+### F-5: Policy Engine ✅ Built
+- Per-client policy rule list with 7 policy types:
+  - **CEE-001** Contract Expiry Enforcement (auto-reject + salary hold)
+  - **PRP-002** Payment Readiness (bank/IFSC missing → hold)
+  - **WOV-003** Work Order Validation (null WO → non-billable + hold)
+  - **PEP-004** Payroll Eligibility Gate (5-condition composite)
+  - **ICP-005** Identity Consistency (employee_id mismatch)
+  - **BFP-006** Banking Fraud Prevention (duplicate account detection)
+  - **DCM-007** Data Completeness (PAN + bank + WO all required)
+- Client-specific operational rules (hours / OT / leave / attendance / compliance)
 - Rule card: category, severity, trigger condition, action, toggle
-- AI Policy Creator: natural language → structured rule (Agent Lumen)
-- Quick suggestion chips for common policy patterns
-- Rule categories: hours / overtime / leave / attendance / payroll / compliance
 
-### F-6: Payroll Processing
-- Batch card: coverage, OT breakdown, conditional actions
-- Tabs: Overview (trend + client breakdown charts) / Batches / History
-- Agent Vault pre-audit result displayed on each batch
-- Finance export trigger (Download)
-- Approve / Hold actions with reason capture
+### F-6: Payroll Processing ✅ Built
+- 8 payroll batches seeded across 6 clients
+- Batch card: coverage, OT breakdown, hold count
+- Status workflow: draft → pending_approval → approved → processed
+- Finance export trigger
 
-### F-7: Reports & Analytics
-- Period selector (last week / month / quarter / YTD / custom)
-- 6 KPIs with period-over-period change
-- Volume trend (received / processed / auto-approved)
-- Status distribution pie
-- Ops health radar chart
-- Compliance leaderboard (clients ranked by score)
-- Turnaround time trend
+### F-7: Reports & Analytics ✅ Built
+- Period selector, 6 KPIs, volume trend, status pie, compliance leaderboard
 
-### F-8: Integrations
-- Portal card grid: sync status, client connections, feature chips, Sync Now action
-- Email ingestion card: IMAP stats, test connection
-- Connect new portal CTA
-- Portal-specific latency indicators
+### F-8: Integrations ✅ Built
+- 10 portal integrations (Veltrix, OrbitHCM, PeopleHive, CloudSpire, HRLoop, TalentWeave, StaffPulse, LeafHR, PayAxis, HumanEdge)
+- Email ingestion card
+- Portal-specific sync frequency + success rate
 
-### F-9: AI Agent Fleet
-- Agent grid with profile cards (name, domain, status, key metrics)
-- Agent detail panel: description, capabilities, activity log, model info
-- Fleet KPI row: processed today, this month, fleet success rate, active count
-- Agent Mark spotlight: recent auto-approvals with confidence scores
-- Pause / Resume / Restart controls per agent
+### F-9: AI Agent Fleet ✅ Built (REDESIGNED)
+- **5 agents** (redesigned from original 6-agent concept):
+  - **MARK** — Timesheet ingestion, NLP email parse, 7-check validation, auto-approval
+  - **ECHO** — Exit lifecycle: asset inventory, salary hold, FnF coordination
+  - **SENTINEL** — Manager sentiment analysis, hidden rating, attrition risk detection
+  - **RELAY** — Payroll snapshot comms: daily digest, critical escalation emails
+  - **NEXUS** — Data completeness gate, banking fraud detection, payroll eligibility
+- Sidebar agent nav, full detail panel per agent
+- Capabilities, triggers, outputs, 8-metric grid, recent activity logs
+- Fleet coordination note (how each agent connects to others)
+
+### F-10: Settings ✅ Built (NEW)
+- 6 sections: Appearance, Notifications, Account, Integrations, Security, System
+- **Theme toggle:** Light (Microsoft Fluent, default) / Dark (glassmorphism)
+- Agent Mark configuration: confidence threshold, batch size, OT escalation
+- Portal connection status list
+- 2FA, session management, API key
+- Data retention + danger zone
 
 ---
 
@@ -135,60 +164,57 @@
 | Security             | Internal-only access; no PII exposed in URLs; audit log immutable    |
 | Accessibility        | WCAG AA for all interactive elements                                  |
 | Browser support      | Chrome, Firefox, Safari (last 2 versions); no IE                     |
+| Theme                | Light (default, WCAG AA) + Dark; persisted in localStorage           |
 
 ---
 
 ## 6. Flows & User Journeys
 
-### Journey 1: Morning Queue Review (Ops Associate)
-1. Open OpsDesk at 9am → Overview shows 23 pending timesheets, 3 SLA at risk
-2. Navigate to Timesheet Inbox → Filter to "Pending" tab
-3. Click ts001 (Rahul Sharma / TCI) → Detail panel opens
-4. See: Agent Mark escalated this (12h OT, no pre-approval), validation score 62%
-5. Review daily breakdown → Reject with note "OT pre-approval required per TCI v3.2"
-6. Move to next → ts009 shows "Auto-approved by Agent Mark" → Skip (no action needed)
-7. Continue until queue is clear or shift ends
+### Journey 1: Morning KRA Review (Ops Lead)
+1. Open OpsDesk → Overview KRA strip shows: 266 Mark auto-approved (month), 62% auto rate, 94.1% SLA adherence
+2. Active Holds card shows 9 holds — click → Policy hold breakdown (4 contract, 3 banking, 2 data)
+3. Filter client table to "With Holds" → identify LTI (4 holds) and HEX (3 holds) as priority
+4. Navigate to LTI client detail → Timesheets tab filtered by "Flagged" → review 4 flagged timesheets
 
-### Journey 2: Adding a New Policy Rule (Ops Lead)
-1. Client (TCI) calls to say they want to flag any employee taking leave the day before a public holiday
-2. Open Policy Engine → Select TCI from client list
-3. Click "Create with AI" → Type: "Flag leave taken immediately before a public holiday"
-4. Agent Lumen parses → shows structured preview: category=leave, severity=warning, trigger=leaveAdjacentToHoliday
-5. Review → Save → Rule is now active for all future TCI timesheets
+### Journey 2: Agent Mark Exit Workflow (ECHO + NEXUS)
+1. Sonia Das (FHL0002) moves to notice period
+2. Agent ECHO detects status change → places salary hold (EXT-002) + emails HR
+3. Agent NEXUS confirms data completeness before FnF release
+4. Agent RELAY notifies account manager Riya Shah and finance@financehub.co
 
-### Journey 3: Monthly Payroll Approval (Ops Lead)
-1. Open Payroll → Batches tab → Filter to April
-2. See IBP Apr W1 batch: ₹48L, 14,200 employees, Agent Vault pre-audit: 0 discrepancies
-3. Click Approve → Batch moves to "Approved" status
-4. Finance team downloads batch → Processes disbursement
+### Journey 3: Banking Fraud Detection (NEXUS)
+1. Daily sweep at 06:00 — Agent NEXUS detects emp031 and emp044 (both GSS) sharing bank account ••••5521
+2. Both records frozen, BFP-006 flag raised, urgent alert dispatched to compliance
+3. Ops sees active hold in dashboard; clicks through to Policy section
 
-### Journey 4: Client Compliance Report (Ops Lead)
-1. Client (HEX) requests compliance report for Q1 FY26
-2. Open Reports → Set period to Q1 FY26 → Filter by client: Hexaware Technologies
-3. View: 12,500 submissions, 94% auto-approved, 2 policy violations, avg turnaround 1.2h
-4. Download → Send to client HR contact
+### Journey 4: Monthly Payroll Approval (Ops Lead)
+1. Open Payroll → IBP Apr W1 batch: ₹48L, all checks green
+2. Click Approve → batch moves to "Approved"
+3. Agent RELAY auto-dispatches cycle-close digest to finance team
 
 ---
 
 ## 7. Prioritised Feature Backlog
 
-| Priority | Feature                                       | Effort   | Phase |
-|----------|-----------------------------------------------|----------|-------|
-| P0       | Timesheet inbox with validation               | XLarge   | 1     |
-| P0       | Client management with policy view            | Large    | 1–2   |
-| P0       | Agent Mark auto-approval                      | Large    | 2     |
-| P0       | Portal sync API integration                   | Large    | 2     |
-| P0       | Email ingestion pipeline (Iris)               | Large    | 2     |
-| P1       | Policy engine with AI creator                 | Large    | 2     |
-| P1       | Payroll batch approval workflow               | Medium   | 2     |
-| P1       | Reports & analytics                           | Large    | 2     |
-| P1       | Agent Fleet page                              | Medium   | 3     |
-| P1       | BRD / PRD / FPRD documentation               | Large    | 3     |
-| P2       | Real portal OAuth integrations                | XLarge   | 4     |
-| P2       | Live IMAP email pipeline                      | Large    | 4     |
-| P2       | Multi-user roles and permissions              | Medium   | 4     |
-| P3       | Client-facing report portal                  | XLarge   | 5     |
-| P3       | Mobile app (ops on-the-go)                   | XLarge   | 5     |
+| Priority | Feature                                       | Effort   | Phase | Status      |
+|----------|-----------------------------------------------|----------|-------|-------------|
+| P0       | Timesheet inbox with validation               | XLarge   | 1     | ✅ Done      |
+| P0       | Client management with policy view            | Large    | 1–2   | ✅ Done      |
+| P0       | Agent Mark auto-approval + KRA dashboard      | Large    | 2     | ✅ Done      |
+| P0       | Portal sync API integration (mock)            | Large    | 2     | ✅ Done      |
+| P0       | Email ingestion pipeline (Agent Mark)         | Large    | 2     | ✅ Done      |
+| P1       | Policy engine with 7 real-world rule types    | Large    | 2     | ✅ Done      |
+| P1       | Payroll batch approval workflow               | Medium   | 2     | ✅ Done      |
+| P1       | Reports & analytics                           | Large    | 2     | ✅ Done      |
+| P1       | AI Agent Fleet (5 agents)                     | Large    | 2–3   | ✅ Done      |
+| P1       | Employee detail page                          | Medium   | 3     | ✅ Done      |
+| P1       | Settings page with theme toggle               | Medium   | 3     | ✅ Done      |
+| P1       | Horizontal filter bars on all tables          | Medium   | 3     | ✅ Done      |
+| P2       | Real portal OAuth integrations                | XLarge   | 4     | Planned     |
+| P2       | Live IMAP email pipeline                      | Large    | 4     | Planned     |
+| P2       | Multi-user roles and permissions              | Medium   | 4     | Planned     |
+| P3       | Client-facing report portal                  | XLarge   | 5     | Future      |
+| P3       | Mobile app (ops on-the-go)                   | XLarge   | 5     | Future      |
 
 ---
 
@@ -196,8 +222,10 @@
 
 | # | Question                                                            | Owner         | Target Resolution |
 |---|---------------------------------------------------------------------|---------------|-------------------|
-| 1 | Should Agent Mark's 95% confidence threshold be configurable per client? | Product  | Phase 3           |
-| 2 | What is the override window for Agent Mark auto-approvals? (currently 48h) | Ops Lead | Phase 3     |
+| 1 | Should Agent Mark's 95% confidence threshold be configurable per client? | Product  | Phase 4           |
+| 2 | What is the override window for Agent Mark auto-approvals? (currently 48h) | Ops Lead | Phase 4     |
 | 3 | Which portal should be prioritised for real API integration first?  | Tech + Ops    | Phase 4 kickoff   |
 | 4 | Should rejected timesheets trigger an automated email to the employee? | Ops Lead   | Phase 4           |
 | 5 | Is the compliance report format client-specific or standardised?   | Client success| Phase 4           |
+| 6 | Should SENTINEL's manager reliability score be visible to the ops lead? | Product  | Phase 4           |
+| 7 | What is the FnF SLA for ECHO's exit workflow? (currently assumed 45 days) | Ops + Client | Phase 4  |

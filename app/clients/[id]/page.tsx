@@ -10,7 +10,7 @@ import { generateEmployeesForClient } from "@/lib/mock-generator"
 import {
   ArrowLeft, Building2, Globe, Mail, Users, Clock, TrendingUp,
   CheckCircle2, AlertTriangle, FileText, CreditCard, Activity,
-  ChevronRight, Eye, Check, Flag, ShieldCheck, Calendar,
+  ChevronRight, Eye, Check, Flag, ShieldCheck, Calendar, ChevronDown, Search,
 } from "lucide-react"
 import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, BarChart, Bar, XAxis } from "recharts"
 
@@ -158,60 +158,136 @@ function OverviewTab({ client, portal }: { client: NonNullable<ReturnType<typeof
   )
 }
 
+// ─── Shared filter select ─────────────────────────────────────────────────────
+
+function FSelect({ value, onChange, options }: {
+  value: string; onChange: (v: string) => void
+  options: { label: string; value: string }[]
+}) {
+  return (
+    <div className="relative">
+      <select value={value} onChange={e => onChange(e.target.value)}
+        className="glass-input text-[11px] py-1.5 appearance-none cursor-pointer" style={{ paddingRight: 28 }}>
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+      <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
+    </div>
+  )
+}
+
 // ─── Tab: Timesheets ─────────────────────────────────────────────────────────
 
 function TimesheetsTab({ clientId }: { clientId: string }) {
-  const ts = timesheets.filter(t => t.clientId === clientId)
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [sourceFilter, setSourceFilter] = useState("all")
+  const [approverFilter, setApproverFilter] = useState("all")
+  const [search, setSearch] = useState("")
+
+  const allTs = timesheets.filter(t => t.clientId === clientId)
+
+  const filtered = useMemo(() => {
+    return allTs.filter(t => {
+      if (statusFilter !== "all" && t.status !== statusFilter) return false
+      if (sourceFilter !== "all" && t.source !== sourceFilter) return false
+      if (approverFilter === "agent" && t.approvedBy !== "Agent Mark") return false
+      if (approverFilter === "human" && (t.approvedBy === "Agent Mark" || !t.approvedBy)) return false
+      if (search) {
+        const emp = employees.find(e => e.id === t.employeeId)
+        const q = search.toLowerCase()
+        if (!emp?.name.toLowerCase().includes(q) && !t.id.includes(q) && !t.period.toLowerCase().includes(q)) return false
+      }
+      return true
+    })
+  }, [allTs, statusFilter, sourceFilter, approverFilter, search])
+
+  const statusColor = { pending:"var(--text-2)", reviewing:"var(--info)", flagged:"var(--warn)", approved:"var(--accent)", processed:"#00a880", rejected:"var(--danger)" }
+
   return (
     <div className="glass overflow-hidden">
-      {ts.length === 0 ? (
-        <div className="p-8 text-center text-white/30 text-[13px]">No timesheets found for this client.</div>
+      {/* Filter bar */}
+      <div className="px-4 py-3 flex items-center gap-2 flex-wrap" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="relative flex-1 min-w-[140px] max-w-[200px]">
+          <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search employee, period…"
+            className="glass-input w-full text-[11px] py-1.5 pl-7" />
+        </div>
+        <FSelect value={statusFilter} onChange={setStatusFilter} options={[
+          { label: "All statuses", value: "all" },
+          { label: "Pending", value: "pending" },
+          { label: "Reviewing", value: "reviewing" },
+          { label: "Flagged", value: "flagged" },
+          { label: "Approved", value: "approved" },
+          { label: "Processed", value: "processed" },
+          { label: "Rejected", value: "rejected" },
+        ]} />
+        <FSelect value={sourceFilter} onChange={setSourceFilter} options={[
+          { label: "All sources", value: "all" },
+          { label: "Portal", value: "portal" },
+          { label: "Email", value: "email" },
+          { label: "Manual", value: "manual" },
+        ]} />
+        <FSelect value={approverFilter} onChange={setApproverFilter} options={[
+          { label: "All approvers", value: "all" },
+          { label: "Agent Mark only", value: "agent" },
+          { label: "Human approved", value: "human" },
+        ]} />
+        <span className="text-[10px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {allTs.length}</span>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="p-8 text-center text-[13px]" style={{ color: "var(--text-3)" }}>No timesheets match the current filters.</div>
       ) : (
         <table className="w-full text-[12px]">
           <thead>
-            <tr className="border-b border-white/[0.05]">
-              {["Employee", "Period", "Hours", "Source", "Score", "Status", ""].map(h => (
-                <th key={h} className="text-left px-4 py-3 text-[11px] text-white/30 font-semibold uppercase tracking-wider">{h}</th>
+            <tr style={{ borderBottom: "1px solid var(--border)" }}>
+              {["Employee", "Period", "Hours", "Source", "Score", "Approved by", "Status", ""].map(h => (
+                <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {ts.map(t => {
+            {filtered.map(t => {
               const emp = employees.find(e => e.id === t.employeeId)
-              const statusColor = { pending:"var(--text-2)", reviewing:"var(--info)", flagged:"var(--warn)", approved:"var(--accent)", processed:"#00a880", rejected:"var(--danger)" }[t.status]
               return (
                 <tr key={t.id} className="ts-row">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-2)" }}>
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ background: "var(--surface)", color: "var(--text-2)" }}>
                         {emp ? initials(emp.name) : "?"}
                       </div>
                       <div>
-                        <div className="font-semibold text-white/90">{emp?.name ?? t.employeeId}</div>
-                        <div className="text-white/35 text-[10px]">{emp?.role}</div>
+                        <div className="font-semibold" style={{ color: "var(--text-1)" }}>{emp?.name ?? t.employeeId}</div>
+                        <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{emp?.role}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-white/55 text-[11px]">{t.period}</td>
+                  <td className="px-4 py-3 text-[11px]" style={{ color: "var(--text-2)" }}>{t.period}</td>
                   <td className="px-4 py-3">
-                    <div className="font-semibold text-white/90">{t.totalHours}h</div>
-                    {t.overtimeHours > 0 && <div className="text-[10px] text-amber-400">+{t.overtimeHours}h OT</div>}
+                    <div className="font-semibold" style={{ color: "var(--text-1)" }}>{t.totalHours}h</div>
+                    {t.overtimeHours > 0 && <div className="text-[10px]" style={{ color: "var(--warn)" }}>+{t.overtimeHours}h OT</div>}
                   </td>
                   <td className="px-4 py-3">
                     <span className="badge badge-portal text-[10px]">{t.source}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="font-bold text-[13px]" style={{ color: t.validationScore >= 85 ? "#00c896" : t.validationScore >= 60 ? "#c89060" : "#c07070" }}>
+                    <span className="font-bold text-[13px]" style={{ color: t.validationScore >= 85 ? "var(--accent)" : t.validationScore >= 60 ? "var(--warn)" : "var(--danger)" }}>
                       {t.validationScore}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-[11px] font-medium" style={{ color: statusColor }}>{t.status}</span>
+                    {t.approvedBy === "Agent Mark"
+                      ? <span className="text-[11px] font-medium" style={{ color: "var(--accent)" }}>⚡ Agent Mark</span>
+                      : <span className="text-[11px]" style={{ color: "var(--text-2)" }}>{t.approvedBy ?? "—"}</span>}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`badge badge-${t.status} text-[10px]`}>{t.status}</span>
                   </td>
                   <td className="px-4 py-3">
                     <Link href="/timesheets">
-                      <button className="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-white/10">
-                        <Eye size={12} className="text-white/50" />
+                      <button className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ color: "var(--text-2)" }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "var(--surface-hover)")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                        <Eye size={12} />
                       </button>
                     </Link>
                   </td>
@@ -228,17 +304,46 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
 // ─── Tab: Employees ───────────────────────────────────────────────────────────
 
 function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeCount: number }) {
+  const [deptFilter, setDeptFilter]     = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [search, setSearch]             = useState("")
+
   const sample = useMemo(() => {
     const seed = employees.filter(e => e.clientId === clientId)
     const generated = generateEmployeesForClient(clientId, Math.min(50, employeeCount) - seed.length)
     return [...seed, ...generated].slice(0, Math.min(50, employeeCount))
   }, [clientId, employeeCount])
 
+  const depts = useMemo(() => ["all", ...Array.from(new Set(sample.map(e => e.department))).sort()], [sample])
+
+  const filtered = useMemo(() => {
+    return sample.filter(e => {
+      if (deptFilter !== "all" && e.department !== deptFilter) return false
+      if (statusFilter !== "all" && e.employmentStatus !== statusFilter) return false
+      if (search && !e.name.toLowerCase().includes(search.toLowerCase()) && !e.employeeCode.toLowerCase().includes(search.toLowerCase())) return false
+      return true
+    })
+  }, [sample, deptFilter, statusFilter, search])
+
   return (
     <div className="glass overflow-hidden">
-      <div className="px-4 py-3 border-b border-white/[0.07] flex items-center justify-between">
-        <div className="text-[13px] font-semibold text-white">Employees</div>
-        <span className="text-[11px] text-white/30">Showing {sample.length} of {fmtNum(employeeCount)}</span>
+      {/* Filter bar */}
+      <div className="px-4 py-3 flex items-center gap-2 flex-wrap" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="relative flex-1 min-w-[140px] max-w-[200px]">
+          <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, code…"
+            className="glass-input w-full text-[11px] py-1.5 pl-7" />
+        </div>
+        <FSelect value={deptFilter} onChange={setDeptFilter}
+          options={depts.map(d => ({ label: d === "all" ? "All departments" : d, value: d }))} />
+        <FSelect value={statusFilter} onChange={setStatusFilter} options={[
+          { label: "All statuses", value: "all" },
+          { label: "Active", value: "active" },
+          { label: "On notice", value: "notice" },
+          { label: "Ended", value: "ended" },
+          { label: "On hold", value: "on_hold" },
+        ]} />
+        <span className="text-[10px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {fmtNum(employeeCount)}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-[12px]">
@@ -250,7 +355,7 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
             </tr>
           </thead>
           <tbody>
-            {sample.map((emp, i) => {
+            {filtered.map((emp, i) => {
               const remaining = emp.leaveBalance.annual - emp.leaveBalance.usedAnnual
               const statusColor = { active: "#00c896", notice: "#c89060", ended: "#c07070", on_hold: "var(--text-3)" }[emp.employmentStatus]
               return (

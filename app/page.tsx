@@ -1,12 +1,13 @@
 "use client"
 
+import { useState, useMemo } from "react"
 import Sidebar from "@/components/Sidebar"
 import AIAgentOrb from "@/components/AIAgentOrb"
 import { clients, weeklyTrend, payrollBatches } from "@/lib/mock-data"
 import {
   Bell, Search, RefreshCw, Mail, TrendingUp, TrendingDown,
   Zap, Clock, Shield, CheckCircle2, AlertTriangle, Banknote,
-  Users, BarChart3, ArrowRight, ChevronRight, Target,
+  Users, BarChart3, ArrowRight, ChevronRight, Target, ChevronDown,
 } from "lucide-react"
 import {
   AreaChart, Area, ResponsiveContainer, Tooltip,
@@ -26,6 +27,15 @@ function fmtINR(n: number) {
 // ─── Business KPI Data ────────────────────────────────────────────────────────
 
 const processKRAs = [
+  {
+    label: "Mark Auto-Approved",
+    value: "266",
+    sub: "+18% vs last month (225)",
+    trend: "up" as const,
+    icon: CheckCircle2,
+    color: "var(--accent)",
+    detail: "Apr 2026 · month",
+  },
   {
     label: "Auto-Approval Rate",
     value: "62%",
@@ -124,12 +134,51 @@ const agentEfficiency = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+// ─── Inline select ───────────────────────────────────────────────────────────
+
+function InlineSelect({ value, onChange, options }: {
+  value: string
+  onChange: (v: string) => void
+  options: { label: string; value: string }[]
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className="glass-input text-[11px] py-1.5 pr-7 appearance-none cursor-pointer"
+        style={{ paddingRight: 28 }}
+      >
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+      <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
+    </div>
+  )
+}
+
 export default function DashboardPage() {
-  const totalSubmitted = clientKPIs.reduce((s, c) => s + c.submitted, 0)
+  const [slaFilter, setSlaFilter]   = useState("all")
+  const [holdFilter, setHoldFilter] = useState("all")
+  const [sortBy, setSortBy]         = useState("payroll")
+
+  const totalSubmitted    = clientKPIs.reduce((s, c) => s + c.submitted, 0)
   const totalAutoApproved = clientKPIs.reduce((s, c) => s + c.autoApproved, 0)
-  const totalFlagged = clientKPIs.reduce((s, c) => s + c.flagged, 0)
-  const totalPayroll = clientKPIs.reduce((s, c) => s + c.payroll, 0)
-  const totalOnHold = clientKPIs.reduce((s, c) => s + c.onHold, 0)
+  const totalFlagged      = clientKPIs.reduce((s, c) => s + c.flagged, 0)
+  const totalPayroll      = clientKPIs.reduce((s, c) => s + c.payroll, 0)
+  const totalOnHold       = clientKPIs.reduce((s, c) => s + c.onHold, 0)
+
+  const filteredClients = useMemo(() => {
+    let rows = [...clientKPIs]
+    if (slaFilter === "risk")    rows = rows.filter(c => c.sla < 90)
+    if (slaFilter === "healthy") rows = rows.filter(c => c.sla >= 95)
+    if (holdFilter === "holds")  rows = rows.filter(c => c.onHold > 0)
+    if (holdFilter === "clean")  rows = rows.filter(c => c.onHold === 0)
+    if (sortBy === "payroll")    rows.sort((a, b) => b.payroll - a.payroll)
+    if (sortBy === "submitted")  rows.sort((a, b) => b.submitted - a.submitted)
+    if (sortBy === "sla")        rows.sort((a, b) => a.sla - b.sla)
+    if (sortBy === "flagged")    rows.sort((a, b) => b.flagged - a.flagged)
+    return rows
+  }, [slaFilter, holdFilter, sortBy])
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -195,7 +244,7 @@ export default function DashboardPage() {
               <BarChart3 size={13} style={{ color: "var(--accent)" }} />
               <div className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>Process Efficiency KRAs</div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
               {processKRAs.map(k => (
                 <div key={k.label} className="glass p-4 flex flex-col gap-2">
                   <div className="flex items-center justify-between">
@@ -222,15 +271,47 @@ export default function DashboardPage() {
 
             {/* Client-wise KPI table — 3 cols */}
             <div className="lg:col-span-3 glass overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
-                <div>
-                  <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Client-wise Summary</div>
-                  <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Apr 2026 Week 1 · {clients.length} active clients</div>
+              <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Client-wise Summary</div>
+                    <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Apr 2026 Week 1 · {filteredClients.length} of {clients.length} clients shown</div>
+                  </div>
+                  <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--text-3)" }}>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--accent)" }} /> Auto-✓</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--warn)" }} /> Flagged</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--danger)" }} /> Hold</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--text-3)" }}>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--accent)" }} /> Auto-approved</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--warn)" }} /> Flagged</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--danger)" }} /> On Hold</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <InlineSelect
+                    value={slaFilter}
+                    onChange={setSlaFilter}
+                    options={[
+                      { label: "All SLA levels", value: "all" },
+                      { label: "At risk (SLA < 90%)", value: "risk" },
+                      { label: "Healthy (SLA ≥ 95%)", value: "healthy" },
+                    ]}
+                  />
+                  <InlineSelect
+                    value={holdFilter}
+                    onChange={setHoldFilter}
+                    options={[
+                      { label: "All holds", value: "all" },
+                      { label: "With holds", value: "holds" },
+                      { label: "No holds", value: "clean" },
+                    ]}
+                  />
+                  <InlineSelect
+                    value={sortBy}
+                    onChange={setSortBy}
+                    options={[
+                      { label: "Sort: Payroll ↓", value: "payroll" },
+                      { label: "Sort: Submitted ↓", value: "submitted" },
+                      { label: "Sort: SLA ↑ (worst first)", value: "sla" },
+                      { label: "Sort: Flagged ↓", value: "flagged" },
+                    ]}
+                  />
                 </div>
               </div>
               <div className="overflow-x-auto">
@@ -243,7 +324,7 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {clientKPIs.map(c => {
+                    {filteredClients.map(c => {
                       const autoRate = Math.round((c.autoApproved / c.submitted) * 100)
                       return (
                         <tr key={c.id} className="ts-row">
