@@ -2,527 +2,494 @@
 
 import Sidebar from "@/components/Sidebar"
 import AIAgentOrb from "@/components/AIAgentOrb"
-import { timesheets, clients, aiInsights, getEmployee, getClient, weeklyTrend, clientDistribution } from "@/lib/mock-data"
+import { clients, weeklyTrend, payrollBatches } from "@/lib/mock-data"
 import {
-  Bell,
-  Search,
-  Clock,
-  AlertTriangle,
-  Banknote,
-  TrendingUp,
-  TrendingDown,
-  Mail,
-  Globe,
-  Edit3,
-  ArrowRight,
-  ChevronRight,
-  Eye,
-  Check,
-  Flag,
-  Zap,
-  RefreshCw,
+  Bell, Search, RefreshCw, Mail, TrendingUp, TrendingDown,
+  Zap, Clock, Shield, CheckCircle2, AlertTriangle, Banknote,
+  Users, BarChart3, ArrowRight, ChevronRight, Target,
 } from "lucide-react"
 import {
-  AreaChart,
-  Area,
-  ResponsiveContainer,
-  Tooltip,
-  PieChart,
-  Pie,
-  Cell,
+  AreaChart, Area, ResponsiveContainer, Tooltip,
+  BarChart, Bar, XAxis, YAxis, ComposedChart, Line,
+  PieChart, Pie, Cell,
 } from "recharts"
 import Link from "next/link"
-import type { TimesheetStatus, TimesheetSource } from "@/lib/types"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getInitials(name: string) {
-  return name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+function fmtINR(n: number) {
+  if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)}Cr`
+  if (n >= 100000)   return `₹${(n / 100000).toFixed(1)}L`
+  return `₹${n.toLocaleString("en-IN")}`
 }
 
-function statusLabel(s: TimesheetStatus) {
-  const map: Record<TimesheetStatus, string> = {
-    pending: "Pending",
-    reviewing: "Reviewing",
-    flagged: "Flagged",
-    approved: "Approved",
-    processed: "Processed",
-    rejected: "Rejected",
-  }
-  return map[s]
-}
+// ─── Business KPI Data ────────────────────────────────────────────────────────
 
-function sourceIcon(s: TimesheetSource) {
-  if (s === "portal") return <Globe size={11} className="text-blue-400" />
-  if (s === "email") return <Mail size={11} className="text-violet-400" />
-  return <Edit3 size={11} className="text-slate-400" />
-}
-
-function sourceLabel(s: TimesheetSource) {
-  if (s === "portal") return "Portal"
-  if (s === "email") return "Email"
-  return "Manual"
-}
-
-function ScoreRing({ score }: { score: number }) {
-  const color = score >= 85 ? "#10B981" : score >= 60 ? "#F59E0B" : "#FF6B6B"
-  const r = 14
-  const circ = 2 * Math.PI * r
-  const dash = (score / 100) * circ
-  return (
-    <div className="relative w-9 h-9 flex-shrink-0">
-      <svg width="36" height="36" viewBox="0 0 36 36" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="18" cy="18" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="2.5" />
-        <circle
-          cx="18" cy="18" r={r} fill="none"
-          stroke={color} strokeWidth="2.5"
-          strokeDasharray={`${dash} ${circ - dash}`}
-          strokeLinecap="round"
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold" style={{ color }}>
-        {score}
-      </span>
-    </div>
-  )
-}
-
-// ─── Stats cards data ─────────────────────────────────────────────────────────
-const stats = [
+const processKRAs = [
   {
-    label: "Pending Review",
-    value: 23,
-    sub: "+3 since yesterday",
+    label: "Auto-Approval Rate",
+    value: "62%",
+    sub: "+4.2pp vs last month",
     trend: "up" as const,
-    icon: Clock,
-    valueColor: "#efefef",
-    iconColor: "rgba(255,255,255,0.25)",
+    icon: Zap,
+    color: "var(--accent)",
+    detail: "Agent Mark",
   },
   {
-    label: "Under Review",
-    value: 8,
-    sub: "−2 since yesterday",
+    label: "SLA Adherence",
+    value: "94.1%",
+    sub: "Target: 95%",
+    trend: "up" as const,
+    icon: Target,
+    color: "var(--info)",
+    detail: "48h window",
+  },
+  {
+    label: "Avg Turnaround",
+    value: "4.2h",
+    sub: "−0.8h vs last month",
     trend: "down" as const,
-    icon: Eye,
-    valueColor: "#efefef",
-    iconColor: "rgba(255,255,255,0.25)",
+    icon: Clock,
+    color: "var(--accent)",
+    detail: "End-to-end",
   },
   {
-    label: "Flagged",
-    value: 5,
-    sub: "+1 flagged by AI",
-    trend: "up" as const,
-    icon: AlertTriangle,
-    valueColor: "#c89060",
-    iconColor: "rgba(200,144,96,0.4)",
+    label: "Validation Error Rate",
+    value: "3.1%",
+    sub: "−1.4pp vs last month",
+    trend: "down" as const,
+    icon: Shield,
+    color: "var(--warn)",
+    detail: "Policy violations",
   },
   {
-    label: "Payroll Ready",
-    value: 12,
-    sub: "₹2.4L total",
+    label: "Payroll On-Time",
+    value: "89%",
+    sub: "3 batches delayed",
     trend: "up" as const,
     icon: Banknote,
-    valueColor: "#00c896",
-    iconColor: "rgba(0,200,150,0.4)",
+    color: "var(--accent)",
+    detail: "Released in cycle",
+  },
+  {
+    label: "Active Holds",
+    value: "9",
+    sub: "4 contract, 3 banking, 2 data",
+    trend: "up" as const,
+    icon: AlertTriangle,
+    color: "var(--warn)",
+    detail: "Payroll blocked",
   },
 ]
 
-// ─── Pipeline stages — single accent, opacity fades toward end ────────────────
-const pipeline = [
-  { label: "Email\nReceived", count: 18, pct: 40, done: true },
-  { label: "Portal\nDownloads", count: 27, pct: 60, done: true },
-  { label: "Parsed &\nQueued", count: 40, pct: 89, done: true },
-  { label: "Under\nReview", count: 23, pct: 51, done: false, active: true },
-  { label: "Approved", count: 12, pct: 27, done: false },
-  { label: "Payroll\nDone", count: 8, pct: 18, done: false },
+// Monthly submission trend (6 months)
+const monthlyTrend = [
+  { month: "Nov", submitted: 1820, approved: 1710, autoApproved: 1040, flagged: 72 },
+  { month: "Dec", submitted: 1680, approved: 1590, autoApproved: 980,  flagged: 58 },
+  { month: "Jan", submitted: 2040, approved: 1920, autoApproved: 1210, flagged: 91 },
+  { month: "Feb", submitted: 2180, approved: 2050, autoApproved: 1310, flagged: 88 },
+  { month: "Mar", submitted: 2390, approved: 2280, autoApproved: 1480, flagged: 76 },
+  { month: "Apr", submitted: 636,  approved: 412,  autoApproved: 266,  flagged: 24 }, // partial
+]
+
+// Per-client KPI table data
+const clientKPIs = [
+  { id:"hex", name:"Hexaware",        code:"HEX", color:"#FF6B35", submitted:87,  autoApproved:61,  manual:23, flagged:3,  onHold:3,  payroll:78400000,  sla:94, complianceScore:94 },
+  { id:"ibp", name:"Infosys BPM",     code:"IBP", color:"#0070F3", submitted:124, autoApproved:92,  manual:28, flagged:4,  onHold:0,  payroll:95800000,  sla:98, complianceScore:97 },
+  { id:"cgi", name:"Capgemini",        code:"CGI", color:"#003189", submitted:52,  autoApproved:35,  manual:14, flagged:3,  onHold:1,  payroll:68000000,  sla:91, complianceScore:92 },
+  { id:"lti", name:"L&T Infotech",    code:"LTI", color:"#009A44", submitted:78,  autoApproved:55,  manual:19, flagged:4,  onHold:4,  payroll:89000000,  sla:89, complianceScore:96 },
+  { id:"mnd", name:"Mindtree",         code:"MND", color:"#E94F37", submitted:71,  autoApproved:49,  manual:18, flagged:4,  onHold:2,  payroll:72000000,  sla:92, complianceScore:93 },
+  { id:"gss", name:"GlobalStaff",      code:"GSS", color:"#8B5CF6", submitted:16,  autoApproved:11,  manual:4,  flagged:1,  onHold:0,  payroll:20200000,  sla:100,complianceScore:90 },
+  { id:"fhl", name:"FinanceHub",       code:"FHL", color:"#F59E0B", submitted:29,  autoApproved:14,  manual:10, flagged:5,  onHold:0,  payroll:42000000,  sla:86, complianceScore:82 },
+  { id:"msh", name:"MedSure",          code:"MSH", color:"#FF6B6B", submitted:20,  autoApproved:11,  manual:7,  flagged:2,  onHold:2,  payroll:6800000,   sla:90, complianceScore:84 },
+]
+
+// Payroll status donut (current month)
+const payrollDonut = [
+  { name: "Processed",  value: 2, color: "var(--accent)" },
+  { name: "Approved",   value: 1, color: "var(--info)" },
+  { name: "Pending",    value: 3, color: "var(--warn)" },
+  { name: "On Hold",    value: 2, color: "var(--danger)" },
+]
+
+// Agent efficiency trend
+const agentEfficiency = [
+  { month: "Nov", autoRate: 57, sla: 91, errorRate: 5.2 },
+  { month: "Dec", autoRate: 58, sla: 92, errorRate: 4.8 },
+  { month: "Jan", autoRate: 59, sla: 93, errorRate: 4.5 },
+  { month: "Feb", autoRate: 60, sla: 93, errorRate: 4.1 },
+  { month: "Mar", autoRate: 61, sla: 94, errorRate: 3.6 },
+  { month: "Apr", autoRate: 62, sla: 94, errorRate: 3.1 },
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────
+
 export default function DashboardPage() {
-  const recentTs = timesheets.slice(0, 7)
+  const totalSubmitted = clientKPIs.reduce((s, c) => s + c.submitted, 0)
+  const totalAutoApproved = clientKPIs.reduce((s, c) => s + c.autoApproved, 0)
+  const totalFlagged = clientKPIs.reduce((s, c) => s + c.flagged, 0)
+  const totalPayroll = clientKPIs.reduce((s, c) => s + c.payroll, 0)
+  const totalOnHold = clientKPIs.reduce((s, c) => s + c.onHold, 0)
 
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header
-          className="flex items-center gap-4 px-6 py-3.5 border-b border-white/[0.07] flex-shrink-0"
-          style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}
-        >
-          {/* Search */}
+        <header className="flex items-center gap-4 px-6 py-3.5 flex-shrink-0"
+          style={{ borderBottom: "1px solid var(--border)", background: "var(--glass-bg)", backdropFilter: "blur(20px)" }}>
           <div className="flex-1 max-w-xs relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-            <input
-              className="glass-input w-full pl-8 text-sm"
-              placeholder="Search employees, clients, timesheet IDs…"
-            />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+            <input className="glass-input w-full pl-8 text-sm" placeholder="Search clients, timesheets, employees…" />
           </div>
-
           <div className="flex items-center gap-3 ml-auto">
-            {/* Monitored email badge */}
-            <div
-              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
-              style={{ background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", color: "#A78BFA" }}
-            >
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
+              style={{ background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", color: "#A78BFA" }}>
               <Mail size={11} />
               candidatemanager@buzzworks.com
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-dot-blink" />
+              <span className="w-1.5 h-1.5 rounded-full animate-dot-blink" style={{ background: "var(--accent)" }} />
             </div>
-
-            {/* Refresh */}
             <button className="btn-ghost flex items-center gap-1.5 py-1.5 px-3 text-xs">
-              <RefreshCw size={12} />
-              <span className="hidden md:inline">Sync portals</span>
+              <RefreshCw size={12} /><span className="hidden md:inline">Sync portals</span>
             </button>
-
-            {/* Notifications */}
-            <button className="relative w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/[0.06] transition-colors">
-              <Bell size={16} className="text-white/50" />
-              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-coral-500" />
+            <button className="relative w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+              style={{ color: "var(--text-2)" }}
+              onMouseEnter={e => (e.currentTarget.style.background = "var(--surface-hover)")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+              <Bell size={16} />
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full" style={{ background: "var(--danger)" }} />
             </button>
-
-            {/* Avatar */}
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
-              style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)" }}
-            >
-              RS
-            </div>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+              style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)" }}>RS</div>
           </div>
         </header>
 
         {/* Scrollable body */}
         <main className="flex-1 overflow-y-auto p-5 space-y-5">
-          {/* Welcome */}
+
+          {/* Welcome + month summary */}
           <div className="flex items-end justify-between">
             <div>
-              <h1 className="text-xl font-bold text-white">
-                Good morning, Riya —{" "}
-                <span className="text-white/40 font-normal text-base">Apr 9, 2026</span>
+              <h1 className="text-xl font-bold" style={{ color: "var(--text-1)" }}>
+                Operations Overview{" "}
+                <span className="font-normal text-base" style={{ color: "var(--text-3)" }}>Apr 2026 · Week 1</span>
               </h1>
-              <p className="text-[13px] text-white/40 mt-0.5">
-                5 flagged timesheets need your attention · Payroll cycle closes Friday
+              <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                {totalSubmitted} timesheets · {totalFlagged} flagged · {totalOnHold} payroll holds · Cycle closes Friday
               </p>
             </div>
-            <Link href="/timesheets" className="btn-teal flex items-center gap-1.5 text-[13px]">
-              Open Inbox <ArrowRight size={13} />
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link href="/timesheets">
+                <button className="btn-ghost flex items-center gap-1.5 text-[13px]">Open Inbox <ArrowRight size={13} /></button>
+              </Link>
+              <Link href="/payroll">
+                <button className="btn-teal flex items-center gap-1.5 text-[13px]">Run Payroll <Banknote size={13} /></button>
+              </Link>
+            </div>
           </div>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {stats.map((s) => (
-              <div key={s.label} className="glass p-4 flex flex-col gap-3">
-                <div className="flex items-start justify-between">
+          {/* Process Efficiency KRA row */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <BarChart3 size={13} style={{ color: "var(--accent)" }} />
+              <div className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>Process Efficiency KRAs</div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {processKRAs.map(k => (
+                <div key={k.label} className="glass p-4 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <k.icon size={14} style={{ color: k.color }} />
+                    <div className="flex items-center gap-0.5 text-[10px]" style={{ color: "var(--text-3)" }}>
+                      {k.trend === "up"
+                        ? <TrendingUp size={10} style={{ color: k.color === "var(--warn)" ? "var(--warn)" : "var(--accent)" }} />
+                        : <TrendingDown size={10} style={{ color: "var(--accent)" }} />
+                      }
+                    </div>
+                  </div>
+                  <div className="text-[22px] font-black leading-none" style={{ color: k.color }}>{k.value}</div>
                   <div>
-                    <div className="text-[11px] font-medium" style={{ color: "var(--text-3)" }}>{s.label}</div>
-                    <div className="text-[28px] font-black mt-1 tracking-tight" style={{ color: s.valueColor }}>
-                      {s.value}
-                    </div>
+                    <div className="text-[11px] font-semibold" style={{ color: "var(--text-2)" }}>{k.label}</div>
+                    <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>{k.sub}</div>
                   </div>
-                  <s.icon size={16} className="mt-1" style={{ color: s.iconColor }} />
                 </div>
-                <div className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text-3)" }}>
-                  {s.trend === "up" ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-                  {s.sub}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Pipeline */}
-          <div className="glass p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="text-[13px] font-semibold text-white">Timesheet Pipeline</div>
-                <div className="text-[11px] text-white/35">Apr Week 1 · 45 timesheets ingested</div>
-              </div>
-              <div
-                className="flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-lg font-medium"
-                style={{ background: "rgba(0,212,165,0.1)", color: "#00D4A5" }}
-              >
-                <Zap size={11} />
-                Live
-              </div>
-            </div>
-            <div className="flex items-end gap-2">
-              {pipeline.map((stage, i) => {
-                const barColor = stage.done ? "#00c896" : stage.active ? "#00c896" : "rgba(255,255,255,0.12)"
-                const textColor = stage.done ? "#00c896" : stage.active ? "#efefef" : "rgba(255,255,255,0.25)"
-                const labelColor = stage.done || stage.active ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.2)"
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                    <div className="w-full flex flex-col items-center gap-1">
-                      <span className="text-[13px] font-bold" style={{ color: textColor }}>
-                        {stage.count}
-                      </span>
-                      <div className="w-full rounded-full overflow-hidden" style={{ height: 4, background: "rgba(255,255,255,0.05)" }}>
-                        <div className="h-full rounded-full" style={{ width: `${stage.pct}%`, background: barColor }} />
-                      </div>
-                    </div>
-                    {i < pipeline.length - 1 && (
-                      <ChevronRight size={11} style={{ color: "rgba(255,255,255,0.12)", position: "relative" }} />
-                    )}
-                    <div className="text-[10px] text-center leading-tight whitespace-pre-line" style={{ color: labelColor }}>
-                      {stage.label}
-                    </div>
-                  </div>
-                )
-              })}
+              ))}
             </div>
           </div>
 
-          {/* Main 3-col grid */}
+          {/* Main content grid */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            {/* Recent timesheets – 3 cols */}
-            <div className="lg:col-span-3 glass overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.07]">
-                <div className="text-[13px] font-semibold text-white">Recent Timesheets</div>
-                <Link href="/timesheets" className="text-[12px] text-teal-400 hover:text-teal-300 flex items-center gap-1 transition-colors">
-                  View all <ChevronRight size={12} />
-                </Link>
-              </div>
 
-              {/* Table */}
+            {/* Client-wise KPI table — 3 cols */}
+            <div className="lg:col-span-3 glass overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                <div>
+                  <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Client-wise Summary</div>
+                  <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Apr 2026 Week 1 · {clients.length} active clients</div>
+                </div>
+                <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--text-3)" }}>
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--accent)" }} /> Auto-approved</span>
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--warn)" }} /> Flagged</span>
+                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full inline-block" style={{ background: "var(--danger)" }} /> On Hold</span>
+                </div>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-[12px]">
                   <thead>
-                    <tr className="border-b border-white/[0.05]">
-                      {["Employee · Client", "Period", "Hours", "Source", "Score", "Status", ""].map((h) => (
-                        <th
-                          key={h}
-                          className="text-left px-4 py-2.5 text-[11px] text-white/30 font-semibold uppercase tracking-wider"
-                        >
-                          {h}
-                        </th>
+                    <tr style={{ borderBottom: "1px solid var(--border)" }}>
+                      {["Client", "Submitted", "Auto-✓", "Manual", "Flagged", "On Hold", "Payroll", "SLA"].map(h => (
+                        <th key={h} className="text-left px-3 py-2.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {recentTs.map((ts) => {
-                      const emp = getEmployee(ts.employeeId)!
-                      const client = getClient(ts.clientId)!
+                    {clientKPIs.map(c => {
+                      const autoRate = Math.round((c.autoApproved / c.submitted) * 100)
                       return (
-                        <tr key={ts.id} className="ts-row">
-                          {/* Employee + Client */}
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2.5">
-                              <div
-                                className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0"
-                                style={{ background: `${client.color}22`, color: client.color }}
-                              >
-                                {getInitials(emp.name)}
+                        <tr key={c.id} className="ts-row">
+                          <td className="px-3 py-2.5">
+                            <Link href={`/clients/${c.id}`}>
+                              <div className="flex items-center gap-2 cursor-pointer">
+                                <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-bold flex-shrink-0"
+                                  style={{ background: `${c.color}22`, color: c.color }}>{c.code.slice(0,3)}</div>
+                                <div>
+                                  <div className="font-semibold text-[11px]" style={{ color: "var(--text-1)" }}>{c.name}</div>
+                                  <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{c.code}</div>
+                                </div>
                               </div>
-                              <div>
-                                <div className="font-semibold text-white/90 text-[12px]">{emp.name}</div>
-                                <div className="text-white/40 text-[11px]">{client.code}</div>
-                              </div>
-                            </div>
+                            </Link>
                           </td>
-                          {/* Period */}
-                          <td className="px-4 py-3 text-white/55 text-[11px] whitespace-nowrap">{ts.period}</td>
-                          {/* Hours */}
-                          <td className="px-4 py-3">
-                            <div className="font-semibold text-white/90">{ts.totalHours}h</div>
-                            {ts.overtimeHours > 0 && (
-                              <div className="text-[10px] text-amber-400">+{ts.overtimeHours}h OT</div>
-                            )}
-                            {ts.leaveHours > 0 && (
-                              <div className="text-[10px] text-violet-400">{ts.leaveHours}h leave</div>
-                            )}
+                          <td className="px-3 py-2.5 font-semibold" style={{ color: "var(--text-1)" }}>{c.submitted}</td>
+                          <td className="px-3 py-2.5">
+                            <div className="font-semibold" style={{ color: "var(--accent)" }}>{c.autoApproved}</div>
+                            <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{autoRate}%</div>
                           </td>
-                          {/* Source */}
-                          <td className="px-4 py-3">
-                            <span className={`badge badge-${ts.source} flex items-center gap-1`}>
-                              {sourceIcon(ts.source)}
-                              {sourceLabel(ts.source)}
-                            </span>
+                          <td className="px-3 py-2.5" style={{ color: "var(--text-2)" }}>{c.manual}</td>
+                          <td className="px-3 py-2.5">
+                            {c.flagged > 0
+                              ? <span className="font-semibold" style={{ color: "var(--warn)" }}>{c.flagged}</span>
+                              : <span style={{ color: "var(--text-3)" }}>—</span>}
                           </td>
-                          {/* Score */}
-                          <td className="px-4 py-3">
-                            <ScoreRing score={ts.validationScore} />
+                          <td className="px-3 py-2.5">
+                            {c.onHold > 0
+                              ? <span className="font-semibold" style={{ color: "var(--danger)" }}>{c.onHold}</span>
+                              : <span style={{ color: "var(--accent)" }}>✓</span>}
                           </td>
-                          {/* Status */}
-                          <td className="px-4 py-3">
-                            <span className={`badge badge-${ts.status}`}>{statusLabel(ts.status)}</span>
-                          </td>
-                          {/* Actions */}
-                          <td className="px-4 py-3">
+                          <td className="px-3 py-2.5 font-semibold text-[11px]" style={{ color: "var(--text-1)" }}>{fmtINR(c.payroll)}</td>
+                          <td className="px-3 py-2.5">
                             <div className="flex items-center gap-1.5">
-                              {ts.status === "pending" && (
-                                <button
-                                  className="w-6 h-6 rounded-lg flex items-center justify-center transition-colors hover:bg-mint-500/20"
-                                  title="Quick approve"
-                                >
-                                  <Check size={12} className="text-mint-400" />
-                                </button>
-                              )}
-                              {(ts.status === "pending" || ts.status === "reviewing") && (
-                                <button
-                                  className="w-6 h-6 rounded-lg flex items-center justify-center transition-colors hover:bg-coral-500/20"
-                                  title="Flag for review"
-                                >
-                                  <Flag size={12} className="text-coral-500" />
-                                </button>
-                              )}
-                              <Link href={`/timesheets`}>
-                                <button
-                                  className="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
-                                  title="View details"
-                                >
-                                  <Eye size={12} className="text-white/50" />
-                                </button>
-                              </Link>
+                              <div className="flex-1 h-1 rounded-full" style={{ background: "var(--surface-hover)", minWidth: 32 }}>
+                                <div className="h-1 rounded-full" style={{ width: `${c.sla}%`, background: c.sla >= 95 ? "var(--accent)" : c.sla >= 85 ? "var(--warn)" : "var(--danger)" }} />
+                              </div>
+                              <span className="text-[10px]" style={{ color: c.sla >= 95 ? "var(--accent)" : c.sla >= 85 ? "var(--warn)" : "var(--danger)" }}>{c.sla}%</span>
                             </div>
                           </td>
                         </tr>
                       )
                     })}
                   </tbody>
+                  <tfoot>
+                    <tr style={{ borderTop: "1px solid var(--border)", background: "var(--surface)" }}>
+                      <td className="px-3 py-2.5 text-[11px] font-bold" style={{ color: "var(--text-2)" }}>TOTAL</td>
+                      <td className="px-3 py-2.5 font-black" style={{ color: "var(--text-1)" }}>{totalSubmitted}</td>
+                      <td className="px-3 py-2.5 font-black" style={{ color: "var(--accent)" }}>{totalAutoApproved}</td>
+                      <td className="px-3 py-2.5 font-semibold" style={{ color: "var(--text-2)" }}>{clientKPIs.reduce((s,c) => s+c.manual, 0)}</td>
+                      <td className="px-3 py-2.5 font-black" style={{ color: "var(--warn)" }}>{totalFlagged}</td>
+                      <td className="px-3 py-2.5 font-black" style={{ color: totalOnHold > 0 ? "var(--danger)" : "var(--accent)" }}>{totalOnHold}</td>
+                      <td className="px-3 py-2.5 font-black text-[11px]" style={{ color: "var(--accent)" }}>{fmtINR(totalPayroll)}</td>
+                      <td className="px-3 py-2.5" />
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
             </div>
 
-            {/* Right column – 2 cols */}
+            {/* Right column — 2 cols */}
             <div className="lg:col-span-2 flex flex-col gap-4">
-              {/* AI insights summary */}
+
+              {/* Payroll status donut */}
               <div className="glass p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div
-                    className="w-6 h-6 rounded-lg flex items-center justify-center"
-                    style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)" }}
-                  >
-                    <Zap size={12} className="text-white" />
-                  </div>
-                  <div className="text-[13px] font-semibold text-white">AI Insights</div>
-                  <span
-                    className="text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-auto"
-                    style={{ background: "rgba(255,107,107,0.15)", color: "#FF6B6B" }}
-                  >
-                    3 urgent
-                  </span>
-                </div>
-
-                <div className="space-y-2">
-                  {aiInsights.slice(0, 3).map((insight) => {
-                    const c = insight.priority === "high" ? "var(--danger)" : insight.priority === "medium" ? "var(--warn)" : "var(--accent)"
-                    return (
-                      <div
-                        key={insight.id}
-                        className="p-2.5 rounded-xl text-[11px]"
-                        style={{
-                          background: "rgba(255,255,255,0.03)",
-                          border: "1px solid var(--border)",
-                          borderLeft: `2px solid ${c}`,
-                        }}
-                      >
-                        <div className="font-semibold text-white/85 leading-tight">{insight.title}</div>
-                        <div className="text-white/45 mt-0.5 leading-snug line-clamp-2">
-                          {insight.description}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-
-                <div
-                  className="mt-3 text-center text-[11px] text-white/30 py-2 rounded-lg"
-                  style={{ background: "rgba(139,92,246,0.06)", border: "1px dashed rgba(139,92,246,0.2)" }}
-                >
-                  <Zap size={11} className="inline mr-1 text-violet-400" />
-                  <span className="text-violet-400">AI auto-approve</span> arriving in v2
-                </div>
-              </div>
-
-              {/* Client distribution */}
-              <div className="glass p-4 flex-1">
-                <div className="text-[13px] font-semibold text-white mb-1">Client Distribution</div>
-                <div className="text-[11px] text-white/35 mb-3">Apr Week 1 · 8 timesheets</div>
-
+                <div className="text-[13px] font-semibold mb-1" style={{ color: "var(--text-1)" }}>Payroll Batches</div>
+                <div className="text-[11px] mb-3" style={{ color: "var(--text-3)" }}>Apr 2026 · {payrollBatches.length} batches · {fmtINR(totalPayroll)} total</div>
                 <div className="flex items-center gap-4">
-                  <div style={{ width: 80, height: 80 }}>
+                  <div style={{ width: 90, height: 90 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                        <Pie
-                          data={clientDistribution}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={24}
-                          outerRadius={36}
-                          paddingAngle={2}
-                          dataKey="value"
-                          strokeWidth={0}
-                        >
-                          {clientDistribution.map((entry, index) => (
-                            <Cell key={index} fill={entry.color} />
-                          ))}
+                        <Pie data={payrollDonut} cx="50%" cy="50%" innerRadius={26} outerRadius={40} paddingAngle={2} dataKey="value" strokeWidth={0}>
+                          {payrollDonut.map((e, i) => <Cell key={i} fill={e.color} />)}
                         </Pie>
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
-
-                  <div className="flex-1 space-y-1.5">
-                    {clientDistribution.map((item) => {
-                      const c = clients.find((cl) => cl.code === item.name)!
-                      return (
-                        <div key={item.name} className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                          <span className="text-[11px] text-white/60 flex-1">{c?.name}</span>
-                          <span className="text-[11px] font-semibold text-white/80">{item.value}</span>
-                        </div>
-                      )
-                    })}
+                  <div className="space-y-1.5 flex-1">
+                    {payrollDonut.map(d => (
+                      <div key={d.name} className="flex items-center gap-2 text-[11px]">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: d.color }} />
+                        <span className="flex-1" style={{ color: "var(--text-2)" }}>{d.name}</span>
+                        <span className="font-bold" style={{ color: "var(--text-1)" }}>{d.value}</span>
+                      </div>
+                    ))}
+                    <Link href="/payroll" className="flex items-center gap-1 text-[10px] mt-1 pt-1" style={{ color: "var(--accent)", borderTop: "1px solid var(--border)" }}>
+                      View all batches <ChevronRight size={10} />
+                    </Link>
                   </div>
                 </div>
               </div>
 
-              {/* Weekly trend chart */}
+              {/* Agent efficiency trend */}
               <div className="glass p-4">
-                <div className="text-[13px] font-semibold text-white mb-0.5">Weekly Volume</div>
-                <div className="text-[11px] text-white/35 mb-3">Received vs Processed</div>
-                <div style={{ height: 70 }}>
+                <div className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-1)" }}>Agent Mark Efficiency</div>
+                <div className="text-[11px] mb-3" style={{ color: "var(--text-3)" }}>Auto-approval rate trend (6 months)</div>
+                <div style={{ height: 80 }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={weeklyTrend} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                    <ComposedChart data={agentEfficiency}>
                       <defs>
-                        <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
+                        <linearGradient id="arGrad" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#00c896" stopOpacity={0.25} />
                           <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
                         </linearGradient>
-                        <linearGradient id="violetGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#00c896" stopOpacity={0.1} />
-                          <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
-                        </linearGradient>
                       </defs>
-                      <Tooltip
-                        contentStyle={{
-                          background: "rgba(12,9,24,0.95)",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          borderRadius: 8,
-                          fontSize: 11,
-                          color: "#f8fafc",
-                        }}
-                      />
-                      <Area type="monotone" dataKey="received" stroke="rgba(0,200,150,0.35)" strokeWidth={1.5} fill="url(#violetGrad)" dot={false} />
-                      <Area type="monotone" dataKey="processed" stroke="#00c896" strokeWidth={1.5} fill="url(#tealGrad)" dot={false} />
-                    </AreaChart>
+                      <XAxis dataKey="month" tick={{ fontSize: 9, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+                      <YAxis hide domain={[50, 70]} />
+                      <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 10, color: "var(--text-1)" }} formatter={(v: number) => `${v}%`} />
+                      <Area type="monotone" dataKey="autoRate" stroke="var(--accent)" strokeWidth={2} fill="url(#arGrad)" dot={false} name="Auto-approval %" />
+                    </ComposedChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex gap-3 mt-1.5">
-                  <div className="flex items-center gap-1 text-[10px]" style={{ color: "var(--text-3)" }}>
-                    <span className="w-2 h-0.5 rounded-full inline-block" style={{ background: "rgba(0,200,150,0.35)" }} />
-                    Received
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px]" style={{ color: "var(--text-3)" }}>
-                    <span className="w-2 h-0.5 rounded-full inline-block" style={{ background: "#00c896" }} />
-                    Processed
-                  </div>
+                <div className="flex items-center justify-between text-[10px] mt-1" style={{ color: "var(--text-3)" }}>
+                  <span>Nov 2025: 57%</span>
+                  <span style={{ color: "var(--accent)", fontWeight: 700 }}>Apr 2026: 62% ↑</span>
                 </div>
+              </div>
+
+              {/* Policy hold alerts */}
+              <div className="glass p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <AlertTriangle size={13} style={{ color: "var(--warn)" }} />
+                  <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Active Holds</div>
+                  <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: "var(--danger-bg)", color: "var(--danger)" }}>{totalOnHold}</span>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { reason: "Contract expired", count: 4, color: "var(--danger)", policy: "CEE-001" },
+                    { reason: "Bank details missing", count: 3, color: "var(--warn)", policy: "PRP-002" },
+                    { reason: "Work order null", count: 2, color: "var(--warn)", policy: "WOV-003" },
+                  ].map(h => (
+                    <div key={h.reason} className="flex items-center gap-2 text-[11px]">
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: h.color }} />
+                      <span className="flex-1" style={{ color: "var(--text-2)" }}>{h.reason}</span>
+                      <span className="text-[10px] font-mono" style={{ color: "var(--text-3)" }}>{h.policy}</span>
+                      <span className="font-bold" style={{ color: h.color }}>{h.count}</span>
+                    </div>
+                  ))}
+                </div>
+                <Link href="/policy" className="flex items-center gap-1 text-[10px] mt-3 pt-2" style={{ color: "var(--accent)", borderTop: "1px solid var(--border)" }}>
+                  Manage policy holds <ChevronRight size={10} />
+                </Link>
               </div>
             </div>
           </div>
+
+          {/* Monthly submission trend — full width */}
+          <div className="glass p-5">
+            <div className="flex items-center justify-between mb-1">
+              <div>
+                <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Monthly Submission Trends</div>
+                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Nov 2025 – Apr 2026 · All clients combined</div>
+              </div>
+              <div className="flex items-center gap-4 text-[10px]" style={{ color: "var(--text-3)" }}>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded-full inline-block" style={{ background: "var(--accent)", opacity: 0.4 }} /> Submitted</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded-full inline-block" style={{ background: "var(--accent)" }} /> Approved</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded-full inline-block" style={{ background: "var(--warn)" }} /> Flagged</span>
+              </div>
+            </div>
+            <div style={{ height: 130 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={monthlyTrend} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="subGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00c896" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="apGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00c896" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 9, fill: "var(--text-3)" }} axisLine={false} tickLine={false} width={32} />
+                  <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }} />
+                  <Area type="monotone" dataKey="submitted"   stroke="rgba(0,200,150,0.35)" strokeWidth={1.5} fill="url(#subGrad)" dot={false} name="Submitted" />
+                  <Area type="monotone" dataKey="approved"    stroke="var(--accent)"        strokeWidth={2}   fill="url(#apGrad)"  dot={false} name="Approved" />
+                  <Bar  dataKey="flagged" fill="var(--warn)" opacity={0.5} radius={[2,2,0,0]} barSize={12} name="Flagged" />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Bottom row: 3-column agent stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                label: "Agent Mark",
+                sub: "Timesheet Validation",
+                color: "var(--accent)",
+                metrics: [
+                  { k: "Processed today", v: "48" },
+                  { k: "Auto-approved (month)", v: "266" },
+                  { k: "Avg processing", v: "1.4s" },
+                  { k: "Success rate", v: "99.2%" },
+                ],
+              },
+              {
+                label: "Agent ECHO",
+                sub: "Exit Lifecycle",
+                color: "var(--warn)",
+                metrics: [
+                  { k: "Exits tracked", v: "3" },
+                  { k: "FnF pending", v: "2" },
+                  { k: "Assets on hold", v: "₹4.2L" },
+                  { k: "Salary holds", v: "3" },
+                ],
+              },
+              {
+                label: "Agent NEXUS",
+                sub: "Data & Fraud Detection",
+                color: "var(--info)",
+                metrics: [
+                  { k: "PAN missing", v: "0" },
+                  { k: "Bank holds", v: "3" },
+                  { k: "Duplicate accounts", v: "1" },
+                  { k: "Work order gaps", v: "2" },
+                ],
+              },
+            ].map(agent => (
+              <div key={agent.label} className="glass p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 rounded-full animate-dot-blink" style={{ background: agent.color }} />
+                  <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>{agent.label}</div>
+                  <span className="text-[10px] ml-auto" style={{ color: "var(--text-3)" }}>{agent.sub}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {agent.metrics.map(m => (
+                    <div key={m.k} className="rounded-lg p-2.5" style={{ background: "var(--surface)" }}>
+                      <div className="text-[16px] font-black" style={{ color: agent.color }}>{m.v}</div>
+                      <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>{m.k}</div>
+                    </div>
+                  ))}
+                </div>
+                <Link href="/agents">
+                  <button className="w-full mt-3 text-[11px] py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1"
+                    style={{ background: "var(--surface)", color: "var(--text-2)", border: "1px solid var(--border)" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "var(--surface-hover)")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "var(--surface)")}>
+                    View agent <ChevronRight size={11} />
+                  </button>
+                </Link>
+              </div>
+            ))}
+          </div>
+
         </main>
       </div>
 

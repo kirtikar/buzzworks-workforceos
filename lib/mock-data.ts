@@ -660,26 +660,209 @@ export const timesheets: Timesheet[] = [
 // ─── Policy Rules (per client sample) ────────────────────────────────────────
 
 export const policyRules: PolicyRule[] = [
-  // TCI rules
-  { id:"pol001", clientId:"tci", category:"hours",      name:"Standard Weekly Hours Cap",           description:"No employee may log more than 40 regular hours in a single work week.",                                          triggerCondition:"regularHours > 40",                             actionOnTrigger:"Flag timesheet for ops review",         severity:"warning",   enabled:true,  createdAt:"2023-01-01", updatedAt:"2024-06-15", createdBy:"system", aiGenerated:false, appliedCount:156, triggerCount:8 },
-  { id:"pol002", clientId:"tci", category:"overtime",   name:"OT Pre-Approval Mandatory",           description:"Any overtime hours must have explicit pre-approval from the reporting manager before the work period begins.",    triggerCondition:"overtimeHours > 0 && !managerApproval",         actionOnTrigger:"Reject — request manager approval",     severity:"violation", enabled:true,  createdAt:"2023-01-01", updatedAt:"2025-01-10", createdBy:"system", aiGenerated:false, appliedCount:42,  triggerCount:15 },
-  { id:"pol003", clientId:"tci", category:"overtime",   name:"Daily OT Cap (3 Hours)",               description:"Overtime on any single day cannot exceed 3 hours as per TCI policy v3.2.",                                      triggerCondition:"dailyOT > 3",                                   actionOnTrigger:"Flag for review — OT ceiling hit",      severity:"warning",   enabled:true,  createdAt:"2023-06-01", updatedAt:"2024-06-15", createdBy:"ops",    aiGenerated:false, appliedCount:28,  triggerCount:6 },
-  { id:"pol004", clientId:"tci", category:"compliance", name:"Consecutive OT Pattern Alert",         description:"After 2 consecutive weeks of more than 8 overtime hours, manager review is mandatory.",                         triggerCondition:"consecutiveOTWeeks >= 2 && weeklyOT > 8",       actionOnTrigger:"Escalate to manager + ops team",        severity:"warning",   enabled:true,  createdAt:"2024-01-15", updatedAt:"2024-01-15", createdBy:"ai",     aiGenerated:true,  appliedCount:12,  triggerCount:4 },
-  { id:"pol005", clientId:"tci", category:"leave",      name:"Sandwich Leave Detection",             description:"Leave taken immediately before or after a public holiday without manager approval is flagged as sandwich leave.", triggerCondition:"leaveAdjacentToHoliday && !managerApproval",    actionOnTrigger:"Flag and request manager confirmation", severity:"warning",   enabled:true,  createdAt:"2024-03-01", updatedAt:"2024-03-01", createdBy:"ai",     aiGenerated:true,  appliedCount:18,  triggerCount:5 },
-  // FHL rules
-  { id:"pol006", clientId:"fhl", category:"overtime",   name:"Zero Overtime Policy",                 description:"FinanceHub Ltd does not permit overtime under any circumstances. Any overtime claim will be rejected.",           triggerCondition:"overtimeHours > 0",                             actionOnTrigger:"Auto-reject — no OT permitted",         severity:"violation", enabled:true,  createdAt:"2022-10-01", updatedAt:"2022-10-01", createdBy:"system", aiGenerated:false, appliedCount:34,  triggerCount:12 },
-  { id:"pol007", clientId:"fhl", category:"hours",      name:"Standard 40-Hour Week",               description:"All employees must maintain exactly 40 hours per week. Under or over submissions require explanation.",           triggerCondition:"totalHours < 38 || totalHours > 40",            actionOnTrigger:"Request explanation from employee",     severity:"warning",   enabled:true,  createdAt:"2022-10-01", updatedAt:"2024-08-20", createdBy:"system", aiGenerated:false, appliedCount:67,  triggerCount:11 },
-  { id:"pol008", clientId:"fhl", category:"compliance", name:"Original Email Required",             description:"Forwarded emails are not accepted as timesheet submissions. The original employee-sent email must be attached.",  triggerCondition:"emailIsForward",                                actionOnTrigger:"Reject — request original submission",  severity:"violation", enabled:true,  createdAt:"2023-04-01", updatedAt:"2023-04-01", createdBy:"system", aiGenerated:false, appliedCount:18,  triggerCount:7 },
-  // MSH rules
-  { id:"pol009", clientId:"msh", category:"hours",      name:"Healthcare Shift Week Cap",            description:"Medical staff may work up to 48 regular hours per week in accordance with healthcare shift norms.",              triggerCondition:"regularHours > 48",                             actionOnTrigger:"Flag for compliance review",            severity:"violation", enabled:true,  createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:45,  triggerCount:3 },
-  { id:"pol010", clientId:"msh", category:"attendance", name:"Minimum 1 Rest Day Per Week",          description:"Every employee must have at least one designated rest day in each 7-day period for health and safety compliance.", triggerCondition:"restDaysInWeek < 1",                            actionOnTrigger:"Warning — contact employee and manager", severity:"warning",   enabled:true,  createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:60,  triggerCount:8 },
-  { id:"pol011", clientId:"msh", category:"overtime",   name:"Double-Pay for OT",                   description:"All overtime is compensated at 2× the standard hourly rate per MSH healthcare worker agreements.",               triggerCondition:"overtimeHours > 0",                             actionOnTrigger:"Auto-calculate 2x OT in payroll",       severity:"info",      enabled:true,  createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:80,  triggerCount:30 },
-  // GSS rules
-  { id:"pol012", clientId:"gss", category:"hours",      name:"45-Hour Weekly Standard",              description:"GSS employees work a 45-hour standard week (9 hrs × 5 days). Submissions within ±2 hours auto-approve.",        triggerCondition:"regularHours > 45 || regularHours < 43",       actionOnTrigger:"Flag for review",                       severity:"warning",   enabled:true,  createdAt:"2023-04-01", updatedAt:"2024-09-01", createdBy:"system", aiGenerated:false, appliedCount:90,  triggerCount:7 },
-  { id:"pol013", clientId:"gss", category:"leave",      name:"Manager CC on Email Submissions",     description:"All email timesheet submissions must CC the reporting manager. Submissions without manager CC are flagged.",       triggerCondition:"emailSubmission && !managerCC",                 actionOnTrigger:"Warning — notify and log",              severity:"warning",   enabled:true,  createdAt:"2023-06-15", updatedAt:"2023-06-15", createdBy:"system", aiGenerated:false, appliedCount:35,  triggerCount:4 },
-  // HEX rules
-  { id:"pol014", clientId:"hex", category:"hours",      name:"45-Hour Standard Week",               description:"Hexaware standard work week is 45 hours. Submissions up to 45 regular hours auto-approve.",                      triggerCondition:"regularHours > 45",                             actionOnTrigger:"Flag for overtime review",              severity:"warning",   enabled:true,  createdAt:"2022-04-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:420, triggerCount:22 },
-  { id:"pol015", clientId:"hex", category:"compliance", name:"Monthly Hour Target (180h)",          description:"Employees are expected to complete approximately 180 regular hours per month. Significant deviation triggers review.",triggerCondition:"monthlyRegularHours < 160 || monthlyRegularHours > 200", actionOnTrigger:"Flag for manager review",      severity:"warning",   enabled:true,  createdAt:"2022-04-01", updatedAt:"2024-01-01", createdBy:"ai",     aiGenerated:true,  appliedCount:200, triggerCount:15 },
+
+  // ── GLOBAL / SYSTEM-WIDE POLICIES (applied across all clients) ──────────────
+
+  // CEE-001 · Contract Expiry Enforcement
+  // IF current_date > contract_end_date → Auto-reject timesheet, Salary HOLD, Notify HR + Manager
+  { id:"pol-cee-001", clientId:"tci", category:"compliance", name:"Contract Expiry Enforcement",
+    description:"If the current date exceeds the employee's contract end date, the timesheet is auto-rejected, salary is placed on hold (code EXT-002), and HR + manager are notified immediately. No manual override without a contract renewal confirmation.",
+    triggerCondition:"current_date > contract_end_date",
+    actionOnTrigger:"Auto-reject timesheet · Salary HOLD (EXT-002) · Notify HR + Manager",
+    severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-06-01", createdBy:"system", aiGenerated:false, appliedCount:8, triggerCount:8 },
+
+  { id:"pol-cee-002", clientId:"fhl", category:"compliance", name:"Contract Expiry Enforcement",
+    description:"Timesheets submitted after contract_end_date are auto-rejected. Salary hold placed (EXT-002). FHL finance team notified within 1 hour.",
+    triggerCondition:"current_date > contract_end_date",
+    actionOnTrigger:"Auto-reject · Salary HOLD (EXT-002) · Alert finance@financehub.co",
+    severity:"violation", enabled:true, createdAt:"2022-10-01", updatedAt:"2025-06-01", createdBy:"system", aiGenerated:false, appliedCount:3, triggerCount:3 },
+
+  { id:"pol-cee-003", clientId:"hex", category:"compliance", name:"Contract Expiry Enforcement",
+    description:"Hexaware contract expiry enforcement. Auto-reject + hold for any submission post contract_end_date. Hexaware AM (Priya Shah) notified.",
+    triggerCondition:"current_date > contract_end_date",
+    actionOnTrigger:"Auto-reject · Salary HOLD (EXT-002) · Notify AM Priya Shah",
+    severity:"violation", enabled:true, createdAt:"2022-04-01", updatedAt:"2025-06-01", createdBy:"system", aiGenerated:false, appliedCount:5, triggerCount:5 },
+
+  // PRP-002 · Payment Readiness Policy
+  // IF bank_account_no OR ifsc_code missing → Salary HOLD, Notify employee
+  { id:"pol-prp-001", clientId:"tci", category:"payroll", name:"Payment Readiness — Bank Details",
+    description:"Payroll cannot be released if bank_account_no or ifsc_code is missing or fails IFSC checksum validation. Salary hold placed (code PRP-002). Employee notified via email to update details in portal.",
+    triggerCondition:"bank_account_no IS NULL OR ifsc_code IS NULL OR ifsc_validate(ifsc_code) = false",
+    actionOnTrigger:"Salary HOLD (PRP-002) · Email employee to update bank details · Block payroll batch",
+    severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2024-09-01", createdBy:"system", aiGenerated:false, appliedCount:24, triggerCount:3 },
+
+  { id:"pol-prp-002", clientId:"gss", category:"payroll", name:"Payment Readiness — Bank Details",
+    description:"GSS employees must have verified bank account and IFSC on file before the payroll cut-off date. Missing or unverified details trigger hold.",
+    triggerCondition:"bank_account_no IS NULL OR ifsc_code IS NULL",
+    actionOnTrigger:"Salary HOLD (PRP-002) · Notify employee + GSS HR lead",
+    severity:"violation", enabled:true, createdAt:"2023-04-01", updatedAt:"2024-09-01", createdBy:"system", aiGenerated:false, appliedCount:12, triggerCount:2 },
+
+  // WOV-003 · Work Order Validation Policy
+  // IF work_order_no is null → Mark as non-billable, Salary HOLD
+  { id:"pol-wov-001", clientId:"lti", category:"payroll", name:"Work Order Validation",
+    description:"Every billable employee must have an active, non-expired Work Order number on file. If work_order_no is null or expired, the employee is flagged as non-billable and salary is held pending WO confirmation from the client's procurement team.",
+    triggerCondition:"work_order_no IS NULL OR work_order_status = 'expired'",
+    actionOnTrigger:"Flag as non-billable · Salary HOLD (WOV-003) · Notify AM + LTI procurement",
+    severity:"violation", enabled:true, createdAt:"2021-10-01", updatedAt:"2025-01-10", createdBy:"system", aiGenerated:false, appliedCount:18, triggerCount:4 },
+
+  { id:"pol-wov-002", clientId:"hex", category:"payroll", name:"Work Order Validation",
+    description:"Hexaware requires a valid WO on every billable resource. Agent NEXUS validates WO against Veltrix HCM work order registry at each payroll pre-check.",
+    triggerCondition:"work_order_no IS NULL OR work_order_status NOT IN ('active','extended')",
+    actionOnTrigger:"Non-billable flag · Salary HOLD (WOV-003) · Notify Hexaware PM",
+    severity:"violation", enabled:true, createdAt:"2022-04-01", updatedAt:"2025-01-10", createdBy:"system", aiGenerated:false, appliedCount:32, triggerCount:6 },
+
+  // PEP-004 · Payroll Eligibility Policy (CORE)
+  // Eligible ONLY IF: is_active AND contract active AND work_order exists AND no violations AND manager approved
+  { id:"pol-pep-001", clientId:"tci", category:"payroll", name:"Payroll Eligibility Gate (Core)",
+    description:"Composite gate: employee must satisfy ALL five conditions before entering payroll queue — (1) is_active = true, (2) contract_end_date ≥ today, (3) work_order is valid and non-expired, (4) no unresolved policy violations on current timesheet, (5) manager has approved or Agent Mark has auto-approved.",
+    triggerCondition:"is_active = false OR contract_expired OR work_order_invalid OR open_violations > 0 OR !manager_approved",
+    actionOnTrigger:"Block payroll entry · Surface failed gate(s) to ops · Salary HOLD until all conditions met",
+    severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-03-01", createdBy:"system", aiGenerated:false, appliedCount:156, triggerCount:12 },
+
+  { id:"pol-pep-002", clientId:"ibp", category:"payroll", name:"Payroll Eligibility Gate (Core)",
+    description:"IBP composite payroll gate: is_active + contract + work_order + zero violations + manager/agent approval. IBP requires 24h SLA on manager approval; auto-escalation if overdue.",
+    triggerCondition:"is_active = false OR contract_expired OR work_order_invalid OR open_violations > 0 OR !manager_approved",
+    actionOnTrigger:"Block payroll · List failed conditions · Auto-escalate if manager overdue > 24h",
+    severity:"violation", enabled:true, createdAt:"2021-01-01", updatedAt:"2025-03-01", createdBy:"system", aiGenerated:false, appliedCount:420, triggerCount:9 },
+
+  // ICP-005 · Identity Consistency Policy
+  // IF mismatch between employee_id and client_employee_id → Flag discrepancy
+  { id:"pol-icp-001", clientId:"hex", category:"compliance", name:"Identity Consistency Check",
+    description:"The Buzzworks employee_id must match the client_employee_id in Veltrix HCM for every submission. A mismatch indicates either a data entry error or a potential identity fraud attempt. Flag and hold pending manual verification.",
+    triggerCondition:"employee_id != client_employee_id (cross-system lookup)",
+    actionOnTrigger:"Flag discrepancy · Salary HOLD (ICP-005) · Notify ops + account manager for manual ID verification",
+    severity:"violation", enabled:true, createdAt:"2022-04-01", updatedAt:"2024-11-01", createdBy:"system", aiGenerated:false, appliedCount:47, triggerCount:2 },
+
+  { id:"pol-icp-002", clientId:"ibp", category:"compliance", name:"Identity Consistency Check",
+    description:"OrbitHCM cross-system identity validation. Buzzworks employee_id vs IBP client_employee_id mismatch triggers immediate freeze on the record.",
+    triggerCondition:"employee_id != client_employee_id",
+    actionOnTrigger:"Freeze record · Flag ICP-005 · Notify IBP HR + Buzzworks ops within 1h",
+    severity:"violation", enabled:true, createdAt:"2021-01-01", updatedAt:"2024-11-01", createdBy:"system", aiGenerated:false, appliedCount:68, triggerCount:1 },
+
+  // BFP-006 · Banking Fraud Prevention
+  // IF same bank_account_no used by multiple employees → Flag for review
+  { id:"pol-bfp-001", clientId:"gss", category:"compliance", name:"Banking Fraud Prevention",
+    description:"Agent NEXUS runs a daily cross-employee duplicate account scan. If the same bank_account_no is found against two or more employees — regardless of client — the record is frozen, compliance is notified immediately, and both employees are held pending verification. This is an urgent, out-of-cycle escalation.",
+    triggerCondition:"bank_account_no IN (SELECT bank_account_no FROM employees GROUP BY bank_account_no HAVING COUNT(*) > 1)",
+    actionOnTrigger:"Freeze both records · Urgent flag BFP-006 · Notify compliance + ops + account managers immediately",
+    severity:"violation", enabled:true, createdAt:"2023-04-01", updatedAt:"2025-02-01", createdBy:"system", aiGenerated:false, appliedCount:340, triggerCount:1 },
+
+  { id:"pol-bfp-002", clientId:"hex", category:"compliance", name:"Banking Fraud Prevention",
+    description:"Hexaware banking fraud gate. Same account used by multiple Hexaware or cross-client employees flags an immediate urgent review.",
+    triggerCondition:"bank_account_no shared across multiple employee records (global scan)",
+    actionOnTrigger:"Freeze salary · Urgent alert BFP-006 · Compliance + Hexaware AM notified",
+    severity:"violation", enabled:true, createdAt:"2022-04-01", updatedAt:"2025-02-01", createdBy:"system", aiGenerated:false, appliedCount:420, triggerCount:0 },
+
+  // DCM-007 · Data Completeness Policy
+  // IF missing PAN, Bank details, or Work Order → Block payroll
+  { id:"pol-dcm-001", clientId:"tci", category:"payroll", name:"Data Completeness Gate",
+    description:"Before any payroll is released, Agent NEXUS verifies that all three critical data fields are present and valid: (1) PAN number (format validation), (2) bank_account_no + IFSC code, (3) work_order_no (active). Missing any one field blocks payroll entirely for that employee.",
+    triggerCondition:"pan IS NULL OR pan_format_invalid OR bank_account_no IS NULL OR ifsc_code IS NULL OR work_order_no IS NULL",
+    actionOnTrigger:"Block payroll (DCM-007) · Itemised gap report to HR · Employee email notification",
+    severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-01-01", createdBy:"system", aiGenerated:false, appliedCount:156, triggerCount:5 },
+
+  { id:"pol-dcm-002", clientId:"ibp", category:"payroll", name:"Data Completeness Gate",
+    description:"IBP data completeness enforcement. PAN + bank details + work order must all be valid. IBP additionally requires Aadhar-linked bank account verification.",
+    triggerCondition:"pan IS NULL OR bank_account_no IS NULL OR ifsc_code IS NULL OR work_order_no IS NULL OR aadhar_link_verified = false",
+    actionOnTrigger:"Block payroll (DCM-007) · Notify IBP HR + Buzzworks ops · Hold until all fields verified",
+    severity:"violation", enabled:true, createdAt:"2021-01-01", updatedAt:"2025-01-01", createdBy:"system", aiGenerated:false, appliedCount:420, triggerCount:7 },
+
+  // ── CLIENT-SPECIFIC OPERATIONAL POLICIES ────────────────────────────────────
+
+  // TCI — operational rules
+  { id:"pol001", clientId:"tci", category:"hours",      name:"Standard Weekly Hours Cap",
+    description:"No employee may log more than 40 regular hours in a single work week.",
+    triggerCondition:"regularHours > 40",
+    actionOnTrigger:"Flag timesheet for ops review",
+    severity:"warning", enabled:true, createdAt:"2023-01-01", updatedAt:"2024-06-15", createdBy:"system", aiGenerated:false, appliedCount:156, triggerCount:8 },
+
+  { id:"pol002", clientId:"tci", category:"overtime",   name:"OT Pre-Approval Mandatory",
+    description:"Any overtime hours must have explicit pre-approval from the reporting manager before the work period begins.",
+    triggerCondition:"overtimeHours > 0 && !managerApproval",
+    actionOnTrigger:"Reject — request manager approval",
+    severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-01-10", createdBy:"system", aiGenerated:false, appliedCount:42, triggerCount:15 },
+
+  { id:"pol003", clientId:"tci", category:"overtime",   name:"Daily OT Cap (3 Hours)",
+    description:"Overtime on any single day cannot exceed 3 hours as per TCI policy v3.2.",
+    triggerCondition:"dailyOT > 3",
+    actionOnTrigger:"Flag for review — OT ceiling hit",
+    severity:"warning", enabled:true, createdAt:"2023-06-01", updatedAt:"2024-06-15", createdBy:"ops", aiGenerated:false, appliedCount:28, triggerCount:6 },
+
+  { id:"pol004", clientId:"tci", category:"compliance", name:"Consecutive OT Pattern Alert",
+    description:"After 2 consecutive weeks of more than 8 overtime hours, manager review is mandatory.",
+    triggerCondition:"consecutiveOTWeeks >= 2 && weeklyOT > 8",
+    actionOnTrigger:"Escalate to manager + ops team",
+    severity:"warning", enabled:true, createdAt:"2024-01-15", updatedAt:"2024-01-15", createdBy:"ai", aiGenerated:true, appliedCount:12, triggerCount:4 },
+
+  { id:"pol005", clientId:"tci", category:"leave",      name:"Sandwich Leave Detection",
+    description:"Leave taken immediately before or after a public holiday without manager approval is flagged as sandwich leave.",
+    triggerCondition:"leaveAdjacentToHoliday && !managerApproval",
+    actionOnTrigger:"Flag and request manager confirmation",
+    severity:"warning", enabled:true, createdAt:"2024-03-01", updatedAt:"2024-03-01", createdBy:"ai", aiGenerated:true, appliedCount:18, triggerCount:5 },
+
+  // FHL — operational rules
+  { id:"pol006", clientId:"fhl", category:"overtime",   name:"Zero Overtime Policy",
+    description:"FinanceHub Ltd does not permit overtime under any circumstances. Any overtime claim will be rejected.",
+    triggerCondition:"overtimeHours > 0",
+    actionOnTrigger:"Auto-reject — no OT permitted",
+    severity:"violation", enabled:true, createdAt:"2022-10-01", updatedAt:"2022-10-01", createdBy:"system", aiGenerated:false, appliedCount:34, triggerCount:12 },
+
+  { id:"pol007", clientId:"fhl", category:"hours",      name:"Standard 40-Hour Week",
+    description:"All employees must maintain exactly 40 hours per week. Under or over submissions require explanation.",
+    triggerCondition:"totalHours < 38 || totalHours > 40",
+    actionOnTrigger:"Request explanation from employee",
+    severity:"warning", enabled:true, createdAt:"2022-10-01", updatedAt:"2024-08-20", createdBy:"system", aiGenerated:false, appliedCount:67, triggerCount:11 },
+
+  { id:"pol008", clientId:"fhl", category:"compliance", name:"Original Email Required",
+    description:"Forwarded emails are not accepted as timesheet submissions. The original employee-sent email must be attached.",
+    triggerCondition:"emailIsForward",
+    actionOnTrigger:"Reject — request original submission",
+    severity:"violation", enabled:true, createdAt:"2023-04-01", updatedAt:"2023-04-01", createdBy:"system", aiGenerated:false, appliedCount:18, triggerCount:7 },
+
+  // MSH — operational rules
+  { id:"pol009", clientId:"msh", category:"hours",      name:"Healthcare Shift Week Cap",
+    description:"Medical staff may work up to 48 regular hours per week in accordance with healthcare shift norms.",
+    triggerCondition:"regularHours > 48",
+    actionOnTrigger:"Flag for compliance review",
+    severity:"violation", enabled:true, createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:45, triggerCount:3 },
+
+  { id:"pol010", clientId:"msh", category:"attendance", name:"Minimum 1 Rest Day Per Week",
+    description:"Every employee must have at least one designated rest day in each 7-day period for health and safety compliance.",
+    triggerCondition:"restDaysInWeek < 1",
+    actionOnTrigger:"Warning — contact employee and manager",
+    severity:"warning", enabled:true, createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:60, triggerCount:8 },
+
+  { id:"pol011", clientId:"msh", category:"overtime",   name:"Double-Pay for OT",
+    description:"All overtime is compensated at 2× the standard hourly rate per MSH healthcare worker agreements.",
+    triggerCondition:"overtimeHours > 0",
+    actionOnTrigger:"Auto-calculate 2x OT in payroll",
+    severity:"info", enabled:true, createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:80, triggerCount:30 },
+
+  // GSS — operational rules
+  { id:"pol012", clientId:"gss", category:"hours",      name:"45-Hour Weekly Standard",
+    description:"GSS employees work a 45-hour standard week (9 hrs × 5 days). Submissions within ±2 hours auto-approve.",
+    triggerCondition:"regularHours > 45 || regularHours < 43",
+    actionOnTrigger:"Flag for review",
+    severity:"warning", enabled:true, createdAt:"2023-04-01", updatedAt:"2024-09-01", createdBy:"system", aiGenerated:false, appliedCount:90, triggerCount:7 },
+
+  { id:"pol013", clientId:"gss", category:"leave",      name:"Manager CC on Email Submissions",
+    description:"All email timesheet submissions must CC the reporting manager. Submissions without manager CC are flagged.",
+    triggerCondition:"emailSubmission && !managerCC",
+    actionOnTrigger:"Warning — notify and log",
+    severity:"warning", enabled:true, createdAt:"2023-06-15", updatedAt:"2023-06-15", createdBy:"system", aiGenerated:false, appliedCount:35, triggerCount:4 },
+
+  // HEX — operational rules
+  { id:"pol014", clientId:"hex", category:"hours",      name:"45-Hour Standard Week",
+    description:"Hexaware standard work week is 45 hours. Submissions up to 45 regular hours auto-approve.",
+    triggerCondition:"regularHours > 45",
+    actionOnTrigger:"Flag for overtime review",
+    severity:"warning", enabled:true, createdAt:"2022-04-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:420, triggerCount:22 },
+
+  { id:"pol015", clientId:"hex", category:"compliance", name:"Monthly Hour Target (180h)",
+    description:"Employees are expected to complete approximately 180 regular hours per month. Significant deviation triggers review.",
+    triggerCondition:"monthlyRegularHours < 160 || monthlyRegularHours > 200",
+    actionOnTrigger:"Flag for manager review",
+    severity:"warning", enabled:true, createdAt:"2022-04-01", updatedAt:"2024-01-01", createdBy:"ai", aiGenerated:true, appliedCount:200, triggerCount:15 },
 ]
 
 // ─── AI Insights ──────────────────────────────────────────────────────────────
