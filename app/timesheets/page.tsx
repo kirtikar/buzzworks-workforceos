@@ -153,7 +153,7 @@ export default function TimesheetsPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header
-          className="flex items-center gap-4 px-5 py-3.5 border-b border-white/[0.07] flex-shrink-0"
+          className="flex items-center gap-3 px-4 lg:px-5 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0"
           style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}
         >
           <div>
@@ -174,13 +174,13 @@ export default function TimesheetsPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-dot-blink" />
             </div>
 
-            <button className="btn-ghost flex items-center gap-1.5 py-1.5 px-3 text-xs">
+            <button className="btn-ghost hidden sm:flex items-center gap-1.5 py-1.5 px-3 text-xs min-h-[36px]">
               <RefreshCw size={12} />
-              Sync portals
+              <span className="hidden md:inline">Sync portals</span>
             </button>
-            <button className="btn-ghost flex items-center gap-1.5 py-1.5 px-3 text-xs">
+            <button className="btn-ghost flex items-center gap-1.5 py-1.5 px-3 text-xs min-h-[36px]">
               <Download size={12} />
-              Export
+              <span className="hidden sm:inline">Export</span>
             </button>
             <button className="relative w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/[0.06] transition-colors">
               <Bell size={16} className="text-white/50" />
@@ -262,8 +262,8 @@ export default function TimesheetsPage() {
         {/* Content area */}
         <div className="flex-1 flex overflow-hidden">
           {/* Table */}
-          <div className="flex-1 overflow-y-auto">
-            <table className="w-full text-[12px]">
+          <div className="flex-1 overflow-y-auto pb-nav lg:pb-0 overflow-x-auto">
+            <table className="w-full min-w-[720px] text-[12px]">
               <thead className="sticky top-0 z-10" style={{ background: "rgba(9,7,20,0.92)", backdropFilter: "blur(12px)" }}>
                 <tr className="border-b border-white/[0.07]">
                   {["Employee", "Client", "Period", "Hours Breakdown", "Source", "Validation", "Status", "Actions"].map((h) => (
@@ -453,7 +453,7 @@ export default function TimesheetsPage() {
           {/* Detail panel */}
           {selected && selectedEmp && selectedClient && (
             <div
-              className="w-[380px] flex-shrink-0 border-l border-white/[0.07] overflow-y-auto animate-slide-in-right"
+              className="fixed inset-0 z-30 lg:static lg:inset-auto lg:w-[380px] lg:flex-shrink-0 border-l border-white/[0.07] overflow-y-auto animate-slide-in-right pb-nav lg:pb-0"
               style={{ background: "rgba(10,7,22,0.97)", backdropFilter: "blur(20px)" }}
             >
               {/* Panel header */}

@@ -475,7 +475,7 @@ export default function EmployeeDetailPage() {
         </div>
 
         {/* Tab content */}
-        <main className="flex-1 overflow-y-auto p-5">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-5 pb-nav lg:pb-5">
           {tab === "Overview"      && <OverviewTab emp={emp} />}
           {tab === "Timesheets"    && <TimesheetsTab empId={emp.id} />}
           {tab === "Leave"         && <LeaveTab emp={emp} />}

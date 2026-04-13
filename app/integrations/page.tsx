@@ -288,7 +288,7 @@ export default function IntegrationsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-4 px-6 py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
           <div className="flex-1">
             <h1 className="text-base font-bold text-white">Integrations</h1>
             <p className="text-[11px] text-white/35">Portal connections &amp; email ingestion</p>
@@ -301,7 +301,7 @@ export default function IntegrationsPage() {
           </button>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-5 space-y-5">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 lg:space-y-5 pb-nav lg:pb-5">
           {/* Summary KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[

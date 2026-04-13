@@ -110,7 +110,7 @@ export default function ReportsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-4 px-6 py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
           <BarChart3 size={18} className="text-teal-400 flex-shrink-0" />
           <div className="flex-1">
             <h1 className="text-base font-bold text-white">Reports & Analytics</h1>
@@ -135,7 +135,7 @@ export default function ReportsPage() {
           </button>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-5 space-y-5">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 lg:space-y-5 pb-nav lg:pb-5">
           {/* KPI row */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             <KpiCard label="Timesheets Processed" value={totalProcessed.toLocaleString()} sub={period}       color="#00c896"        icon={CheckCircle2} change={+8}  />

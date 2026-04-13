@@ -196,7 +196,7 @@ export default function PayrollPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-4 px-6 py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
           <CreditCard size={18} className="text-teal-400 flex-shrink-0" />
           <div className="flex-1">
             <h1 className="text-base font-bold text-white">Payroll</h1>
@@ -208,7 +208,7 @@ export default function PayrollPage() {
         </header>
 
         {/* Tab nav */}
-        <div className="flex items-center gap-1 px-6 pt-3 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.4)" }}>
+        <div className="flex items-center gap-1 px-4 lg:px-6 pt-3 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.4)" }}>
           {TABS.map(t => (
             <button
               key={t.key}
@@ -220,7 +220,7 @@ export default function PayrollPage() {
           ))}
         </div>
 
-        <main className="flex-1 overflow-y-auto p-5 space-y-5">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 lg:space-y-5 pb-nav lg:pb-5">
           {/* KPI row — always visible */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
@@ -335,12 +335,12 @@ export default function PayrollPage() {
 
           {/* History tab */}
           {tab === "history" && (
-            <div className="glass overflow-hidden rounded-2xl">
+            <div className="glass overflow-hidden rounded-2xl overflow-x-auto">
               <div className="px-5 py-4 border-b border-white/[0.07]">
                 <div className="text-[13px] font-semibold text-white">Payroll History</div>
                 <div className="text-[11px] text-white/35">All processed and approved batches</div>
               </div>
-              <table className="w-full text-[12px]">
+              <table className="w-full min-w-[600px] text-[12px]">
                 <thead>
                   <tr className="border-b border-white/[0.05]">
                     {["Client", "Period", "Timesheets", "Hours", "Amount", "Status", "Approved by", "Processed"].map(h => (

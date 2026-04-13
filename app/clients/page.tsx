@@ -163,7 +163,7 @@ export default function ClientsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-4 px-6 py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
           <Building2 size={18} className="text-teal-400 flex-shrink-0" />
           <div className="flex-1">
             <h1 className="text-base font-bold text-white">Clients</h1>

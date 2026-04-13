@@ -248,22 +248,22 @@ export default function EmployeesPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Header */}
-        <header className="flex items-center gap-4 px-6 py-3.5 border-b flex-shrink-0"
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b flex-shrink-0"
           style={{ background: "rgba(9,7,20,0.6)", backdropFilter:"blur(20px)", borderColor:"var(--border)" }}>
           <Users size={18} style={{ color:"var(--accent)" }} className="flex-shrink-0" />
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold" style={{ color:"var(--text-1)" }}>Employees</h1>
             <p className="text-[11px]" style={{ color:"var(--text-3)" }}>
               {filtered.length.toLocaleString()} of {allEmployees.length.toLocaleString()} employees
             </p>
           </div>
-          <button className="btn-ghost flex items-center gap-1.5 text-[12px] py-2 px-3">
-            <Download size={12} /> Export
+          <button className="btn-ghost flex items-center gap-1.5 text-[12px] py-2 px-3 min-h-[36px]">
+            <Download size={12} /><span className="hidden sm:inline">Export</span>
           </button>
         </header>
 
         {/* ── Horizontal filter bar ── */}
-        <div className="flex items-center gap-2 px-6 py-3 border-b flex-shrink-0 overflow-x-auto"
+        <div className="flex items-center gap-2 px-4 lg:px-6 py-3 border-b flex-shrink-0 overflow-x-auto scrollbar-none"
           style={{ borderColor:"var(--border)", background:"var(--surface)" }}>
 
           {/* Search */}
@@ -318,8 +318,8 @@ export default function EmployeesPage() {
         </div>
 
         {/* ── Table ── */}
-        <div className="flex-1 overflow-y-auto">
-          <table className="w-full border-collapse">
+        <div className="flex-1 overflow-y-auto overflow-x-auto pb-nav lg:pb-0">
+          <table className="w-full min-w-[700px] border-collapse">
             <thead className="sticky top-0 z-10" style={{ background:"var(--surface)" }}>
               <tr className="border-b" style={{ borderColor:"var(--border)" }}>
                 {["Employee","Client","Role / Category","City","Joined","Rate / hr","Leave","Status"].map(h => (

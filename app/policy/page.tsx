@@ -366,9 +366,27 @@ export default function PolicyPage() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex overflow-hidden">
-        {/* Client selector panel */}
-        <div className="w-56 flex-shrink-0 border-r border-white/[0.07] flex flex-col overflow-hidden" style={{ background: "rgba(9,7,20,0.6)" }}>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile client picker — horizontal chip scroll */}
+        <div className="flex sm:hidden items-center gap-2 px-3 py-2 overflow-x-auto flex-shrink-0 scrollbar-none"
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(9,7,20,0.6)" }}>
+          {clients.map(c => (
+            <button key={c.id} onClick={() => setSelClientId(c.id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full flex-shrink-0 text-[11px] font-semibold transition-all whitespace-nowrap"
+              style={{
+                background: selClientId === c.id ? `${c.color}22` : "rgba(255,255,255,0.05)",
+                border: `1px solid ${selClientId === c.id ? c.color + "50" : "rgba(255,255,255,0.08)"}`,
+                color: selClientId === c.id ? c.color : "rgba(255,255,255,0.4)",
+              }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.color }} />
+              {c.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-1 overflow-hidden">
+        {/* Client selector panel — desktop */}
+        <div className="hidden sm:flex w-56 flex-shrink-0 border-r border-white/[0.07] flex-col overflow-hidden" style={{ background: "rgba(9,7,20,0.6)" }}>
           <div className="px-4 py-4 border-b border-white/[0.07]">
             <div className="text-[12px] font-semibold text-white/50 uppercase tracking-wider">Select Client</div>
           </div>
@@ -396,7 +414,7 @@ export default function PolicyPage() {
         {/* Policy rules area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
-          <header className="flex items-center gap-4 px-6 py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
+          <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
             <FileText size={18} className="text-teal-400" />
             <div className="flex-1">
               <h1 className="text-base font-bold text-white">{selClient.name} — Policy Engine</h1>
@@ -424,7 +442,7 @@ export default function PolicyPage() {
           </header>
 
           {/* Rules content */}
-          <main className="flex-1 overflow-y-auto p-5 space-y-4">
+          <main className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 pb-nav lg:pb-5">
             {clientRules.length === 0 ? (
               <div className="glass p-12 rounded-2xl text-center">
                 <FileText size={40} className="text-white/15 mx-auto mb-4" />
@@ -477,6 +495,7 @@ export default function PolicyPage() {
             </div>
           </main>
         </div>
+        </div>{/* flex flex-1 overflow-hidden */}
       </div>
 
       {showCreator && (

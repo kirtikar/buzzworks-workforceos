@@ -438,7 +438,7 @@ export default function AgentsPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Header */}
-        <header className="flex items-center gap-4 px-6 py-3.5 flex-shrink-0"
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 flex-shrink-0"
           style={{ borderBottom: "1px solid var(--border)", background: "var(--glass-bg)", backdropFilter: "blur(20px)" }}>
           <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.3), rgba(0,200,150,0.3))", border: "1px solid rgba(139,92,246,0.2)" }}>
@@ -457,10 +457,27 @@ export default function AgentsPage() {
           </div>
         </header>
 
+        {/* Mobile agent picker — horizontal chip scroll */}
+        <div className="flex sm:hidden items-center gap-2 px-4 py-2 overflow-x-auto flex-shrink-0 scrollbar-none"
+          style={{ borderBottom: "1px solid var(--border)", background: "var(--surface)" }}>
+          {AGENTS.map(a => (
+            <button key={a.id} onClick={() => setSelected(a.id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full flex-shrink-0 text-[11px] font-semibold transition-all"
+              style={{
+                background: selected === a.id ? `${a.color}22` : "var(--surface-hover)",
+                border: `1px solid ${selected === a.id ? a.color + "40" : "var(--border)"}`,
+                color: selected === a.id ? a.color : "var(--text-2)",
+              }}>
+              <a.icon size={11} />
+              {a.name}
+            </button>
+          ))}
+        </div>
+
         <div className="flex flex-1 overflow-hidden">
 
           {/* Agent list — left panel */}
-          <div className="w-56 flex-shrink-0 overflow-y-auto p-3 space-y-1.5"
+          <div className="hidden sm:block w-44 lg:w-56 flex-shrink-0 overflow-y-auto p-3 space-y-1.5"
             style={{ borderRight: "1px solid var(--border)" }}>
             {AGENTS.map(a => (
               <button
@@ -489,7 +506,7 @@ export default function AgentsPage() {
           </div>
 
           {/* Agent detail — right panel */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto pb-nav lg:pb-0">
 
             {/* Agent header */}
             <div className="px-6 py-4 flex-shrink-0" style={{ borderBottom: "1px solid var(--border)", background: `${agent.color}06` }}>

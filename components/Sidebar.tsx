@@ -29,7 +29,7 @@ export default function Sidebar() {
   return (
     <div
       className={clsx(
-        "relative flex flex-col h-screen flex-shrink-0 transition-all duration-300 ease-in-out",
+        "relative hidden lg:flex flex-col h-screen flex-shrink-0 transition-all duration-300 ease-in-out",
         "border-r border-white/[0.07]",
         collapsed ? "w-[68px]" : "w-[228px]"
       )}

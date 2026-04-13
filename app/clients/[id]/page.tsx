@@ -579,7 +579,7 @@ export default function ClientDetailPage() {
         </div>
 
         {/* Tab content */}
-        <main className="flex-1 overflow-y-auto p-5">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-5 pb-nav lg:pb-5">
           {tab === "Overview"    && <OverviewTab client={client} portal={portal} />}
           {tab === "Timesheets"  && <TimesheetsTab clientId={client.id} />}
           {tab === "Employees"   && <EmployeesTab clientId={client.id} employeeCount={client.employeeCount} />}

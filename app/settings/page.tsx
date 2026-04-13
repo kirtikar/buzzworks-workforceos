@@ -481,9 +481,28 @@ export default function SettingsPage() {
           </div>
         </header>
 
+        {/* Mobile section tabs */}
+        <div className="flex sm:hidden items-center gap-1 px-3 py-2 overflow-x-auto flex-shrink-0 scrollbar-none"
+          style={{ borderBottom: "1px solid var(--border)", background: "var(--surface)" }}>
+          {SECTIONS.map(s => {
+            const Icon = SECTION_ICONS[s]
+            return (
+              <button key={s} onClick={() => setSection(s)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full flex-shrink-0 text-[11px] font-semibold transition-all whitespace-nowrap"
+                style={{
+                  background: s === section ? "var(--accent-dim)" : "var(--surface-hover)",
+                  border: `1px solid ${s === section ? "var(--accent-border)" : "var(--border)"}`,
+                  color: s === section ? "var(--accent)" : "var(--text-2)",
+                }}>
+                <Icon size={11} />{s}
+              </button>
+            )
+          })}
+        </div>
+
         <div className="flex flex-1 overflow-hidden">
           {/* Section nav sidebar */}
-          <nav className="w-44 flex-shrink-0 overflow-y-auto p-3 space-y-0.5" style={{ borderRight: "1px solid var(--border)" }}>
+          <nav className="hidden sm:block w-44 flex-shrink-0 overflow-y-auto p-3 space-y-0.5" style={{ borderRight: "1px solid var(--border)" }}>
             {SECTIONS.map(s => {
               const Icon = SECTION_ICONS[s]
               const active = s === section
@@ -506,7 +525,7 @@ export default function SettingsPage() {
           </nav>
 
           {/* Section content */}
-          <main className="flex-1 overflow-y-auto p-6">
+          <main className="flex-1 overflow-y-auto p-4 lg:p-6 pb-nav lg:pb-6">
             <div className="max-w-2xl mx-auto space-y-5">
               <div className="text-[16px] font-bold mb-1" style={{ color: "var(--text-1)" }}>{section}</div>
               <SectionContent />

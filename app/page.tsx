@@ -186,54 +186,54 @@ export default function DashboardPage() {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="flex items-center gap-4 px-6 py-3.5 flex-shrink-0"
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 flex-shrink-0"
           style={{ borderBottom: "1px solid var(--border)", background: "var(--glass-bg)", backdropFilter: "blur(20px)" }}>
-          <div className="flex-1 max-w-xs relative">
+          <div className="hidden sm:flex flex-1 max-w-xs relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
             <input className="glass-input w-full pl-8 text-sm" placeholder="Search clients, timesheets, employees…" />
           </div>
-          <div className="flex items-center gap-3 ml-auto">
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
               style={{ background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", color: "#A78BFA" }}>
               <Mail size={11} />
               candidatemanager@buzzworks.com
               <span className="w-1.5 h-1.5 rounded-full animate-dot-blink" style={{ background: "var(--accent)" }} />
             </div>
-            <button className="btn-ghost flex items-center gap-1.5 py-1.5 px-3 text-xs">
-              <RefreshCw size={12} /><span className="hidden md:inline">Sync portals</span>
+            <button className="btn-ghost flex items-center gap-1.5 py-1.5 px-3 text-xs min-h-[36px]">
+              <RefreshCw size={12} /><span className="hidden sm:inline">Sync portals</span>
             </button>
-            <button className="relative w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+            <button className="relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
               style={{ color: "var(--text-2)" }}
               onMouseEnter={e => (e.currentTarget.style.background = "var(--surface-hover)")}
               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-              <Bell size={16} />
-              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full" style={{ background: "var(--danger)" }} />
+              <Bell size={18} />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full" style={{ background: "var(--danger)" }} />
             </button>
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
               style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)" }}>RS</div>
           </div>
         </header>
 
         {/* Scrollable body */}
-        <main className="flex-1 overflow-y-auto p-5 space-y-5">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 lg:space-y-5 pb-nav lg:pb-5">
 
           {/* Welcome + month summary */}
-          <div className="flex items-end justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-0 sm:justify-between">
             <div>
-              <h1 className="text-xl font-bold" style={{ color: "var(--text-1)" }}>
+              <h1 className="text-lg lg:text-xl font-bold" style={{ color: "var(--text-1)" }}>
                 Operations Overview{" "}
                 <span className="font-normal text-base" style={{ color: "var(--text-3)" }}>Apr 2026 · Week 1</span>
               </h1>
-              <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                {totalSubmitted} timesheets · {totalFlagged} flagged · {totalOnHold} payroll holds · Cycle closes Friday
+              <p className="text-[12px] lg:text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                {totalSubmitted} timesheets · {totalFlagged} flagged · {totalOnHold} holds · Closes Friday
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Link href="/timesheets">
-                <button className="btn-ghost flex items-center gap-1.5 text-[13px]">Open Inbox <ArrowRight size={13} /></button>
+                <button className="btn-ghost flex items-center gap-1.5 text-[13px] min-h-[40px]">Open Inbox <ArrowRight size={13} /></button>
               </Link>
               <Link href="/payroll">
-                <button className="btn-teal flex items-center gap-1.5 text-[13px]">Run Payroll <Banknote size={13} /></button>
+                <button className="btn-teal flex items-center gap-1.5 text-[13px] min-h-[40px]">Run Payroll <Banknote size={13} /></button>
               </Link>
             </div>
           </div>

@@ -4,6 +4,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Mobile: prevent iOS input zoom (font-size must be ≥16px on focus) ── */
+@media (max-width: 1023px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Safe-area padding for bottom nav ───────────────────────────────── */
+.pb-nav {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+/* ── Touch-friendly minimum tap target ──────────────────────────────── */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
 :root {
   /* Single accent — the only real color in the system */
   --accent: #00c896;
