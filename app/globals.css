@@ -31,6 +31,10 @@
   --border:        rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
 
+  /* Navigation surfaces */
+  --surface-nav:   #111520;
+  --nav-border:    rgba(255, 255, 255, 0.07);
+
   --text-1: #EDF0F7;
   --text-2: #8892A8;
   --text-3: #4C556B;
@@ -48,12 +52,8 @@
   --info-border: rgba(96, 165, 250, 0.22);
 
   /* legacy aliases */
-  --glass-bg:     #181C27;
-  --glass-border: rgba(255, 255, 255, 0.08);
-
-  /* sidebar */
-  --sidebar-bg:     #13172000;
-  --sidebar-bg-val: #111520;
+  --glass-bg:     var(--surface);
+  --glass-border: var(--border);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -72,6 +72,10 @@
   --border:        #E2E8F0;
   --border-strong: #CBD5E1;
 
+  /* Navigation surfaces */
+  --surface-nav:   #FFFFFF;
+  --nav-border:    #E2E8F0;
+
   --text-1: #0F172A;
   --text-2: #64748B;
   --text-3: #94A3B8;
@@ -88,126 +92,28 @@
   --info-bg:     rgba(37, 99, 235, 0.07);
   --info-border: rgba(37, 99, 235, 0.18);
 
-  --glass-bg:     #FFFFFF;
-  --glass-border: #E2E8F0;
-
-  --sidebar-bg-val: #FFFFFF;
+  --glass-bg:     var(--surface);
+  --glass-border: var(--border);
 }
 
-[data-theme="light"] body { background: #F8FAFC; color: #0F172A; }
-[data-theme="light"] .app-bg { background: #F8FAFC; }
+/* ═══════════════════════════════════════════════════════════
+   TEXT TOKEN OVERRIDES
+   Maps Tailwind text-white/* classes to CSS vars so they
+   automatically switch: light text in dark mode, dark in light
+   ═══════════════════════════════════════════════════════════ */
+.text-white,
+.text-white\/90, .text-white\/85,
+.text-white\/80, .text-white\/75                     { color: var(--text-1); }
+.text-white\/70, .text-white\/65,
+.text-white\/60, .text-white\/55,
+.text-white\/50                                      { color: var(--text-2); }
+.text-white\/45, .text-white\/40, .text-white\/35,
+.text-white\/30, .text-white\/25, .text-white\/20,
+.text-white\/15, .text-white\/10                     { color: var(--text-3); }
 
-/* ── Light: override dark-first hardcoded white text utilities ─── */
-[data-theme="light"] .text-white                { color: var(--text-1) !important; }
-[data-theme="light"] .text-white\/80            { color: var(--text-1) !important; }
-[data-theme="light"] .text-white\/60            { color: var(--text-2) !important; }
-[data-theme="light"] .text-white\/50            { color: var(--text-2) !important; }
-[data-theme="light"] .text-white\/40            { color: var(--text-3) !important; }
-[data-theme="light"] .text-white\/35            { color: var(--text-3) !important; }
-[data-theme="light"] .text-white\/30            { color: var(--text-3) !important; }
-[data-theme="light"] .text-white\/25            { color: var(--text-3) !important; }
-[data-theme="light"] .text-white\/20            { color: var(--text-3) !important; }
-[data-theme="light"] .text-white\/15            { color: var(--text-3) !important; }
-[data-theme="light"] .text-white\/10            { color: var(--text-3) !important; }
-
-/* ── Light: override dark-first hardcoded white border utilities ─── */
-[data-theme="light"] .border-white\/\[0\.05\]   { border-color: var(--border) !important; }
-[data-theme="light"] .border-white\/\[0\.07\]   { border-color: var(--border) !important; }
-[data-theme="light"] .border-white\/\[0\.08\]   { border-color: var(--border) !important; }
-[data-theme="light"] .border-white\/\[0\.10\]   { border-color: var(--border-strong) !important; }
-
-/* ── Light: inline rgba white backgrounds in cards/surfaces ─── */
-/* These are applied via JS to override inline-style rgba(255,255,255,...) */
-[data-theme="light"] .light-surface-2 { background: var(--surface-2) !important; }
-
-/* ── Light: card surfaces — flat, shadowed, no blur ─── */
-[data-theme="light"] .glass-card {
-  background: #FFFFFF;
-  border-color: #E2E8F0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  backdrop-filter: none;
-}
-[data-theme="light"] .glass {
-  background: #FFFFFF;
-  border-color: #E2E8F0;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-  backdrop-filter: none;
-}
-[data-theme="light"] .glass-sm {
-  background: #FFFFFF;
-  border-color: #E2E8F0;
-  backdrop-filter: none;
-}
-[data-theme="light"] .glass-dark {
-  background: #F8FAFC;
-  border-color: #E2E8F0;
-}
-
-/* ── Light: inputs ─── */
-[data-theme="light"] .glass-input {
-  background: #FFFFFF;
-  border-color: #CBD5E1;
-  color: #0F172A;
-}
-[data-theme="light"] .glass-input::placeholder { color: #94A3B8; }
-[data-theme="light"] .glass-input:focus { border-color: #006AFF; box-shadow: 0 0 0 3px rgba(0,106,255,0.12); }
-[data-theme="light"] select.glass-input option { background: #FFFFFF; color: #0F172A; }
-
-/* ── Light: buttons ─── */
-[data-theme="light"] .btn-primary {
-  background: #006AFF;
-  color: #FFFFFF;
-}
-[data-theme="light"] .btn-ghost {
-  background: #FFFFFF;
-  color: #374151;
-  border-color: #D1D5DB;
-}
-[data-theme="light"] .btn-ghost:hover { background: #F9FAFB; color: #111827; }
-
-/* ── Light: table rows ─── */
-[data-theme="light"] .ts-row { border-bottom-color: #F1F5F9; }
-[data-theme="light"] .ts-row:hover { background: rgba(0,106,255,0.03); }
-[data-theme="light"] .ts-row.selected {
-  background: rgba(0,106,255,0.05);
-  border-left-color: #006AFF;
-}
-
-/* ── Light: badges ─── */
-[data-theme="light"] .badge-pending  { background: #F8FAFC; color: #64748B; border-color: #E2E8F0; }
-[data-theme="light"] .badge-approved { background: rgba(0,106,255,0.07); color: #006AFF; border-color: rgba(0,106,255,0.18); }
-[data-theme="light"] .badge-portal   { background: #F8FAFC; color: #64748B; border-color: #E2E8F0; }
-[data-theme="light"] .badge-email    { background: #F8FAFC; color: #64748B; border-color: #E2E8F0; }
-[data-theme="light"] .badge-manual   { background: #F8FAFC; color: #94A3B8; border-color: #E2E8F0; }
-
-/* ── Light: nav active dot ─── */
-[data-theme="light"] .nav-active-dot { background: #006AFF; }
-
-/* ── Light: scrollbar ─── */
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
-
-/* ── Light: login ─── */
-[data-theme="light"] .login-card {
-  background: #FFFFFF;
-  border-color: #E2E8F0;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
-}
-[data-theme="light"] .login-input {
-  background: #FFFFFF;
-  border-color: #CBD5E1;
-  color: #0F172A;
-}
-[data-theme="light"] .login-input:focus { border-color: #006AFF; }
-
-/* ── Light: sidebar ─── */
-[data-theme="light"] .sidebar-surface {
-  background: #FFFFFF;
-  border-right-color: #E2E8F0;
-}
-[data-theme="light"] .bottom-nav-surface {
-  background: rgba(255,255,255,0.97);
-  border-top-color: #E2E8F0;
-}
+/* Border token overrides */
+.border-white\/\[0\.05\], .border-white\/\[0\.06\],
+.border-white\/\[0\.07\], .border-white\/\[0\.08\]  { border-color: var(--border); }
 
 /* ═══════════════════════════════════════════════════════════
    BASE STYLES
@@ -241,24 +147,24 @@ body {
   border-radius: 8px;
 }
 .glass-dark {
-  background: rgba(8, 10, 18, 0.94);
+  background: var(--surface-2);
   border: 1px solid var(--border);
 }
 
 /* ── Sidebar / BottomNav surfaces (theme-responsive) ─────── */
 .sidebar-surface {
-  background: #111520;
-  border-right: 1px solid rgba(255,255,255,0.07);
+  background: var(--surface-nav);
+  border-right: 1px solid var(--nav-border);
 }
 .bottom-nav-surface {
-  background: rgba(11,13,22,0.97);
-  border-top: 1px solid rgba(255,255,255,0.07);
+  background: var(--surface-nav);
+  border-top: 1px solid var(--nav-border);
 }
 
 /* ── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 .scrollbar-none { scrollbar-width: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
 
@@ -274,21 +180,21 @@ body {
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
-.badge-pending   { background: rgba(255,255,255,0.05); color: var(--text-2); border: 1px solid var(--border); }
-.badge-reviewing { background: var(--info-bg);         color: var(--info);   border: 1px solid var(--info-border); }
-.badge-flagged   { background: var(--warn-bg);         color: var(--warn);   border: 1px solid var(--warn-border); }
-.badge-approved  { background: var(--accent-dim);      color: var(--accent); border: 1px solid var(--accent-border); }
-.badge-processed { background: var(--accent-dim);      color: var(--accent); border: 1px solid var(--accent-border); opacity: 0.85; }
-.badge-rejected  { background: var(--danger-bg);       color: var(--danger); border: 1px solid var(--danger-border); }
-.badge-portal    { background: rgba(255,255,255,0.05); color: var(--text-2); border: 1px solid var(--border); }
-.badge-email     { background: rgba(255,255,255,0.05); color: var(--text-2); border: 1px solid var(--border); }
-.badge-manual    { background: rgba(255,255,255,0.03); color: var(--text-3); border: 1px solid var(--border); }
+.badge-pending   { background: var(--surface-2);   color: var(--text-2); border: 1px solid var(--border); }
+.badge-reviewing { background: var(--info-bg);      color: var(--info);   border: 1px solid var(--info-border); }
+.badge-flagged   { background: var(--warn-bg);      color: var(--warn);   border: 1px solid var(--warn-border); }
+.badge-approved  { background: var(--accent-dim);   color: var(--accent); border: 1px solid var(--accent-border); }
+.badge-processed { background: var(--accent-dim);   color: var(--accent); border: 1px solid var(--accent-border); opacity: 0.85; }
+.badge-rejected  { background: var(--danger-bg);    color: var(--danger); border: 1px solid var(--danger-border); }
+.badge-portal    { background: var(--surface-2);    color: var(--text-2); border: 1px solid var(--border); }
+.badge-email     { background: var(--surface-2);    color: var(--text-2); border: 1px solid var(--border); }
+.badge-manual    { background: var(--surface-2);    color: var(--text-3); border: 1px solid var(--border); }
 
 /* ── Validation checks ───────────────────────────────────── */
 .check-pass    { color: #34D399; }
 .check-fail    { color: #F87171; }
 .check-warning { color: #FBBF24; }
-.check-pending { color: #94A3B8; }
+.check-pending { color: var(--text-3); }
 
 /* ── Table rows ──────────────────────────────────────────── */
 .ts-row {
@@ -314,7 +220,7 @@ body {
 
 /* ── Input styles ────────────────────────────────────────── */
 .glass-input {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-2);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   color: var(--text-1);
@@ -329,9 +235,10 @@ body {
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
 .glass-input::placeholder { color: var(--text-3); }
-select.glass-input option { background: #1A1E2A; color: var(--text-1); }
+select.glass-input option { background: var(--surface); color: var(--text-1); }
 
 /* ── Buttons ─────────────────────────────────────────────── */
+/* NOTE: btn-primary comes after text-white override so white text on buttons always wins */
 .btn-primary, .btn-teal {
   background: var(--accent);
   color: #FFFFFF;
@@ -373,12 +280,12 @@ select.glass-input option { background: #1A1E2A; color: var(--text-1); }
 
 /* ── Login ───────────────────────────────────────────────── */
 .login-card {
-  background: #12161F;
+  background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: 16px;
 }
 .login-input {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-2);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   color: var(--text-1);
@@ -410,14 +317,14 @@ select.glass-input option { background: #1A1E2A; color: var(--text-1); }
   to   { opacity: 1; transform: translateY(0);   }
 }
 
-.animate-orb-pulse     { animation: orb-pulse 2.5s ease-in-out infinite; }
-.animate-dot-blink     { animation: dot-blink 1.5s ease-in-out infinite; }
+.animate-orb-pulse      { animation: orb-pulse 2.5s ease-in-out infinite; }
+.animate-dot-blink      { animation: dot-blink 1.5s ease-in-out infinite; }
 .animate-slide-in-right { animation: slide-in-right 0.25s ease-out forwards; }
 .animate-fade-in        { animation: fade-in 0.3s ease-out forwards; }
 
 /* ── Validation score ring ───────────────────────────────── */
-.score-ring  { position: relative; width: 36px; height: 36px; }
-.score-text  {
+.score-ring { position: relative; width: 36px; height: 36px; }
+.score-text {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; font-weight: 700;

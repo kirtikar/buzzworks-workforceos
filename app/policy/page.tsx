@@ -24,7 +24,7 @@ const CAT_CONFIG: Record<PolicyRuleCategory, { label: string; icon: React.Elemen
 }
 
 const SEV_CONFIG: Record<PolicySeverity, { label: string; color: string; bg: string }> = {
-  info:      { label: "Info",      color: "var(--text-2)",   bg: "rgba(255,255,255,0.05)" },
+  info:      { label: "Info",      color: "var(--text-2)",   bg: "var(--surface-2)" },
   warning:   { label: "Warning",   color: "#c89060",          bg: "rgba(200,144,96,0.08)" },
   violation: { label: "Violation", color: "#c07070",          bg: "rgba(192,112,112,0.08)" },
 }

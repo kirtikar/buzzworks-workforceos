@@ -53,7 +53,7 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
   const connected = clients.filter(c => portal.connectedClientIds.includes(c.id))
 
   return (
-    <div className="glass rounded-2xl overflow-hidden flex flex-col" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+    <div className="glass rounded-2xl overflow-hidden flex flex-col" style={{ borderColor: "var(--nav-border)" }}>
       {/* Header */}
       <div className="p-4 flex items-start gap-3">
         {/* Logo blob */}
@@ -81,14 +81,14 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
         {/* Tier badge */}
         <span
           className="text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider flex-shrink-0"
-          style={{ background: "rgba(255,255,255,0.06)", color: "var(--text-3)" }}
+          style={{ background: "var(--surface-2)", color: "var(--text-3)" }}
         >
           {portal.tier}
         </span>
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-px mx-4 mb-3" style={{ background: "rgba(255,255,255,0.05)" }}>
+      <div className="grid grid-cols-3 gap-px mx-4 mb-3" style={{ background: "var(--surface-2)" }}>
         {[
           { label: "Clients",    value: portal.connectedClientIds.length },
           { label: "Employees",  value: fmtNum(portal.totalEmployees) },
@@ -134,7 +134,7 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
         {/* Features */}
         <div className="flex flex-wrap gap-1 pt-1">
           {portal.features.slice(0, 3).map(f => (
-            <span key={f} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-3)" }}>
+            <span key={f} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "var(--surface-2)", color: "var(--text-3)" }}>
               {f}
             </span>
           ))}
@@ -221,7 +221,7 @@ function EmailCard() {
           { label: "Parsing errors",    value: "2",   color: "#c07070" },
           { label: "Check frequency",   value: "5 min", color: "var(--text-2)" },
         ].map(s => (
-          <div key={s.label} className="rounded-xl p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)" }}>
+          <div key={s.label} className="rounded-xl p-3" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
             <div className="text-[18px] font-black" style={{ color: s.color }}>{s.value}</div>
             <div className="text-[10px] text-white/30 mt-0.5">{s.label}</div>
           </div>

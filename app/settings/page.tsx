@@ -83,7 +83,7 @@ function AppearanceSection() {
       label: "Dark",
       subtitle: "Glassmorphism",
       desc: "Dark surfaces with teal accent, optimised for low-light environments",
-      preview: { bg: "#09090e", surface: "rgba(255,255,255,0.06)", accent: "var(--accent)", text: "#efefef" },
+      preview: { bg: "#09090e", surface: "var(--surface-2)", accent: "var(--accent)", text: "#efefef" },
     },
   ]
 

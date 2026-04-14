@@ -22,7 +22,7 @@ const statusDistribution = [
   { name: "Ops Approved",  value: 188, color: "#2563EB", pct: 23 },
   { name: "Flagged",       value: 98,  color: "#c89060", pct: 12 },
   { name: "Rejected",      value: 64,  color: "#c07070", pct: 8  },
-  { name: "Pending",       value: 47,  color: "rgba(255,255,255,0.2)", pct: 6 },
+  { name: "Pending",       value: 47,  color: "var(--border-strong)", pct: 6 },
 ]
 
 const violationTypes = [
@@ -32,13 +32,13 @@ const violationTypes = [
   { name: "Holiday work",              count: 14, color: "#F59E0B" },
   { name: "No attachment",             count: 12, color: "#c07070" },
   { name: "Forwarded email",           count: 9,  color: "#6366F1" },
-  { name: "Inactive employee",         count: 5,  color: "rgba(255,255,255,0.3)" },
+  { name: "Inactive employee",         count: 5,  color: "var(--text-3)" },
 ]
 
 const sourceBreakdown = [
   { name: "Portal",  value: 68, color: "#3B82F6" },
   { name: "Email",   value: 24, color: "#2563EB" },
-  { name: "Manual",  value: 8,  color: "rgba(255,255,255,0.2)" },
+  { name: "Manual",  value: 8,  color: "var(--border-strong)" },
 ]
 
 const topClients = clients.slice(0, 8).map(c => ({
@@ -118,7 +118,7 @@ export default function ReportsPage() {
           </div>
 
           {/* Period selector */}
-          <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
             {PERIODS.map(p => (
               <button
                 key={p}
@@ -183,8 +183,8 @@ export default function ReportsPage() {
                       <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="week" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }} />
+                  <XAxis dataKey="week" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }} />
                   <Area type="monotone" dataKey="received"    stroke="rgba(75,143,255,0.35)" strokeWidth={1.5} fill="url(#recvGrad)" dot={false} name="Received" />
                   <Area type="monotone" dataKey="processed"   stroke="var(--accent)"              strokeWidth={1.5} fill="url(#procGrad)" dot={false} name="Processed" />
                   <Area type="monotone" dataKey="autoApproved"stroke="#2563EB"              strokeWidth={1.5} fill="url(#autoGrad)" dot={false} name="Auto-Approved" />
@@ -230,7 +230,7 @@ export default function ReportsPage() {
                       <span className="text-white/55">{s.name}</span>
                       <span className="font-bold" style={{ color: s.color }}>{s.value}%</span>
                     </div>
-                    <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <div className="h-1.5 rounded-full" style={{ background: "var(--surface-2)" }}>
                       <div className="h-full rounded-full" style={{ width: `${s.value}%`, background: s.color }} />
                     </div>
                   </div>
@@ -247,8 +247,8 @@ export default function ReportsPage() {
               <div style={{ height: 140 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart data={radarData}>
-                    <PolarGrid stroke="rgba(255,255,255,0.07)" />
-                    <PolarAngleAxis dataKey="metric" tick={{ fontSize: 9, fill: "rgba(255,255,255,0.4)" }} />
+                    <PolarGrid stroke="var(--nav-border)" />
+                    <PolarAngleAxis dataKey="metric" tick={{ fontSize: 9, fill: "var(--text-3)" }} />
                     <Radar dataKey="value" stroke="var(--accent)" strokeWidth={1.5} fill="var(--accent)" fillOpacity={0.12} />
                   </RadarChart>
                 </ResponsiveContainer>
@@ -271,7 +271,7 @@ export default function ReportsPage() {
                         <span className="text-white/60">{v.name}</span>
                         <span className="font-bold" style={{ color: v.color }}>{v.count}</span>
                       </div>
-                      <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
+                      <div className="h-1.5 rounded-full" style={{ background: "var(--surface-2)" }}>
                         <div className="h-full rounded-full" style={{ width: `${(v.count / max) * 100}%`, background: v.color }} />
                       </div>
                     </div>
@@ -291,7 +291,7 @@ export default function ReportsPage() {
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: c.color }} />
                     <span className="text-[12px] text-white/70 flex-1 truncate">{c.name}</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-20 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                      <div className="w-20 h-1.5 rounded-full" style={{ background: "var(--surface-2)" }}>
                         <div className="h-full rounded-full" style={{ width: `${c.compliance}%`, background: c.compliance >= 90 ? "var(--accent)" : c.compliance >= 75 ? "#c89060" : "#c07070" }} />
                       </div>
                       <span className="text-[11px] font-bold w-8 text-right" style={{ color: c.compliance >= 90 ? "var(--accent)" : "#c89060" }}>{c.compliance}%</span>
@@ -319,10 +319,10 @@ export default function ReportsPage() {
             <div style={{ height: 100 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={turnaroundTrend} barSize={20}>
-                  <XAxis dataKey="week" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="week" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                   <Tooltip
                     formatter={(v: number) => `${v}h`}
-                    contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
+                    contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
                   />
                   <Bar dataKey="hours" name="Avg hours" radius={[4, 4, 0, 0]}>
                     {turnaroundTrend.map((entry, i) => (

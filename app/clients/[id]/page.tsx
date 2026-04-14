@@ -61,8 +61,8 @@ function OverviewTab({ client, portal }: { client: NonNullable<ReturnType<typeof
                   <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="week" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }} />
+              <XAxis dataKey="week" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }} />
               <Area type="monotone" dataKey="submitted" stroke="rgba(75,143,255,0.35)" strokeWidth={1.5} fill="url(#csubGrad)" dot={false} name="Submitted" />
               <Area type="monotone" dataKey="approved"  stroke="var(--accent)" strokeWidth={1.5} fill="none" dot={false} name="Approved" />
             </AreaChart>
@@ -147,7 +147,7 @@ function OverviewTab({ client, portal }: { client: NonNullable<ReturnType<typeof
             { label: "OT multiplier",    value: client.overtimeMultiplier === 0 ? "No OT" : `${client.overtimeMultiplier}×` },
             { label: "SLA turnaround",   value: `${client.slaHours}h` },
           ].map(s => (
-            <div key={s.label} className="rounded-xl p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)" }}>
+            <div key={s.label} className="rounded-xl p-3" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
               <div className="text-[18px] font-black text-white">{s.value}</div>
               <div className="text-[10px] text-white/30 mt-0.5">{s.label}</div>
             </div>
@@ -422,7 +422,7 @@ function PolicyTab({ clientId }: { clientId: string }) {
             </span>
             <span
               className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase"
-              style={{ background: "rgba(255,255,255,0.05)", color: sevColors[rule.severity] }}
+              style={{ background: "var(--surface-2)", color: sevColors[rule.severity] }}
             >
               {rule.severity}
             </span>
@@ -436,7 +436,7 @@ function PolicyTab({ clientId }: { clientId: string }) {
               <span className={clsx("w-2 h-2 rounded-full ml-auto", rule.enabled ? "bg-blue-400" : "bg-white/20")} />
             </div>
             <div className="text-[12px] text-white/55 mb-2">{rule.description}</div>
-            <div className="font-mono text-[10px] px-2 py-1 rounded-lg text-white/40" style={{ background: "rgba(255,255,255,0.04)" }}>
+            <div className="font-mono text-[10px] px-2 py-1 rounded-lg text-white/40" style={{ background: "var(--surface-2)" }}>
               if ({rule.triggerCondition}) → {rule.actionOnTrigger}
             </div>
             <div className="flex items-center gap-3 mt-2 text-[10px] text-white/25">
@@ -473,7 +473,7 @@ function PayrollTab({ clientId }: { clientId: string }) {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="font-semibold text-[13px] text-white">{b.period}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold capitalize" style={{ background: "rgba(255,255,255,0.06)", color: statusColors[b.status] ?? "var(--text-2)" }}>
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold capitalize" style={{ background: "var(--surface-2)", color: statusColors[b.status] ?? "var(--text-2)" }}>
                 {b.status.replace("_", " ")}
               </span>
               {b.onHoldCount > 0 && (
@@ -538,7 +538,7 @@ export default function ClientDetailPage() {
             <div className="flex-1">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-[16px] font-bold text-white">{client.name}</h1>
-                <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)", color: "var(--text-2)" }}>{client.industry}</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>{client.industry}</span>
                 {client.emailOnly ? (
                   <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}><Mail size={10} />Email only</span>
                 ) : portal ? (

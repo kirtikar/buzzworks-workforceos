@@ -70,7 +70,7 @@ function ScoreRing({ score }: { score: number }) {
   return (
     <div className="relative w-9 h-9 flex-shrink-0">
       <svg width="36" height="36" viewBox="0 0 36 36" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="18" cy="18" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="2.5" />
+        <circle cx="18" cy="18" r={r} fill="none" stroke="var(--border)" strokeWidth="2.5" />
         <circle
           cx="18" cy="18" r={r} fill="none"
           stroke={color} strokeWidth="2.5"
@@ -197,7 +197,7 @@ export default function TimesheetsPage() {
         {/* Filters bar */}
         <div
           className="flex items-center gap-2.5 px-5 py-2.5 border-b border-white/[0.06] flex-shrink-0 flex-wrap"
-          style={{ background: "rgba(255,255,255,0.015)" }}
+          style={{ background: "var(--border)" }}
         >
           <div className="relative flex-1 min-w-[180px] max-w-xs">
             <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30" />
@@ -534,7 +534,7 @@ export default function TimesheetsPage() {
                   </div>
                   <div
                     className="mt-2 glass-sm p-2.5 flex items-center justify-between"
-                    style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                    style={{ border: "1px solid var(--border-strong)" }}
                   >
                     <span className="text-[12px] text-white/60">Total payable</span>
                     <span className="text-[14px] font-black text-white">
@@ -554,7 +554,7 @@ export default function TimesheetsPage() {
                         <div
                           key={i}
                           className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px]"
-                          style={{ background: "rgba(255,255,255,0.03)" }}
+                          style={{ background: "var(--surface-2)" }}
                         >
                           <span className="w-7 text-white/35 font-medium">{day.dayOfWeek}</span>
                           <span className="text-white/25 text-[10px]">
@@ -602,7 +602,7 @@ export default function TimesheetsPage() {
                               ? "rgba(255,107,107,0.08)"
                               : check.result === "warning"
                               ? "rgba(245,158,11,0.07)"
-                              : "rgba(255,255,255,0.04)",
+                              : "var(--surface-2)",
                           border:
                             check.result === "pass"
                               ? "1px solid rgba(16,185,129,0.15)"
@@ -610,7 +610,7 @@ export default function TimesheetsPage() {
                               ? "1px solid rgba(255,107,107,0.2)"
                               : check.result === "warning"
                               ? "1px solid rgba(245,158,11,0.18)"
-                              : "1px solid rgba(255,255,255,0.06)",
+                              : "1px solid var(--surface-2)",
                         }}
                       >
                         {validationIcon[check.result]}
@@ -676,7 +676,7 @@ export default function TimesheetsPage() {
                         <div className="text-[9px] text-white/35 mt-0.5">{lb.label}</div>
                         <div
                           className="w-full rounded-full mt-1.5 overflow-hidden"
-                          style={{ height: 3, background: "rgba(255,255,255,0.08)" }}
+                          style={{ height: 3, background: "var(--border)" }}
                         >
                           <div
                             className="h-full rounded-full"

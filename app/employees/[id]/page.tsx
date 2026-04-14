@@ -90,7 +90,7 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
               <YAxis hide />
               <Tooltip
                 contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
-                cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                cursor={{ fill: "var(--surface-2)" }}
               />
               <Bar dataKey="hours" fill="var(--accent)" opacity={0.7} radius={[3,3,0,0]} name="Regular" />
               <Bar dataKey="ot" fill="var(--warn)" radius={[3,3,0,0]} name="Overtime" />

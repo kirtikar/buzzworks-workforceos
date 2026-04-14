@@ -23,7 +23,7 @@ function fmtINR(n: number) {
 function fmtNum(n: number) { return n.toLocaleString("en-IN") }
 
 const STATUS_CFG: Record<PayrollStatus, { label: string; color: string; bg: string; border: string }> = {
-  draft:            { label: "Draft",            color: "var(--text-2)",   bg: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.08)" },
+  draft:            { label: "Draft",            color: "var(--text-2)",   bg: "var(--surface-2)", border: "var(--border)" },
   pending_approval: { label: "Needs Approval",   color: "#c89060",          bg: "rgba(200,144,96,0.08)", border: "rgba(200,144,96,0.18)" },
   approved:         { label: "Approved",         color: "#2563EB",          bg: "rgba(37,99,235,0.1)",  border: "rgba(37,99,235,0.2)" },
   processed:        { label: "Processed",        color: "var(--accent)",          bg: "rgba(75,143,255,0.08)",  border: "rgba(75,143,255,0.18)" },
@@ -65,7 +65,7 @@ function BatchCard({ batch, onApprove, onHold }: { batch: PayrollBatch; onApprov
         {/* Client logo */}
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-[12px] flex-shrink-0"
-          style={{ background: client ? `${client.color}18` : "rgba(255,255,255,0.05)", color: client?.color ?? "var(--text-2)" }}
+          style={{ background: client ? `${client.color}18` : "var(--surface-2)", color: client?.color ?? "var(--text-2)" }}
         >
           {client?.code.slice(0, 3) ?? "?"}
         </div>
@@ -97,7 +97,7 @@ function BatchCard({ batch, onApprove, onHold }: { batch: PayrollBatch; onApprov
           { label: "Hours",      value: fmtNum(batch.totalHours) + "h", color: "var(--text-1)" },
           { label: "Amount",     value: fmtINR(batch.totalAmount), color: "var(--accent)" },
         ].map(s => (
-          <div key={s.label} className="rounded-lg py-2" style={{ background: "rgba(255,255,255,0.03)" }}>
+          <div key={s.label} className="rounded-lg py-2" style={{ background: "var(--surface-2)" }}>
             <div className="text-[13px] font-black" style={{ color: s.color }}>{s.value}</div>
             <div className="text-[9px] text-white/25 mt-0.5">{s.label}</div>
           </div>
@@ -110,7 +110,7 @@ function BatchCard({ batch, onApprove, onHold }: { batch: PayrollBatch; onApprov
           <span className="text-white/25">Timesheet coverage</span>
           <span style={{ color: coverage === 100 ? "var(--accent)" : "#c89060" }}>{coverage}%</span>
         </div>
-        <div className="h-1 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+        <div className="h-1 rounded-full" style={{ background: "var(--surface-2)" }}>
           <div className="h-full rounded-full" style={{ width: `${coverage}%`, background: coverage === 100 ? "var(--accent)" : "#c89060" }} />
         </div>
       </div>
@@ -256,10 +256,10 @@ export default function PayrollPage() {
                           <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                       <Tooltip
                         formatter={(v: number) => fmtINR(v)}
-                        contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
+                        contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
                       />
                       <Area type="monotone" dataKey="total" stroke="var(--accent)" strokeWidth={1.5} fill="url(#payGrad)" dot={(props) => {
                         const { cx, cy, payload } = props as { cx: number; cy: number; payload: { current?: boolean } }
@@ -278,10 +278,10 @@ export default function PayrollPage() {
                 <div style={{ height: 140 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={clientPayrollData} barSize={14}>
-                      <XAxis dataKey="name" tick={{ fontSize: 9, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 9, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                       <Tooltip
                         formatter={(v: number) => `₹${v.toFixed(1)}L`}
-                        contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
+                        contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
                       />
                       <Bar dataKey="amount" radius={[3, 3, 0, 0]}>
                         {clientPayrollData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
