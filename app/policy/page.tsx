@@ -141,28 +141,28 @@ function AIPolicyCreator({
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}>
       <div className="glass rounded-2xl w-full max-w-lg mx-4 overflow-hidden animate-fade-in">
         {/* Modal header */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.08]">
+        <div className="flex items-center gap-3 px-5 py-4 border-b" style={{ borderColor: "var(--border)" }}>
           <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #2563EB, var(--accent))" }}>
             <Sparkles size={14} className="text-white" />
           </div>
           <div className="flex-1">
-            <div className="font-bold text-[14px] text-white">AI Policy Creator</div>
-            <div className="text-[11px] text-white/35">Describe your rule in plain English</div>
+            <div className="font-bold text-[14px]" style={{ color: "var(--text-1)" }}>AI Policy Creator</div>
+            <div className="text-[11px]" style={{ color: "var(--text-3)" }}>Describe your rule in plain English</div>
           </div>
-          <button onClick={onClose} className="text-white/30 hover:text-white/60 transition-colors"><X size={16} /></button>
+          <button onClick={onClose} style={{ color: "var(--text-3)" }} className="hover:opacity-70 transition-opacity"><X size={16} /></button>
         </div>
 
         <div className="p-5 space-y-4">
           {stage === "saved" ? (
             <div className="flex flex-col items-center gap-3 py-6">
               <CheckCircle2 size={40} style={{ color: "var(--accent)" }} />
-              <div className="text-[14px] font-semibold text-white">Rule saved!</div>
+              <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>Rule saved!</div>
             </div>
           ) : (
             <>
               {/* Input */}
               <div>
-                <label className="text-[11px] text-white/40 mb-2 block">Describe the policy rule</label>
+                <label className="text-[11px] mb-2 block" style={{ color: "var(--text-3)" }}>Describe the policy rule</label>
                 <textarea
                   className="glass-input w-full text-[13px] leading-relaxed resize-none"
                   rows={3}
@@ -176,14 +176,14 @@ function AIPolicyCreator({
               {/* Suggestions */}
               {stage === "input" && (
                 <div>
-                  <div className="text-[10px] text-white/25 mb-2">Quick suggestions</div>
+                  <div className="text-[10px] mb-2" style={{ color: "var(--text-3)" }}>Quick suggestions</div>
                   <div className="flex flex-wrap gap-1.5">
                     {AI_SUGGESTIONS.map(s => (
                       <button
                         key={s}
                         onClick={() => setInput(s)}
                         className="text-[11px] px-2.5 py-1 rounded-full transition-all"
-                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-2)" }}
+                        style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)" }}
                       >
                         {s.length > 45 ? s.slice(0, 45) + "…" : s}
                       </button>
@@ -196,14 +196,14 @@ function AIPolicyCreator({
               {stage === "thinking" && (
                 <div className="flex items-center gap-3 py-4 justify-center">
                   <Loader2 size={18} className="animate-spin" style={{ color: "#2563EB" }} />
-                  <span className="text-[13px] text-white/50">Analysing policy intent…</span>
+                  <span className="text-[13px]" style={{ color: "var(--text-2)" }}>Analysing policy intent…</span>
                 </div>
               )}
 
               {/* Preview */}
               {stage === "preview" && preview && (
                 <div className="space-y-3">
-                  <div className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">AI-Generated Rule Preview</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>AI-Generated Rule Preview</div>
                   <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)" }}>
                     <div className="flex items-center gap-2 flex-wrap">
                       {catCfg && (
@@ -220,7 +220,7 @@ function AIPolicyCreator({
                     </div>
 
                     <div>
-                      <div className="text-[10px] text-white/30 mb-1">Rule name</div>
+                      <div className="text-[10px] mb-1" style={{ color: "var(--text-3)" }}>Rule name</div>
                       <input
                         className="glass-input w-full text-[13px] py-1.5"
                         value={preview.name ?? ""}
@@ -229,16 +229,16 @@ function AIPolicyCreator({
                     </div>
 
                     <div>
-                      <div className="text-[10px] text-white/30 mb-1">Trigger condition</div>
-                      <div className="font-mono text-[11px] px-3 py-1.5 rounded-lg text-white/60" style={{ background: "rgba(255,255,255,0.04)" }}>
+                      <div className="text-[10px] mb-1" style={{ color: "var(--text-3)" }}>Trigger condition</div>
+                      <div className="font-mono text-[11px] px-3 py-1.5 rounded-lg" style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
                         if ({preview.triggerCondition}) → {preview.actionOnTrigger}
                       </div>
                     </div>
                   </div>
 
                   <div
-                    className="text-[11px] text-white/40 px-3 py-2 rounded-lg flex items-start gap-2"
-                    style={{ background: "rgba(200,144,96,0.06)", border: "1px solid rgba(200,144,96,0.12)" }}
+                    className="text-[11px] px-3 py-2 rounded-lg flex items-start gap-2"
+                    style={{ color: "var(--text-3)", background: "var(--warn-bg)", border: "1px solid var(--warn-border)" }}
                   >
                     <Info size={12} className="mt-0.5 flex-shrink-0" style={{ color: "#c89060" }} />
                     Review the rule above before saving. The trigger condition will be finalised by your ops team.
@@ -280,7 +280,7 @@ function RuleCard({ rule, onToggle }: { rule: PolicyRule; onToggle: (id: string)
   return (
     <div
       className={clsx("rounded-xl p-4 flex items-start gap-4 transition-all", !rule.enabled && "opacity-50")}
-      style={{ background: "rgba(255,255,255,0.025)", border: `1px solid rgba(255,255,255,0.07)`, borderLeft: `3px solid ${rule.enabled ? catCfg.color : "rgba(255,255,255,0.1)"}` }}
+      style={{ background: "var(--surface)", border: `1px solid var(--border)`, borderLeft: `3px solid ${rule.enabled ? catCfg.color : "var(--border-strong)"}` }}
     >
       {/* Category icon */}
       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: `${catCfg.color}12` }}>
@@ -290,7 +290,7 @@ function RuleCard({ rule, onToggle }: { rule: PolicyRule; onToggle: (id: string)
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="font-semibold text-[13px] text-white">{rule.name}</span>
+          <span className="font-semibold text-[13px]" style={{ color: "var(--text-1)" }}>{rule.name}</span>
           <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase" style={{ background: sevCfg.bg, color: sevCfg.color }}>{sevCfg.label}</span>
           {rule.aiGenerated && (
             <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold flex items-center gap-0.5" style={{ background: "rgba(37,99,235,0.12)", color: "#2563EB" }}>
@@ -298,15 +298,15 @@ function RuleCard({ rule, onToggle }: { rule: PolicyRule; onToggle: (id: string)
             </span>
           )}
         </div>
-        <div className="text-[12px] text-white/50 mb-2 leading-relaxed">{rule.description}</div>
-        <div className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg text-white/35 mb-2" style={{ background: "rgba(255,255,255,0.04)" }}>
+        <div className="text-[12px] mb-2 leading-relaxed" style={{ color: "var(--text-2)" }}>{rule.description}</div>
+        <div className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg mb-2" style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
           if ({rule.triggerCondition}) → {rule.actionOnTrigger}
         </div>
-        <div className="flex items-center gap-4 text-[10px] text-white/25">
+        <div className="flex items-center gap-4 text-[10px]" style={{ color: "var(--text-3)" }}>
           <span>Applied {rule.appliedCount}× this month</span>
-          <span className={rule.triggerCount > 0 ? "text-amber-500/70" : ""}>Triggered {rule.triggerCount}×</span>
+          <span style={{ color: rule.triggerCount > 0 ? "var(--warn)" : "var(--text-3)" }}>Triggered {rule.triggerCount}×</span>
           <span>by {rule.createdBy}</span>
-          <span className="ml-auto text-white/15">{rule.updatedAt.split("T")[0]}</span>
+          <span className="ml-auto">{rule.updatedAt.split("T")[0]}</span>
         </div>
       </div>
 
@@ -314,7 +314,7 @@ function RuleCard({ rule, onToggle }: { rule: PolicyRule; onToggle: (id: string)
       <button
         onClick={() => onToggle(rule.id)}
         className="flex-shrink-0 mt-1 transition-colors"
-        style={{ color: rule.enabled ? catCfg.color : "rgba(255,255,255,0.2)" }}
+        style={{ color: rule.enabled ? catCfg.color : "var(--text-3)" }}
         title={rule.enabled ? "Disable rule" : "Enable rule"}
       >
         {rule.enabled ? <ToggleRight size={22} /> : <ToggleLeft size={22} />}
@@ -369,14 +369,14 @@ export default function PolicyPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile client picker — horizontal chip scroll */}
         <div className="flex sm:hidden items-center gap-2 px-3 py-2 overflow-x-auto flex-shrink-0 scrollbar-none"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "var(--surface)" }}>
+          style={{ borderBottom: "1px solid var(--border)", background: "var(--surface)" }}>
           {clients.map(c => (
             <button key={c.id} onClick={() => setSelClientId(c.id)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full flex-shrink-0 text-[11px] font-semibold transition-all whitespace-nowrap"
               style={{
-                background: selClientId === c.id ? `${c.color}22` : "rgba(255,255,255,0.05)",
-                border: `1px solid ${selClientId === c.id ? c.color + "50" : "rgba(255,255,255,0.08)"}`,
-                color: selClientId === c.id ? c.color : "rgba(255,255,255,0.4)",
+                background: selClientId === c.id ? `${c.color}22` : "var(--surface-2)",
+                border: `1px solid ${selClientId === c.id ? c.color + "50" : "var(--border)"}`,
+                color: selClientId === c.id ? c.color : "var(--text-2)",
               }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.color }} />
               {c.name}
@@ -386,9 +386,9 @@ export default function PolicyPage() {
 
         <div className="flex flex-1 overflow-hidden">
         {/* Client selector panel — desktop */}
-        <div className="hidden sm:flex w-56 flex-shrink-0 border-r border-white/[0.07] flex-col overflow-hidden" style={{ background: "var(--surface)" }}>
-          <div className="px-4 py-4 border-b border-white/[0.07]">
-            <div className="text-[12px] font-semibold text-white/50 uppercase tracking-wider">Select Client</div>
+        <div className="hidden sm:flex w-56 flex-shrink-0 border-r flex-col overflow-hidden" style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
+          <div className="px-4 py-4 border-b" style={{ borderColor: "var(--border)" }}>
+            <div className="text-[12px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Select Client</div>
           </div>
           <div className="flex-1 overflow-y-auto py-2">
             {clients.map(c => {
@@ -397,14 +397,15 @@ export default function PolicyPage() {
                 <button
                   key={c.id}
                   onClick={() => setSelClientId(c.id)}
-                  className={clsx("w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-all", selClientId === c.id ? "bg-white/[0.07]" : "hover:bg-white/[0.03]")}
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-all"
+                  style={{ background: selClientId === c.id ? "var(--accent-dim)" : "transparent" }}
                 >
                   {selClientId === c.id && <span className="nav-active-dot" />}
                   <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: c.color }} />
                   <span className="flex-1 min-w-0">
-                    <span className="text-[12px] font-medium truncate block" style={{ color: selClientId === c.id ? "#fff" : "rgba(255,255,255,0.5)" }}>{c.name}</span>
+                    <span className="text-[12px] font-medium truncate block" style={{ color: selClientId === c.id ? "var(--text-1)" : "var(--text-2)" }}>{c.name}</span>
                   </span>
-                  <span className="text-[10px] text-white/25">{ruleCount || "–"}</span>
+                  <span className="text-[10px]" style={{ color: "var(--text-3)" }}>{ruleCount || "–"}</span>
                 </button>
               )
             })}
@@ -414,22 +415,22 @@ export default function PolicyPage() {
         {/* Policy rules area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
-          <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
-            <FileText size={18} className="text-blue-400" />
+          <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)", borderColor: "var(--border)" }}>
+            <FileText size={18} style={{ color: "var(--accent)" }} />
             <div className="flex-1">
-              <h1 className="text-base font-bold text-white">{selClient.name} — Policy Engine</h1>
-              <p className="text-[11px] text-white/35">v{selClient.policyVersion.replace("v", "")} · {enabledCount} active rules</p>
+              <h1 className="text-base font-bold" style={{ color: "var(--text-1)" }}>{selClient.name} — Policy Engine</h1>
+              <p className="text-[11px]" style={{ color: "var(--text-3)" }}>v{selClient.policyVersion.replace("v", "")} · {enabledCount} active rules</p>
             </div>
             {/* Stats pills */}
             <div className="hidden md:flex items-center gap-2">
               {[
                 { label: "Rules",    value: clientRules.length, color: "var(--text-2)" },
                 { label: "Applied",  value: totalApplied,        color: "var(--accent)" },
-                { label: "Triggers", value: totalTriggered,      color: "#c89060" },
+                { label: "Triggers", value: totalTriggered,      color: "var(--warn)" },
               ].map(s => (
                 <div key={s.label} className="glass px-3 py-1.5 rounded-xl text-center">
                   <div className="text-[14px] font-black" style={{ color: s.color }}>{s.value}</div>
-                  <div className="text-[9px] text-white/25">{s.label}</div>
+                  <div className="text-[9px]" style={{ color: "var(--text-3)" }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -445,9 +446,9 @@ export default function PolicyPage() {
           <main className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 pb-nav lg:pb-5">
             {clientRules.length === 0 ? (
               <div className="glass p-12 rounded-2xl text-center">
-                <FileText size={40} className="text-white/15 mx-auto mb-4" />
-                <div className="text-[15px] font-semibold text-white/30 mb-2">No policy rules configured</div>
-                <div className="text-[12px] text-white/20 mb-5">Click "Add Policy Rule" to create your first rule using AI or manual input.</div>
+                <FileText size={40} className="mx-auto mb-4" style={{ color: "var(--text-3)" }} />
+                <div className="text-[15px] font-semibold mb-2" style={{ color: "var(--text-2)" }}>No policy rules configured</div>
+                <div className="text-[12px] mb-5" style={{ color: "var(--text-3)" }}>Click "Add Policy Rule" to create your first rule using AI or manual input.</div>
                 <button onClick={() => setShowCreator(true)} className="btn-teal flex items-center gap-2 mx-auto text-[13px]">
                   <Sparkles size={14} /> Create with AI
                 </button>
@@ -465,9 +466,9 @@ export default function PolicyPage() {
                       className="flex items-center gap-2.5 mb-3 w-full text-left group"
                     >
                       <CatIcon size={14} style={{ color: cfg.color }} />
-                      <span className="text-[13px] font-semibold text-white">{cfg.label}</span>
+                      <span className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>{cfg.label}</span>
                       <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: `${cfg.color}12`, color: cfg.color }}>{catRules.length}</span>
-                      <ChevronDown size={13} className={clsx("text-white/30 ml-auto transition-transform", isOpen ? "rotate-0" : "-rotate-90")} />
+                      <ChevronDown size={13} className={clsx("ml-auto transition-transform", isOpen ? "rotate-0" : "-rotate-90")} style={{ color: "var(--text-3)" }} />
                     </button>
                     {isOpen && (
                       <div className="space-y-2.5 ml-1">
@@ -488,8 +489,8 @@ export default function PolicyPage() {
                 <Sparkles size={18} className="text-white" />
               </div>
               <div className="flex-1">
-                <div className="text-[13px] font-semibold text-white mb-0.5">Agentic Policy Engine — coming in v2</div>
-                <div className="text-[11px] text-white/40 leading-relaxed">AI will monitor policy trigger patterns and proactively suggest new rules or adjustments based on recurring violations and timesheet anomalies.</div>
+                <div className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-1)" }}>Agentic Policy Engine — coming in v2</div>
+                <div className="text-[11px] leading-relaxed" style={{ color: "var(--text-3)" }}>AI will monitor policy trigger patterns and proactively suggest new rules or adjustments based on recurring violations and timesheet anomalies.</div>
               </div>
               <button className="btn-ghost text-[11px] py-1.5 px-3 flex-shrink-0">Learn more</button>
             </div>

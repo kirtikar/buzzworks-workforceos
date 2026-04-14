@@ -26,7 +26,7 @@ function ComplianceBar({ score }: { score: number }) {
   const color = score >= 90 ? "var(--accent)" : score >= 75 ? "#c89060" : "#c07070"
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+      <div className="flex-1 h-1 rounded-full" style={{ background: "var(--border)" }}>
         <div className="h-full rounded-full" style={{ width: `${score}%`, background: color }} />
       </div>
       <span className="text-[10px] font-bold" style={{ color }}>{score}%</span>
@@ -59,13 +59,13 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
             {client.code.slice(0, 3)}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-bold text-[13px] text-white truncate">{client.name}</div>
+            <div className="font-bold text-[13px] truncate" style={{ color: "var(--text-1)" }}>{client.name}</div>
             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-              <span className="text-[10px] text-white/35">{client.code}</span>
-              <span className="text-white/15">·</span>
+              <span className="text-[10px]" style={{ color: "var(--text-3)" }}>{client.code}</span>
+              <span style={{ color: "var(--text-3)" }}>·</span>
               <span
                 className="text-[10px] px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(255,255,255,0.06)", color: "var(--text-2)" }}
+                style={{ background: "var(--surface-2)", color: "var(--text-2)" }}
               >
                 {client.industry}
               </span>
@@ -81,31 +81,31 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-2 text-[11px]">
-          <div className="flex items-center gap-1.5 text-white/50">
+          <div className="flex items-center gap-1.5" style={{ color: "var(--text-2)" }}>
             <Users size={11} />
             <span>{fmtNum(client.activeEmployeeCount)} active</span>
-            <span className="text-white/25">/ {fmtNum(client.employeeCount)}</span>
+            <span style={{ color: "var(--text-3)" }}>/ {fmtNum(client.employeeCount)}</span>
           </div>
           <div className="flex items-center gap-1.5">
             {client.pendingTimesheets > 0 ? (
-              <span className="text-amber-400 flex items-center gap-1">
+              <span className="flex items-center gap-1" style={{ color: "var(--warn)" }}>
                 <Clock size={11} />{client.pendingTimesheets} pending
               </span>
             ) : (
-              <span className="text-blue-400 flex items-center gap-1">
+              <span className="flex items-center gap-1" style={{ color: "var(--accent)" }}>
                 <CheckCircle2 size={11} />All clear
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-white/50">
+          <div className="flex items-center gap-1.5" style={{ color: "var(--text-2)" }}>
             <TrendingUp size={11} />
             <span>{fmtINR(client.monthlyPayroll)}/mo</span>
           </div>
           <div className="flex items-center gap-1.5">
             {client.emailOnly ? (
-              <span className="text-violet-400 flex items-center gap-1"><Mail size={11} />Email only</span>
+              <span className="flex items-center gap-1" style={{ color: "#A78BFA" }}><Mail size={11} />Email only</span>
             ) : portal ? (
-              <span className="text-white/50 flex items-center gap-1" style={{ color: portal.color }}>
+              <span className="flex items-center gap-1" style={{ color: portal.color }}>
                 <Globe size={11} />{portal.shortName}
               </span>
             ) : null}
@@ -115,15 +115,15 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
         {/* Compliance */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] text-white/25">Compliance score</span>
+            <span className="text-[10px]" style={{ color: "var(--text-3)" }}>Compliance score</span>
           </div>
           <ComplianceBar score={client.complianceScore} />
         </div>
 
         {/* City + policy */}
-        <div className="flex items-center justify-between text-[11px] pt-1 border-t border-white/[0.05]">
-          <span className="text-white/30">{client.city} · Policy {client.policyVersion}</span>
-          <span className="text-blue-400 flex items-center gap-1 font-medium">
+        <div className="flex items-center justify-between text-[11px] pt-1 border-t" style={{ borderColor: "var(--border)" }}>
+          <span style={{ color: "var(--text-3)" }}>{client.city} · Policy {client.policyVersion}</span>
+          <span className="flex items-center gap-1 font-medium" style={{ color: "var(--accent)" }}>
             View <ArrowRight size={11} />
           </span>
         </div>
@@ -164,10 +164,10 @@ export default function ClientsPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
-          <Building2 size={18} className="text-blue-400 flex-shrink-0" />
+          <Building2 size={18} style={{ color: "var(--accent)" }} className="flex-shrink-0" />
           <div className="flex-1">
-            <h1 className="text-base font-bold text-white">Clients</h1>
-            <p className="text-[11px] text-white/35">{clients.length} active clients · {fmtNum(totalEmployees)} total employees</p>
+            <h1 className="text-base font-bold" style={{ color: "var(--text-1)" }}>Clients</h1>
+            <p className="text-[11px]" style={{ color: "var(--text-3)" }}>{clients.length} active clients · {fmtNum(totalEmployees)} total employees</p>
           </div>
         </header>
 
@@ -181,20 +181,20 @@ export default function ClientsPage() {
               { label: "Avg Compliance",    value: `${avgCompliance}%`, color: avgCompliance > 90 ? "var(--accent)" : "#c89060", sub: "Across all clients" },
             ].map(s => (
               <div key={s.label} className="glass p-4">
-                <div className="text-[11px] text-white/35 mb-1">{s.label}</div>
+                <div className="text-[11px] mb-1" style={{ color: "var(--text-3)" }}>{s.label}</div>
                 <div className="text-[24px] font-black" style={{ color: s.color }}>{s.value}</div>
-                <div className="text-[11px] text-white/30 mt-0.5">{s.sub}</div>
+                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{s.sub}</div>
               </div>
             ))}
           </div>
 
           {/* Filters */}
           <div className="glass p-3 flex flex-wrap items-center gap-3">
-            <Filter size={13} className="text-white/30 flex-shrink-0" />
+            <Filter size={13} className="flex-shrink-0" style={{ color: "var(--text-3)" }} />
 
             {/* Search */}
             <div className="relative flex-1 min-w-[180px]">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
               <input
                 className="glass-input w-full pl-8 text-[12px] py-1.5"
                 placeholder="Search clients…"
@@ -236,7 +236,7 @@ export default function ClientsPage() {
               <option value="name">Sort: Name</option>
             </select>
 
-            <span className="text-[11px] text-white/30 ml-auto">{filtered.length} results</span>
+            <span className="text-[11px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} results</span>
           </div>
 
           {/* Client grid */}

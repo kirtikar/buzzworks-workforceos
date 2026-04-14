@@ -496,7 +496,7 @@ export default function AgentsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[12px] font-bold truncate" style={{ color: selected === a.id ? a.color : "var(--text-1)" }}>{a.name}</div>
-                    <div className="text-[9px]" style={{ color: "var(--text-3)" }}>{a.codename} {a.version}</div>
+                    <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{a.codename} {a.version}</div>
                   </div>
                   <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: a.status === "active" ? "var(--accent)" : a.status === "paused" ? "var(--warn)" : "var(--text-3)" }} />
                 </div>
@@ -542,7 +542,7 @@ export default function AgentsPage() {
 
             {/* Metrics grid */}
             <div className="px-6 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-3)" }}>Live Metrics</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Live Metrics</div>
               <div className="grid grid-cols-4 gap-3">
                 {agent.metricsLabels.map(ml => (
                   <div key={ml.key} className="rounded-xl p-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
@@ -560,7 +560,7 @@ export default function AgentsPage() {
               {/* Capabilities */}
               <div className="space-y-4">
                 <div className="glass p-4">
-                  <div className="text-[12px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-3)" }}>Capabilities</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Capabilities</div>
                   <div className="space-y-2">
                     {agent.capabilities.map((c, i) => (
                       <div key={i} className="flex items-start gap-2 text-[12px]">
@@ -573,7 +573,7 @@ export default function AgentsPage() {
 
                 {/* Triggers */}
                 <div className="glass p-4">
-                  <div className="text-[12px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-3)" }}>Triggers</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Triggers</div>
                   <div className="space-y-2">
                     {agent.triggers.map((t, i) => (
                       <div key={i} className="flex items-start gap-2 text-[12px]">
@@ -586,7 +586,7 @@ export default function AgentsPage() {
 
                 {/* Outputs */}
                 <div className="glass p-4">
-                  <div className="text-[12px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-3)" }}>Outputs</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Outputs</div>
                   <div className="space-y-2">
                     {agent.outputs.map((o, i) => (
                       <div key={i} className="flex items-start gap-2 text-[12px]">
@@ -603,7 +603,7 @@ export default function AgentsPage() {
                 <div className="glass overflow-hidden">
                   <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid var(--border)" }}>
                     <Activity size={13} style={{ color: agent.color }} />
-                    <div className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "var(--text-3)" }}>Recent Activity</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Recent Activity</div>
                   </div>
                   <div className="divide-y" style={{ borderColor: "var(--border)" }}>
                     {agent.recentLogs.map((log, i) => {
@@ -624,7 +624,7 @@ export default function AgentsPage() {
 
                 {/* Model info */}
                 <div className="glass p-4">
-                  <div className="text-[12px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-3)" }}>Model & Runtime</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Model & Runtime</div>
                   <div className="space-y-2 text-[12px]">
                     {[
                       { label: "Model",            value: agent.model },
