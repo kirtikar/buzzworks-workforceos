@@ -61,8 +61,8 @@ const AGENTS: Agent[] = [
     tagline: "Every timesheet — portal or email — validated in under 2 seconds",
     description:
       "Agent Mark is the primary ingestion layer for all timesheet submissions. It reads portal syncs (10 portals) and the monitored email inbox, parses content via NLP, and runs a full 7-check policy validation suite against each client's active rule set. Clean submissions — all checks green, confidence ≥ 95%, no anomalous patterns — are auto-approved and immediately queued for payroll eligibility check. Policy violations, missing data, or low-confidence parses are escalated to the ops queue with a structured flag report and recommended action.",
-    color: "#00C896",
-    bgColor: "rgba(0,200,150,0.08)",
+    color: "var(--accent)",
+    bgColor: "rgba(75,143,255,0.08)",
     icon: Zap,
     status: "active",
     capabilities: [
@@ -441,7 +441,7 @@ export default function AgentsPage() {
         <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 flex-shrink-0"
           style={{ borderBottom: "1px solid var(--border)", background: "var(--glass-bg)", backdropFilter: "blur(20px)" }}>
           <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.3), rgba(0,200,150,0.3))", border: "1px solid rgba(139,92,246,0.2)" }}>
+            style={{ background: "linear-gradient(135deg, rgba(37,99,235,0.3), rgba(75,143,255,0.3))", border: "1px solid rgba(37,99,235,0.2)" }}>
             <Bot size={16} style={{ color: "var(--accent)" }} />
           </div>
           <div className="flex-1">
@@ -640,7 +640,7 @@ export default function AgentsPage() {
                 </div>
 
                 {/* Fleet cross-agent note */}
-                <div className="rounded-xl p-4" style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.06), rgba(0,200,150,0.06))", border: "1px solid var(--border)" }}>
+                <div className="rounded-xl p-4" style={{ background: "linear-gradient(135deg, rgba(37,99,235,0.06), rgba(75,143,255,0.06))", border: "1px solid var(--border)" }}>
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles size={12} style={{ color: "#A78BFA" }} />
                     <div className="text-[11px] font-semibold" style={{ color: "#A78BFA" }}>Fleet coordination</div>

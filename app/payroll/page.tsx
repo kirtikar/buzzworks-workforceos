@@ -25,8 +25,8 @@ function fmtNum(n: number) { return n.toLocaleString("en-IN") }
 const STATUS_CFG: Record<PayrollStatus, { label: string; color: string; bg: string; border: string }> = {
   draft:            { label: "Draft",            color: "var(--text-2)",   bg: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.08)" },
   pending_approval: { label: "Needs Approval",   color: "#c89060",          bg: "rgba(200,144,96,0.08)", border: "rgba(200,144,96,0.18)" },
-  approved:         { label: "Approved",         color: "#8B5CF6",          bg: "rgba(139,92,246,0.1)",  border: "rgba(139,92,246,0.2)" },
-  processed:        { label: "Processed",        color: "#00c896",          bg: "rgba(0,200,150,0.08)",  border: "rgba(0,200,150,0.18)" },
+  approved:         { label: "Approved",         color: "#2563EB",          bg: "rgba(37,99,235,0.1)",  border: "rgba(37,99,235,0.2)" },
+  processed:        { label: "Processed",        color: "var(--accent)",          bg: "rgba(75,143,255,0.08)",  border: "rgba(75,143,255,0.18)" },
   on_hold:          { label: "On Hold",          color: "#c07070",          bg: "rgba(192,112,112,0.08)",border: "rgba(192,112,112,0.18)" },
 }
 
@@ -93,9 +93,9 @@ function BatchCard({ batch, onApprove, onHold }: { batch: PayrollBatch; onApprov
       {/* Stats grid */}
       <div className="grid grid-cols-3 gap-2 mb-3 text-center">
         {[
-          { label: "Timesheets", value: `${batch.approvedTimesheets}/${batch.totalTimesheets}`, color: coverage === 100 ? "#00c896" : "#c89060" },
+          { label: "Timesheets", value: `${batch.approvedTimesheets}/${batch.totalTimesheets}`, color: coverage === 100 ? "var(--accent)" : "#c89060" },
           { label: "Hours",      value: fmtNum(batch.totalHours) + "h", color: "var(--text-1)" },
-          { label: "Amount",     value: fmtINR(batch.totalAmount), color: "#00c896" },
+          { label: "Amount",     value: fmtINR(batch.totalAmount), color: "var(--accent)" },
         ].map(s => (
           <div key={s.label} className="rounded-lg py-2" style={{ background: "rgba(255,255,255,0.03)" }}>
             <div className="text-[13px] font-black" style={{ color: s.color }}>{s.value}</div>
@@ -108,10 +108,10 @@ function BatchCard({ batch, onApprove, onHold }: { batch: PayrollBatch; onApprov
       <div className="mb-3">
         <div className="flex items-center justify-between text-[10px] mb-1">
           <span className="text-white/25">Timesheet coverage</span>
-          <span style={{ color: coverage === 100 ? "#00c896" : "#c89060" }}>{coverage}%</span>
+          <span style={{ color: coverage === 100 ? "var(--accent)" : "#c89060" }}>{coverage}%</span>
         </div>
         <div className="h-1 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
-          <div className="h-full rounded-full" style={{ width: `${coverage}%`, background: coverage === 100 ? "#00c896" : "#c89060" }} />
+          <div className="h-full rounded-full" style={{ width: `${coverage}%`, background: coverage === 100 ? "var(--accent)" : "#c89060" }} />
         </div>
       </div>
 
@@ -196,8 +196,8 @@ export default function PayrollPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
-          <CreditCard size={18} className="text-teal-400 flex-shrink-0" />
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
+          <CreditCard size={18} className="text-blue-400 flex-shrink-0" />
           <div className="flex-1">
             <h1 className="text-base font-bold text-white">Payroll</h1>
             <p className="text-[11px] text-white/35">Apr 2026 · {pendingCount} batch{pendingCount !== 1 ? "es" : ""} need approval</p>
@@ -208,12 +208,12 @@ export default function PayrollPage() {
         </header>
 
         {/* Tab nav */}
-        <div className="flex items-center gap-1 px-4 lg:px-6 pt-3 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.4)" }}>
+        <div className="flex items-center gap-1 px-4 lg:px-6 pt-3 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)" }}>
           {TABS.map(t => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={clsx("px-4 py-2 text-[12px] font-medium rounded-t-lg transition-all border-b-2", tab === t.key ? "text-teal-400 border-teal-400 bg-white/[0.04]" : "text-white/35 border-transparent hover:text-white/60")}
+              className={clsx("px-4 py-2 text-[12px] font-medium rounded-t-lg transition-all border-b-2", tab === t.key ? "text-blue-400 border-teal-400 bg-white/[0.04]" : "text-white/35 border-transparent hover:text-white/60")}
             >
               {t.label}
             </button>
@@ -224,9 +224,9 @@ export default function PayrollPage() {
           {/* KPI row — always visible */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Total Payroll (Apr)", value: fmtINR(totalPayroll),    sub: "All batches",         color: "#00c896",  icon: DollarSign   },
+              { label: "Total Payroll (Apr)", value: fmtINR(totalPayroll),    sub: "All batches",         color: "var(--accent)",  icon: DollarSign   },
               { label: "Pending Approval",    value: fmtINR(pendingApproval), sub: `${pendingCount} batches`,  color: "#c89060",  icon: Clock        },
-              { label: "Processed",           value: fmtINR(processed),       sub: "Sent to finance",     color: "#8B5CF6",  icon: FileCheck    },
+              { label: "Processed",           value: fmtINR(processed),       sub: "Sent to finance",     color: "#2563EB",  icon: FileCheck    },
               { label: "Total Hours",         value: fmtNum(totalHours) + "h",sub: "Across all batches",  color: "var(--text-1)", icon: Users   },
             ].map(s => (
               <div key={s.label} className="glass p-4 flex gap-3 items-start">
@@ -252,8 +252,8 @@ export default function PayrollPage() {
                     <AreaChart data={payrollTrend}>
                       <defs>
                         <linearGradient id="payGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#00c896" stopOpacity={0.2} />
-                          <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                          <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.2} />
+                          <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <XAxis dataKey="month" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
@@ -261,10 +261,10 @@ export default function PayrollPage() {
                         formatter={(v: number) => fmtINR(v)}
                         contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
                       />
-                      <Area type="monotone" dataKey="total" stroke="#00c896" strokeWidth={1.5} fill="url(#payGrad)" dot={(props) => {
+                      <Area type="monotone" dataKey="total" stroke="var(--accent)" strokeWidth={1.5} fill="url(#payGrad)" dot={(props) => {
                         const { cx, cy, payload } = props as { cx: number; cy: number; payload: { current?: boolean } }
                         if (!payload.current) return <circle key={cx} cx={cx} cy={cy} r={0} />
-                        return <circle key={cx} cx={cx} cy={cy} r={4} fill="#00c896" stroke="#09090e" strokeWidth={2} />
+                        return <circle key={cx} cx={cx} cy={cy} r={4} fill="var(--accent)" stroke="#09090e" strokeWidth={2} />
                       }} name="Payroll" />
                     </AreaChart>
                   </ResponsiveContainer>

@@ -18,8 +18,8 @@ import clsx from "clsx"
 // ─── Mock report data ─────────────────────────────────────────────────────────
 
 const statusDistribution = [
-  { name: "Auto-Approved", value: 412, color: "#00c896", pct: 51 },
-  { name: "Ops Approved",  value: 188, color: "#8B5CF6", pct: 23 },
+  { name: "Auto-Approved", value: 412, color: "var(--accent)", pct: 51 },
+  { name: "Ops Approved",  value: 188, color: "#2563EB", pct: 23 },
   { name: "Flagged",       value: 98,  color: "#c89060", pct: 12 },
   { name: "Rejected",      value: 64,  color: "#c07070", pct: 8  },
   { name: "Pending",       value: 47,  color: "rgba(255,255,255,0.2)", pct: 6 },
@@ -28,7 +28,7 @@ const statusDistribution = [
 const violationTypes = [
   { name: "OT without approval",       count: 38, color: "#c89060" },
   { name: "Under-hours",               count: 27, color: "#3B82F6" },
-  { name: "Sandwich leave",            count: 22, color: "#8B5CF6" },
+  { name: "Sandwich leave",            count: 22, color: "#2563EB" },
   { name: "Holiday work",              count: 14, color: "#F59E0B" },
   { name: "No attachment",             count: 12, color: "#c07070" },
   { name: "Forwarded email",           count: 9,  color: "#6366F1" },
@@ -37,7 +37,7 @@ const violationTypes = [
 
 const sourceBreakdown = [
   { name: "Portal",  value: 68, color: "#3B82F6" },
-  { name: "Email",   value: 24, color: "#8B5CF6" },
+  { name: "Email",   value: 24, color: "#2563EB" },
   { name: "Manual",  value: 8,  color: "rgba(255,255,255,0.2)" },
 ]
 
@@ -77,7 +77,7 @@ function KpiCard({ label, value, sub, change, color, icon: Icon }: {
       <div className="flex items-start justify-between mb-2">
         <Icon size={16} style={{ color }} className="mt-0.5" />
         {change !== undefined && (
-          <span className={clsx("flex items-center gap-0.5 text-[10px] font-bold", change >= 0 ? "text-teal-400" : "text-rose-400")}>
+          <span className={clsx("flex items-center gap-0.5 text-[10px] font-bold", change >= 0 ? "text-blue-400" : "text-rose-400")}>
             {change >= 0 ? <ArrowUp size={9} /> : <ArrowDown size={9} />}
             {Math.abs(change)}%
           </span>
@@ -110,8 +110,8 @@ export default function ReportsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
-          <BarChart3 size={18} className="text-teal-400 flex-shrink-0" />
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
+          <BarChart3 size={18} className="text-blue-400 flex-shrink-0" />
           <div className="flex-1">
             <h1 className="text-base font-bold text-white">Reports & Analytics</h1>
             <p className="text-[11px] text-white/35">Operational intelligence across all clients</p>
@@ -123,7 +123,7 @@ export default function ReportsPage() {
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={clsx("px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all whitespace-nowrap", period === p ? "bg-teal-400/15 text-teal-400" : "text-white/35 hover:text-white/60")}
+                className={clsx("px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all whitespace-nowrap", period === p ? "bg-blue-400/15 text-blue-400" : "text-white/35 hover:text-white/60")}
               >
                 {p}
               </button>
@@ -138,10 +138,10 @@ export default function ReportsPage() {
         <main className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 lg:space-y-5 pb-nav lg:pb-5">
           {/* KPI row */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            <KpiCard label="Timesheets Processed" value={totalProcessed.toLocaleString()} sub={period}       color="#00c896"        icon={CheckCircle2} change={+8}  />
-            <KpiCard label="Auto-Approve Rate"    value={`${autoApproveRate}%`}           sub="of total"     color="#8B5CF6"        icon={Zap}          change={+5}  />
-            <KpiCard label="Avg Turnaround"       value={`${avgTurnaround}h`}             sub="SLA: 48h"     color="#00c896"        icon={Clock}        change={-12} />
-            <KpiCard label="SLA Compliance"       value={`${slaCompliance}%`}             sub="On-time"      color={slaCompliance >= 90 ? "#00c896" : "#c89060"} icon={Shield} change={+2} />
+            <KpiCard label="Timesheets Processed" value={totalProcessed.toLocaleString()} sub={period}       color="var(--accent)"        icon={CheckCircle2} change={+8}  />
+            <KpiCard label="Auto-Approve Rate"    value={`${autoApproveRate}%`}           sub="of total"     color="#2563EB"        icon={Zap}          change={+5}  />
+            <KpiCard label="Avg Turnaround"       value={`${avgTurnaround}h`}             sub="SLA: 48h"     color="var(--accent)"        icon={Clock}        change={-12} />
+            <KpiCard label="SLA Compliance"       value={`${slaCompliance}%`}             sub="On-time"      color={slaCompliance >= 90 ? "var(--accent)" : "#c89060"} icon={Shield} change={+2} />
             <KpiCard label="Violations Caught"    value="127"                             sub="By AI + Ops"  color="#c89060"        icon={AlertTriangle} change={-3} />
             <KpiCard label="Active Clients"       value="25"                              sub="All reporting" color="var(--text-1)" icon={Users}         />
           </div>
@@ -155,9 +155,9 @@ export default function ReportsPage() {
               </div>
               <div className="flex items-center gap-4 text-[10px]">
                 {[
-                  { color: "rgba(0,200,150,0.35)", label: "Received" },
-                  { color: "#00c896",               label: "Processed" },
-                  { color: "#8B5CF6",               label: "Auto-Approved" },
+                  { color: "rgba(75,143,255,0.35)", label: "Received" },
+                  { color: "var(--accent)",               label: "Processed" },
+                  { color: "#2563EB",               label: "Auto-Approved" },
                 ].map(l => (
                   <div key={l.label} className="flex items-center gap-1.5 text-white/40">
                     <span className="w-3 h-0.5 rounded-full inline-block" style={{ background: l.color }} />
@@ -171,23 +171,23 @@ export default function ReportsPage() {
                 <AreaChart data={weeklyTrend}>
                   <defs>
                     <linearGradient id="recvGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00c896" stopOpacity={0.12} />
-                      <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.12} />
+                      <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="procGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00c896" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="autoGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#2563EB" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="week" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }} />
-                  <Area type="monotone" dataKey="received"    stroke="rgba(0,200,150,0.35)" strokeWidth={1.5} fill="url(#recvGrad)" dot={false} name="Received" />
-                  <Area type="monotone" dataKey="processed"   stroke="#00c896"              strokeWidth={1.5} fill="url(#procGrad)" dot={false} name="Processed" />
-                  <Area type="monotone" dataKey="autoApproved"stroke="#8B5CF6"              strokeWidth={1.5} fill="url(#autoGrad)" dot={false} name="Auto-Approved" />
+                  <Area type="monotone" dataKey="received"    stroke="rgba(75,143,255,0.35)" strokeWidth={1.5} fill="url(#recvGrad)" dot={false} name="Received" />
+                  <Area type="monotone" dataKey="processed"   stroke="var(--accent)"              strokeWidth={1.5} fill="url(#procGrad)" dot={false} name="Processed" />
+                  <Area type="monotone" dataKey="autoApproved"stroke="#2563EB"              strokeWidth={1.5} fill="url(#autoGrad)" dot={false} name="Auto-Approved" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -249,7 +249,7 @@ export default function ReportsPage() {
                   <RadarChart data={radarData}>
                     <PolarGrid stroke="rgba(255,255,255,0.07)" />
                     <PolarAngleAxis dataKey="metric" tick={{ fontSize: 9, fill: "rgba(255,255,255,0.4)" }} />
-                    <Radar dataKey="value" stroke="#00c896" strokeWidth={1.5} fill="#00c896" fillOpacity={0.12} />
+                    <Radar dataKey="value" stroke="var(--accent)" strokeWidth={1.5} fill="var(--accent)" fillOpacity={0.12} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
@@ -292,9 +292,9 @@ export default function ReportsPage() {
                     <span className="text-[12px] text-white/70 flex-1 truncate">{c.name}</span>
                     <div className="flex items-center gap-2">
                       <div className="w-20 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
-                        <div className="h-full rounded-full" style={{ width: `${c.compliance}%`, background: c.compliance >= 90 ? "#00c896" : c.compliance >= 75 ? "#c89060" : "#c07070" }} />
+                        <div className="h-full rounded-full" style={{ width: `${c.compliance}%`, background: c.compliance >= 90 ? "var(--accent)" : c.compliance >= 75 ? "#c89060" : "#c07070" }} />
                       </div>
-                      <span className="text-[11px] font-bold w-8 text-right" style={{ color: c.compliance >= 90 ? "#00c896" : "#c89060" }}>{c.compliance}%</span>
+                      <span className="text-[11px] font-bold w-8 text-right" style={{ color: c.compliance >= 90 ? "var(--accent)" : "#c89060" }}>{c.compliance}%</span>
                     </div>
                   </div>
                 ))}
@@ -311,7 +311,7 @@ export default function ReportsPage() {
               </div>
               <div
                 className="text-[11px] px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5"
-                style={{ background: "rgba(0,200,150,0.1)", color: "#00c896" }}
+                style={{ background: "rgba(75,143,255,0.1)", color: "var(--accent)" }}
               >
                 <TrendingUp size={11} /> Improving
               </div>
@@ -326,7 +326,7 @@ export default function ReportsPage() {
                   />
                   <Bar dataKey="hours" name="Avg hours" radius={[4, 4, 0, 0]}>
                     {turnaroundTrend.map((entry, i) => (
-                      <Cell key={i} fill={entry.hours <= 36 ? "#00c896" : entry.hours <= 48 ? "#c89060" : "#c07070"} />
+                      <Cell key={i} fill={entry.hours <= 36 ? "var(--accent)" : entry.hours <= 48 ? "#c89060" : "#c07070"} />
                     ))}
                   </Bar>
                 </BarChart>

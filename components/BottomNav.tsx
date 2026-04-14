@@ -49,12 +49,12 @@ export default function BottomNav() {
       {open && (
         <div
           className="fixed bottom-[64px] left-0 right-0 z-50 lg:hidden rounded-t-2xl px-4 pt-4 pb-6 animate-fade-in"
-          style={{ background: "rgba(12,10,24,0.98)", border: "1px solid rgba(255,255,255,0.08)", borderBottom: "none" }}
+          style={{ background: "var(--surface)", border: "1px solid var(--border-strong)", borderBottom: "none" }}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg,#00D4A5,#8B5CF6)" }}>
+                style={{ background: "linear-gradient(135deg,var(--accent),#2563EB)" }}>
                 <ClipboardCheck size={14} className="text-white" />
               </div>
               <span className="text-[13px] font-bold" style={{ color: "var(--text-1)" }}>OpsDesk</span>
@@ -84,11 +84,9 @@ export default function BottomNav() {
 
       {/* Bottom bar */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 flex items-center lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center lg:hidden bottom-nav-surface"
         style={{
-          background: "rgba(9,7,20,0.96)",
           backdropFilter: "blur(20px)",
-          borderTop: "1px solid rgba(255,255,255,0.07)",
           height: 64,
           paddingBottom: "env(safe-area-inset-bottom)",
         }}

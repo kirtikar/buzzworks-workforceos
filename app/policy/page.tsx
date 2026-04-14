@@ -15,9 +15,9 @@ import clsx from "clsx"
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const CAT_CONFIG: Record<PolicyRuleCategory, { label: string; icon: React.ElementType; color: string }> = {
-  hours:      { label: "Working Hours",   icon: Clock,         color: "#00c896" },
+  hours:      { label: "Working Hours",   icon: Clock,         color: "var(--accent)" },
   overtime:   { label: "Overtime",        icon: TrendingUp,    color: "#c89060" },
-  leave:      { label: "Leave & Absences",icon: CalendarCheck, color: "#8B5CF6" },
+  leave:      { label: "Leave & Absences",icon: CalendarCheck, color: "#2563EB" },
   attendance: { label: "Attendance",      icon: Users,         color: "#3B82F6" },
   payroll:    { label: "Payroll",         icon: DollarSign,    color: "#10B981" },
   compliance: { label: "Compliance",      icon: Shield,        color: "#F59E0B" },
@@ -142,7 +142,7 @@ function AIPolicyCreator({
       <div className="glass rounded-2xl w-full max-w-lg mx-4 overflow-hidden animate-fade-in">
         {/* Modal header */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.08]">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)" }}>
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #2563EB, var(--accent))" }}>
             <Sparkles size={14} className="text-white" />
           </div>
           <div className="flex-1">
@@ -155,7 +155,7 @@ function AIPolicyCreator({
         <div className="p-5 space-y-4">
           {stage === "saved" ? (
             <div className="flex flex-col items-center gap-3 py-6">
-              <CheckCircle2 size={40} style={{ color: "#00c896" }} />
+              <CheckCircle2 size={40} style={{ color: "var(--accent)" }} />
               <div className="text-[14px] font-semibold text-white">Rule saved!</div>
             </div>
           ) : (
@@ -195,7 +195,7 @@ function AIPolicyCreator({
               {/* Thinking state */}
               {stage === "thinking" && (
                 <div className="flex items-center gap-3 py-4 justify-center">
-                  <Loader2 size={18} className="animate-spin" style={{ color: "#8B5CF6" }} />
+                  <Loader2 size={18} className="animate-spin" style={{ color: "#2563EB" }} />
                   <span className="text-[13px] text-white/50">Analysing policy intent…</span>
                 </div>
               )}
@@ -204,7 +204,7 @@ function AIPolicyCreator({
               {stage === "preview" && preview && (
                 <div className="space-y-3">
                   <div className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">AI-Generated Rule Preview</div>
-                  <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(139,92,246,0.06)", border: "1px solid rgba(139,92,246,0.15)" }}>
+                  <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)" }}>
                     <div className="flex items-center gap-2 flex-wrap">
                       {catCfg && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase" style={{ background: `${catCfg.color}18`, color: catCfg.color }}>
@@ -216,7 +216,7 @@ function AIPolicyCreator({
                           {sevCfg.label}
                         </span>
                       )}
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ background: "rgba(139,92,246,0.15)", color: "#8B5CF6" }}>AI Generated</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ background: "rgba(37,99,235,0.15)", color: "#2563EB" }}>AI Generated</span>
                     </div>
 
                     <div>
@@ -293,7 +293,7 @@ function RuleCard({ rule, onToggle }: { rule: PolicyRule; onToggle: (id: string)
           <span className="font-semibold text-[13px] text-white">{rule.name}</span>
           <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase" style={{ background: sevCfg.bg, color: sevCfg.color }}>{sevCfg.label}</span>
           {rule.aiGenerated && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold flex items-center gap-0.5" style={{ background: "rgba(139,92,246,0.12)", color: "#8B5CF6" }}>
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold flex items-center gap-0.5" style={{ background: "rgba(37,99,235,0.12)", color: "#2563EB" }}>
               <Sparkles size={8} /> AI
             </span>
           )}
@@ -369,7 +369,7 @@ export default function PolicyPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile client picker — horizontal chip scroll */}
         <div className="flex sm:hidden items-center gap-2 px-3 py-2 overflow-x-auto flex-shrink-0 scrollbar-none"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(9,7,20,0.6)" }}>
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "var(--surface)" }}>
           {clients.map(c => (
             <button key={c.id} onClick={() => setSelClientId(c.id)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full flex-shrink-0 text-[11px] font-semibold transition-all whitespace-nowrap"
@@ -386,7 +386,7 @@ export default function PolicyPage() {
 
         <div className="flex flex-1 overflow-hidden">
         {/* Client selector panel — desktop */}
-        <div className="hidden sm:flex w-56 flex-shrink-0 border-r border-white/[0.07] flex-col overflow-hidden" style={{ background: "rgba(9,7,20,0.6)" }}>
+        <div className="hidden sm:flex w-56 flex-shrink-0 border-r border-white/[0.07] flex-col overflow-hidden" style={{ background: "var(--surface)" }}>
           <div className="px-4 py-4 border-b border-white/[0.07]">
             <div className="text-[12px] font-semibold text-white/50 uppercase tracking-wider">Select Client</div>
           </div>
@@ -414,8 +414,8 @@ export default function PolicyPage() {
         {/* Policy rules area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
-          <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
-            <FileText size={18} className="text-teal-400" />
+          <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
+            <FileText size={18} className="text-blue-400" />
             <div className="flex-1">
               <h1 className="text-base font-bold text-white">{selClient.name} — Policy Engine</h1>
               <p className="text-[11px] text-white/35">v{selClient.policyVersion.replace("v", "")} · {enabledCount} active rules</p>
@@ -424,7 +424,7 @@ export default function PolicyPage() {
             <div className="hidden md:flex items-center gap-2">
               {[
                 { label: "Rules",    value: clientRules.length, color: "var(--text-2)" },
-                { label: "Applied",  value: totalApplied,        color: "#00c896" },
+                { label: "Applied",  value: totalApplied,        color: "var(--accent)" },
                 { label: "Triggers", value: totalTriggered,      color: "#c89060" },
               ].map(s => (
                 <div key={s.label} className="glass px-3 py-1.5 rounded-xl text-center">
@@ -482,9 +482,9 @@ export default function PolicyPage() {
             {/* AI capabilities teaser */}
             <div
               className="rounded-2xl p-5 flex items-center gap-5 mt-2"
-              style={{ background: "rgba(139,92,246,0.04)", border: "1px dashed rgba(139,92,246,0.2)" }}
+              style={{ background: "rgba(37,99,235,0.04)", border: "1px dashed rgba(37,99,235,0.2)" }}
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)" }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, #2563EB, var(--accent))" }}>
                 <Sparkles size={18} className="text-white" />
               </div>
               <div className="flex-1">

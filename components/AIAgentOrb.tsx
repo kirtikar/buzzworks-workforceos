@@ -23,7 +23,7 @@ export default function AIAgentOrb() {
         style={{
           width: 52,
           height: 52,
-          background: "#00c896",
+          background: "var(--accent)",
         }}
       >
         <div className="animate-orb-pulse absolute inset-0 rounded-full" />
@@ -53,14 +53,14 @@ export default function AIAgentOrb() {
             <div className="flex items-center gap-2">
               <div
                 className="w-6 h-6 rounded-lg flex items-center justify-center"
-                style={{ background: "#00c896" }}
+                style={{ background: "var(--accent)" }}
               >
                 <Zap size={12} className="text-white" />
               </div>
               <span className="text-[13px] font-semibold text-white">AI Insights</span>
               <span
                 className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
-                style={{ background: "rgba(139,92,246,0.2)", color: "#A78BFA" }}
+                style={{ background: "rgba(37,99,235,0.2)", color: "#A78BFA" }}
               >
                 {unread} new
               </span>
@@ -73,10 +73,10 @@ export default function AIAgentOrb() {
           {/* Status bar */}
           <div
             className="px-4 py-2 flex items-center gap-2 border-b border-white/[0.06]"
-            style={{ background: "rgba(0,212,165,0.06)" }}
+            style={{ background: "rgba(75,143,255,0.06)" }}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-dot-blink" />
-            <span className="text-[11px] text-teal-400 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-dot-blink" />
+            <span className="text-[11px] text-blue-400 font-medium">
               Agent scanning 8 timesheets · 5 auto-validated
             </span>
           </div>

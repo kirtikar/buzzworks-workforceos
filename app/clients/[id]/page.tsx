@@ -37,7 +37,7 @@ const weeklyVolume = [
 ]
 
 const statusBreakdown = [
-  { name: "Approved",  value: 22, color: "#00c896" },
+  { name: "Approved",  value: 22, color: "var(--accent)" },
   { name: "Pending",   value: 14, color: "#c89060" },
   { name: "Flagged",   value: 5,  color: "#c07070" },
   { name: "Reviewed",  value: 5,  color: "#7090c8" },
@@ -57,14 +57,14 @@ function OverviewTab({ client, portal }: { client: NonNullable<ReturnType<typeof
             <AreaChart data={weeklyVolume}>
               <defs>
                 <linearGradient id="csubGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00c896" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis dataKey="week" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }} />
-              <Area type="monotone" dataKey="submitted" stroke="rgba(0,200,150,0.35)" strokeWidth={1.5} fill="url(#csubGrad)" dot={false} name="Submitted" />
-              <Area type="monotone" dataKey="approved"  stroke="#00c896" strokeWidth={1.5} fill="none" dot={false} name="Approved" />
+              <Area type="monotone" dataKey="submitted" stroke="rgba(75,143,255,0.35)" strokeWidth={1.5} fill="url(#csubGrad)" dot={false} name="Submitted" />
+              <Area type="monotone" dataKey="approved"  stroke="var(--accent)" strokeWidth={1.5} fill="none" dot={false} name="Approved" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -115,7 +115,7 @@ function OverviewTab({ client, portal }: { client: NonNullable<ReturnType<typeof
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-white/40">Status</span>
-                <span className="text-teal-400 flex items-center gap-1"><CheckCircle2 size={11} /> {portal.status}</span>
+                <span className="text-blue-400 flex items-center gap-1"><CheckCircle2 size={11} /> {portal.status}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-white/40">Sync frequency</span>
@@ -123,7 +123,7 @@ function OverviewTab({ client, portal }: { client: NonNullable<ReturnType<typeof
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-white/40">Success rate</span>
-                <span style={{ color: portal.successRate > 98 ? "#00c896" : "#c89060" }}>{portal.successRate}%</span>
+                <span style={{ color: portal.successRate > 98 ? "var(--accent)" : "#c89060" }}>{portal.successRate}%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-white/40">API version</span>
@@ -357,7 +357,7 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
           <tbody>
             {filtered.map((emp, i) => {
               const remaining = emp.leaveBalance.annual - emp.leaveBalance.usedAnnual
-              const statusColor = { active: "#00c896", notice: "#c89060", ended: "#c07070", on_hold: "var(--text-3)" }[emp.employmentStatus]
+              const statusColor = { active: "var(--accent)", notice: "#c89060", ended: "#c07070", on_hold: "var(--text-3)" }[emp.employmentStatus]
               return (
                 <tr key={emp.id} className="ts-row">
                   <td className="px-4 py-2.5">
@@ -376,7 +376,7 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
                   <td className="px-4 py-2.5 text-white/50">{emp.city}</td>
                   <td className="px-4 py-2.5 text-white/80 font-medium">₹{emp.ratePerHour}/h</td>
                   <td className="px-4 py-2.5">
-                    <span className="text-[11px]" style={{ color: remaining > 5 ? "#00c896" : remaining > 0 ? "#c89060" : "#c07070" }}>{remaining}d left</span>
+                    <span className="text-[11px]" style={{ color: remaining > 5 ? "var(--accent)" : remaining > 0 ? "#c89060" : "#c07070" }}>{remaining}d left</span>
                   </td>
                   <td className="px-4 py-2.5">
                     <span className="text-[11px] font-medium capitalize" style={{ color: statusColor }}>{emp.employmentStatus}</span>
@@ -406,7 +406,7 @@ function PolicyTab({ clientId }: { clientId: string }) {
       </div>
     )
   }
-  const catColors: Record<string, string> = { hours:"#00c896", overtime:"#c89060", leave:"#8B5CF6", attendance:"#3B82F6", payroll:"#10B981", compliance:"#F59E0B" }
+  const catColors: Record<string, string> = { hours:"var(--accent)", overtime:"#c89060", leave:"#2563EB", attendance:"#3B82F6", payroll:"#10B981", compliance:"#F59E0B" }
   const sevColors: Record<string, string> = { info:"var(--text-2)", warning:"#c89060", violation:"#c07070" }
 
   return (
@@ -431,9 +431,9 @@ function PolicyTab({ clientId }: { clientId: string }) {
             <div className="flex items-center gap-2 mb-1">
               <span className="font-semibold text-[13px] text-white">{rule.name}</span>
               {rule.aiGenerated && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: "rgba(139,92,246,0.15)", color: "#8B5CF6" }}>AI</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: "rgba(37,99,235,0.15)", color: "#2563EB" }}>AI</span>
               )}
-              <span className={clsx("w-2 h-2 rounded-full ml-auto", rule.enabled ? "bg-teal-400" : "bg-white/20")} />
+              <span className={clsx("w-2 h-2 rounded-full ml-auto", rule.enabled ? "bg-blue-400" : "bg-white/20")} />
             </div>
             <div className="text-[12px] text-white/55 mb-2">{rule.description}</div>
             <div className="font-mono text-[10px] px-2 py-1 rounded-lg text-white/40" style={{ background: "rgba(255,255,255,0.04)" }}>
@@ -462,7 +462,7 @@ function PolicyTab({ clientId }: { clientId: string }) {
 
 function PayrollTab({ clientId }: { clientId: string }) {
   const batches = getClientPayrollBatches(clientId)
-  const statusColors = { draft:"var(--text-3)", pending_approval:"#c89060", approved:"#8B5CF6", processed:"#00c896", on_hold:"#c07070" }
+  const statusColors = { draft:"var(--text-3)", pending_approval:"#c89060", approved:"#2563EB", processed:"var(--accent)", on_hold:"#c07070" }
   return (
     <div className="space-y-3">
       {batches.length === 0 && (
@@ -513,7 +513,7 @@ export default function ClientDetailPage() {
       <div className="flex h-screen overflow-hidden">
         <Sidebar />
         <div className="flex-1 flex items-center justify-center text-white/30 text-[14px]">
-          Client not found — <Link href="/clients" className="text-teal-400 ml-2">Back to Clients</Link>
+          Client not found — <Link href="/clients" className="text-blue-400 ml-2">Back to Clients</Link>
         </div>
       </div>
     )
@@ -524,7 +524,7 @@ export default function ClientDetailPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="px-6 py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
+        <header className="px-6 py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
           <Link href="/clients" className="flex items-center gap-1.5 text-[11px] text-white/30 hover:text-white/60 mb-2 transition-colors">
             <ArrowLeft size={11} /> Clients
           </Link>
@@ -540,7 +540,7 @@ export default function ClientDetailPage() {
                 <h1 className="text-[16px] font-bold text-white">{client.name}</h1>
                 <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)", color: "var(--text-2)" }}>{client.industry}</span>
                 {client.emailOnly ? (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(139,92,246,0.1)", color: "#8B5CF6" }}><Mail size={10} />Email only</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}><Mail size={10} />Email only</span>
                 ) : portal ? (
                   <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${portal.color}15`, color: portal.color }}><Globe size={10} />{portal.shortName}</span>
                 ) : null}
@@ -551,10 +551,10 @@ export default function ClientDetailPage() {
             {/* KPI pills */}
             <div className="hidden lg:flex items-center gap-3">
               {[
-                { icon: Users,       value: fmtNum(client.activeEmployeeCount), label: "Active employees", color: "#8B5CF6" },
+                { icon: Users,       value: fmtNum(client.activeEmployeeCount), label: "Active employees", color: "#2563EB" },
                 { icon: Clock,       value: client.pendingTimesheets,            label: "Pending",          color: "#c89060" },
-                { icon: TrendingUp,  value: fmtINR(client.monthlyPayroll),       label: "Monthly payroll",  color: "#00c896" },
-                { icon: ShieldCheck, value: `${client.complianceScore}%`,        label: "Compliance",       color: client.complianceScore > 90 ? "#00c896" : "#c89060" },
+                { icon: TrendingUp,  value: fmtINR(client.monthlyPayroll),       label: "Monthly payroll",  color: "var(--accent)" },
+                { icon: ShieldCheck, value: `${client.complianceScore}%`,        label: "Compliance",       color: client.complianceScore > 90 ? "var(--accent)" : "#c89060" },
               ].map(k => (
                 <div key={k.label} className="glass px-3 py-2 rounded-xl text-center">
                   <div className="text-[15px] font-black" style={{ color: k.color }}>{k.value}</div>
@@ -566,12 +566,12 @@ export default function ClientDetailPage() {
         </header>
 
         {/* Tab nav */}
-        <div className="flex items-center gap-1 px-6 pt-3 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.4)" }}>
+        <div className="flex items-center gap-1 px-6 pt-3 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)" }}>
           {TABS.map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={clsx("px-4 py-2 text-[12px] font-medium rounded-t-lg transition-all border-b-2", tab === t ? "text-teal-400 border-teal-400 bg-white/[0.04]" : "text-white/35 border-transparent hover:text-white/60")}
+              className={clsx("px-4 py-2 text-[12px] font-medium rounded-t-lg transition-all border-b-2", tab === t ? "text-blue-400 border-teal-400 bg-white/[0.04]" : "text-white/35 border-transparent hover:text-white/60")}
             >
               {t}
             </button>

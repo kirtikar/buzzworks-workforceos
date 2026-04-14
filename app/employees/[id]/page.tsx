@@ -111,8 +111,8 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
               <AreaChart data={monthlyEarnings}>
                 <defs>
                   <linearGradient id="earnGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00c896" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                    <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 10, color: "var(--text-1)" }} formatter={(v: number) => fmtINR(v)} />

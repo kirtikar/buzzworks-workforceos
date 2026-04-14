@@ -16,8 +16,8 @@ import clsx from "clsx"
 
 function statusConfig(status: Portal["status"]) {
   const map = {
-    connected:    { label: "Connected",    color: "#00c896", icon: CheckCircle2, bg: "rgba(0,200,150,0.1)",  border: "rgba(0,200,150,0.2)" },
-    syncing:      { label: "Syncing…",     color: "#8B5CF6", icon: Loader2,      bg: "rgba(139,92,246,0.1)", border: "rgba(139,92,246,0.2)" },
+    connected:    { label: "Connected",    color: "var(--accent)", icon: CheckCircle2, bg: "rgba(75,143,255,0.1)",  border: "rgba(75,143,255,0.2)" },
+    syncing:      { label: "Syncing…",     color: "#2563EB", icon: Loader2,      bg: "rgba(37,99,235,0.1)", border: "rgba(37,99,235,0.2)" },
     error:        { label: "Error",        color: "#c07070", icon: AlertTriangle, bg: "rgba(192,112,112,0.1)", border: "rgba(192,112,112,0.2)" },
     disconnected: { label: "Disconnected", color: "#46465a", icon: WifiOff,      bg: "rgba(70,70,90,0.1)",   border: "rgba(70,70,90,0.2)" },
     paused:       { label: "Paused",       color: "#c89060", icon: PauseCircle,  bg: "rgba(200,144,96,0.1)", border: "rgba(200,144,96,0.2)" },
@@ -117,7 +117,7 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
         </div>
         <div className="flex items-center justify-between text-[11px]">
           <span className="text-white/35 flex items-center gap-1.5"><Activity size={11} />Success rate</span>
-          <span style={{ color: portal.successRate > 98 ? "#00c896" : portal.successRate > 95 ? "#c89060" : "#c07070" }}>
+          <span style={{ color: portal.successRate > 98 ? "var(--accent)" : portal.successRate > 95 ? "#c89060" : "#c07070" }}>
             {portal.successRate}%
           </span>
         </div>
@@ -139,7 +139,7 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
             </span>
           ))}
           {portal.webhookEnabled && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(139,92,246,0.1)", color: "#8B5CF6" }}>
+            <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}>
               <Webhook size={9} /> Webhooks
             </span>
           )}
@@ -199,14 +199,14 @@ function EmailCard() {
       <div className="flex items-start gap-3">
         <div
           className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)" }}
+          style={{ background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.2)" }}
         >
-          <Mail size={20} style={{ color: "#8B5CF6" }} />
+          <Mail size={20} style={{ color: "#2563EB" }} />
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[14px] text-white">Email Inbox Monitor</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: "rgba(0,200,150,0.1)", color: "#00c896", border: "1px solid rgba(0,200,150,0.2)" }}>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: "rgba(75,143,255,0.1)", color: "var(--accent)", border: "1px solid rgba(75,143,255,0.2)" }}>
               Active
             </span>
           </div>
@@ -216,8 +216,8 @@ function EmailCard() {
 
       <div className="grid grid-cols-2 gap-3">
         {[
-          { label: "Parsed today",      value: "14",  color: "#00c896" },
-          { label: "Parsed this month", value: "312", color: "#8B5CF6" },
+          { label: "Parsed today",      value: "14",  color: "var(--accent)" },
+          { label: "Parsed this month", value: "312", color: "#2563EB" },
           { label: "Parsing errors",    value: "2",   color: "#c07070" },
           { label: "Check frequency",   value: "5 min", color: "var(--text-2)" },
         ].map(s => (
@@ -248,7 +248,7 @@ function EmailCard() {
           disabled={testing}
           className="btn-ghost flex items-center gap-2 py-2 px-4 text-[12px] flex-1 justify-center"
         >
-          {testing ? <Loader2 size={12} className="animate-spin" /> : tested ? <CheckCircle2 size={12} style={{ color: "#00c896" }} /> : <Plug size={12} />}
+          {testing ? <Loader2 size={12} className="animate-spin" /> : tested ? <CheckCircle2 size={12} style={{ color: "var(--accent)" }} /> : <Plug size={12} />}
           {testing ? "Testing…" : tested ? "Connection OK" : "Test Connection"}
         </button>
         <button className="btn-ghost flex items-center gap-1.5 py-2 px-4 text-[12px]">
@@ -288,7 +288,7 @@ export default function IntegrationsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
           <div className="flex-1">
             <h1 className="text-base font-bold text-white">Integrations</h1>
             <p className="text-[11px] text-white/35">Portal connections &amp; email ingestion</p>
@@ -305,10 +305,10 @@ export default function IntegrationsPage() {
           {/* Summary KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Portal Integrations", value: "10",              sub: "8 connected · 1 syncing",        color: "#00c896" },
-              { label: "Total Employees",      value: fmtNum(totalEmployees), sub: "Across all connected portals",  color: "#8B5CF6" },
-              { label: "Synced This Month",    value: fmtNum(totalSynced),    sub: "Timesheets ingested",            color: "#00c896" },
-              { label: "Errors",               value: String(errored),   sub: "Portals with pending errors",    color: errored > 0 ? "#c07070" : "#00c896" },
+              { label: "Portal Integrations", value: "10",              sub: "8 connected · 1 syncing",        color: "var(--accent)" },
+              { label: "Total Employees",      value: fmtNum(totalEmployees), sub: "Across all connected portals",  color: "#2563EB" },
+              { label: "Synced This Month",    value: fmtNum(totalSynced),    sub: "Timesheets ingested",            color: "var(--accent)" },
+              { label: "Errors",               value: String(errored),   sub: "Portals with pending errors",    color: errored > 0 ? "#c07070" : "var(--accent)" },
             ].map(s => (
               <div key={s.label} className="glass p-4">
                 <div className="text-[11px] text-white/35 mb-1">{s.label}</div>
@@ -337,14 +337,14 @@ export default function IntegrationsPage() {
               <div key={portal.id} className="relative">
                 {syncingId === portal.id && (
                   <div className="absolute inset-0 rounded-2xl z-10 flex items-center justify-center" style={{ background: "rgba(9,7,20,0.7)", backdropFilter: "blur(4px)" }}>
-                    <div className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: "#8B5CF6" }}>
+                    <div className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: "#2563EB" }}>
                       <Loader2 size={16} className="animate-spin" />
                       Syncing {portal.shortName}…
                     </div>
                   </div>
                 )}
                 {synced.has(portal.id) && syncingId !== portal.id && (
-                  <div className="absolute top-3 right-3 z-10 flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full" style={{ background: "rgba(0,200,150,0.15)", color: "#00c896" }}>
+                  <div className="absolute top-3 right-3 z-10 flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full" style={{ background: "rgba(75,143,255,0.15)", color: "var(--accent)" }}>
                     <CheckCircle2 size={10} /> Synced
                   </div>
                 )}
@@ -366,7 +366,7 @@ export default function IntegrationsPage() {
           {/* Add portal CTA */}
           <div
             className="rounded-2xl p-6 flex items-center justify-between"
-            style={{ background: "rgba(0,200,150,0.04)", border: "1px dashed rgba(0,200,150,0.2)" }}
+            style={{ background: "rgba(75,143,255,0.04)", border: "1px dashed rgba(75,143,255,0.2)" }}
           >
             <div>
               <div className="text-[14px] font-semibold text-white mb-0.5">Connect a new portal</div>

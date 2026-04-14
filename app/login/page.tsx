@@ -34,7 +34,7 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4"
-      style={{ background: "#09090e" }}
+      style={{ background: "var(--bg)" }}
     >
       {/* Card */}
       <div className="w-full max-w-[380px]">
@@ -42,9 +42,9 @@ export default function LoginPage() {
         <div className="flex flex-col items-center mb-8">
           <div
             className="w-11 h-11 rounded-2xl flex items-center justify-center mb-3"
-            style={{ background: "#00c896" }}
+            style={{ background: "var(--accent)" }}
           >
-            <ClipboardCheck size={20} style={{ color: "#021a14" }} />
+            <ClipboardCheck size={20} style={{ color: "#ffffff" }} />
           </div>
           <div className="text-[22px] font-black tracking-tight" style={{ color: "#efefef" }}>
             OpsDesk
@@ -141,11 +141,11 @@ export default function LoginPage() {
           {/* Prefilled hint */}
           <div
             className="p-3 rounded-xl space-y-1.5"
-            style={{ background: "rgba(0,200,150,0.05)", border: "1px solid rgba(0,200,150,0.12)" }}
+            style={{ background: "var(--accent-dim)", border: "1px solid var(--accent-border)" }}
           >
             <div className="flex items-center gap-2">
-              <Sparkles size={11} style={{ color: "#00c896" }} />
-              <span className="text-[11px] font-medium" style={{ color: "#00c896" }}>Dev access credentials</span>
+              <Sparkles size={11} style={{ color: "var(--accent)" }} />
+              <span className="text-[11px] font-medium" style={{ color: "var(--accent)" }}>Dev access credentials</span>
             </div>
             <div className="text-[11px] font-mono" style={{ color: "var(--text-2)" }}>
               {DEMO_EMAIL}

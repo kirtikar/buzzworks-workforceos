@@ -39,7 +39,7 @@ function initials(name: string) { return name.split(" ").map(n => n[0]).join("")
 function LeaveBar({ bal }: { bal: Employee["leaveBalance"] }) {
   const rem = bal.annual - bal.usedAnnual
   const pct = Math.round((rem / bal.annual) * 100)
-  const color = pct > 60 ? "#00c896" : pct > 25 ? "#d97706" : "#dc2626"
+  const color = pct > 60 ? "var(--accent)" : pct > 25 ? "#d97706" : "#dc2626"
   return (
     <div className="flex items-center gap-1.5">
       <div className="w-14 h-1.5 rounded-full" style={{ background: "var(--border)" }}>
@@ -52,7 +52,7 @@ function LeaveBar({ bal }: { bal: Employee["leaveBalance"] }) {
 
 function StatusDot({ status }: { status: EmploymentStatus }) {
   const map: Record<EmploymentStatus, [string, string]> = {
-    active:  ["#00c896", "Active"],
+    active:  ["var(--accent)", "Active"],
     notice:  ["#d97706", "On Notice"],
     ended:   ["#dc2626", "Ended"],
     on_hold: ["#9ca3af", "On Hold"],
@@ -249,7 +249,7 @@ export default function EmployeesPage() {
 
         {/* Header */}
         <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b flex-shrink-0"
-          style={{ background: "rgba(9,7,20,0.6)", backdropFilter:"blur(20px)", borderColor:"var(--border)" }}>
+          style={{ background: "var(--surface)", backdropFilter:"blur(20px)", borderColor:"var(--border)" }}>
           <Users size={18} style={{ color:"var(--accent)" }} className="flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold" style={{ color:"var(--text-1)" }}>Employees</h1>

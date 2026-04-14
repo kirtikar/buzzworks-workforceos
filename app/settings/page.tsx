@@ -83,7 +83,7 @@ function AppearanceSection() {
       label: "Dark",
       subtitle: "Glassmorphism",
       desc: "Dark surfaces with teal accent, optimised for low-light environments",
-      preview: { bg: "#09090e", surface: "rgba(255,255,255,0.06)", accent: "#00c896", text: "#efefef" },
+      preview: { bg: "#09090e", surface: "rgba(255,255,255,0.06)", accent: "var(--accent)", text: "#efefef" },
     },
   ]
 
@@ -251,7 +251,7 @@ function AccountSection() {
 
 function IntegrationsSection() {
   const portals = [
-    { name: "Veltrix HCM",   status: "connected", clients: 3, lastSync: "2 min ago",   color: "#8B5CF6" },
+    { name: "Veltrix HCM",   status: "connected", clients: 3, lastSync: "2 min ago",   color: "#2563EB" },
     { name: "OrbitHCM",      status: "connected", clients: 3, lastSync: "8 min ago",   color: "#3B82F6" },
     { name: "PeopleHive",    status: "connected", clients: 3, lastSync: "4 min ago",   color: "#10B981" },
     { name: "CloudSpire",    status: "connected", clients: 2, lastSync: "12 min ago",  color: "#F59E0B" },

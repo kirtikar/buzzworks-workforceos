@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, Inbox, Building2, Users, FileText,
   CreditCard, BarChart3, Settings, ChevronLeft, ChevronRight,
-  Sparkles, ClipboardCheck, Plug, Bot,
+  Zap, ClipboardCheck, Plug, Bot,
 } from "lucide-react"
 import clsx from "clsx"
 
@@ -29,24 +29,25 @@ export default function Sidebar() {
   return (
     <div
       className={clsx(
-        "relative hidden lg:flex flex-col h-screen flex-shrink-0 transition-all duration-300 ease-in-out",
-        "border-r border-white/[0.07]",
-        collapsed ? "w-[68px]" : "w-[228px]"
+        "relative hidden lg:flex flex-col h-screen flex-shrink-0 transition-all duration-300 ease-in-out sidebar-surface",
+        collapsed ? "w-[64px]" : "w-[220px]"
       )}
-      style={{ background: "rgba(9, 7, 20, 0.9)", backdropFilter: "blur(20px)" }}
     >
       {/* Logo */}
-      <div className={clsx("flex items-center gap-3 border-b border-white/[0.07]", collapsed ? "px-4 py-5 justify-center" : "px-4 py-5")}>
+      <div className={clsx(
+        "flex items-center gap-3 py-5 border-b",
+        collapsed ? "px-4 justify-center" : "px-5",
+      )} style={{ borderColor: "var(--border)" }}>
         <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: "linear-gradient(135deg, #00D4A5 0%, #8B5CF6 100%)" }}
+          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+          style={{ background: "var(--accent)" }}
         >
-          <ClipboardCheck size={17} className="text-white" />
+          <ClipboardCheck size={16} className="text-white" />
         </div>
         {!collapsed && (
           <div>
-            <div className="font-bold text-sm text-white tracking-wide">OpsDesk</div>
-            <div className="text-[10px] text-white/35 font-medium tracking-wider uppercase">Buzzworks</div>
+            <div className="font-bold text-[14px] tracking-tight" style={{ color: "var(--text-1)" }}>OpsDesk</div>
+            <div className="text-[10px] font-medium tracking-wider uppercase" style={{ color: "var(--text-3)" }}>Buzzworks</div>
           </div>
         )}
       </div>
@@ -60,14 +61,21 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={clsx(
-                "relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 group",
-                isActive ? "bg-white/[0.08] text-white" : "text-white/45 hover:text-white/75 hover:bg-white/[0.05]"
+                "relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group",
+                isActive
+                  ? "text-white"
+                  : "hover:text-white/80"
               )}
+              style={{
+                background: isActive ? "var(--accent-dim)" : "transparent",
+                color: isActive ? "var(--text-1)" : "var(--text-3)",
+              }}
             >
               {isActive && <span className="nav-active-dot" />}
               <item.icon
-                size={17}
-                className={clsx("flex-shrink-0 transition-colors", isActive ? "text-teal-500" : "group-hover:text-white/60")}
+                size={16}
+                className="flex-shrink-0 transition-colors"
+                style={{ color: isActive ? "var(--accent)" : undefined }}
               />
               {!collapsed && (
                 <>
@@ -75,7 +83,7 @@ export default function Sidebar() {
                   {item.badge && (
                     <span
                       className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
-                      style={{ background: "rgba(0,212,165,0.18)", color: "#00D4A5" }}
+                      style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
                     >
                       {item.badge}
                     </span>
@@ -87,45 +95,54 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* AI Agent */}
+      {/* AI Agent status */}
       <div className="px-2 pb-2">
         <div
-          className={clsx("flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all", collapsed ? "justify-center" : "")}
-          style={{ background: "rgba(0,200,150,0.07)", border: "1px solid rgba(0,200,150,0.15)" }}
+          className={clsx(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all",
+            collapsed ? "justify-center" : ""
+          )}
+          style={{ background: "var(--accent-dim)", border: "1px solid var(--accent-border)" }}
         >
           <div className="relative flex-shrink-0">
-            <Sparkles size={16} style={{ color: "#00c896" }} />
-            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full animate-dot-blink" style={{ background: "#00c896" }} />
+            <Zap size={14} style={{ color: "var(--accent)" }} />
+            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full animate-dot-blink" style={{ background: "var(--accent)" }} />
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <div className="text-[12px] font-semibold" style={{ color: "#00c896" }}>AI Agent</div>
-              <div className="text-[10px]" style={{ color: "var(--text-3)" }}>6 insights · active</div>
+              <div className="text-[12px] font-semibold" style={{ color: "var(--accent)" }}>AI Agents</div>
+              <div className="text-[10px]" style={{ color: "var(--text-3)" }}>5 active · 48 today</div>
             </div>
           )}
         </div>
       </div>
 
       {/* Settings + Avatar */}
-      <div className="px-2 pb-4 pt-2 border-t border-white/[0.06]">
+      <div className="px-2 pb-4 pt-2 border-t" style={{ borderColor: "var(--border)" }}>
         <Link
           href="/settings"
-          className={clsx("flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/35 hover:text-white/60 hover:bg-white/[0.04] transition-all", collapsed ? "justify-center" : "")}
+          className={clsx(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all",
+            collapsed ? "justify-center" : ""
+          )}
+          style={{ color: "var(--text-3)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--text-1)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--text-3)")}
         >
-          <Settings size={17} />
+          <Settings size={16} />
           {!collapsed && <span className="text-[13px] font-medium">Settings</span>}
         </Link>
         {!collapsed && (
-          <div className="flex items-center gap-2.5 px-3 pt-3 mt-1 border-t border-white/[0.06]">
+          <div className="flex items-center gap-2.5 px-3 pt-3 mt-1 border-t" style={{ borderColor: "var(--border)" }}>
             <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)", color: "#fff" }}
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 text-white"
+              style={{ background: "var(--accent)" }}
             >
               RS
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] font-semibold text-white/80 truncate">Riya Shah</div>
-              <div className="text-[10px] text-white/35 truncate">Ops Lead</div>
+              <div className="text-[11px] font-semibold truncate" style={{ color: "var(--text-1)" }}>Riya Shah</div>
+              <div className="text-[10px] truncate" style={{ color: "var(--text-3)" }}>Ops Lead</div>
             </div>
           </div>
         )}
@@ -134,10 +151,14 @@ export default function Sidebar() {
       {/* Collapse toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-[72px] w-6 h-6 rounded-full border border-white/[0.12] flex items-center justify-center z-10 transition-all hover:border-white/25"
-        style={{ background: "#0f0a20" }}
+        className="absolute -right-3 top-[72px] w-6 h-6 rounded-full flex items-center justify-center z-10 transition-all"
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border-strong)",
+          color: "var(--text-3)",
+        }}
       >
-        {collapsed ? <ChevronRight size={11} className="text-white/50" /> : <ChevronLeft size={11} className="text-white/50" />}
+        {collapsed ? <ChevronRight size={11} /> : <ChevronLeft size={11} />}
       </button>
     </div>
   )

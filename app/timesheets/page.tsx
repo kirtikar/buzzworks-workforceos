@@ -154,7 +154,7 @@ export default function TimesheetsPage() {
         {/* Header */}
         <header
           className="flex items-center gap-3 px-4 lg:px-5 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0"
-          style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}
+          style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}
         >
           <div>
             <h1 className="text-base font-bold text-white">Timesheet Inbox</h1>
@@ -167,11 +167,11 @@ export default function TimesheetsPage() {
             {/* Monitored email */}
             <div
               className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
-              style={{ background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", color: "#A78BFA" }}
+              style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)", color: "#A78BFA" }}
             >
               <Mail size={11} />
               candidatemanager@buzzworks.com
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-dot-blink" />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-dot-blink" />
             </div>
 
             <button className="btn-ghost hidden sm:flex items-center gap-1.5 py-1.5 px-3 text-xs min-h-[36px]">
@@ -187,7 +187,7 @@ export default function TimesheetsPage() {
             </button>
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
-              style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)" }}
+              style={{ background: "linear-gradient(135deg, #2563EB, var(--accent))" }}
             >
               RS
             </div>
@@ -454,11 +454,11 @@ export default function TimesheetsPage() {
           {selected && selectedEmp && selectedClient && (
             <div
               className="fixed inset-0 z-30 lg:static lg:inset-auto lg:w-[380px] lg:flex-shrink-0 border-l border-white/[0.07] overflow-y-auto animate-slide-in-right pb-nav lg:pb-0"
-              style={{ background: "rgba(10,7,22,0.97)", backdropFilter: "blur(20px)" }}
+              style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}
             >
               {/* Panel header */}
               <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.08] sticky top-0 z-10"
-                style={{ background: "rgba(10,7,22,0.97)", backdropFilter: "blur(10px)" }}>
+                style={{ background: "var(--surface)", backdropFilter: "blur(10px)" }}>
                 <div>
                   <div className="text-[13px] font-bold text-white">{selectedEmp.name}</div>
                   <div className="text-[11px] text-white/40">{selected.period}</div>
@@ -494,7 +494,7 @@ export default function TimesheetsPage() {
                 {selected.source === "email" && (
                   <div
                     className="glass-sm p-3 space-y-1"
-                    style={{ border: "1px solid rgba(139,92,246,0.2)", background: "rgba(139,92,246,0.06)" }}
+                    style={{ border: "1px solid rgba(37,99,235,0.2)", background: "rgba(37,99,235,0.06)" }}
                   >
                     <div className="flex items-center gap-1.5 text-[11px] text-violet-300 font-semibold">
                       <Mail size={12} /> Email Submission
@@ -520,9 +520,9 @@ export default function TimesheetsPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { label: "Regular", value: selected.regularHours, color: "#00D4A5" },
+                      { label: "Regular", value: selected.regularHours, color: "var(--accent)" },
                       { label: "Overtime", value: selected.overtimeHours, color: "#F59E0B" },
-                      { label: "Leave", value: selected.leaveHours, color: "#8B5CF6" },
+                      { label: "Leave", value: selected.leaveHours, color: "#2563EB" },
                     ].map((item) => (
                       <div key={item.label} className="glass-sm p-2.5 text-center">
                         <div className="text-[16px] font-black" style={{ color: item.color }}>
@@ -653,7 +653,7 @@ export default function TimesheetsPage() {
                         label: "Annual",
                         total: selectedEmp.leaveBalance.annual,
                         used: selectedEmp.leaveBalance.usedAnnual,
-                        color: "#00D4A5",
+                        color: "var(--accent)",
                       },
                       {
                         label: "Sick",
@@ -665,7 +665,7 @@ export default function TimesheetsPage() {
                         label: "Casual",
                         total: selectedEmp.leaveBalance.casual,
                         used: selectedEmp.leaveBalance.usedCasual,
-                        color: "#8B5CF6",
+                        color: "#2563EB",
                       },
                     ].map((lb) => (
                       <div key={lb.label} className="glass-sm p-2 text-center">
@@ -750,7 +750,7 @@ export default function TimesheetsPage() {
                     )}
                     <div
                       className="text-[10px] text-white/25 text-center py-1 px-2 rounded-lg"
-                      style={{ background: "rgba(139,92,246,0.06)", border: "1px dashed rgba(139,92,246,0.15)" }}
+                      style={{ background: "rgba(37,99,235,0.06)", border: "1px dashed rgba(37,99,235,0.15)" }}
                     >
                       <Sparkles size={9} className="inline text-violet-400 mr-1" />
                       AI auto-approve for score ≥ 90 — coming in v2
@@ -777,10 +777,10 @@ export default function TimesheetsPage() {
                 {selected.status === "processed" && (
                   <div
                     className="p-3 rounded-xl text-[12px] text-center"
-                    style={{ background: "rgba(0,212,165,0.08)", border: "1px solid rgba(0,212,165,0.2)" }}
+                    style={{ background: "rgba(75,143,255,0.08)", border: "1px solid rgba(75,143,255,0.2)" }}
                   >
-                    <CheckCircle2 size={18} className="text-teal-400 mx-auto mb-1" />
-                    <div className="font-semibold text-teal-400">Processed & Paid</div>
+                    <CheckCircle2 size={18} className="text-blue-400 mx-auto mb-1" />
+                    <div className="font-semibold text-blue-400">Processed & Paid</div>
                     <div className="text-white/40 text-[11px] mt-0.5">
                       ₹{selected.totalPayable.toLocaleString("en-IN")}
                     </div>

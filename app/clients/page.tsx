@@ -23,7 +23,7 @@ function fmtINR(n: number) {
 function fmtNum(n: number) { return n.toLocaleString("en-IN") }
 
 function ComplianceBar({ score }: { score: number }) {
-  const color = score >= 90 ? "#00c896" : score >= 75 ? "#c89060" : "#c07070"
+  const color = score >= 90 ? "var(--accent)" : score >= 75 ? "#c89060" : "#c07070"
   return (
     <div className="flex items-center gap-2">
       <div className="flex-1 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
@@ -73,7 +73,7 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
           </div>
           <span
             className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0"
-            style={{ background: client.status === "active" ? "rgba(0,200,150,0.1)" : "rgba(192,112,112,0.1)", color: client.status === "active" ? "#00c896" : "#c07070" }}
+            style={{ background: client.status === "active" ? "rgba(75,143,255,0.1)" : "rgba(192,112,112,0.1)", color: client.status === "active" ? "var(--accent)" : "#c07070" }}
           >
             {client.status}
           </span>
@@ -92,7 +92,7 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
                 <Clock size={11} />{client.pendingTimesheets} pending
               </span>
             ) : (
-              <span className="text-teal-400 flex items-center gap-1">
+              <span className="text-blue-400 flex items-center gap-1">
                 <CheckCircle2 size={11} />All clear
               </span>
             )}
@@ -123,7 +123,7 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
         {/* City + policy */}
         <div className="flex items-center justify-between text-[11px] pt-1 border-t border-white/[0.05]">
           <span className="text-white/30">{client.city} · Policy {client.policyVersion}</span>
-          <span className="text-teal-400 flex items-center gap-1 font-medium">
+          <span className="text-blue-400 flex items-center gap-1 font-medium">
             View <ArrowRight size={11} />
           </span>
         </div>
@@ -163,8 +163,8 @@ export default function ClientsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "rgba(9,7,20,0.6)", backdropFilter: "blur(20px)" }}>
-          <Building2 size={18} className="text-teal-400 flex-shrink-0" />
+        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
+          <Building2 size={18} className="text-blue-400 flex-shrink-0" />
           <div className="flex-1">
             <h1 className="text-base font-bold text-white">Clients</h1>
             <p className="text-[11px] text-white/35">{clients.length} active clients · {fmtNum(totalEmployees)} total employees</p>
@@ -175,10 +175,10 @@ export default function ClientsPage() {
           {/* Summary KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Total Clients",     value: clients.length, color: "#00c896", sub: "25 active" },
-              { label: "Total Employees",   value: fmtNum(totalEmployees), color: "#8B5CF6", sub: "Across all clients" },
-              { label: "Pending Timesheets",value: totalPending,   color: totalPending > 100 ? "#c89060" : "#00c896", sub: "Need ops action" },
-              { label: "Avg Compliance",    value: `${avgCompliance}%`, color: avgCompliance > 90 ? "#00c896" : "#c89060", sub: "Across all clients" },
+              { label: "Total Clients",     value: clients.length, color: "var(--accent)", sub: "25 active" },
+              { label: "Total Employees",   value: fmtNum(totalEmployees), color: "#2563EB", sub: "Across all clients" },
+              { label: "Pending Timesheets",value: totalPending,   color: totalPending > 100 ? "#c89060" : "var(--accent)", sub: "Need ops action" },
+              { label: "Avg Compliance",    value: `${avgCompliance}%`, color: avgCompliance > 90 ? "var(--accent)" : "#c89060", sub: "Across all clients" },
             ].map(s => (
               <div key={s.label} className="glass p-4">
                 <div className="text-[11px] text-white/35 mb-1">{s.label}</div>

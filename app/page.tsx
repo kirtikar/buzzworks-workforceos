@@ -109,7 +109,7 @@ const clientKPIs = [
   { id:"cgi", name:"Capgemini",        code:"CGI", color:"#003189", submitted:52,  autoApproved:35,  manual:14, flagged:3,  onHold:1,  payroll:68000000,  sla:91, complianceScore:92 },
   { id:"lti", name:"L&T Infotech",    code:"LTI", color:"#009A44", submitted:78,  autoApproved:55,  manual:19, flagged:4,  onHold:4,  payroll:89000000,  sla:89, complianceScore:96 },
   { id:"mnd", name:"Mindtree",         code:"MND", color:"#E94F37", submitted:71,  autoApproved:49,  manual:18, flagged:4,  onHold:2,  payroll:72000000,  sla:92, complianceScore:93 },
-  { id:"gss", name:"GlobalStaff",      code:"GSS", color:"#8B5CF6", submitted:16,  autoApproved:11,  manual:4,  flagged:1,  onHold:0,  payroll:20200000,  sla:100,complianceScore:90 },
+  { id:"gss", name:"GlobalStaff",      code:"GSS", color:"#2563EB", submitted:16,  autoApproved:11,  manual:4,  flagged:1,  onHold:0,  payroll:20200000,  sla:100,complianceScore:90 },
   { id:"fhl", name:"FinanceHub",       code:"FHL", color:"#F59E0B", submitted:29,  autoApproved:14,  manual:10, flagged:5,  onHold:0,  payroll:42000000,  sla:86, complianceScore:82 },
   { id:"msh", name:"MedSure",          code:"MSH", color:"#FF6B6B", submitted:20,  autoApproved:11,  manual:7,  flagged:2,  onHold:2,  payroll:6800000,   sla:90, complianceScore:84 },
 ]
@@ -194,7 +194,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-2 ml-auto">
             <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
-              style={{ background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", color: "#A78BFA" }}>
+              style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)", color: "#A78BFA" }}>
               <Mail size={11} />
               candidatemanager@buzzworks.com
               <span className="w-1.5 h-1.5 rounded-full animate-dot-blink" style={{ background: "var(--accent)" }} />
@@ -210,7 +210,7 @@ export default function DashboardPage() {
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full" style={{ background: "var(--danger)" }} />
             </button>
             <div className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
-              style={{ background: "linear-gradient(135deg, #8B5CF6, #00D4A5)" }}>RS</div>
+              style={{ background: "linear-gradient(135deg, #2563EB, var(--accent))" }}>RS</div>
           </div>
         </header>
 
@@ -426,8 +426,8 @@ export default function DashboardPage() {
                     <ComposedChart data={agentEfficiency}>
                       <defs>
                         <linearGradient id="arGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#00c896" stopOpacity={0.25} />
-                          <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                          <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.25} />
+                          <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <XAxis dataKey="month" tick={{ fontSize: 9, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
@@ -489,18 +489,18 @@ export default function DashboardPage() {
                 <ComposedChart data={monthlyTrend} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="subGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00c896" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="apGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00c896" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#00c896" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="month" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 9, fill: "var(--text-3)" }} axisLine={false} tickLine={false} width={32} />
                   <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }} />
-                  <Area type="monotone" dataKey="submitted"   stroke="rgba(0,200,150,0.35)" strokeWidth={1.5} fill="url(#subGrad)" dot={false} name="Submitted" />
+                  <Area type="monotone" dataKey="submitted"   stroke="rgba(75,143,255,0.35)" strokeWidth={1.5} fill="url(#subGrad)" dot={false} name="Submitted" />
                   <Area type="monotone" dataKey="approved"    stroke="var(--accent)"        strokeWidth={2}   fill="url(#apGrad)"  dot={false} name="Approved" />
                   <Bar  dataKey="flagged" fill="var(--warn)" opacity={0.5} radius={[2,2,0,0]} barSize={12} name="Flagged" />
                 </ComposedChart>
