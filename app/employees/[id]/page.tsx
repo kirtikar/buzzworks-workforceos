@@ -4,7 +4,8 @@ import { useState, useMemo } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/components/Sidebar"
-import { employees, timesheets } from "@/lib/mock-data"
+import { employees, clients, timesheets } from "@/lib/mock-data"
+import { generateEmployeesForClient } from "@/lib/mock-generator"
 import {
   ArrowLeft, User, Mail, MapPin, Calendar, Clock, TrendingUp,
   CheckCircle2, AlertTriangle, FileText, Shield, Activity,
@@ -385,9 +386,21 @@ function RiskProfileTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+function buildPool() {
+  const pool = [...employees]
+  for (const client of clients) {
+    const seedCount = employees.filter(e => e.clientId === client.id).length
+    const need = Math.min(80, client.employeeCount) - seedCount
+    if (need > 0) pool.push(...generateEmployeesForClient(client.id, need, seedCount))
+  }
+  return pool
+}
+
+const allEmployees = buildPool()
+
 export default function EmployeeDetailPage() {
   const params = useParams<{ id: string }>()
-  const emp    = employees.find(e => e.id === params.id)
+  const emp    = allEmployees.find(e => e.id === params.id)
   const [tab, setTab] = useState<Tab>("Overview")
 
   if (!emp) {

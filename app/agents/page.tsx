@@ -540,19 +540,16 @@ export default function AgentsPage() {
               <p className="text-[12px] mt-3 leading-relaxed" style={{ color: "var(--text-2)" }}>{agent.description}</p>
             </div>
 
-            {/* Metrics grid */}
-            <div className="px-6 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
-              <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Live Metrics</div>
-              <div className="grid grid-cols-4 gap-3">
-                {agent.metricsLabels.map(ml => (
-                  <div key={ml.key} className="rounded-xl p-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                    <div className="text-[18px] font-black" style={{ color: agent.color }}>
-                      {fmtMetric(agent.metrics[ml.key] ?? 0, ml.format)}
-                    </div>
-                    <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>{ml.label}</div>
+            {/* Key metrics — 4 stats inline */}
+            <div className="flex items-stretch border-b" style={{ borderColor: "var(--border)" }}>
+              {agent.metricsLabels.slice(0, 4).map((ml, i) => (
+                <div key={ml.key} className="flex-1 px-5 py-4" style={{ borderLeft: i > 0 ? "1px solid var(--border)" : "none" }}>
+                  <div className="text-[22px] font-bold" style={{ color: agent.color }}>
+                    {fmtMetric(agent.metrics[ml.key] ?? 0, ml.format)}
                   </div>
-                ))}
-              </div>
+                  <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{ml.label}</div>
+                </div>
+              ))}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-6">

@@ -196,21 +196,23 @@ export default function TimesheetsPage() {
 
         {/* Filters bar */}
         <div
-          className="flex items-center gap-2.5 px-5 py-2.5 border-b border-white/[0.06] flex-shrink-0 flex-wrap"
-          style={{ background: "var(--border)" }}
+          className="flex items-center gap-2 px-4 lg:px-5 py-2.5 border-b flex-shrink-0 overflow-x-auto scrollbar-none"
+          style={{ background: "var(--surface)", borderColor: "var(--border)" }}
         >
-          <div className="relative flex-1 min-w-[180px] max-w-xs">
-            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30" />
+          <div className="relative flex-shrink-0">
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
             <input
-              className="glass-input w-full pl-8 text-[12px] py-1.5"
-              placeholder="Search employee, client, period…"
+              className="glass-input pl-8 text-[12px] py-1.5 w-48"
+              placeholder="Search employee, client…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
+          <div className="w-px h-5 flex-shrink-0" style={{ background: "var(--border)" }} />
+
           <select
-            className="glass-input text-[12px] py-1.5 pr-8 appearance-none cursor-pointer"
+            className="glass-input text-[12px] py-1.5 flex-shrink-0 w-32 cursor-pointer"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
           >
@@ -224,7 +226,7 @@ export default function TimesheetsPage() {
           </select>
 
           <select
-            className="glass-input text-[12px] py-1.5 pr-8 appearance-none cursor-pointer"
+            className="glass-input text-[12px] py-1.5 flex-shrink-0 w-36 cursor-pointer"
             value={filterClient}
             onChange={(e) => setFilterClient(e.target.value)}
           >
@@ -235,7 +237,7 @@ export default function TimesheetsPage() {
           </select>
 
           <select
-            className="glass-input text-[12px] py-1.5 pr-8 appearance-none cursor-pointer"
+            className="glass-input text-[12px] py-1.5 flex-shrink-0 w-32 cursor-pointer"
             value={filterSource}
             onChange={(e) => setFilterSource(e.target.value)}
           >
@@ -247,16 +249,16 @@ export default function TimesheetsPage() {
 
           {(search || filterStatus !== "all" || filterClient !== "all" || filterSource !== "all") && (
             <button
-              className="btn-ghost py-1.5 px-3 text-[12px] flex items-center gap-1.5"
+              className="btn-ghost py-1.5 px-3 text-[12px] flex items-center gap-1.5 flex-shrink-0"
               onClick={() => { setSearch(""); setFilterStatus("all"); setFilterClient("all"); setFilterSource("all") }}
             >
               <X size={11} /> Clear
             </button>
           )}
 
-          <div className="ml-auto text-[11px] text-white/30">
+          <span className="ml-auto flex-shrink-0 text-[11px]" style={{ color: "var(--text-3)" }}>
             {filtered.length} of {localTs.length}
-          </div>
+          </span>
         </div>
 
         {/* Content area */}
@@ -264,7 +266,7 @@ export default function TimesheetsPage() {
           {/* Table */}
           <div className="flex-1 overflow-y-auto pb-nav lg:pb-0 overflow-x-auto">
             <table className="w-full min-w-[720px] text-[12px]">
-              <thead className="sticky top-0 z-10" style={{ background: "rgba(9,7,20,0.92)", backdropFilter: "blur(12px)" }}>
+              <thead className="sticky top-0 z-10" style={{ background: "var(--surface)" }}>
                 <tr className="border-b border-white/[0.07]">
                   {["Employee", "Client", "Period", "Hours Breakdown", "Source", "Validation", "Status", "Actions"].map((h) => (
                     <th
