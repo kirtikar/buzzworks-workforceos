@@ -9,14 +9,14 @@ interface ThemeCtxValue {
   setTheme: (t: Theme) => void
 }
 
-const ThemeCtx = createContext<ThemeCtxValue>({ theme: "dark", setTheme: () => {} })
+const ThemeCtx = createContext<ThemeCtxValue>({ theme: "light", setTheme: () => {} })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark")
+  const [theme, setThemeState] = useState<Theme>("light")
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const saved = (localStorage.getItem("opsd_theme") as Theme) || "dark"
+    const saved = (localStorage.getItem("opsd_theme") as Theme) || "light"
     setThemeState(saved)
     document.documentElement.setAttribute("data-theme", saved)
     setMounted(true)

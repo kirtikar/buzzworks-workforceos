@@ -15,7 +15,7 @@ const navItems = [
   { href: "/timesheets",    icon: Inbox,           label: "Timesheet Inbox", badge: "23" },
   { href: "/clients",       icon: Building2,       label: "Clients",         badge: null },
   { href: "/employees",     icon: Users,           label: "Employees",       badge: null },
-  { href: "/policy",        icon: FileText,        label: "Policy Engine",   badge: null },
+  { href: "/policy",        icon: FileText,        label: "AI Engine",       badge: null },
   { href: "/payroll",       icon: CreditCard,      label: "Payroll",         badge: "12" },
   { href: "/reports",       icon: BarChart3,       label: "Reports",         badge: null },
   { href: "/integrations",  icon: Plug,            label: "Integrations",    badge: "10" },

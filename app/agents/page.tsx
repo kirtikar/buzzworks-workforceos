@@ -2,659 +2,868 @@
 
 import { useState } from "react"
 import Sidebar from "@/components/Sidebar"
+import BottomNav from "@/components/BottomNav"
 import {
-  Bot, Zap, Shield, Mail, CreditCard, FileText, Activity,
-  CheckCircle2, Clock, TrendingUp, AlertTriangle, Sparkles,
-  ChevronRight, Play, Pause, RefreshCw, BarChart3, Eye,
-  UserMinus, Brain, Send, Database, Search, Star,
-  ArrowRight, Lock, Unlock, Package,
+  ClipboardList, Scale, Mail, Send, Database,
+  ExternalLink, ArrowRight,
 } from "lucide-react"
-import clsx from "clsx"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+type AgentCategory = "inspector" | "compliance" | "communication" | "data"
+type AgentStatus   = "active" | "idle" | "paused"
+type LogOutcome    = "success" | "flagged" | "escalated" | "hold"
+
 interface AgentLog {
   timestamp: string
-  action: string
-  outcome: "success" | "flagged" | "escalated" | "hold"
-  detail: string
+  action:    string
+  outcome:   LogOutcome
+  detail:    string
+}
+
+interface EmailTemplate {
+  trigger:    string
+  recipient:  string
+  subject:    string
+  preview:    string
+}
+
+interface PolicyUpdate {
+  date:             string
+  source:           string
+  category:         string
+  title:            string
+  impact:           string
+  url:              string
+  clientsAffected:  string[]
 }
 
 interface Agent {
-  id: string
-  name: string
-  codename: string
-  version: string
-  domain: string
-  tagline: string
-  description: string
-  color: string
-  bgColor: string
-  icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>
-  status: "active" | "idle" | "paused"
+  id:           string
+  name:         string
+  initials:     string
+  codename:     string
+  version:      string
+  category:     AgentCategory
+  tagline:      string
+  description:  string
+  color:        string
+  bgColor:      string
+  icon:         React.ComponentType<{ size?: number; style?: React.CSSProperties; className?: string }>
+  status:       AgentStatus
+  tags:         string[]
   capabilities: string[]
-  triggers: string[]
-  outputs: string[]
-  metrics: {
-    processedToday: number
-    processedThisMonth: number
-    successRate: number
-    avgProcessingMs: number
-    [key: string]: number
-  }
-  metricsLabels: { key: string; label: string; format?: "pct" | "ms" | "inr" | "count" }[]
-  lastAction: string
+  outputs:      string[]
+  metrics:      Record<string, number>
+  metricsLabels: { key: string; label: string; format?: "pct" | "ms" | "count" }[]
+  lastAction:   string
   lastActionAt: string
-  model: string
-  recentLogs: AgentLog[]
+  recentLogs:   AgentLog[]
+  emailTemplates?: EmailTemplate[]
+  policyFeed?:    PolicyUpdate[]
+}
+
+// ─── Category Config ──────────────────────────────────────────────────────────
+
+const CATEGORY_META: Record<AgentCategory, { label: string; color: string; bg: string }> = {
+  inspector:     { label: "Inspector",     color: "#4B8FFF", bg: "rgba(75,143,255,0.1)"  },
+  compliance:    { label: "Compliance",    color: "#34D399", bg: "rgba(52,211,153,0.1)"  },
+  communication: { label: "Communication", color: "#C084FC", bg: "rgba(192,132,252,0.1)" },
+  data:          { label: "Data",          color: "#38BDF8", bg: "rgba(56,189,248,0.1)"  },
 }
 
 // ─── Agent Definitions ────────────────────────────────────────────────────────
 
 const AGENTS: Agent[] = [
+  // ── Mark Sharma — Inspector ──────────────────────────────────────────────
   {
-    id: "mark",
-    name: "Agent Mark",
+    id:       "mark",
+    name:     "Mark Sharma",
+    initials: "MS",
     codename: "MARK",
-    version: "v2.1",
-    domain: "Timesheet Ingestion · Validation · Auto-Approval",
-    tagline: "Every timesheet — portal or email — validated in under 2 seconds",
+    version:  "v2.1",
+    category: "inspector",
+    tagline:  "Every timesheet — portal or email — validated in under 2 seconds",
     description:
-      "Agent Mark is the primary ingestion layer for all timesheet submissions. It reads portal syncs (10 portals) and the monitored email inbox, parses content via NLP, and runs a full 7-check policy validation suite against each client's active rule set. Clean submissions — all checks green, confidence ≥ 95%, no anomalous patterns — are auto-approved and immediately queued for payroll eligibility check. Policy violations, missing data, or low-confidence parses are escalated to the ops queue with a structured flag report and recommended action.",
-    color: "var(--accent)",
+      "Mark validates all timesheet submissions regardless of channel — portal syncs, email attachments, or manual entries. Runs a 7-check policy suite against each client's active rule set. Clean submissions are auto-approved and queued for payroll. Violations are escalated with a structured flag report and clear actionables.",
+    color:   "#4B8FFF",
     bgColor: "rgba(75,143,255,0.08)",
-    icon: Zap,
-    status: "active",
+    icon:    ClipboardList,
+    status:  "active",
+    tags:    ["Timesheet", "Auto-Approve", "Portal Sync", "Email Parse", "Anomaly Detection"],
     capabilities: [
-      "Ingest portal syncs across 10 HRMS platforms",
-      "Parse email timesheets via NLP pipeline v3.4 (GPT-4o)",
-      "Run 7-check policy validation per submission",
-      "Cross-check OT pre-approvals from portal audit logs",
-      "Detect sandwich leave, consecutive OT patterns, daily cap violations",
-      "Auto-approve at confidence ≥ 95%, all checks green",
-      "Generate structured flag report for every escalation",
-      "Trigger payroll eligibility pre-check on approval",
-      "SLA breach detection and proactive alert to RELAY",
-    ],
-    triggers: [
-      "Portal sync event (15 min–24 hr per portal config)",
-      "Email received at candidatemanager@buzzworks.com",
-      "Manual reprocess trigger from ops team",
+      "Ingests portal syncs across 10 HRMS platforms",
+      "Parses email timesheets via NLP (GPT-4o backed)",
+      "Runs 7-check policy validation per submission",
+      "Cross-checks OT pre-approvals from portal audit logs",
+      "Detects sandwich leave, consecutive OT, daily cap violations",
+      "Auto-approves at confidence ≥ 95%, all checks green",
+      "Generates structured flag report with policy rule reference",
+      "Triggers payroll eligibility pre-check on approval",
     ],
     outputs: [
       "Auto-approved timesheet → payroll queue",
-      "Flag report → ops inbox (with policy rule ref + recommended action)",
-      "SLA risk alert → Agent RELAY for immediate notification",
-      "Anomaly signal → Agent SENTINEL for pattern tracking",
+      "Flag report → ops inbox with recommended action",
+      "SLA risk alert → Rohan for immediate notification",
+      "Anomaly signal → Neha for pattern tracking",
     ],
     metrics: {
-      processedToday: 48,
-      processedThisMonth: 636,
-      successRate: 99.2,
+      processedToday:   48,
+      autoApproved:    266,
+      flagged:          24,
       avgProcessingMs: 1420,
-      autoApproved: 266,
-      flagged: 24,
-      escalated: 9,
-      emailsParsed: 38,
     },
     metricsLabels: [
-      { key: "processedToday",    label: "Processed today",        format: "count" },
-      { key: "processedThisMonth",label: "This month",             format: "count" },
-      { key: "autoApproved",      label: "Auto-approved",          format: "count" },
-      { key: "flagged",           label: "Flagged",                format: "count" },
-      { key: "emailsParsed",      label: "Emails parsed",          format: "count" },
-      { key: "avgProcessingMs",   label: "Avg processing",         format: "ms" },
-      { key: "successRate",       label: "Parse success",          format: "pct" },
-      { key: "escalated",         label: "Escalated to ops",       format: "count" },
+      { key: "processedToday",   label: "Processed Today",  format: "count" },
+      { key: "autoApproved",     label: "Auto-Approved",    format: "count" },
+      { key: "flagged",          label: "Flagged",          format: "count" },
+      { key: "avgProcessingMs",  label: "Avg. Processing",  format: "ms"    },
     ],
-    lastAction: "Auto-approved ts015 (LTI / Ravi Menon) — email parsed, 5/5 checks passed, OT pre-auth confirmed in thread #LTI-OT-0407",
-    lastActionAt: "2026-04-07T09:22:14Z",
-    model: "GPT-4o (NLP parse) + rule engine (validation)",
+    lastAction:   "Auto-approved 3 timesheets from DIN portal sync",
+    lastActionAt: "2 min ago",
     recentLogs: [
-      { timestamp:"09:22", action:"Auto-approve",   outcome:"success",   detail:"ts015 · LTI / Ravi Menon · email · confidence 95%" },
-      { timestamp:"09:01", action:"Auto-approve",   outcome:"success",   detail:"ts010 · IBP / Rajesh Pillai · portal · confidence 99%" },
-      { timestamp:"08:50", action:"Flag → escalate",outcome:"flagged",   detail:"ts001 · TCI / Rahul Sharma · OT pre-approval missing" },
-      { timestamp:"08:34", action:"Auto-approve",   outcome:"success",   detail:"ts013 · GSS / Arjun Kumar · portal · OT pre-auth confirmed" },
-      { timestamp:"08:11", action:"Auto-approve",   outcome:"success",   detail:"ts009 · HEX / Suresh Nair · portal · confidence 98%" },
-      { timestamp:"07:58", action:"Auto-approve",   outcome:"success",   detail:"ts012 · TCI / Rahul Sharma · portal · 22nd consecutive clean" },
+      { timestamp: "09:42", action: "Auto-approved",  outcome: "success",   detail: "Dinesh Kumar · Dine-In Brands · 44h standard" },
+      { timestamp: "09:40", action: "Flagged",        outcome: "flagged",   detail: "Rahul Verma · OT cap exceeded (12h → 14h)" },
+      { timestamp: "09:35", action: "Auto-approved",  outcome: "success",   detail: "Sneha Rao · TechCorp India · 40h standard" },
+      { timestamp: "09:28", action: "Escalated",      outcome: "escalated", detail: "Ankit Mehta · Missing work order ref #WO-2204" },
+      { timestamp: "09:15", action: "Auto-approved",  outcome: "success",   detail: "Priya Das · Swiggy · 38h standard" },
     ],
   },
 
+  // ── Asha Menon — Compliance ───────────────────────────────────────────────
   {
-    id: "echo",
-    name: "Agent ECHO",
-    codename: "ECHO",
-    version: "v1.3",
-    domain: "Exit Lifecycle · Asset Clearance · FnF Processing",
-    tagline: "No employee exits without ECHO completing the clearance chain",
+    id:       "asha",
+    name:     "Asha Menon",
+    initials: "AM",
+    codename: "ASHA",
+    version:  "v1.3",
+    category: "compliance",
+    tagline:  "Real-time regulatory intelligence for IT and blue-collar contract workforce",
     description:
-      "Agent ECHO monitors all employment status changes across every client. The moment an employee transitions to 'notice' or 'ended', ECHO activates the exit lifecycle workflow: it queries the client's asset and equipment registry to calculate the total cost of items in the employee's inventory, applies the client's specific exit policy (garden leave, notice period pay-out, asset recovery timeline), places an immediate salary hold, and coordinates with the client's HR team to initiate and track Full & Final settlement. ECHO owns the entire process until FnF is marked complete and the hold is released.",
-    color: "#C89060",
-    bgColor: "rgba(200,144,96,0.08)",
-    icon: UserMinus,
-    status: "active",
+      "Asha monitors regulatory changes from EPFO, Labour Ministry, ESIC, Income Tax Department, and state labour boards that affect contract workers. She distinguishes between IT and blue-collar workforce rules, maps changes to affected clients, and surfaces a compliance feed on each client page with deep links to authoritative government sources.",
+    color:   "#34D399",
+    bgColor: "rgba(52,211,153,0.08)",
+    icon:    Scale,
+    status:  "active",
+    tags:    ["Regulatory", "EPFO", "Labour Law", "ESIC", "IT Compliance", "Blue-Collar"],
     capabilities: [
-      "Monitor employment_status changes → 'notice' or 'ended' events",
-      "Query client asset/equipment registry for employee inventory",
-      "Calculate replacement cost and depreciated value of allocated assets",
-      "Apply client-specific exit policy (notice period, garden leave, buyout)",
-      "Place salary hold with reason code EXT-001 on exit detection",
-      "Generate FnF statement draft (salary payable, deductions, gratuity if applicable)",
-      "Email HR + payroll + account manager with exit clearance checklist",
-      "Track asset return status — release hold only on full clearance",
-      "Escalate if FnF is not processed within client SLA (typically 45 days)",
-    ],
-    triggers: [
-      "employment_status field changes to 'notice' or 'ended'",
-      "Notice period end date crossed without status update",
-      "Manual trigger from ops for retrospective exit processing",
+      "Monitors EPFO, Labour Ministry, ESIC, Income Tax portals daily",
+      "Tracks state labour board notifications (18 states covered)",
+      "Classifies updates by worker category: IT vs. blue-collar",
+      "Maps policy changes to affected clients by worker type and region",
+      "Generates plain-English impact summaries with deep links",
+      "Stores structured updates in compliance vector DB for semantic search",
+      "Alerts clients via feed on their dashboard page",
     ],
     outputs: [
-      "Salary HOLD placed → payroll system (reason: EXT-001)",
-      "Exit clearance checklist → HR + manager + account manager (email)",
-      "FnF draft statement → finance team",
-      "Asset recovery request → client IT/admin portal",
-      "HOLD released → payroll queue once all clearances confirmed",
+      "Compliance feed per client page (filtered by worker type)",
+      "Weekly regulatory digest → Rohan for AM distribution",
+      "Vector DB update → Neha for cross-validation enrichment",
+      "Critical alert → ops inbox for immediate review",
     ],
     metrics: {
-      processedToday: 0,
-      processedThisMonth: 3,
-      successRate: 100,
-      avgProcessingMs: 4200,
-      activeExits: 3,
-      fnfPending: 2,
-      fnfCompleted: 1,
-      assetsOnHoldInr: 420000,
-      salaryHolds: 3,
+      updatesThisMonth:  14,
+      clientsAlerted:    31,
+      sourcesMonitored:  22,
+      avgAlertDelay:     4,
     },
     metricsLabels: [
-      { key: "activeExits",        label: "Active exits",           format: "count" },
-      { key: "fnfPending",         label: "FnF pending",            format: "count" },
-      { key: "fnfCompleted",       label: "FnF completed (month)",  format: "count" },
-      { key: "salaryHolds",        label: "Salary holds active",    format: "count" },
-      { key: "assetsOnHoldInr",    label: "Asset value on hold",    format: "inr" },
-      { key: "processedThisMonth", label: "Exits processed (month)",format: "count" },
-      { key: "successRate",        label: "Clearance rate",         format: "pct" },
-      { key: "avgProcessingMs",    label: "Avg FnF initiation",     format: "ms" },
+      { key: "updatesThisMonth", label: "Policy Updates",    format: "count" },
+      { key: "clientsAlerted",  label: "Clients Alerted",   format: "count" },
+      { key: "sourcesMonitored",label: "Sources Monitored", format: "count" },
+      { key: "avgAlertDelay",   label: "Avg. Alert Delay",  format: "ms"    },
     ],
-    lastAction: "Placed salary HOLD for Sonia Das (FHL0002) — on notice period, FnF checklist emailed to finance@financehub.co",
-    lastActionAt: "2026-04-09T09:30:00Z",
-    model: "Rule engine + document generation (GPT-4o)",
+    lastAction:   "Indexed EPFO circular on increased PF wage ceiling",
+    lastActionAt: "3 hrs ago",
     recentLogs: [
-      { timestamp:"09:30", action:"Salary HOLD placed",   outcome:"hold",    detail:"Sonia Das (FHL0002) · on notice · FnF initiated" },
-      { timestamp:"09:28", action:"Asset query",          outcome:"success",  detail:"FHL asset registry queried · 1 laptop, 1 access card · ₹92,000 value" },
-      { timestamp:"09:25", action:"Email dispatched",     outcome:"success",  detail:"Exit checklist sent to finance@financehub.co + hr@financehub.co" },
-      { timestamp:"Mar 22","action":"FnF released",       outcome:"success",  detail:"Vikram Singh (MSH0001 prev exit) · all assets returned · hold lifted" },
-      { timestamp:"Mar 15", action:"Salary HOLD placed",  outcome:"hold",    detail:"Exit detected for emp022 (CGI0088) · query asset registry" },
+      { timestamp: "06:30", action: "Indexed",  outcome: "success",  detail: "EPFO Circular 2025/04 · PF wage ceiling ₹21,000" },
+      { timestamp: "Yesterday", action: "Alerted", outcome: "success", detail: "Karnataka Shops Act amendment — 16 clients affected" },
+      { timestamp: "Apr 12", action: "Indexed",  outcome: "success",  detail: "Income Tax TDS Section 194C — contract payment threshold" },
+      { timestamp: "Apr 10", action: "Flagged",  outcome: "flagged",  detail: "ESIC coverage ambiguity for gig workers — pending clarification" },
+    ],
+    policyFeed: [
+      {
+        date:            "Apr 15, 2026",
+        source:          "EPFO",
+        category:        "Provident Fund",
+        title:           "PF Wage Ceiling Revised to ₹21,000 (Effective May 1)",
+        impact:          "All blue-collar contract workers currently at ₹15,000 ceiling will see revised PF deductions. Payroll templates need updating before the May cycle.",
+        url:             "https://www.epfindia.gov.in",
+        clientsAffected: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket"],
+      },
+      {
+        date:            "Apr 12, 2026",
+        source:          "Income Tax Dept.",
+        category:        "TDS",
+        title:           "TDS Threshold for Contract Payments Raised to ₹1 Lakh/Year",
+        impact:          "IT contract workers below ₹1L annual contract value now exempt from TDS Section 194C. Update vendor payment configurations for impacted contractors.",
+        url:             "https://incometaxindia.gov.in",
+        clientsAffected: ["TechCorp India", "Infosys BPO", "Wipro GE"],
+      },
+      {
+        date:            "Apr 10, 2026",
+        source:          "Karnataka Govt.",
+        category:        "Labour Law",
+        title:           "Karnataka Shops & Establishments Act — Amended Overtime Rules",
+        impact:          "OT rate for blue-collar workers in Karnataka increased from 1.5x to 2x for hours beyond 9hrs/day. Mark's OT validation rule set for Bangalore clients requires update.",
+        url:             "https://labour.karnataka.gov.in",
+        clientsAffected: ["Dine-In Brands", "Swiggy", "Urban Company"],
+      },
+      {
+        date:            "Apr 8, 2026",
+        source:          "ESIC",
+        category:        "ESI",
+        title:           "ESIC Circular: Gig Worker Coverage Framework (Consultation Draft)",
+        impact:          "Draft proposes mandatory ESI for platform gig workers earning ₹21,000+/month. Currently in consultation; no action required but monitor for final notification.",
+        url:             "https://www.esic.in",
+        clientsAffected: ["Swiggy", "Zomato", "Urban Company", "BigBasket"],
+      },
     ],
   },
 
+  // ── Priya Nair — Communication ────────────────────────────────────────────
   {
-    id: "sentinel",
-    name: "Agent SENTINEL",
-    codename: "SENTINEL",
-    version: "v1.0",
-    domain: "Manager Intelligence · Sentiment Analysis · Hidden Rating",
-    tagline: "Surfacing what managers signal but never say",
+    id:       "priya",
+    name:     "Priya Nair",
+    initials: "PN",
+    codename: "PRIYA",
+    version:  "v1.8",
+    category: "communication",
+    tagline:  "Canned, context-aware emails for every ops workflow — one click to send",
     description:
-      "Agent SENTINEL operates silently in the background, building a behavioural intelligence layer on top of every manager interaction in the system. It analyses approval/rejection patterns, response latency on flagged timesheets, tone of email communications forwarded through the platform, and the correlation between manager actions and employee attrition signals. SENTINEL produces an internal 'manager reliability score' — invisible to the client — that informs Agent Mark's trust tier calculations. It also detects early attrition risk by tracking sentiment drift in employee-submitted notes and manager-added comments over time.",
-    color: "#7090C8",
-    bgColor: "rgba(112,144,200,0.08)",
-    icon: Brain,
-    status: "active",
+      "Priya composes pre-filled, context-aware emails triggered by workflow events: OT flag, missing document, SLA breach, approval confirmation. Each template pulls live data (employee name, hours, rule reference) and presents a ready-to-send email requiring only one click from the ops team. Reduces email drafting from 8–12 min to under 10 seconds.",
+    color:   "#C084FC",
+    bgColor: "rgba(192,132,252,0.08)",
+    icon:    Mail,
+    status:  "active",
+    tags:    ["Email", "HR Outreach", "OT Flag", "SLA Breach", "Document Request"],
     capabilities: [
-      "Track manager approval/rejection latency per client",
-      "Sentiment analysis on manager email responses (GPT-4o)",
-      "Detect bias patterns — selective fast-tracking or chronic delays by manager",
-      "Build internal manager reliability score (0–100, not exposed to client)",
-      "Correlate approval speed with employee tenure and attrition risk",
-      "Detect employee distress signals in timesheet submission notes",
-      "Flag managers with consistent rejection patterns for ops review",
-      "Feed trust tier calculation for Agent Mark auto-approval decisions",
-      "Generate quarterly Manager Intelligence Report for Buzzworks leadership",
-    ],
-    triggers: [
-      "Any manager approval, rejection, or delay action",
-      "Email received with manager CC containing sentiment-triggering language",
-      "Weekly scheduled scan of all manager action history",
-      "Employee attrition signal detected (status → notice)",
+      "Composes emails for 12 standard ops workflow triggers",
+      "Pulls live employee and timesheet data into templates",
+      "CC/BCC routing logic for manager, HR, client AM",
+      "Tracks send history and open status per email",
+      "Escalation re-send if no response within SLA window",
+      "Supports custom per-client email tone and signature",
     ],
     outputs: [
-      "Manager reliability score → Agent Mark trust tier engine",
-      "Attrition risk flag → ops + account manager alert",
-      "Sentiment report → Buzzworks leadership (monthly)",
-      "Bias pattern alert → ops inbox (actionable insight)",
+      "Ready-to-send email → ops team review queue",
+      "Send confirmation + tracking log → Rohan for digest",
+      "Escalation trigger if no response in SLA window",
     ],
     metrics: {
-      processedToday: 12,
-      processedThisMonth: 218,
-      successRate: 97.4,
-      avgProcessingMs: 890,
-      managersTracked: 47,
-      attritionRisks: 3,
-      biasAlertsThisMonth: 2,
-      avgManagerScore: 78,
+      sentThisMonth: 148,
+      avgDraftTime:  8,
+      openRate:      74,
+      pendingApproval: 5,
     },
     metricsLabels: [
-      { key: "managersTracked",     label: "Managers tracked",        format: "count" },
-      { key: "avgManagerScore",     label: "Avg manager reliability", format: "count" },
-      { key: "attritionRisks",      label: "Attrition risks flagged", format: "count" },
-      { key: "biasAlertsThisMonth", label: "Bias alerts (month)",     format: "count" },
-      { key: "processedThisMonth",  label: "Actions analysed (month)",format: "count" },
-      { key: "processedToday",      label: "Actions today",           format: "count" },
-      { key: "successRate",         label: "Confidence rate",         format: "pct" },
-      { key: "avgProcessingMs",     label: "Avg analysis time",       format: "ms" },
+      { key: "sentThisMonth",    label: "Sent This Month",  format: "count" },
+      { key: "openRate",         label: "Open Rate",        format: "pct"   },
+      { key: "pendingApproval",  label: "Pending Send",     format: "count" },
+      { key: "avgDraftTime",     label: "Avg. Draft (sec)", format: "ms"    },
     ],
-    lastAction: "Attrition risk flag raised — emp007 (FHL / Sonia Das) sentiment drift detected over 6 weeks; now confirmed on notice",
-    lastActionAt: "2026-04-09T10:15:00Z",
-    model: "GPT-4o (sentiment) + statistical pattern engine",
+    lastAction:   "Drafted OT excess notification for Rahul Verma",
+    lastActionAt: "9 min ago",
     recentLogs: [
-      { timestamp:"10:15", action:"Attrition risk flagged", outcome:"escalated", detail:"Sonia Das (FHL0002) — 6-week negative sentiment drift confirmed" },
-      { timestamp:"09:40", action:"Manager score updated",  outcome:"success",   detail:"mgr@techcorp.in · score 72 → 68 · 3 consecutive delayed approvals" },
-      { timestamp:"08:00", action:"Weekly scan",            outcome:"success",   detail:"47 managers scanned · 2 bias patterns identified" },
-      { timestamp:"Apr 7", action:"Bias alert raised",      outcome:"flagged",   detail:"MGR-HEX-014 · approving own team 40% faster than cross-team" },
-      { timestamp:"Apr 5", action:"Sentiment analysis",     outcome:"success",   detail:"18 manager emails processed · avg sentiment +0.62" },
+      { timestamp: "09:41", action: "Drafted",  outcome: "success",  detail: "OT flag — Rahul Verma · Dine-In Brands · ready to send" },
+      { timestamp: "09:15", action: "Sent",     outcome: "success",  detail: "Document request — Ankit Mehta · WO ref missing" },
+      { timestamp: "Yesterday", action: "Sent", outcome: "success",  detail: "SLA breach alert — TechCorp India · 3 timesheets pending 5d" },
+      { timestamp: "Apr 13", action: "Escalated", outcome: "escalated", detail: "No response from Swiggy HR after 48h — re-sent" },
+    ],
+    emailTemplates: [
+      {
+        trigger:   "OT Cap Exceeded",
+        recipient: "Employee + HR Manager",
+        subject:   "Action Required: Overtime Approval Needed — [Employee Name]",
+        preview:   "Hi [Manager Name], Timesheet for [Employee] on [Date] shows [X] hours OT exceeding the approved [Y]h cap for [Client]. Please review and approve or adjust before [SLA Date].",
+      },
+      {
+        trigger:   "Missing Document",
+        recipient: "Employee + Recruiter",
+        subject:   "Document Pending: Work Order Reference Missing — [Employee Name]",
+        preview:   "Hi [Employee Name], We noticed your timesheet submission for [Period] is missing a work order reference. Please submit WO# to candidatemanager@buzzworks.com by [Date].",
+      },
+      {
+        trigger:   "SLA Breach Warning",
+        recipient: "Client AM + Internal Ops",
+        subject:   "SLA Alert: [X] Timesheets Pending Approval — [Client Name]",
+        preview:   "Hi [AM Name], There are [X] timesheets for [Client] that have been pending approval for [N] days, approaching the [SLA] SLA. Please action or escalate.",
+      },
+      {
+        trigger:   "Auto-Approval Confirmation",
+        recipient: "Employee (CC: Manager)",
+        subject:   "Timesheet Approved: [Period] — [Employee Name]",
+        preview:   "Hi [Employee Name], Your timesheet for [Period] ([X] hours) has been reviewed and approved. It has been queued for payroll processing. No further action needed.",
+      },
     ],
   },
 
+  // ── Rohan Kapoor — Communication ─────────────────────────────────────────
   {
-    id: "relay",
-    name: "Agent RELAY",
+    id:       "rohan",
+    name:     "Rohan Kapoor",
+    initials: "RK",
     codename: "RELAY",
-    version: "v1.1",
-    domain: "Payroll Communications · Snapshots · Escalation Alerts",
-    tagline: "The right information, to the right person, at the right moment",
+    version:  "v1.5",
+    category: "communication",
+    tagline:  "Payroll digests, alerts, and AM routing — nothing gets missed",
     description:
-      "Agent RELAY is the communications backbone of OpsDesk. It assembles and dispatches payroll status snapshots to the Buzzworks ops team and client account managers at configurable intervals — daily digest, cycle close alert, and critical escalations. RELAY knows which account manager owns which client and routes notifications accordingly. It tracks email delivery confirmations and re-sends failed deliveries. For urgent events (SLA breach imminent, salary hold placed, FnF overdue), RELAY fires an immediate out-of-cycle alert regardless of the digest schedule.",
-    color: "#A78BFA",
-    bgColor: "rgba(167,139,250,0.08)",
-    icon: Send,
-    status: "active",
+      "Rohan handles outbound payroll communications: weekly digests for account managers, payment alerts for employees, and critical routing when anomalies require human escalation. He ensures every stakeholder gets the right information at the right time without ops team manually composing status updates.",
+    color:   "#FBBF24",
+    bgColor: "rgba(251,191,36,0.08)",
+    icon:    Send,
+    status:  "active",
+    tags:    ["Payroll Alerts", "Digest", "AM Routing", "Notifications"],
     capabilities: [
-      "Compile payroll snapshot: pending by client, holds with reasons, amounts",
-      "Daily end-of-day digest to ops team and per-client account managers",
-      "Cycle close alert (48h before payroll deadline) with action checklist",
-      "Immediate escalation for SLA breach, salary hold, FnF overdue",
-      "Delivery tracking — re-send on failure with ops notification",
-      "Customisable DL routing per client account manager",
-      "Attach formatted PDF snapshot to digest emails",
-      "Integration with Agent ECHO for exit hold notifications",
-      "Integration with Agent NEXUS for data completeness alerts",
-    ],
-    triggers: [
-      "Scheduled: daily 18:00 IST for digest",
-      "Scheduled: 48h before payroll cycle close",
-      "Event-driven: SLA breach imminent (from Agent Mark)",
-      "Event-driven: salary hold placed (from Agent ECHO or NEXUS)",
-      "Event-driven: FnF overdue > 45 days (from Agent ECHO)",
-      "Manual trigger from ops dashboard",
+      "Weekly payroll digest for each account manager",
+      "Real-time payment confirmation notifications to employees",
+      "Anomaly escalation routing to relevant AM or ops lead",
+      "Compliance digest distribution (sourced from Asha)",
+      "SLA breach alerts from Mark escalated immediately",
+      "Holiday / pay cycle calendar reminders to clients",
     ],
     outputs: [
-      "Daily digest email → ops team + account managers",
-      "Cycle close alert email → ops team",
-      "Critical alert email → specific account manager + Riya Shah",
-      "PDF payroll snapshot attachment",
-      "Delivery confirmation log → OpsDesk audit trail",
+      "Weekly AM digest → email + in-app",
+      "Payment confirmation → employee SMS / email",
+      "Anomaly escalation → designated ops lead",
+      "Compliance digest → AMs weekly",
     ],
     metrics: {
-      processedToday: 3,
-      processedThisMonth: 94,
-      successRate: 99.8,
-      avgProcessingMs: 340,
-      digestsSent: 28,
-      criticalAlerts: 6,
-      deliveryFailures: 1,
-      uniqueRecipients: 14,
+      digestsSentThisMonth: 62,
+      alertsRouted:         19,
+      escalations:           4,
+      avgDeliveryMs:       320,
     },
     metricsLabels: [
-      { key: "digestsSent",       label: "Digests sent (month)",     format: "count" },
-      { key: "criticalAlerts",    label: "Critical alerts (month)",  format: "count" },
-      { key: "uniqueRecipients",  label: "Unique recipients",        format: "count" },
-      { key: "deliveryFailures",  label: "Delivery failures",        format: "count" },
-      { key: "processedThisMonth",label: "Total dispatched (month)", format: "count" },
-      { key: "processedToday",    label: "Dispatched today",         format: "count" },
-      { key: "successRate",       label: "Delivery success",         format: "pct" },
-      { key: "avgProcessingMs",   label: "Avg compile time",         format: "ms" },
+      { key: "digestsSentThisMonth", label: "Digests Sent",    format: "count" },
+      { key: "alertsRouted",         label: "Alerts Routed",   format: "count" },
+      { key: "escalations",          label: "Escalations",     format: "count" },
+      { key: "avgDeliveryMs",        label: "Avg. Delivery",   format: "ms"    },
     ],
-    lastAction: "Dispatched daily digest to ops@buzzworks.com + 6 account managers — 636 timesheets, 9 holds, 8 batches summary",
-    lastActionAt: "2026-04-09T18:00:00Z",
-    model: "Template engine + GPT-4o (narrative summary)",
+    lastAction:   "Sent weekly payroll digest to 8 account managers",
+    lastActionAt: "1 hr ago",
     recentLogs: [
-      { timestamp:"18:00", action:"Daily digest sent",      outcome:"success",   detail:"8 account managers · 636 timesheets · 9 holds · ₹4.03Cr payroll" },
-      { timestamp:"14:30", action:"Critical alert",         outcome:"escalated", detail:"LTI batch — 4 on-hold employees · SLA breach risk in 6h" },
-      { timestamp:"09:31", action:"Hold notification",      outcome:"success",   detail:"FHL payroll hold (Sonia Das FnF) → finance@financehub.co" },
-      { timestamp:"Apr 8", action:"Cycle close alert",      outcome:"success",   detail:"Payroll cycle closes Apr 11 · 23 timesheets pending approval" },
-      { timestamp:"Apr 7", action:"Daily digest sent",      outcome:"success",   detail:"7 account managers · 598 timesheets · 12 holds" },
+      { timestamp: "08:00", action: "Sent digest",    outcome: "success",  detail: "Weekly payroll digest — 8 AMs, 34 clients covered" },
+      { timestamp: "Yesterday", action: "Escalated",  outcome: "escalated", detail: "Anomaly: duplicate bank account detected — routed to Riya Shah" },
+      { timestamp: "Apr 14", action: "Alerted",       outcome: "success",  detail: "Payment confirmations — 212 employees notified" },
+      { timestamp: "Apr 13", action: "Sent digest",   outcome: "success",  detail: "Compliance digest (Asha) — forwarded to all AMs" },
     ],
   },
 
+  // ── Neha Iyer — Data ─────────────────────────────────────────────────────
   {
-    id: "nexus",
-    name: "Agent NEXUS",
+    id:       "neha",
+    name:     "Neha Iyer",
+    initials: "NI",
     codename: "NEXUS",
-    version: "v1.0",
-    domain: "Data Completeness · Payroll Eligibility · Fraud Detection",
-    tagline: "No incomplete or fraudulent record reaches payroll",
+    version:  "v1.9",
+    category: "data",
+    tagline:  "PAN, bank, and work order integrity — fraud patterns caught before payroll",
     description:
-      "Agent NEXUS is the last line of defence before any employee enters the payroll queue. It validates data completeness — PAN, bank account, IFSC, work order number — and blocks payroll silently if any critical field is missing. It runs a cross-employee banking fraud check, flagging cases where the same account number is claimed by multiple employees. It also validates work order numbers against the client's active work order registry and detects identity mismatches between Buzzworks' employee_id and the client's client_employee_id. NEXUS updates the eligibility flag in real-time and triggers Agent RELAY to notify the affected employee's HR contact.",
-    color: "#10B981",
-    bgColor: "rgba(16,185,129,0.08)",
-    icon: Database,
-    status: "active",
+      "Neha validates the integrity of employee master data: PAN cross-checks against IT dept records, bank account uniqueness, work order references. She surfaces duplicate records, mismatched PAN–name pairs, and anomalous work patterns that may indicate time fraud. Flags are raised before payroll is processed.",
+    color:   "#38BDF8",
+    bgColor: "rgba(56,189,248,0.08)",
+    icon:    Database,
+    status:  "idle",
+    tags:    ["PAN Validation", "Bank Verification", "Fraud Detection", "Data Integrity"],
     capabilities: [
-      "Validate PAN presence and basic checksum format for all employees",
-      "Validate bank account + IFSC code before every payroll run",
-      "Cross-employee banking fraud detection — duplicate account flagging",
-      "Work order number validation against client's active WO registry",
-      "Identity consistency check: employee_id ↔ client_employee_id",
-      "Payroll eligibility gate: is_active + contract + WO + no violations + manager approved",
-      "Real-time hold placement with reason code (PRP-002, WOV-003, DCM-007, etc.)",
-      "Trigger RELAY to notify HR contact for each data hold",
-      "Daily sweep — re-check all held employees for data completion",
-    ],
-    triggers: [
-      "Pre-payroll run eligibility check (each batch)",
-      "New employee onboarded (immediate completeness check)",
-      "Daily 06:00 IST sweep of all active employees",
-      "Manual trigger from ops for specific employee or batch",
+      "PAN verification against Income Tax department API",
+      "Bank account uniqueness check across employee pool",
+      "Work order reference integrity validation",
+      "Duplicate employee detection across clients",
+      "Anomalous billing pattern detection (hours vs. project scope)",
+      "Regular master data quality scoring per client",
     ],
     outputs: [
-      "Payroll eligibility flag (eligible / blocked) per employee",
-      "Salary HOLD with reason code → payroll system",
-      "Data completeness alert → HR contact via Agent RELAY",
-      "Banking fraud alert → ops + compliance team (urgent)",
-      "Identity mismatch report → account manager",
+      "Data flag → ops inbox with exact mismatch detail",
+      "Integrity score per client → Reports dashboard",
+      "Fraud pattern alert → Rohan for immediate escalation",
+      "Clean record confirmation → payroll clearance",
     ],
     metrics: {
-      processedToday: 186,
-      processedThisMonth: 4820,
-      successRate: 99.6,
-      avgProcessingMs: 210,
-      bankHolds: 3,
-      workOrderGaps: 2,
-      duplicateAccounts: 1,
-      panMissing: 0,
-      eligibilityBlocked: 9,
+      checksRunThisMonth: 1840,
+      flagsRaised:          12,
+      fraudPatterns:         2,
+      dataScore:            96,
     },
     metricsLabels: [
-      { key: "eligibilityBlocked", label: "Payroll blocked",         format: "count" },
-      { key: "bankHolds",          label: "Bank detail holds",       format: "count" },
-      { key: "workOrderGaps",      label: "Work order gaps",         format: "count" },
-      { key: "duplicateAccounts",  label: "Duplicate accounts",      format: "count" },
-      { key: "panMissing",         label: "PAN missing",             format: "count" },
-      { key: "processedToday",     label: "Checks today",            format: "count" },
-      { key: "successRate",        label: "Check pass rate",         format: "pct" },
-      { key: "avgProcessingMs",    label: "Avg check time",          format: "ms" },
+      { key: "checksRunThisMonth", label: "Checks This Month", format: "count" },
+      { key: "flagsRaised",        label: "Flags Raised",      format: "count" },
+      { key: "fraudPatterns",      label: "Fraud Patterns",    format: "count" },
+      { key: "dataScore",          label: "Data Score",        format: "pct"   },
     ],
-    lastAction: "Duplicate bank account detected — emp031 and emp044 (both GSS) share account ••••5521 — banking fraud alert dispatched to compliance",
-    lastActionAt: "2026-04-09T06:18:00Z",
-    model: "Deterministic rule engine + fuzzy match (account dedup)",
+    lastAction:   "Completed monthly PAN sweep — 1,840 records clean",
+    lastActionAt: "4 hrs ago",
     recentLogs: [
-      { timestamp:"06:18", action:"Fraud flag raised",      outcome:"escalated", detail:"Duplicate bank ••••5521 · emp031 + emp044 (GSS) · compliance notified" },
-      { timestamp:"06:02", action:"Daily sweep complete",   outcome:"success",   detail:"4,820 employees checked · 9 blocked · 3 bank holds · 2 WO gaps" },
-      { timestamp:"Apr 8", action:"Work order hold",        outcome:"hold",      detail:"emp028 (LTI0044) · WO-2603 expired · salary blocked" },
-      { timestamp:"Apr 8", action:"Data hold lifted",       outcome:"success",   detail:"emp019 (HEX0821) · IFSC updated by HR · payroll eligibility restored" },
-      { timestamp:"Apr 7", action:"PAN validation",         outcome:"success",   detail:"186 employees validated · 0 missing PAN · all format checks pass" },
+      { timestamp: "05:00", action: "Completed sweep", outcome: "success",  detail: "Monthly PAN + bank verification — 1,840 records" },
+      { timestamp: "Apr 14", action: "Flagged",        outcome: "flagged",  detail: "Duplicate bank account: Suresh K and Suresh Kumar (Swiggy)" },
+      { timestamp: "Apr 13", action: "Flagged",        outcome: "flagged",  detail: "PAN name mismatch: Anita R vs ANITA ROY in IT records" },
+      { timestamp: "Apr 12", action: "Alerted",        outcome: "escalated", detail: "Suspicious OT pattern — same 4 employees every Friday for 6 weeks" },
     ],
   },
 ]
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function fmtMetric(value: number, format?: string): string {
-  if (format === "pct") return `${value}%`
-  if (format === "ms") {
-    if (value < 1000) return `${value}ms`
-    return `${(value / 1000).toFixed(1)}s`
-  }
-  if (format === "inr") {
-    if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`
-    return `₹${value.toLocaleString("en-IN")}`
-  }
-  return value.toLocaleString("en-IN")
+function fmtMetric(val: number, format?: string) {
+  if (format === "pct") return `${val}%`
+  if (format === "ms")  return val >= 1000 ? `${(val / 1000).toFixed(1)}s` : `${val}ms`
+  return val.toLocaleString()
 }
 
-const outcomeStyle: Record<AgentLog["outcome"], { color: string; label: string }> = {
-  success:   { color: "var(--accent)", label: "✓" },
-  flagged:   { color: "var(--warn)",   label: "⚑" },
-  escalated: { color: "var(--danger)", label: "↑" },
-  hold:      { color: "#A78BFA",       label: "⏸" },
+const OUTCOME_STYLE: Record<LogOutcome, { dot: string; label: string }> = {
+  success:   { dot: "#34D399", label: "Approved"  },
+  flagged:   { dot: "#FBBF24", label: "Flagged"   },
+  escalated: { dot: "#F87171", label: "Escalated" },
+  hold:      { dot: "#94A3B8", label: "Hold"      },
 }
 
-// ─── Fleet status bar ─────────────────────────────────────────────────────────
-
-const totalToday = AGENTS.reduce((s, a) => s + a.metrics.processedToday, 0)
-const activeCount = AGENTS.filter(a => a.status === "active").length
+const CATEGORY_ORDER: AgentCategory[] = ["inspector", "compliance", "communication", "data"]
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AgentsPage() {
-  const [selected, setSelected] = useState<string>(AGENTS[0].id)
-  const agent = AGENTS.find(a => a.id === selected)!
+  const [selectedId, setSelectedId] = useState<string>("mark")
+
+  const agent = AGENTS.find(a => a.id === selectedId)!
+  const catMeta = CATEGORY_META[agent.category]
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden app-bg">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 flex-shrink-0"
-          style={{ borderBottom: "1px solid var(--border)", background: "var(--glass-bg)", backdropFilter: "blur(20px)" }}>
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, rgba(37,99,235,0.3), rgba(75,143,255,0.3))", border: "1px solid rgba(37,99,235,0.2)" }}>
-            <Bot size={16} style={{ color: "var(--accent)" }} />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-[15px] font-bold" style={{ color: "var(--text-1)" }}>AI Agent Fleet</h1>
-            <p className="text-[11px]" style={{ color: "var(--text-3)" }}>
-              5 specialised agents · {activeCount} active · {totalToday} actions today
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-[11px] px-3 py-1.5 rounded-lg font-medium"
-            style={{ background: "var(--accent-dim)", border: "1px solid var(--accent-border)", color: "var(--accent)" }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-dot-blink" style={{ background: "var(--accent)" }} />
-            All systems operational
-          </div>
-        </header>
+      <div className="flex flex-1 min-w-0 overflow-hidden">
 
-        {/* Mobile agent picker — horizontal chip scroll */}
-        <div className="flex sm:hidden items-center gap-2 px-4 py-2 overflow-x-auto flex-shrink-0 scrollbar-none"
-          style={{ borderBottom: "1px solid var(--border)", background: "var(--surface)" }}>
-          {AGENTS.map(a => (
-            <button key={a.id} onClick={() => setSelected(a.id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full flex-shrink-0 text-[11px] font-semibold transition-all"
-              style={{
-                background: selected === a.id ? `${a.color}22` : "var(--surface-hover)",
-                border: `1px solid ${selected === a.id ? a.color + "40" : "var(--border)"}`,
-                color: selected === a.id ? a.color : "var(--text-2)",
-              }}>
-              <a.icon size={11} />
-              {a.name}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex flex-1 overflow-hidden">
-
-          {/* Agent list — left panel */}
-          <div className="hidden sm:block w-44 lg:w-56 flex-shrink-0 overflow-y-auto p-3 space-y-1.5"
-            style={{ borderRight: "1px solid var(--border)" }}>
-            {AGENTS.map(a => (
-              <button
-                key={a.id}
-                onClick={() => setSelected(a.id)}
-                className={clsx("w-full text-left rounded-xl p-3 transition-all")}
-                style={{
-                  background: selected === a.id ? `${a.color}14` : "transparent",
-                  border: selected === a.id ? `1px solid ${a.color}30` : "1px solid transparent",
-                }}
-              >
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${a.color}18`, border: `1px solid ${a.color}25` }}>
-                    <a.icon size={14} style={{ color: a.color }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[12px] font-bold truncate" style={{ color: selected === a.id ? a.color : "var(--text-1)" }}>{a.name}</div>
-                    <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{a.codename} {a.version}</div>
-                  </div>
-                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: a.status === "active" ? "var(--accent)" : a.status === "paused" ? "var(--warn)" : "var(--text-3)" }} />
-                </div>
-                <div className="text-[10px] leading-tight line-clamp-2" style={{ color: "var(--text-3)" }}>{a.domain.split(" · ")[0]}</div>
-              </button>
-            ))}
-          </div>
-
-          {/* Agent detail — right panel */}
-          <div className="flex-1 overflow-y-auto pb-nav lg:pb-0">
-
-            {/* Agent header */}
-            <div className="px-6 py-4 flex-shrink-0" style={{ borderBottom: "1px solid var(--border)", background: `${agent.color}06` }}>
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${agent.color}18`, border: `1px solid ${agent.color}35` }}>
-                  <agent.icon size={26} style={{ color: agent.color }} />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h2 className="text-[18px] font-black" style={{ color: "var(--text-1)" }}>{agent.name}</h2>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold font-mono"
-                      style={{ background: `${agent.color}18`, color: agent.color }}>{agent.version}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-medium capitalize"
-                      style={{ background: agent.status === "active" ? "var(--accent-dim)" : "var(--surface)", color: agent.status === "active" ? "var(--accent)" : "var(--text-2)", border: "1px solid var(--border)" }}>
-                      {agent.status}
-                    </span>
-                  </div>
-                  <div className="text-[12px] font-semibold mt-0.5" style={{ color: agent.color }}>{agent.tagline}</div>
-                  <div className="text-[11px] mt-1" style={{ color: "var(--text-3)" }}>{agent.domain}</div>
-                </div>
-                <div className="hidden lg:flex items-center gap-2">
-                  <button className="btn-ghost text-[12px] flex items-center gap-1.5">
-                    <Pause size={12} /> Pause
-                  </button>
-                  <button className="btn-ghost text-[12px] flex items-center gap-1.5">
-                    <RefreshCw size={12} /> Force run
-                  </button>
-                </div>
-              </div>
-              <p className="text-[12px] mt-3 leading-relaxed" style={{ color: "var(--text-2)" }}>{agent.description}</p>
+        {/* ── Left panel ──────────────────────────────────────────────────── */}
+        <div
+          className="hidden lg:flex flex-col flex-shrink-0 overflow-y-auto"
+          style={{
+            width: 240,
+            background: "var(--surface)",
+            borderRight: "1px solid var(--border)",
+          }}
+        >
+          {/* Header */}
+          <div className="px-4 pt-5 pb-3 flex-shrink-0">
+            <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>AI Agents</div>
+            <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
+              {AGENTS.filter(a => a.status === "active").length} active · {AGENTS.length} total
             </div>
+          </div>
 
-            {/* Key metrics — 4 stats inline */}
-            <div className="flex items-stretch border-b" style={{ borderColor: "var(--border)" }}>
-              {agent.metricsLabels.slice(0, 4).map((ml, i) => (
-                <div key={ml.key} className="flex-1 px-5 py-4" style={{ borderLeft: i > 0 ? "1px solid var(--border)" : "none" }}>
-                  <div className="text-[22px] font-bold" style={{ color: agent.color }}>
-                    {fmtMetric(agent.metrics[ml.key] ?? 0, ml.format)}
+          {/* Categories */}
+          <div className="px-3 pb-4 space-y-5">
+            {CATEGORY_ORDER.map(cat => {
+              const meta    = CATEGORY_META[cat]
+              const members = AGENTS.filter(a => a.category === cat)
+              if (!members.length) return null
+              return (
+                <div key={cat}>
+                  {/* Category label */}
+                  <div
+                    className="flex items-center gap-1.5 px-1 mb-1.5 text-[10px] font-semibold uppercase tracking-wider"
+                    style={{ color: meta.color }}
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                      style={{ background: meta.color }}
+                    />
+                    {meta.label}
                   </div>
-                  <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{ml.label}</div>
-                </div>
-              ))}
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-6">
-
-              {/* Capabilities */}
-              <div className="space-y-4">
-                <div className="glass p-4">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Capabilities</div>
-                  <div className="space-y-2">
-                    {agent.capabilities.map((c, i) => (
-                      <div key={i} className="flex items-start gap-2 text-[12px]">
-                        <CheckCircle2 size={12} className="flex-shrink-0 mt-0.5" style={{ color: agent.color }} />
-                        <span style={{ color: "var(--text-2)" }}>{c}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Triggers */}
-                <div className="glass p-4">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Triggers</div>
-                  <div className="space-y-2">
-                    {agent.triggers.map((t, i) => (
-                      <div key={i} className="flex items-start gap-2 text-[12px]">
-                        <Zap size={11} className="flex-shrink-0 mt-0.5" style={{ color: "var(--warn)" }} />
-                        <span style={{ color: "var(--text-2)" }}>{t}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Outputs */}
-                <div className="glass p-4">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Outputs</div>
-                  <div className="space-y-2">
-                    {agent.outputs.map((o, i) => (
-                      <div key={i} className="flex items-start gap-2 text-[12px]">
-                        <ArrowRight size={11} className="flex-shrink-0 mt-0.5" style={{ color: agent.color }} />
-                        <span style={{ color: "var(--text-2)" }}>{o}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Recent logs + model info */}
-              <div className="space-y-4">
-                <div className="glass overflow-hidden">
-                  <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid var(--border)" }}>
-                    <Activity size={13} style={{ color: agent.color }} />
-                    <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Recent Activity</div>
-                  </div>
-                  <div className="divide-y" style={{ borderColor: "var(--border)" }}>
-                    {agent.recentLogs.map((log, i) => {
-                      const os = outcomeStyle[log.outcome]
+                  {/* Agent rows */}
+                  <div className="space-y-0.5">
+                    {members.map(a => {
+                      const isSelected = a.id === selectedId
+                      const aMeta      = CATEGORY_META[a.category]
                       return (
-                        <div key={i} className="px-4 py-3 flex items-start gap-3">
-                          <span className="text-[13px] font-bold flex-shrink-0 mt-0.5 w-4 text-center" style={{ color: os.color }}>{os.label}</span>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[12px] font-semibold" style={{ color: "var(--text-1)" }}>{log.action}</div>
-                            <div className="text-[11px] mt-0.5 line-clamp-2" style={{ color: "var(--text-2)" }}>{log.detail}</div>
+                        <button
+                          key={a.id}
+                          onClick={() => setSelectedId(a.id)}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all"
+                          style={{
+                            background: isSelected ? aMeta.bg : "transparent",
+                            border:     isSelected ? `1px solid ${aMeta.color}22` : "1px solid transparent",
+                          }}
+                        >
+                          {/* Avatar */}
+                          <div
+                            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-[10px] font-bold"
+                            style={{ background: aMeta.bg, color: aMeta.color }}
+                          >
+                            {a.initials}
                           </div>
-                          <div className="text-[10px] flex-shrink-0 mt-0.5" style={{ color: "var(--text-3)" }}>{log.timestamp}</div>
-                        </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div
+                              className="text-[12px] font-medium truncate"
+                              style={{ color: isSelected ? "var(--text-1)" : "var(--text-2)" }}
+                            >
+                              {a.name}
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span
+                                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                                style={{
+                                  background: a.status === "active" ? "#34D399"
+                                            : a.status === "idle"   ? "var(--text-3)"
+                                            : "#F87171",
+                                }}
+                              />
+                              <span className="text-[10px] truncate" style={{ color: "var(--text-3)" }}>
+                                {a.status === "active" ? "Active" : a.status === "idle" ? "Idle" : "Paused"} · {a.codename}
+                              </span>
+                            </div>
+                          </div>
+                        </button>
                       )
                     })}
                   </div>
                 </div>
+              )
+            })}
+          </div>
+        </div>
 
-                {/* Model info */}
-                <div className="glass p-4">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Model & Runtime</div>
-                  <div className="space-y-2 text-[12px]">
-                    {[
-                      { label: "Model",            value: agent.model },
-                      { label: "Last action",       value: agent.lastActionAt.replace("T", " ").slice(0, 16) + " IST" },
-                      { label: "Last action detail",value: agent.lastAction },
-                    ].map(r => (
-                      <div key={r.label}>
-                        <div className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "var(--text-3)" }}>{r.label}</div>
-                        <div className="leading-snug" style={{ color: "var(--text-2)" }}>{r.value}</div>
-                      </div>
-                    ))}
-                  </div>
+        {/* ── Mobile chip picker ──────────────────────────────────────────── */}
+        <div
+          className="lg:hidden flex gap-2 px-4 py-2.5 border-b overflow-x-auto scrollbar-none flex-shrink-0 absolute top-0 left-0 right-0 z-10"
+          style={{ background: "var(--surface)", borderColor: "var(--border)" }}
+        >
+          {AGENTS.map(a => {
+            const meta = CATEGORY_META[a.category]
+            return (
+              <button
+                key={a.id}
+                onClick={() => setSelectedId(a.id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full flex-shrink-0 text-[11px] font-medium transition-all"
+                style={{
+                  background: selectedId === a.id ? meta.bg : "var(--surface-2)",
+                  color:      selectedId === a.id ? meta.color : "var(--text-2)",
+                  border:     selectedId === a.id ? `1px solid ${meta.color}33` : "1px solid var(--border)",
+                }}
+              >
+                {a.name.split(" ")[0]}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* ── Detail panel ────────────────────────────────────────────────── */}
+        <div className="flex-1 min-w-0 overflow-y-auto">
+
+          {/* Agent header */}
+          <div
+            className="px-6 py-5 border-b flex-shrink-0"
+            style={{ background: "var(--surface)", borderColor: "var(--border)" }}
+          >
+            <div className="flex items-start gap-4">
+              {/* Icon circle */}
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: catMeta.bg }}
+              >
+                <agent.icon size={22} style={{ color: catMeta.color }} />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <span className="text-[18px] font-bold" style={{ color: "var(--text-1)" }}>
+                    {agent.name}
+                  </span>
+                  {/* Category badge */}
+                  <span
+                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                    style={{ background: catMeta.bg, color: catMeta.color }}
+                  >
+                    {catMeta.label}
+                  </span>
+                  {/* Status */}
+                  <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text-3)" }}>
+                    <span
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{
+                        background: agent.status === "active" ? "#34D399"
+                                  : agent.status === "idle"   ? "var(--text-3)"
+                                  : "#F87171",
+                      }}
+                    />
+                    {agent.status === "active" ? "Active" : agent.status === "idle" ? "Idle" : "Paused"}
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded" style={{ background: "var(--surface-2)", color: "var(--text-3)" }}>
+                    {agent.codename} · {agent.version}
+                  </span>
                 </div>
 
-                {/* Fleet cross-agent note */}
-                <div className="rounded-xl p-4" style={{ background: "linear-gradient(135deg, rgba(37,99,235,0.06), rgba(75,143,255,0.06))", border: "1px solid var(--border)" }}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles size={12} style={{ color: "#A78BFA" }} />
-                    <div className="text-[11px] font-semibold" style={{ color: "#A78BFA" }}>Fleet coordination</div>
-                  </div>
-                  <div className="text-[11px] leading-relaxed" style={{ color: "var(--text-2)" }}>
-                    {agent.id === "mark" && "Mark feeds approval signals to SENTINEL and eligibility gates to NEXUS. SLA risk events trigger RELAY for immediate dispatch."}
-                    {agent.id === "echo" && "ECHO fires hold events to NEXUS (payroll eligibility block) and to RELAY (stakeholder notification). SENTINEL receives attrition signals from ECHO."}
-                    {agent.id === "sentinel" && "SENTINEL feeds manager reliability scores to Mark's trust tier engine. Attrition risk flags route to RELAY for account manager alerts."}
-                    {agent.id === "relay" && "RELAY receives triggers from all 4 agents. It is the only agent that produces external communications — all others are internal-only."}
-                    {agent.id === "nexus" && "NEXUS places the final eligibility gate before payroll. Fraud flags are escalated directly to compliance via RELAY, bypassing normal digest scheduling."}
-                  </div>
+                <p className="text-[12px] mt-1 leading-relaxed" style={{ color: "var(--text-2)" }}>
+                  {agent.tagline}
+                </p>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-1.5 mt-2.5">
+                  {agent.tags.map(tag => (
+                    <span
+                      key={tag}
+                      className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                      style={{ background: "var(--surface-2)", color: "var(--text-2)", border: "1px solid var(--border)" }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Metrics row */}
+          <div className="flex border-b" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+            {agent.metricsLabels.map((ml, i) => (
+              <div
+                key={ml.key}
+                className="flex-1 px-5 py-4"
+                style={{ borderLeft: i > 0 ? "1px solid var(--border)" : "none" }}
+              >
+                <div className="text-[22px] font-bold" style={{ color: catMeta.color }}>
+                  {fmtMetric(agent.metrics[ml.key] ?? 0, ml.format)}
+                </div>
+                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{ml.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Body */}
+          <div className="p-5 lg:p-6 space-y-5">
+
+            {/* Description */}
+            <div
+              className="p-4 rounded-xl"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+            >
+              <div className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-3)" }}>
+                About
+              </div>
+              <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-2)" }}>
+                {agent.description}
+              </p>
+            </div>
+
+            {/* Capabilities + Recent Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+              {/* Capabilities */}
+              <div
+                className="p-4 rounded-xl"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              >
+                <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>
+                  Capabilities
+                </div>
+                <ul className="space-y-2">
+                  {agent.capabilities.map((c, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: catMeta.color }} />
+                      <span className="text-[12px] leading-relaxed" style={{ color: "var(--text-2)" }}>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Recent Logs */}
+              <div
+                className="p-4 rounded-xl"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>
+                    Recent Activity
+                  </div>
+                  <span className="text-[10px]" style={{ color: "var(--text-3)" }}>
+                    Last: {agent.lastActionAt}
+                  </span>
+                </div>
+                <ul className="space-y-2.5">
+                  {agent.recentLogs.map((log, i) => {
+                    const os = OUTCOME_STYLE[log.outcome]
+                    return (
+                      <li key={i} className="flex items-start gap-2.5">
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: os.dot }} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[11px] font-medium" style={{ color: "var(--text-1)" }}>
+                              {log.action}
+                            </span>
+                            <span className="text-[10px]" style={{ color: "var(--text-3)" }}>· {log.timestamp}</span>
+                          </div>
+                          <div className="text-[11px] mt-0.5 truncate" style={{ color: "var(--text-3)" }}>
+                            {log.detail}
+                          </div>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            </div>
+
+            {/* Outputs */}
+            <div
+              className="p-4 rounded-xl"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+            >
+              <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>
+                Outputs
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {agent.outputs.map((o, i) => (
+                  <span
+                    key={i}
+                    className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-lg"
+                    style={{ background: "var(--surface-2)", color: "var(--text-2)", border: "1px solid var(--border)" }}
+                  >
+                    <ArrowRight size={11} style={{ color: catMeta.color }} />
+                    {o}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Asha: Policy Feed ─────────────────────────────────────── */}
+            {agent.policyFeed && (
+              <div
+                className="p-4 rounded-xl"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>
+                    Compliance Feed
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+                    style={{ background: "rgba(52,211,153,0.1)", color: "#34D399" }}>
+                    {agent.policyFeed.length} updates
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {agent.policyFeed.map((p, i) => (
+                    <div
+                      key={i}
+                      className="p-3.5 rounded-lg"
+                      style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <span
+                              className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                              style={{ background: "rgba(52,211,153,0.1)", color: "#34D399", border: "1px solid rgba(52,211,153,0.2)" }}
+                            >
+                              {p.source}
+                            </span>
+                            <span className="text-[10px] font-medium" style={{ color: "var(--text-3)" }}>
+                              {p.category}
+                            </span>
+                            <span className="text-[10px]" style={{ color: "var(--text-3)" }}>
+                              · {p.date}
+                            </span>
+                          </div>
+                          <div className="text-[13px] font-semibold leading-snug mb-1.5" style={{ color: "var(--text-1)" }}>
+                            {p.title}
+                          </div>
+                          <p className="text-[12px] leading-relaxed mb-2" style={{ color: "var(--text-2)" }}>
+                            {p.impact}
+                          </p>
+                          {/* Affected clients */}
+                          <div className="flex flex-wrap gap-1.5 mb-2">
+                            {p.clientsAffected.map(c => (
+                              <span
+                                key={c}
+                                className="text-[10px] px-1.5 py-0.5 rounded"
+                                style={{ background: "var(--surface)", color: "var(--text-3)", border: "1px solid var(--border)" }}
+                              >
+                                {c}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      {/* Source link */}
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-medium mt-1 transition-opacity hover:opacity-80"
+                        style={{ color: "#34D399" }}
+                      >
+                        <ExternalLink size={11} />
+                        View on {p.source} official website
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Priya: Email Templates ────────────────────────────────── */}
+            {agent.emailTemplates && (
+              <div
+                className="p-4 rounded-xl"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>
+                    Email Templates
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+                    style={{ background: "rgba(192,132,252,0.1)", color: "#C084FC" }}>
+                    {agent.emailTemplates.length} templates
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {agent.emailTemplates.map((t, i) => (
+                    <div
+                      key={i}
+                      className="p-3.5 rounded-lg"
+                      style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <span
+                              className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                              style={{ background: "rgba(192,132,252,0.1)", color: "#C084FC", border: "1px solid rgba(192,132,252,0.2)" }}
+                            >
+                              {t.trigger}
+                            </span>
+                            <span className="text-[10px]" style={{ color: "var(--text-3)" }}>
+                              → {t.recipient}
+                            </span>
+                          </div>
+                          <div className="text-[12px] font-semibold mb-1.5" style={{ color: "var(--text-1)" }}>
+                            {t.subject}
+                          </div>
+                          <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-2)" }}>
+                            {t.preview}
+                          </p>
+                        </div>
+                        {/* Send button */}
+                        <button
+                          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80"
+                          style={{ background: "rgba(192,132,252,0.12)", color: "#C084FC", border: "1px solid rgba(192,132,252,0.25)" }}
+                        >
+                          <Send size={11} />
+                          Send
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
         </div>
       </div>
+
+      <BottomNav />
     </div>
   )
 }

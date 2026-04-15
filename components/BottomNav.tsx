@@ -18,7 +18,7 @@ const PRIMARY = [
 
 const MORE = [
   { href: "/employees",    icon: Users,      label: "Employees"    },
-  { href: "/policy",       icon: FileText,   label: "Policy"       },
+  { href: "/policy",       icon: FileText,   label: "AI Engine"    },
   { href: "/reports",      icon: BarChart3,  label: "Reports"      },
   { href: "/integrations", icon: Plug,       label: "Integrations" },
   { href: "/agents",       icon: Bot,        label: "AI Agents"    },
