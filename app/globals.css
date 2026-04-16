@@ -122,6 +122,8 @@
 html, body { height: 100%; overflow: hidden; }
 body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
   background: var(--bg);
   color: var(--text-1);
   -webkit-font-smoothing: antialiased;
@@ -135,16 +137,19 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .glass {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .glass-sm {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 .glass-dark {
   background: var(--surface-2);
@@ -199,13 +204,13 @@ body {
 /* ── Table rows ──────────────────────────────────────────── */
 .ts-row {
   border-bottom: 1px solid var(--border);
-  transition: background 0.12s ease;
+  transition: background 0.15s ease;
   cursor: pointer;
 }
-.ts-row:hover { background: var(--accent-dim); }
+.ts-row:hover { background: var(--surface-2); }
 .ts-row.selected {
   background: var(--accent-dim);
-  border-left: 2px solid var(--accent);
+  border-left: 3px solid var(--accent);
 }
 
 /* ── Nav active indicator ────────────────────────────────── */
@@ -221,11 +226,11 @@ body {
 /* ── Input styles ────────────────────────────────────────── */
 .glass-input {
   background: var(--surface-2);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text-1);
   font-size: 13px;
-  padding: 8px 12px;
+  padding: 9px 14px;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
   width: 100%;
@@ -244,7 +249,7 @@ select.glass-input option { background: var(--surface); color: var(--text-1); }
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
-  padding: 8px 18px;
+  padding: 10px 20px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -256,15 +261,15 @@ select.glass-input option { background: var(--surface); color: var(--text-1); }
 .btn-ghost {
   background: var(--surface);
   color: var(--text-2);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 8px 16px;
+  padding: 10px 18px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.btn-ghost:hover { background: var(--surface-hover); color: var(--text-1); }
+.btn-ghost:hover { background: var(--surface-hover); color: var(--text-1); border-color: var(--border-strong); }
 
 .btn-coral {
   background: var(--danger-bg);
