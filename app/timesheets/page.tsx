@@ -2,790 +2,513 @@
 
 import { useState, useMemo } from "react"
 import Sidebar from "@/components/Sidebar"
-import AIAgentOrb from "@/components/AIAgentOrb"
+import BottomNav from "@/components/BottomNav"
 import {
   timesheets as allTimesheets,
   getEmployee,
   getClient,
   clients,
 } from "@/lib/mock-data"
-import type { Timesheet, TimesheetStatus, TimesheetSource, ValidationResult } from "@/lib/types"
+import type { TimesheetStatus } from "@/lib/types"
 import {
-  Search,
-  X,
-  Check,
-  Flag,
-  ThumbsDown,
-  Mail,
-  Globe,
-  Edit3,
-  ChevronDown,
-  ChevronRight,
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  Clock,
-  ArrowUpDown,
-  Download,
-  Filter,
-  Sparkles,
-  RefreshCw,
-  Bell,
+  Search, Check, Flag, X, CheckCircle2, XCircle,
+  AlertTriangle, Clock, Mail, Globe, Edit3,
+  ChevronDown, Sparkles,
 } from "lucide-react"
-import clsx from "clsx"
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-function getInitials(name: string) {
-  return name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+type ActionCategory = "all" | "timesheets" | "compliance" | "documents" | "payroll"
+
+interface BulkRule {
+  label: string
+  description: string
+  match: (ts: typeof allTimesheets[0]) => boolean
+  count: number
 }
 
-const statusConfig: Record<TimesheetStatus, { label: string; cls: string }> = {
-  pending: { label: "Pending", cls: "badge-pending" },
-  reviewing: { label: "Reviewing", cls: "badge-reviewing" },
-  flagged: { label: "Flagged", cls: "badge-flagged" },
-  approved: { label: "Approved", cls: "badge-approved" },
-  processed: { label: "Processed", cls: "badge-processed" },
-  rejected: { label: "Rejected", cls: "badge-rejected" },
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function initials(name: string) {
+  return name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
 }
 
-const sourceConfig: Record<TimesheetSource, { label: string; cls: string; icon: React.ReactNode }> = {
-  portal: { label: "Portal", cls: "badge-portal", icon: <Globe size={11} className="text-blue-400" /> },
-  email: { label: "Email", cls: "badge-email", icon: <Mail size={11} className="text-violet-400" /> },
-  manual: { label: "Manual", cls: "badge-manual", icon: <Edit3 size={11} className="text-slate-400" /> },
-}
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
-const validationIcon: Record<ValidationResult, React.ReactNode> = {
-  pass: <CheckCircle2 size={13} className="check-pass flex-shrink-0" />,
-  fail: <XCircle size={13} className="check-fail flex-shrink-0" />,
-  warning: <AlertTriangle size={13} className="check-warning flex-shrink-0" />,
-  pending: <Clock size={13} className="check-pending flex-shrink-0" />,
-}
+export default function InboxPage() {
+  const [localTs, setLocalTs]     = useState(allTimesheets)
+  const [search, setSearch]       = useState("")
+  const [category, setCategory]   = useState<ActionCategory>("timesheets")
+  const [statusFilter, setStatusFilter] = useState<string>("actionable")
+  const [clientFilter, setClientFilter] = useState<string>("all")
+  const [selectedIds, setSelectedIds]   = useState<Set<string>>(new Set())
+  const [detailId, setDetailId]         = useState<string | null>(null)
 
-function ScoreRing({ score }: { score: number }) {
-  const color = score >= 85 ? "#10B981" : score >= 60 ? "#F59E0B" : "#FF6B6B"
-  const r = 14
-  const circ = 2 * Math.PI * r
-  const dash = (score / 100) * circ
-  return (
-    <div className="relative w-9 h-9 flex-shrink-0">
-      <svg width="36" height="36" viewBox="0 0 36 36" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="18" cy="18" r={r} fill="none" stroke="var(--border)" strokeWidth="2.5" />
-        <circle
-          cx="18" cy="18" r={r} fill="none"
-          stroke={color} strokeWidth="2.5"
-          strokeDasharray={`${dash} ${circ - dash}`}
-          strokeLinecap="round"
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold" style={{ color }}>
-        {score}
-      </span>
-    </div>
-  )
-}
+  // Counts
+  const actionableCount = localTs.filter(t => ["pending", "reviewing", "flagged"].includes(t.status)).length
+  const pendingCount    = localTs.filter(t => t.status === "pending").length
+  const flaggedCount    = localTs.filter(t => t.status === "flagged").length
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-
-export default function TimesheetsPage() {
-  const [search, setSearch] = useState("")
-  const [filterStatus, setFilterStatus] = useState<string>("all")
-  const [filterClient, setFilterClient] = useState<string>("all")
-  const [filterSource, setFilterSource] = useState<string>("all")
-  const [selected, setSelected] = useState<Timesheet | null>(null)
-  const [localTs, setLocalTs] = useState(allTimesheets)
-  const [flagging, setFlagging] = useState<string | null>(null)
-  const [flagReason, setFlagReason] = useState("")
-
+  // Filtered list
   const filtered = useMemo(() => {
-    return localTs.filter((ts) => {
-      const emp = getEmployee(ts.employeeId)
+    return localTs.filter(ts => {
+      const emp    = getEmployee(ts.employeeId)
       const client = getClient(ts.clientId)
-      const matchSearch =
-        !search ||
-        emp?.name.toLowerCase().includes(search.toLowerCase()) ||
-        client?.name.toLowerCase().includes(search.toLowerCase()) ||
-        ts.id.toLowerCase().includes(search.toLowerCase()) ||
-        ts.period.toLowerCase().includes(search.toLowerCase())
-      const matchStatus = filterStatus === "all" || ts.status === filterStatus
-      const matchClient = filterClient === "all" || ts.clientId === filterClient
-      const matchSource = filterSource === "all" || ts.source === filterSource
-      return matchSearch && matchStatus && matchClient && matchSource
+      // Status
+      if (statusFilter === "actionable" && !["pending", "reviewing", "flagged"].includes(ts.status)) return false
+      if (statusFilter !== "actionable" && statusFilter !== "all" && ts.status !== statusFilter) return false
+      // Client
+      if (clientFilter !== "all" && ts.clientId !== clientFilter) return false
+      // Search
+      if (search) {
+        const q = search.toLowerCase()
+        if (!emp?.name.toLowerCase().includes(q) && !client?.name.toLowerCase().includes(q) && !ts.period.toLowerCase().includes(q)) return false
+      }
+      return true
     })
-  }, [localTs, search, filterStatus, filterClient, filterSource])
+  }, [localTs, search, statusFilter, clientFilter])
 
+  // Bulk rules
+  const bulkRules: BulkRule[] = useMemo(() => [
+    {
+      label: "Score ≥ 95, all checks pass",
+      description: "Auto-approve clean submissions",
+      match: ts => ts.validationScore >= 95 && ts.validationChecks.every(c => c.result === "pass") && ["pending", "reviewing"].includes(ts.status),
+      count: localTs.filter(ts => ts.validationScore >= 95 && ts.validationChecks.every(c => c.result === "pass") && ["pending", "reviewing"].includes(ts.status)).length,
+    },
+    {
+      label: "Portal source, no flags",
+      description: "Approve portal-synced, zero warnings",
+      match: ts => ts.source === "portal" && ts.validationChecks.every(c => c.result !== "fail") && ["pending", "reviewing"].includes(ts.status),
+      count: localTs.filter(ts => ts.source === "portal" && ts.validationChecks.every(c => c.result !== "fail") && ["pending", "reviewing"].includes(ts.status)).length,
+    },
+    {
+      label: "Under 40h, single client",
+      description: "Standard week, no overtime",
+      match: ts => ts.totalHours <= 40 && ts.overtimeHours === 0 && ["pending", "reviewing"].includes(ts.status),
+      count: localTs.filter(ts => ts.totalHours <= 40 && ts.overtimeHours === 0 && ["pending", "reviewing"].includes(ts.status)).length,
+    },
+  ], [localTs])
+
+  // Actions
   function approveTs(id: string) {
-    setLocalTs((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Riya Shah (Ops)", approvedAt: new Date().toISOString() } : t))
-    )
-    if (selected?.id === id) setSelected((s) => s ? { ...s, status: "approved" } : s)
+    setLocalTs(prev => prev.map(t => t.id === id ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Riya Shah", approvedAt: new Date().toISOString() } : t))
   }
 
-  function rejectTs(id: string) {
-    setLocalTs((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: "rejected" as TimesheetStatus } : t))
-    )
-    if (selected?.id === id) setSelected((s) => s ? { ...s, status: "rejected" } : s)
+  function bulkApprove(rule: BulkRule) {
+    setLocalTs(prev => prev.map(t => rule.match(t) ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Riya Shah (Bulk)", approvedAt: new Date().toISOString() } : t))
   }
 
-  function flagTs(id: string, reason: string) {
-    setLocalTs((prev) =>
-      prev.map((t) =>
-        t.id === id ? { ...t, status: "flagged" as TimesheetStatus, flagReason: reason, flaggedBy: "ops" as const } : t
-      )
-    )
-    if (selected?.id === id)
-      setSelected((s) => s ? { ...s, status: "flagged", flagReason: reason, flaggedBy: "ops" } : s)
-    setFlagging(null)
-    setFlagReason("")
+  function approveSelected() {
+    setLocalTs(prev => prev.map(t => selectedIds.has(t.id) && ["pending", "reviewing"].includes(t.status) ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Riya Shah", approvedAt: new Date().toISOString() } : t))
+    setSelectedIds(new Set())
   }
 
-  const selectedEmp = selected ? getEmployee(selected.employeeId) : null
-  const selectedClient = selected ? getClient(selected.clientId) : null
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
-  const pendingCount = localTs.filter((t) => t.status === "pending").length
-  const flaggedCount = localTs.filter((t) => t.status === "flagged").length
+  function selectAll() {
+    const actionable = filtered.filter(t => ["pending", "reviewing", "flagged"].includes(t.status))
+    if (selectedIds.size === actionable.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(actionable.map(t => t.id)))
+    }
+  }
+
+  const detail = detailId ? localTs.find(t => t.id === detailId) : null
+  const detailEmp = detail ? getEmployee(detail.employeeId) : null
+  const detailClient = detail ? getClient(detail.clientId) : null
+
+  // Category tabs for future expansion
+  const categories: { value: ActionCategory; label: string; count: number }[] = [
+    { value: "timesheets",  label: "Timesheets",  count: actionableCount },
+    { value: "compliance",  label: "Compliance",   count: 3 },
+    { value: "documents",   label: "Documents",    count: 5 },
+    { value: "payroll",     label: "Payroll",      count: 2 },
+  ]
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden app-bg">
       <Sidebar />
 
       <div className="flex-1 flex flex-col overflow-hidden">
+
         {/* Header */}
-        <header
-          className="flex items-center gap-3 px-4 lg:px-5 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0"
-          style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}
-        >
-          <div>
-            <h1 className="text-base font-bold text-white">Timesheet Inbox</h1>
-            <p className="text-[11px] text-white/35">
-              {filtered.length} timesheets · {pendingCount} pending · {flaggedCount} flagged
-            </p>
+        <header className="px-6 lg:px-8 py-5 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Inbox</h1>
+              <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                {actionableCount} items need your attention
+              </p>
+            </div>
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-3">
+                <span className="text-[13px] font-medium" style={{ color: "var(--text-2)" }}>
+                  {selectedIds.size} selected
+                </span>
+                <button onClick={approveSelected} className="btn-primary flex items-center gap-2 py-2 px-4 text-[13px]">
+                  <Check size={14} /> Approve selected
+                </button>
+                <button onClick={() => setSelectedIds(new Set())} className="btn-ghost py-2 px-3 text-[13px]">
+                  Clear
+                </button>
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 ml-auto">
-            {/* Monitored email */}
-            <div
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
-              style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)", color: "#A78BFA" }}
-            >
-              <Mail size={11} />
-              candidatemanager@buzzworks.com
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-dot-blink" />
-            </div>
-
-            <button className="btn-ghost hidden sm:flex items-center gap-1.5 py-1.5 px-3 text-xs min-h-[36px]">
-              <RefreshCw size={12} />
-              <span className="hidden md:inline">Sync portals</span>
-            </button>
-            <button className="btn-ghost flex items-center gap-1.5 py-1.5 px-3 text-xs min-h-[36px]">
-              <Download size={12} />
-              <span className="hidden sm:inline">Export</span>
-            </button>
-            <button className="relative w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/[0.06] transition-colors">
-              <Bell size={16} className="text-white/50" />
-            </button>
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
-              style={{ background: "linear-gradient(135deg, #2563EB, var(--accent))" }}
-            >
-              RS
-            </div>
+          {/* Category tabs */}
+          <div className="flex items-center gap-1 mt-4">
+            {categories.map(c => (
+              <button
+                key={c.value}
+                onClick={() => setCategory(c.value)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors"
+                style={{
+                  background: category === c.value ? "var(--accent-dim)" : "transparent",
+                  color: category === c.value ? "var(--accent)" : "var(--text-3)",
+                }}
+              >
+                {c.label}
+                <span
+                  className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full min-w-[20px] text-center"
+                  style={{
+                    background: category === c.value ? "var(--accent)" : "var(--surface-2)",
+                    color: category === c.value ? "#fff" : "var(--text-3)",
+                  }}
+                >
+                  {c.count}
+                </span>
+              </button>
+            ))}
           </div>
         </header>
 
-        {/* Filters bar */}
-        <div
-          className="flex items-center gap-2 px-4 lg:px-5 py-2.5 border-b flex-shrink-0 overflow-x-auto scrollbar-none"
-          style={{ background: "var(--surface)", borderColor: "var(--border)" }}
-        >
-          <div className="relative flex-shrink-0">
-            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
-            <input
-              className="glass-input pl-8 text-[12px] py-1.5 w-48"
-              placeholder="Search employee, client…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-
-          <div className="w-px h-5 flex-shrink-0" style={{ background: "var(--border)" }} />
-
-          <select
-            className="glass-input text-[12px] py-1.5 flex-shrink-0 w-32 cursor-pointer"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="reviewing">Reviewing</option>
-            <option value="flagged">Flagged</option>
-            <option value="approved">Approved</option>
-            <option value="processed">Processed</option>
-            <option value="rejected">Rejected</option>
-          </select>
-
-          <select
-            className="glass-input text-[12px] py-1.5 flex-shrink-0 w-36 cursor-pointer"
-            value={filterClient}
-            onChange={(e) => setFilterClient(e.target.value)}
-          >
-            <option value="all">All Clients</option>
-            {clients.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-
-          <select
-            className="glass-input text-[12px] py-1.5 flex-shrink-0 w-32 cursor-pointer"
-            value={filterSource}
-            onChange={(e) => setFilterSource(e.target.value)}
-          >
-            <option value="all">All Sources</option>
-            <option value="portal">Portal</option>
-            <option value="email">Email</option>
-            <option value="manual">Manual</option>
-          </select>
-
-          {(search || filterStatus !== "all" || filterClient !== "all" || filterSource !== "all") && (
-            <button
-              className="btn-ghost py-1.5 px-3 text-[12px] flex items-center gap-1.5 flex-shrink-0"
-              onClick={() => { setSearch(""); setFilterStatus("all"); setFilterClient("all"); setFilterSource("all") }}
-            >
-              <X size={11} /> Clear
-            </button>
-          )}
-
-          <span className="ml-auto flex-shrink-0 text-[11px]" style={{ color: "var(--text-3)" }}>
-            {filtered.length} of {localTs.length}
-          </span>
-        </div>
-
-        {/* Content area */}
+        {/* Content */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Table */}
-          <div className="flex-1 overflow-y-auto pb-nav lg:pb-0 overflow-x-auto">
-            <table className="w-full min-w-[720px] text-[12px]">
-              <thead className="sticky top-0 z-10" style={{ background: "var(--surface)" }}>
-                <tr className="border-b border-white/[0.07]">
-                  {["Employee", "Client", "Period", "Hours Breakdown", "Source", "Validation", "Status", "Actions"].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-4 py-3 text-[10px] text-white/30 font-semibold uppercase tracking-wider"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="text-center py-16 text-white/25 text-[13px]">
-                      No timesheets match current filters.
-                    </td>
-                  </tr>
-                )}
-                {filtered.map((ts) => {
-                  const emp = getEmployee(ts.employeeId)!
-                  const client = getClient(ts.clientId)!
-                  const isSelected = selected?.id === ts.id
-                  const src = sourceConfig[ts.source]
-                  const st = statusConfig[ts.status]
-                  const fails = ts.validationChecks.filter((v) => v.result === "fail").length
-                  const warnings = ts.validationChecks.filter((v) => v.result === "warning").length
-                  const pendingChecks = ts.validationChecks.filter((v) => v.result === "pending").length
 
-                  return (
-                    <tr
-                      key={ts.id}
-                      className={clsx("ts-row", isSelected && "selected")}
-                      onClick={() => setSelected(isSelected ? null : ts)}
-                    >
-                      {/* Employee */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0"
-                            style={{ background: `${client.color}20`, color: client.color }}
-                          >
-                            {getInitials(emp.name)}
-                          </div>
-                          <div>
-                            <div className="font-semibold text-white/90">{emp.name}</div>
-                            <div className="text-white/35 text-[10px]">{emp.role}</div>
-                          </div>
-                        </div>
-                      </td>
+          {/* Main list */}
+          <div className="flex-1 flex flex-col overflow-hidden">
 
-                      {/* Client */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: client.color }} />
-                          <span className="text-white/70">{client.code}</span>
-                        </div>
-                        <div className="text-[10px] text-white/30 mt-0.5">{client.policyVersion}</div>
-                      </td>
+            {/* Filter + bulk bar */}
+            <div className="flex items-center gap-3 px-6 lg:px-8 py-3 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
 
-                      {/* Period */}
-                      <td className="px-4 py-3 text-white/55 whitespace-nowrap text-[11px]">
-                        {ts.period}
-                        <div className="text-[10px] text-white/25 mt-0.5">
-                          {new Date(ts.submittedAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}
-                        </div>
-                      </td>
+              {/* Search */}
+              <div className="relative flex-shrink-0">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+                <input
+                  className="glass-input pl-9 py-2 text-[13px] w-52"
+                  placeholder="Search…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </div>
 
-                      {/* Hours */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div>
-                            <div className="font-bold text-white/90 text-[13px]">{ts.totalHours}h</div>
-                            <div className="text-[10px] text-white/35">total</div>
-                          </div>
-                          {ts.overtimeHours > 0 && (
-                            <div>
-                              <div className="font-semibold text-amber-400 text-[12px]">+{ts.overtimeHours}h</div>
-                              <div className="text-[10px] text-white/35">OT</div>
-                            </div>
-                          )}
-                          {ts.leaveHours > 0 && (
-                            <div>
-                              <div className="font-semibold text-violet-400 text-[12px]">{ts.leaveHours}h</div>
-                              <div className="text-[10px] text-white/35">leave</div>
-                            </div>
-                          )}
-                        </div>
-                      </td>
+              {/* Status filter */}
+              <div className="relative flex-shrink-0">
+                <select
+                  value={statusFilter}
+                  onChange={e => setStatusFilter(e.target.value)}
+                  className="glass-input py-2 text-[13px] pr-8 appearance-none cursor-pointer"
+                  style={{ width: 150 }}
+                >
+                  <option value="actionable">Needs action ({actionableCount})</option>
+                  <option value="all">All timesheets</option>
+                  <option value="pending">Pending ({pendingCount})</option>
+                  <option value="flagged">Flagged ({flaggedCount})</option>
+                  <option value="approved">Approved</option>
+                  <option value="processed">Processed</option>
+                </select>
+                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
+              </div>
 
-                      {/* Source */}
-                      <td className="px-4 py-3">
-                        <span className={`badge ${src.cls} flex items-center gap-1 w-fit`}>
-                          {src.icon}
-                          {src.label}
+              {/* Client filter */}
+              <div className="relative flex-shrink-0">
+                <select
+                  value={clientFilter}
+                  onChange={e => setClientFilter(e.target.value)}
+                  className="glass-input py-2 text-[13px] pr-8 appearance-none cursor-pointer"
+                  style={{ width: 150 }}
+                >
+                  <option value="all">All clients</option>
+                  {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
+              </div>
+
+              <span className="text-[13px] ml-auto" style={{ color: "var(--text-3)" }}>
+                {filtered.length} items
+              </span>
+            </div>
+
+            {/* Bulk rules bar */}
+            {statusFilter === "actionable" && bulkRules.some(r => r.count > 0) && (
+              <div className="flex items-center gap-3 px-6 lg:px-8 py-2.5 flex-shrink-0 overflow-x-auto scrollbar-none"
+                style={{ background: "var(--bg)" }}>
+                <Sparkles size={14} style={{ color: "var(--accent)" }} className="flex-shrink-0" />
+                <span className="text-xs font-medium flex-shrink-0" style={{ color: "var(--text-2)" }}>Quick rules:</span>
+                {bulkRules.filter(r => r.count > 0).map(rule => (
+                  <button
+                    key={rule.label}
+                    onClick={() => bulkApprove(rule)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0"
+                    style={{ background: "var(--surface)", color: "var(--accent)", boxShadow: "var(--shadow-sm)" }}
+                  >
+                    <Check size={12} />
+                    {rule.label}
+                    <span className="text-[11px] font-semibold px-1.5 rounded-full"
+                      style={{ background: "var(--accent-dim)", color: "var(--accent)" }}>
+                      {rule.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* List */}
+            <div className="flex-1 overflow-y-auto pb-nav lg:pb-0">
+
+              {/* Select all */}
+              {filtered.some(t => ["pending", "reviewing", "flagged"].includes(t.status)) && (
+                <div className="flex items-center gap-3 px-6 lg:px-8 py-2" style={{ borderBottom: "1px solid var(--border)" }}>
+                  <button
+                    onClick={selectAll}
+                    className="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
+                    style={{
+                      borderColor: selectedIds.size > 0 ? "var(--accent)" : "var(--border-strong)",
+                      background: selectedIds.size > 0 ? "var(--accent)" : "transparent",
+                    }}
+                  >
+                    {selectedIds.size > 0 && <Check size={10} className="text-white" />}
+                  </button>
+                  <span className="text-xs" style={{ color: "var(--text-3)" }}>
+                    Select all actionable
+                  </span>
+                </div>
+              )}
+
+              {filtered.map(ts => {
+                const emp    = getEmployee(ts.employeeId)!
+                const client = getClient(ts.clientId)!
+                const isActionable = ["pending", "reviewing", "flagged"].includes(ts.status)
+                const isSelected = selectedIds.has(ts.id)
+                const isDetail = detailId === ts.id
+                const fails    = ts.validationChecks.filter(c => c.result === "fail").length
+                const warnings = ts.validationChecks.filter(c => c.result === "warning").length
+
+                const scoreColor = ts.validationScore >= 85 ? "#059669" : ts.validationScore >= 60 ? "var(--warn)" : "var(--danger)"
+
+                return (
+                  <div
+                    key={ts.id}
+                    className="flex items-center gap-4 px-6 lg:px-8 py-3.5 transition-colors cursor-pointer"
+                    style={{
+                      borderBottom: "1px solid var(--border)",
+                      background: isDetail ? "var(--accent-dim)" : isSelected ? "var(--surface-hover)" : "var(--surface)",
+                    }}
+                    onClick={() => setDetailId(isDetail ? null : ts.id)}
+                  >
+                    {/* Checkbox */}
+                    {isActionable && (
+                      <button
+                        onClick={e => { e.stopPropagation(); toggleSelect(ts.id) }}
+                        className="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
+                        style={{
+                          borderColor: isSelected ? "var(--accent)" : "var(--border-strong)",
+                          background: isSelected ? "var(--accent)" : "transparent",
+                        }}
+                      >
+                        {isSelected && <Check size={10} className="text-white" />}
+                      </button>
+                    )}
+                    {!isActionable && <div className="w-4 flex-shrink-0" />}
+
+                    {/* Status indicator */}
+                    <div className="flex-shrink-0">
+                      {ts.status === "pending" && <Clock size={16} style={{ color: "var(--text-3)" }} />}
+                      {ts.status === "reviewing" && <Sparkles size={16} style={{ color: "var(--accent)" }} />}
+                      {ts.status === "flagged" && <AlertTriangle size={16} style={{ color: "var(--warn)" }} />}
+                      {ts.status === "approved" && <CheckCircle2 size={16} style={{ color: "#059669" }} />}
+                      {ts.status === "processed" && <CheckCircle2 size={16} style={{ color: "var(--accent)" }} />}
+                      {ts.status === "rejected" && <XCircle size={16} style={{ color: "var(--danger)" }} />}
+                    </div>
+
+                    {/* Employee + context */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[13px] font-medium truncate" style={{ color: "var(--text-1)" }}>
+                          {emp.name}
                         </span>
-                        {ts.source === "email" && ts.emailFrom && (
-                          <div className="text-[10px] text-white/30 mt-1 max-w-[120px] truncate">
-                            {ts.emailFrom}
-                          </div>
-                        )}
-                      </td>
+                        <span className="text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0"
+                          style={{ background: `${client.color}12`, color: client.color }}>
+                          {client.code}
+                        </span>
+                        {ts.source === "email" && <Mail size={12} style={{ color: "var(--text-3)" }} />}
+                        {ts.source === "portal" && <Globe size={12} style={{ color: "var(--text-3)" }} />}
+                        {ts.source === "manual" && <Edit3 size={12} style={{ color: "var(--text-3)" }} />}
+                      </div>
+                      <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>
+                        {ts.period} · {ts.totalHours}h
+                        {ts.overtimeHours > 0 && <span style={{ color: "var(--warn)" }}> (+{ts.overtimeHours}h OT)</span>}
+                        {ts.flagReason && <span style={{ color: "var(--warn)" }}> · {ts.flagReason}</span>}
+                      </div>
+                    </div>
 
-                      {/* Validation */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <ScoreRing score={ts.validationScore} />
-                          <div className="text-[10px] space-y-0.5">
-                            {fails > 0 && <div className="text-coral-500">{fails} fail{fails > 1 ? "s" : ""}</div>}
-                            {warnings > 0 && <div className="text-amber-400">{warnings} warn</div>}
-                            {pendingChecks > 0 && <div className="text-white/35">{pendingChecks} pending</div>}
-                            {fails === 0 && warnings === 0 && pendingChecks === 0 && (
-                              <div className="text-mint-400">All clear</div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
+                    {/* Score */}
+                    <div className="flex-shrink-0 text-right">
+                      <div className="text-sm font-semibold tabular-nums" style={{ color: scoreColor }}>
+                        {ts.validationScore}
+                      </div>
+                      <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
+                        {fails > 0 ? `${fails} fail` : warnings > 0 ? `${warnings} warn` : "clean"}
+                      </div>
+                    </div>
 
-                      {/* Status */}
-                      <td className="px-4 py-3">
-                        <span className={`badge ${st.cls}`}>{st.label}</span>
-                        {ts.flagReason && (
-                          <div className="text-[10px] text-coral-500 mt-1 max-w-[110px] truncate" title={ts.flagReason}>
-                            {ts.flagReason}
-                          </div>
-                        )}
-                      </td>
+                    {/* Quick action */}
+                    {isActionable && ts.status !== "flagged" && (
+                      <button
+                        onClick={e => { e.stopPropagation(); approveTs(ts.id) }}
+                        className="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                        style={{ background: "rgba(5,150,105,0.08)", color: "#059669" }}
+                      >
+                        Approve
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
 
-                      {/* Actions */}
-                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          {(ts.status === "pending" || ts.status === "reviewing") && (
-                            <button
-                              onClick={() => approveTs(ts.id)}
-                              className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-colors hover:bg-mint-500/25"
-                              style={{ background: "rgba(16,185,129,0.12)", color: "#34D399", border: "1px solid rgba(16,185,129,0.25)" }}
-                              title="Approve"
-                            >
-                              <Check size={11} />
-                              Approve
-                            </button>
-                          )}
-                          {(ts.status === "pending" || ts.status === "reviewing" || ts.status === "flagged") && (
-                            <button
-                              onClick={() => setFlagging(flagging === ts.id ? null : ts.id)}
-                              className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-colors"
-                              style={{ background: "rgba(245,158,11,0.12)", color: "#FBB64A", border: "1px solid rgba(245,158,11,0.25)" }}
-                              title="Flag"
-                            >
-                              <Flag size={11} />
-                              Flag
-                            </button>
-                          )}
-                        </div>
-                        {/* Inline flag reason input */}
-                        {flagging === ts.id && (
-                          <div className="mt-1.5 flex gap-1" onClick={(e) => e.stopPropagation()}>
-                            <input
-                              className="glass-input text-[11px] py-1 px-2 flex-1 min-w-0"
-                              placeholder="Flag reason…"
-                              value={flagReason}
-                              onChange={(e) => setFlagReason(e.target.value)}
-                              autoFocus
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter" && flagReason) flagTs(ts.id, flagReason)
-                                if (e.key === "Escape") setFlagging(null)
-                              }}
-                            />
-                            <button
-                              className="px-2 py-1 rounded-lg text-[11px] font-semibold"
-                              style={{ background: "rgba(245,158,11,0.2)", color: "#FBB64A" }}
-                              onClick={() => flagReason && flagTs(ts.id, flagReason)}
-                            >
-                              OK
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+              {filtered.length === 0 && (
+                <div className="text-center py-20 text-sm" style={{ color: "var(--text-3)" }}>
+                  No items match current filters
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Detail panel */}
-          {selected && selectedEmp && selectedClient && (
+          {detail && detailEmp && detailClient && (
             <div
-              className="fixed inset-0 z-30 lg:static lg:inset-auto lg:w-[380px] lg:flex-shrink-0 border-l border-white/[0.07] overflow-y-auto animate-slide-in-right pb-nav lg:pb-0"
-              style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}
+              className="hidden lg:flex flex-col w-[400px] flex-shrink-0 overflow-y-auto"
+              style={{ background: "var(--surface)", boxShadow: "-1px 0 0 var(--border)" }}
             >
               {/* Panel header */}
-              <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.08] sticky top-0 z-10"
-                style={{ background: "var(--surface)", backdropFilter: "blur(10px)" }}>
+              <div className="flex items-center justify-between px-6 py-4 flex-shrink-0"
+                style={{ boxShadow: "0 1px 0 var(--border)" }}>
                 <div>
-                  <div className="text-[13px] font-bold text-white">{selectedEmp.name}</div>
-                  <div className="text-[11px] text-white/40">{selected.period}</div>
+                  <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>{detailEmp.name}</div>
+                  <div className="text-[13px]" style={{ color: "var(--text-3)" }}>{detail.period}</div>
                 </div>
-                <button onClick={() => setSelected(null)} className="text-white/35 hover:text-white/70 transition-colors">
-                  <X size={16} />
+                <button onClick={() => setDetailId(null)} style={{ color: "var(--text-3)" }}>
+                  <X size={18} />
                 </button>
               </div>
 
-              <div className="p-4 space-y-4">
-                {/* Employee info */}
-                <div className="glass-sm p-3 flex gap-3 items-center">
+              <div className="p-6 space-y-5">
+                {/* Employee card */}
+                <div className="flex items-center gap-3">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-bold flex-shrink-0"
-                    style={{ background: `${selectedClient.color}22`, color: selectedClient.color }}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
+                    style={{ background: `${detailClient.color}12`, color: detailClient.color }}
                   >
-                    {getInitials(selectedEmp.name)}
+                    {initials(detailEmp.name)}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-semibold text-white">{selectedEmp.name}</div>
-                    <div className="text-[11px] text-white/50">{selectedEmp.role} · {selectedEmp.department}</div>
-                    <div className="text-[10px] text-white/30 mt-0.5">{selectedEmp.email}</div>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <div className="text-[11px] font-semibold" style={{ color: selectedClient.color }}>
-                      {selectedClient.code}
-                    </div>
-                    <div className="text-[10px] text-white/30">{selectedClient.policyVersion}</div>
+                  <div className="flex-1">
+                    <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>{detailEmp.role}</div>
+                    <div className="text-xs" style={{ color: "var(--text-3)" }}>{detailEmp.department} · {detailClient.name}</div>
                   </div>
                 </div>
 
-                {/* Source info */}
-                {selected.source === "email" && (
-                  <div
-                    className="glass-sm p-3 space-y-1"
-                    style={{ border: "1px solid rgba(37,99,235,0.2)", background: "rgba(37,99,235,0.06)" }}
-                  >
-                    <div className="flex items-center gap-1.5 text-[11px] text-violet-300 font-semibold">
-                      <Mail size={12} /> Email Submission
+                {/* Hours */}
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: "Regular", value: `${detail.regularHours}h`, color: "var(--accent)" },
+                    { label: "Overtime", value: `${detail.overtimeHours}h`, color: "var(--warn)" },
+                    { label: "Leave",   value: `${detail.leaveHours}h`,    color: "var(--info)"  },
+                  ].map(h => (
+                    <div key={h.label} className="glass-sm p-3 text-center">
+                      <div className="text-lg font-semibold" style={{ color: h.color }}>{h.value}</div>
+                      <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>{h.label}</div>
                     </div>
-                    <div className="text-[11px] text-white/50">
-                      <span className="text-white/30">From:</span> {selected.emailFrom}
-                    </div>
-                    {selected.emailSubject && (
-                      <div className="text-[11px] text-white/50">
-                        <span className="text-white/30">Subject:</span> {selected.emailSubject}
-                      </div>
-                    )}
-                    <div className="text-[11px] text-white/50">
-                      <span className="text-white/30">Received at:</span> candidatemanager@buzzworks.com
-                    </div>
-                  </div>
-                )}
-
-                {/* Hours summary */}
-                <div>
-                  <div className="text-[11px] font-semibold text-white/50 mb-2 uppercase tracking-wider">
-                    Hours Breakdown
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { label: "Regular", value: selected.regularHours, color: "var(--accent)" },
-                      { label: "Overtime", value: selected.overtimeHours, color: "#F59E0B" },
-                      { label: "Leave", value: selected.leaveHours, color: "#2563EB" },
-                    ].map((item) => (
-                      <div key={item.label} className="glass-sm p-2.5 text-center">
-                        <div className="text-[16px] font-black" style={{ color: item.color }}>
-                          {item.value}h
-                        </div>
-                        <div className="text-[10px] text-white/40 mt-0.5">{item.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div
-                    className="mt-2 glass-sm p-2.5 flex items-center justify-between"
-                    style={{ border: "1px solid var(--border-strong)" }}
-                  >
-                    <span className="text-[12px] text-white/60">Total payable</span>
-                    <span className="text-[14px] font-black text-white">
-                      ₹{selected.totalPayable.toLocaleString("en-IN")}
-                    </span>
-                  </div>
+                  ))}
                 </div>
 
-                {/* Daily entries */}
-                {selected.dailyEntries.length > 0 && (
-                  <div>
-                    <div className="text-[11px] font-semibold text-white/50 mb-2 uppercase tracking-wider">
-                      Daily Entries
-                    </div>
-                    <div className="space-y-1">
-                      {selected.dailyEntries.map((day, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px]"
-                          style={{ background: "var(--surface-2)" }}
-                        >
-                          <span className="w-7 text-white/35 font-medium">{day.dayOfWeek}</span>
-                          <span className="text-white/25 text-[10px]">
-                            {new Date(day.date).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}
-                          </span>
-                          <div className="flex-1 flex gap-2 justify-end">
-                            {day.leaveType ? (
-                              <span className="badge badge-reviewing">{day.leaveType}</span>
-                            ) : (
-                              <>
-                                <span className="text-white/70 font-semibold">{day.regularHours}h</span>
-                                {day.overtimeHours > 0 && (
-                                  <span className="text-amber-400 font-semibold">+{day.overtimeHours}h OT</span>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="flex items-center justify-between py-3 px-4 rounded-lg" style={{ background: "var(--surface-2)" }}>
+                  <span className="text-[13px]" style={{ color: "var(--text-2)" }}>Total payable</span>
+                  <span className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
+                    ₹{detail.totalPayable.toLocaleString("en-IN")}
+                  </span>
+                </div>
 
                 {/* Validation checks */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">
-                      Policy Validation
-                    </div>
-                    <div className="flex items-center gap-1 text-[10px] text-white/30">
-                      <Sparkles size={10} className="text-violet-400" />
-                      AI · {selected.aiConfidence}% confidence
-                    </div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>Validation</span>
+                    <span className="text-xs" style={{ color: "var(--text-3)" }}>
+                      {detail.aiConfidence}% AI confidence
+                    </span>
                   </div>
-                  <div className="space-y-1.5">
-                    {selected.validationChecks.map((check) => (
-                      <div
-                        key={check.id}
-                        className="p-2.5 rounded-xl text-[11px] flex gap-2"
-                        style={{
-                          background:
-                            check.result === "pass"
-                              ? "rgba(16,185,129,0.06)"
-                              : check.result === "fail"
-                              ? "rgba(255,107,107,0.08)"
-                              : check.result === "warning"
-                              ? "rgba(245,158,11,0.07)"
-                              : "var(--surface-2)",
-                          border:
-                            check.result === "pass"
-                              ? "1px solid rgba(16,185,129,0.15)"
-                              : check.result === "fail"
-                              ? "1px solid rgba(255,107,107,0.2)"
-                              : check.result === "warning"
-                              ? "1px solid rgba(245,158,11,0.18)"
-                              : "1px solid var(--surface-2)",
-                        }}
-                      >
-                        {validationIcon[check.result]}
+                  <div className="space-y-2">
+                    {detail.validationChecks.map(check => (
+                      <div key={check.id} className="flex items-start gap-2.5 py-2">
+                        {check.result === "pass" && <CheckCircle2 size={15} className="flex-shrink-0 mt-0.5" style={{ color: "#059669" }} />}
+                        {check.result === "fail" && <XCircle size={15} className="flex-shrink-0 mt-0.5" style={{ color: "var(--danger)" }} />}
+                        {check.result === "warning" && <AlertTriangle size={15} className="flex-shrink-0 mt-0.5" style={{ color: "var(--warn)" }} />}
+                        {check.result === "pending" && <Clock size={15} className="flex-shrink-0 mt-0.5" style={{ color: "var(--text-3)" }} />}
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-white/80 leading-tight">{check.rule}</div>
-                          <div className="text-white/45 mt-0.5 leading-snug">{check.detail}</div>
-                          {!check.autoChecked && (
-                            <div className="flex items-center gap-1 mt-1 text-[10px] text-white/25">
-                              <Clock size={9} /> Manual check required
-                            </div>
-                          )}
+                          <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>{check.rule}</div>
+                          <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>{check.detail}</div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Flag reason */}
-                {selected.flagReason && (
-                  <div
-                    className="p-3 rounded-xl text-[11px]"
-                    style={{ background: "rgba(255,107,107,0.08)", border: "1px solid rgba(255,107,107,0.2)" }}
-                  >
-                    <div className="flex items-center gap-1.5 font-semibold text-coral-500 mb-1">
-                      <Flag size={11} />
-                      Flagged{selected.flaggedBy === "ai" ? " by AI" : selected.flaggedBy === "ops" ? " by Ops" : " by System"}
+                {/* Flag info */}
+                {detail.flagReason && (
+                  <div className="p-4 rounded-lg" style={{ background: "var(--warn-bg)" }}>
+                    <div className="flex items-center gap-1.5 text-[13px] font-medium mb-1" style={{ color: "var(--warn)" }}>
+                      <Flag size={13} /> Flagged
                     </div>
-                    <div className="text-white/60">{selected.flagReason}</div>
+                    <div className="text-xs" style={{ color: "var(--text-2)" }}>{detail.flagReason}</div>
                   </div>
                 )}
 
-                {/* Leave balance */}
-                <div>
-                  <div className="text-[11px] font-semibold text-white/50 mb-2 uppercase tracking-wider">
-                    Leave Balance · {selectedClient.code}
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      {
-                        label: "Annual",
-                        total: selectedEmp.leaveBalance.annual,
-                        used: selectedEmp.leaveBalance.usedAnnual,
-                        color: "var(--accent)",
-                      },
-                      {
-                        label: "Sick",
-                        total: selectedEmp.leaveBalance.sick,
-                        used: selectedEmp.leaveBalance.usedSick,
-                        color: "#FF6B6B",
-                      },
-                      {
-                        label: "Casual",
-                        total: selectedEmp.leaveBalance.casual,
-                        used: selectedEmp.leaveBalance.usedCasual,
-                        color: "#2563EB",
-                      },
-                    ].map((lb) => (
-                      <div key={lb.label} className="glass-sm p-2 text-center">
-                        <div className="text-[11px] font-bold text-white/80">
-                          {lb.total - lb.used}
-                          <span className="text-[9px] text-white/30 font-normal">/{lb.total}</span>
-                        </div>
-                        <div className="text-[9px] text-white/35 mt-0.5">{lb.label}</div>
-                        <div
-                          className="w-full rounded-full mt-1.5 overflow-hidden"
-                          style={{ height: 3, background: "var(--border)" }}
-                        >
-                          <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${(lb.used / lb.total) * 100}%`,
-                              background: lb.color,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Action buttons */}
-                {(selected.status === "pending" || selected.status === "reviewing" || selected.status === "flagged") && (
-                  <div className="space-y-2 pt-2 border-t border-white/[0.08]">
-                    <div className="text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-3">
-                      Actions
-                    </div>
+                {/* Actions */}
+                {["pending", "reviewing", "flagged"].includes(detail.status) && (
+                  <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
                     <button
-                      onClick={() => approveTs(selected.id)}
-                      className="w-full btn-teal flex items-center justify-center gap-2 py-2.5"
+                      onClick={() => approveTs(detail.id)}
+                      className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[13px]"
                     >
-                      <CheckCircle2 size={15} />
-                      Approve Timesheet
+                      <CheckCircle2 size={15} /> Approve
                     </button>
                     <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => setFlagging(flagging === selected.id ? null : selected.id)}
-                        className="btn-ghost flex items-center justify-center gap-1.5 py-2"
-                        style={{ color: "#FBB64A", borderColor: "rgba(245,158,11,0.3)" }}
-                      >
-                        <Flag size={13} />
-                        Flag
+                      <button className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-[13px]"
+                        style={{ color: "var(--warn)" }}>
+                        <Flag size={13} /> Flag
                       </button>
-                      <button
-                        onClick={() => rejectTs(selected.id)}
-                        className="btn-coral flex items-center justify-center gap-1.5 py-2"
-                      >
-                        <ThumbsDown size={13} />
-                        Reject
+                      <button className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-[13px]"
+                        style={{ color: "var(--danger)" }}>
+                        <XCircle size={13} /> Reject
                       </button>
-                    </div>
-                    {flagging === selected.id && (
-                      <div className="space-y-2">
-                        <textarea
-                          className="glass-input w-full text-[12px] resize-none"
-                          rows={2}
-                          placeholder="Describe the issue to flag…"
-                          value={flagReason}
-                          onChange={(e) => setFlagReason(e.target.value)}
-                          autoFocus
-                        />
-                        <div className="flex gap-2">
-                          <button
-                            className="flex-1 btn-ghost text-[12px] py-2"
-                            onClick={() => setFlagging(null)}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            className="flex-1 text-[12px] py-2 rounded-xl font-semibold transition-colors"
-                            style={{ background: "rgba(245,158,11,0.2)", color: "#FBB64A", border: "1px solid rgba(245,158,11,0.3)" }}
-                            onClick={() => flagReason && flagTs(selected.id, flagReason)}
-                          >
-                            Confirm Flag
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    <div
-                      className="text-[10px] text-white/25 text-center py-1 px-2 rounded-lg"
-                      style={{ background: "rgba(37,99,235,0.06)", border: "1px dashed rgba(37,99,235,0.15)" }}
-                    >
-                      <Sparkles size={9} className="inline text-violet-400 mr-1" />
-                      AI auto-approve for score ≥ 90 — coming in v2
                     </div>
                   </div>
                 )}
 
-                {selected.status === "approved" && (
-                  <div
-                    className="p-3 rounded-xl text-[12px] text-center"
-                    style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)" }}
-                  >
-                    <CheckCircle2 size={18} className="text-mint-400 mx-auto mb-1" />
-                    <div className="font-semibold text-mint-400">Approved</div>
-                    {selected.approvedBy && (
-                      <div className="text-white/40 text-[11px] mt-0.5">by {selected.approvedBy}</div>
+                {detail.status === "approved" && (
+                  <div className="text-center py-4 rounded-lg" style={{ background: "rgba(5,150,105,0.06)" }}>
+                    <CheckCircle2 size={20} className="mx-auto mb-1" style={{ color: "#059669" }} />
+                    <div className="text-[13px] font-medium" style={{ color: "#059669" }}>Approved</div>
+                    {detail.approvedBy && (
+                      <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>by {detail.approvedBy}</div>
                     )}
-                    <button className="mt-2 btn-teal text-[11px] py-1.5 w-full">
-                      Send to Payroll
-                    </button>
-                  </div>
-                )}
-
-                {selected.status === "processed" && (
-                  <div
-                    className="p-3 rounded-xl text-[12px] text-center"
-                    style={{ background: "rgba(75,143,255,0.08)", border: "1px solid rgba(75,143,255,0.2)" }}
-                  >
-                    <CheckCircle2 size={18} className="text-blue-400 mx-auto mb-1" />
-                    <div className="font-semibold text-blue-400">Processed & Paid</div>
-                    <div className="text-white/40 text-[11px] mt-0.5">
-                      ₹{selected.totalPayable.toLocaleString("en-IN")}
-                    </div>
                   </div>
                 )}
               </div>
@@ -794,7 +517,7 @@ export default function TimesheetsPage() {
         </div>
       </div>
 
-      <AIAgentOrb />
+      <BottomNav />
     </div>
   )
 }

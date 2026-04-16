@@ -11,7 +11,7 @@ import clsx from "clsx"
 
 const PRIMARY = [
   { href: "/",           icon: LayoutDashboard, label: "Overview",   badge: null },
-  { href: "/timesheets", icon: Inbox,           label: "Timesheets", badge: "23" },
+  { href: "/timesheets", icon: Inbox,           label: "Inbox",      badge: "23" },
   { href: "/clients",    icon: Building2,       label: "Clients",    badge: null },
   { href: "/payroll",    icon: CreditCard,      label: "Payroll",    badge: "12" },
 ]
