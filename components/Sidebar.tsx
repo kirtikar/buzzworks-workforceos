@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  LayoutDashboard, Inbox, Building2, Users, FileText,
+  LayoutDashboard, Inbox, Building2, Users, FileText, Scale,
   CreditCard, BarChart3, Settings, Zap, ClipboardCheck, Plug, Bot,
 } from "lucide-react"
 
@@ -12,6 +12,7 @@ const navItems = [
   { href: "/timesheets",    icon: Inbox,           label: "Timesheet Inbox" },
   { href: "/clients",       icon: Building2,       label: "Clients"         },
   { href: "/employees",     icon: Users,           label: "Employees"       },
+  { href: "/compliance",    icon: Scale,           label: "Compliance"      },
   { href: "/policy",        icon: FileText,        label: "AI Engine"       },
   { href: "/payroll",       icon: CreditCard,      label: "Payroll"         },
   { href: "/reports",       icon: BarChart3,       label: "Reports"         },

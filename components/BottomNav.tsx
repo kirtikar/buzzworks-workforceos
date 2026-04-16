@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, Inbox, Building2, CreditCard, MoreHorizontal,
-  Users, FileText, BarChart3, Plug, Bot, Settings, X, ClipboardCheck,
+  Users, FileText, BarChart3, Plug, Bot, Settings, X, ClipboardCheck, Scale,
 } from "lucide-react"
 import clsx from "clsx"
 
@@ -18,6 +18,7 @@ const PRIMARY = [
 
 const MORE = [
   { href: "/employees",    icon: Users,      label: "Employees"    },
+  { href: "/compliance",   icon: Scale,      label: "Compliance"   },
   { href: "/policy",       icon: FileText,   label: "AI Engine"    },
   { href: "/reports",      icon: BarChart3,  label: "Reports"      },
   { href: "/integrations", icon: Plug,       label: "Integrations" },
