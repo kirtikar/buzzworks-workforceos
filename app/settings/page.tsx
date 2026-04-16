@@ -139,7 +139,7 @@ function AppearanceSection() {
         <SettingRow label="Animate transitions" description="Page transitions and micro-interactions">
           <Toggle on={true} onChange={() => {}} />
         </SettingRow>
-        <SettingRow label="Show AI confidence scores" description="Display Agent Mark confidence percentages in timesheet rows">
+        <SettingRow label="Show AI confidence scores" description="Display JARVIS confidence percentages in timesheet rows">
           <Toggle on={true} onChange={() => {}} />
         </SettingRow>
       </SectionCard>
@@ -176,7 +176,7 @@ function NotificationsSection() {
         <SettingRow label="Urgent escalations" description="Popups for SLA breaches and policy violations">
           <Toggle on={notifs.push_urgent} onChange={v => setNotifs(n => ({ ...n, push_urgent: v }))} />
         </SettingRow>
-        <SettingRow label="Approval confirmations" description="Notify when Agent Mark auto-approves in bulk">
+        <SettingRow label="Approval confirmations" description="Notify when JARVIS auto-approves in bulk">
           <Toggle on={notifs.push_approvals} onChange={v => setNotifs(n => ({ ...n, push_approvals: v }))} />
         </SettingRow>
       </SectionCard>
@@ -384,8 +384,8 @@ function SecuritySection() {
 function SystemSection() {
   return (
     <div className="space-y-5">
-      <SectionCard title="Agent Mark Settings">
-        <SettingRow label="Auto-approval enabled" description="Allow Agent Mark to approve timesheets that pass all checks with confidence ≥ threshold">
+      <SectionCard title="JARVIS Settings">
+        <SettingRow label="Auto-approval enabled" description="Allow JARVIS to approve timesheets that pass all checks with confidence ≥ threshold">
           <Toggle on={true} onChange={() => {}} />
         </SettingRow>
         <SettingRow label="Confidence threshold" description="Minimum AI confidence for auto-approval. Lower = more auto-approvals, higher = safer.">
@@ -396,7 +396,7 @@ function SystemSection() {
             <option>100%</option>
           </select>
         </SettingRow>
-        <SettingRow label="Max batch size" description="Maximum timesheets Agent Mark can auto-approve in a single batch run">
+        <SettingRow label="Max batch size" description="Maximum timesheets JARVIS can auto-approve in a single batch run">
           <select className="glass-input text-[12px] py-1.5" style={{ width: 120 }}>
             <option>25</option>
             <option selected>50</option>
@@ -476,7 +476,7 @@ export default function SettingsPage() {
           <div className="ml-auto flex items-center gap-2">
             <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--text-3)" }}>
               <Info size={12} />
-              OpsDesk v2.1.0 · Agent Mark v2.1
+              OpsDesk v2.1.0 · JARVIS v2.1
             </div>
           </div>
         </header>

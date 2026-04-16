@@ -43,7 +43,7 @@ const processKRAs = [
     trend: "up" as const,
     icon: Zap,
     color: "var(--accent)",
-    detail: "Agent Mark",
+    detail: "JARVIS",
   },
   {
     label: "SLA Adherence",
@@ -419,7 +419,7 @@ export default function DashboardPage() {
 
               {/* Agent efficiency trend */}
               <div className="glass p-4">
-                <div className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-1)" }}>Agent Mark Efficiency</div>
+                <div className="text-[13px] font-semibold mb-0.5" style={{ color: "var(--text-1)" }}>JARVIS Efficiency</div>
                 <div className="text-[11px] mb-3" style={{ color: "var(--text-3)" }}>Auto-approval rate trend (6 months)</div>
                 <div style={{ height: 80 }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -512,7 +512,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               {
-                label: "Agent Mark",
+                label: "JARVIS",
                 sub: "Timesheet Validation",
                 color: "var(--accent)",
                 metrics: [

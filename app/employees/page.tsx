@@ -484,7 +484,7 @@ function RiskTab({ emp }: { emp: Employee }) {
       <div className="p-4 rounded-xl" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
         <div className="flex items-center gap-2 mb-2">
           <BarChart3 size={12} style={{ color: "var(--accent)" }} />
-          <span className="text-xs font-semibold" style={{ color: "var(--text-1)" }}>MARK&apos;s Recommendation</span>
+          <span className="text-xs font-semibold" style={{ color: "var(--text-1)" }}>JARVIS Recommendation</span>
         </div>
         <div className="space-y-1.5 text-xs" style={{ color: "var(--text-2)" }}>
           {riskLevel === "Low" && <>

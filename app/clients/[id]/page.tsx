@@ -189,8 +189,8 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
     return allTs.filter(t => {
       if (statusFilter !== "all" && t.status !== statusFilter) return false
       if (sourceFilter !== "all" && t.source !== sourceFilter) return false
-      if (approverFilter === "agent" && t.approvedBy !== "Agent Mark") return false
-      if (approverFilter === "human" && (t.approvedBy === "Agent Mark" || !t.approvedBy)) return false
+      if (approverFilter === "agent" && t.approvedBy !== "JARVIS") return false
+      if (approverFilter === "human" && (t.approvedBy === "JARVIS" || !t.approvedBy)) return false
       if (search) {
         const emp = employees.find(e => e.id === t.employeeId)
         const q = search.toLowerCase()
@@ -228,7 +228,7 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
         ]} />
         <FSelect value={approverFilter} onChange={setApproverFilter} options={[
           { label: "All approvers", value: "all" },
-          { label: "Agent Mark only", value: "agent" },
+          { label: "JARVIS only", value: "agent" },
           { label: "Human approved", value: "human" },
         ]} />
         <span className="text-[10px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {allTs.length}</span>
@@ -275,8 +275,8 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    {t.approvedBy === "Agent Mark"
-                      ? <span className="text-[11px] font-medium" style={{ color: "var(--accent)" }}>⚡ Agent Mark</span>
+                    {t.approvedBy === "JARVIS"
+                      ? <span className="text-[11px] font-medium" style={{ color: "var(--accent)" }}>⚡ JARVIS</span>
                       : <span className="text-[11px]" style={{ color: "var(--text-2)" }}>{t.approvedBy ?? "—"}</span>}
                   </td>
                   <td className="px-4 py-3">

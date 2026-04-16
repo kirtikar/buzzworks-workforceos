@@ -190,9 +190,9 @@ function TimesheetsTab({ empId }: { empId: string }) {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  {t.approvedBy === "Agent Mark" ? (
+                  {t.approvedBy === "JARVIS" ? (
                     <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--accent)" }}>
-                      <Star size={10} fill="currentColor" /> Agent Mark
+                      <Star size={10} fill="currentColor" /> JARVIS
                     </span>
                   ) : (
                     <span className="text-[11px]" style={{ color: "var(--text-2)" }}>{t.approvedBy ?? "—"}</span>
@@ -362,7 +362,7 @@ function RiskProfileTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
       <div className="glass p-4 rounded-xl">
         <div className="flex items-center gap-2 mb-3">
           <BarChart3 size={13} style={{ color: "var(--accent)" }} />
-          <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Agent Mark Recommendations</div>
+          <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>JARVIS Recommendations</div>
         </div>
         <div className="space-y-2 text-[12px]" style={{ color: "var(--text-2)" }}>
           {riskLevel === "Low" && <>

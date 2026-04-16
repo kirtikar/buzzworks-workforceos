@@ -75,17 +75,17 @@ const CATEGORY_META: Record<AgentCategory, { label: string; color: string; bg: s
 // ─── Agent Definitions ────────────────────────────────────────────────────────
 
 const AGENTS: Agent[] = [
-  // ── Mark Sharma — Inspector ──────────────────────────────────────────────
+  // ── JARVIS — Inspector ───────────────────────────────────────────────────
   {
-    id:       "mark",
-    name:     "MARK",
-    initials: "M",
-    codename: "MARK",
+    id:       "jarvis",
+    name:     "JARVIS",
+    initials: "J",
+    codename: "Just-in-time Automated Review & Validation Intelligence System",
     version:  "v2.1",
     category: "inspector",
     tagline:  "Every timesheet — portal or email — validated in under 2 seconds",
     description:
-      "Mark validates all timesheet submissions regardless of channel — portal syncs, email attachments, or manual entries. Runs a 7-check policy suite against each client's active rule set. Clean submissions are auto-approved and queued for payroll. Violations are escalated with a structured flag report and clear actionables.",
+      "JARVIS validates all timesheet submissions regardless of channel — portal syncs, email attachments, or manual entries. Runs a 7-check policy suite against each client's active rule set. Clean submissions are auto-approved and queued for payroll. Violations are escalated with a structured flag report and clear actionables.",
     color:   "#4B8FFF",
     bgColor: "rgba(75,143,255,0.08)",
     icon:    ClipboardList,
@@ -104,8 +104,8 @@ const AGENTS: Agent[] = [
     outputs: [
       "Auto-approved timesheet → payroll queue",
       "Flag report → ops inbox with recommended action",
-      "SLA risk alert → Rohan for immediate notification",
-      "Anomaly signal → Neha for pattern tracking",
+      "SLA risk alert → TRON for immediate notification",
+      "Anomaly signal → CASE for pattern tracking",
     ],
     metrics: {
       processedToday:   48,
@@ -130,17 +130,17 @@ const AGENTS: Agent[] = [
     ],
   },
 
-  // ── Asha Menon — Compliance ───────────────────────────────────────────────
+  // ── ORACLE — Compliance ──────────────────────────────────────────────────
   {
-    id:       "asha",
-    name:     "ASHA",
-    initials: "A",
-    codename: "ASHA",
+    id:       "oracle",
+    name:     "ORACLE",
+    initials: "O",
+    codename: "Operational Regulatory & Compliance Law Engine",
     version:  "v1.3",
     category: "compliance",
     tagline:  "Real-time regulatory intelligence for IT and blue-collar contract workforce",
     description:
-      "Asha monitors regulatory changes from EPFO, Labour Ministry, ESIC, Income Tax Department, and state labour boards that affect contract workers. She distinguishes between IT and blue-collar workforce rules, maps changes to affected clients, and surfaces a compliance feed on each client page with deep links to authoritative government sources.",
+      "ORACLE monitors regulatory changes from EPFO, Labour Ministry, ESIC, Income Tax Department, and state labour boards that affect contract workers. Distinguishes between IT and blue-collar workforce rules, maps changes to affected clients, and surfaces a compliance feed on each client page with deep links to authoritative government sources.",
     color:   "#34D399",
     bgColor: "rgba(52,211,153,0.08)",
     icon:    Scale,
@@ -157,8 +157,8 @@ const AGENTS: Agent[] = [
     ],
     outputs: [
       "Compliance feed per client page (filtered by worker type)",
-      "Weekly regulatory digest → Rohan for AM distribution",
-      "Vector DB update → Neha for cross-validation enrichment",
+      "Weekly regulatory digest → TRON for AM distribution",
+      "Vector DB update → CASE for cross-validation enrichment",
       "Critical alert → ops inbox for immediate review",
     ],
     metrics: {
@@ -205,7 +205,7 @@ const AGENTS: Agent[] = [
         source:          "Karnataka Govt.",
         category:        "Labour Law",
         title:           "Karnataka Shops & Establishments Act — Amended Overtime Rules",
-        impact:          "OT rate for blue-collar workers in Karnataka increased from 1.5x to 2x for hours beyond 9hrs/day. Mark's OT validation rule set for Bangalore clients requires update.",
+        impact:          "OT rate for blue-collar workers in Karnataka increased from 1.5x to 2x for hours beyond 9hrs/day. JARVIS OT validation rule set for Bangalore clients requires update.",
         url:             "https://labour.karnataka.gov.in",
         clientsAffected: ["Dine-In Brands", "Swiggy", "Urban Company"],
       },
@@ -221,17 +221,17 @@ const AGENTS: Agent[] = [
     ],
   },
 
-  // ── Priya Nair — Communication ────────────────────────────────────────────
+  // ── RIPLEY — Communication ───────────────────────────────────────────────
   {
-    id:       "priya",
-    name:     "PRIYA",
-    initials: "P",
-    codename: "PRIYA",
+    id:       "ripley",
+    name:     "RIPLEY",
+    initials: "R",
+    codename: "Rapid Intelligent Personnel Liaison & Email Yielder",
     version:  "v1.8",
     category: "communication",
     tagline:  "Canned, context-aware emails for every ops workflow — one click to send",
     description:
-      "Priya composes pre-filled, context-aware emails triggered by workflow events: OT flag, missing document, SLA breach, approval confirmation. Each template pulls live data (employee name, hours, rule reference) and presents a ready-to-send email requiring only one click from the ops team. Reduces email drafting from 8–12 min to under 10 seconds.",
+      "RIPLEY composes pre-filled, context-aware emails triggered by workflow events: OT flag, missing document, SLA breach, approval confirmation. Each template pulls live data (employee name, hours, rule reference) and presents a ready-to-send email requiring only one click from the ops team. Reduces email drafting from 8–12 min to under 10 seconds.",
     color:   "#C084FC",
     bgColor: "rgba(192,132,252,0.08)",
     icon:    Mail,
@@ -247,7 +247,7 @@ const AGENTS: Agent[] = [
     ],
     outputs: [
       "Ready-to-send email → ops team review queue",
-      "Send confirmation + tracking log → Rohan for digest",
+      "Send confirmation + tracking log → TRON for digest",
       "Escalation trigger if no response in SLA window",
     ],
     metrics: {
@@ -298,17 +298,17 @@ const AGENTS: Agent[] = [
     ],
   },
 
-  // ── Rohan Kapoor — Communication ─────────────────────────────────────────
+  // ── TRON — Communication ─────────────────────────────────────────────────
   {
-    id:       "rohan",
-    name:     "ROHAN",
-    initials: "R",
-    codename: "RELAY",
+    id:       "tron",
+    name:     "TRON",
+    initials: "T",
+    codename: "Triggered Relay for Operations & Notifications",
     version:  "v1.5",
     category: "communication",
     tagline:  "Payroll digests, alerts, and AM routing — nothing gets missed",
     description:
-      "Rohan handles outbound payroll communications: weekly digests for account managers, payment alerts for employees, and critical routing when anomalies require human escalation. He ensures every stakeholder gets the right information at the right time without ops team manually composing status updates.",
+      "TRON handles outbound payroll communications: weekly digests for account managers, payment alerts for employees, and critical routing when anomalies require human escalation. Ensures every stakeholder gets the right information at the right time without ops team manually composing status updates.",
     color:   "#FBBF24",
     bgColor: "rgba(251,191,36,0.08)",
     icon:    Send,
@@ -318,8 +318,8 @@ const AGENTS: Agent[] = [
       "Weekly payroll digest for each account manager",
       "Real-time payment confirmation notifications to employees",
       "Anomaly escalation routing to relevant AM or ops lead",
-      "Compliance digest distribution (sourced from Asha)",
-      "SLA breach alerts from Mark escalated immediately",
+      "Compliance digest distribution (sourced from ORACLE)",
+      "SLA breach alerts from JARVIS escalated immediately",
       "Holiday / pay cycle calendar reminders to clients",
     ],
     outputs: [
@@ -346,21 +346,21 @@ const AGENTS: Agent[] = [
       { timestamp: "08:00", action: "Sent digest",    outcome: "success",  detail: "Weekly payroll digest — 8 AMs, 34 clients covered" },
       { timestamp: "Yesterday", action: "Escalated",  outcome: "escalated", detail: "Anomaly: duplicate bank account detected — routed to Riya Shah" },
       { timestamp: "Apr 14", action: "Alerted",       outcome: "success",  detail: "Payment confirmations — 212 employees notified" },
-      { timestamp: "Apr 13", action: "Sent digest",   outcome: "success",  detail: "Compliance digest (Asha) — forwarded to all AMs" },
+      { timestamp: "Apr 13", action: "Sent digest",   outcome: "success",  detail: "Compliance digest (ORACLE) — forwarded to all AMs" },
     ],
   },
 
-  // ── Neha Iyer — Data ─────────────────────────────────────────────────────
+  // ── CASE — Data ──────────────────────────────────────────────────────────
   {
-    id:       "neha",
-    name:     "NEHA",
-    initials: "N",
-    codename: "NEXUS",
+    id:       "case",
+    name:     "CASE",
+    initials: "C",
+    codename: "Comprehensive Audit & Security Engine",
     version:  "v1.9",
     category: "data",
     tagline:  "PAN, bank, and work order integrity — fraud patterns caught before payroll",
     description:
-      "Neha validates the integrity of employee master data: PAN cross-checks against IT dept records, bank account uniqueness, work order references. She surfaces duplicate records, mismatched PAN–name pairs, and anomalous work patterns that may indicate time fraud. Flags are raised before payroll is processed.",
+      "CASE validates the integrity of employee master data: PAN cross-checks against IT dept records, bank account uniqueness, work order references. Surfaces duplicate records, mismatched PAN–name pairs, and anomalous work patterns that may indicate time fraud. Flags are raised before payroll is processed.",
     color:   "#38BDF8",
     bgColor: "rgba(56,189,248,0.08)",
     icon:    Database,
@@ -377,7 +377,7 @@ const AGENTS: Agent[] = [
     outputs: [
       "Data flag → ops inbox with exact mismatch detail",
       "Integrity score per client → Reports dashboard",
-      "Fraud pattern alert → Rohan for immediate escalation",
+      "Fraud pattern alert → TRON for immediate escalation",
       "Clean record confirmation → payroll clearance",
     ],
     metrics: {
@@ -423,7 +423,7 @@ const CATEGORY_ORDER: AgentCategory[] = ["inspector", "compliance", "communicati
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AgentsPage() {
-  const [selectedId, setSelectedId] = useState<string>("mark")
+  const [selectedId, setSelectedId] = useState<string>("jarvis")
 
   const agent = AGENTS.find(a => a.id === selectedId)!
   const catMeta = CATEGORY_META[agent.category]

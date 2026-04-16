@@ -491,15 +491,15 @@ export const timesheets: Timesheet[] = [
       {id:"v3",category:"employment",rule:"Active employment status",result:"pass",detail:"Active",autoChecked:true},
     ],
   },
-  // ─ Agent Mark auto-approved ────────────────────────────────────────────────
+  // ─ JARVIS auto-approved ────────────────────────────────────────────────
   {
     id:"ts009", employeeId:"emp010", clientId:"hex",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
     submittedAt:"2026-04-07T08:10:00Z", source:"portal", sourceDetail:"Veltrix HCM", portalId:"veltrix",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:32000, validationScore:100, aiConfidence:98,
-    approvedBy:"Agent Mark", approvedAt:"2026-04-07T08:11:42Z",
-    notes:"Auto-approved by Agent Mark (v2.1) — 5/5 checks passed, confidence 98%, no anomalies detected. Consistent with prior 6 weeks.",
+    approvedBy:"JARVIS", approvedAt:"2026-04-07T08:11:42Z",
+    notes:"Auto-approved by JARVIS (v2.1) — 5/5 checks passed, confidence 98%, no anomalies detected. Consistent with prior 6 weeks.",
     dailyEntries:[
       {date:"2026-03-31",dayOfWeek:"Mon",regularHours:8,overtimeHours:0},
       {date:"2026-04-01",dayOfWeek:"Tue",regularHours:8,overtimeHours:0},
@@ -521,8 +521,8 @@ export const timesheets: Timesheet[] = [
     submittedAt:"2026-04-07T09:00:00Z", source:"portal", sourceDetail:"OrbitHCM", portalId:"orbithcm",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:23200, validationScore:100, aiConfidence:99,
-    approvedBy:"Agent Mark", approvedAt:"2026-04-07T09:01:18Z",
-    notes:"Auto-approved by Agent Mark (v2.1) — perfect match across all 5 policy checks. Employee has 100% on-time submission record (18 consecutive weeks).",
+    approvedBy:"JARVIS", approvedAt:"2026-04-07T09:01:18Z",
+    notes:"Auto-approved by JARVIS (v2.1) — perfect match across all 5 policy checks. Employee has 100% on-time submission record (18 consecutive weeks).",
     dailyEntries:[
       {date:"2026-03-31",dayOfWeek:"Mon",regularHours:8,overtimeHours:0},
       {date:"2026-04-01",dayOfWeek:"Tue",regularHours:8,overtimeHours:0},
@@ -544,8 +544,8 @@ export const timesheets: Timesheet[] = [
     submittedAt:"2026-03-31T08:45:00Z", source:"portal", sourceDetail:"PeopleHive", portalId:"peoplehive",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:28000, validationScore:100, aiConfidence:97,
-    approvedBy:"Agent Mark", approvedAt:"2026-03-31T08:46:55Z",
-    notes:"Auto-approved by Agent Mark (v2.1) — clean submission, all checks green. PMO-category employees historically exhibit high compliance; pattern score 97%.",
+    approvedBy:"JARVIS", approvedAt:"2026-03-31T08:46:55Z",
+    notes:"Auto-approved by JARVIS (v2.1) — clean submission, all checks green. PMO-category employees historically exhibit high compliance; pattern score 97%.",
     dailyEntries:[
       {date:"2026-03-24",dayOfWeek:"Mon",regularHours:8,overtimeHours:0},
       {date:"2026-03-25",dayOfWeek:"Tue",regularHours:8,overtimeHours:0},
@@ -567,8 +567,8 @@ export const timesheets: Timesheet[] = [
     submittedAt:"2026-03-24T07:58:00Z", source:"portal", sourceDetail:"PeopleHive", portalId:"peoplehive",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:20000, validationScore:100, aiConfidence:99,
-    approvedBy:"Agent Mark", approvedAt:"2026-03-24T07:59:12Z",
-    notes:"Auto-approved by Agent Mark (v2.1) — 6/6 checks passed, confidence 99%. Rahul Sharma has 22 consecutive clean submissions; behavioural pattern matches historical baseline within 0.3% variance.",
+    approvedBy:"JARVIS", approvedAt:"2026-03-24T07:59:12Z",
+    notes:"Auto-approved by JARVIS (v2.1) — 6/6 checks passed, confidence 99%. Rahul Sharma has 22 consecutive clean submissions; behavioural pattern matches historical baseline within 0.3% variance.",
     dailyEntries:[
       {date:"2026-03-17",dayOfWeek:"Mon",regularHours:8,overtimeHours:0},
       {date:"2026-03-18",dayOfWeek:"Tue",regularHours:8,overtimeHours:0},
@@ -591,8 +591,8 @@ export const timesheets: Timesheet[] = [
     submittedAt:"2026-04-07T08:33:00Z", source:"portal", sourceDetail:"HRLoop", portalId:"hrloop",
     status:"approved", totalHours:45, regularHours:40, overtimeHours:5, leaveHours:0,
     totalPayable:28800, validationScore:98, aiConfidence:97,
-    approvedBy:"Agent Mark", approvedAt:"2026-04-07T08:34:51Z",
-    notes:"Auto-approved by Agent Mark (v2.1) — OT hours pre-approved via HRLoop on Mar 29; all policy conditions met. 5h OT at 1.25× rate correctly calculated. AI confidence 97%.",
+    approvedBy:"JARVIS", approvedAt:"2026-04-07T08:34:51Z",
+    notes:"Auto-approved by JARVIS (v2.1) — OT hours pre-approved via HRLoop on Mar 29; all policy conditions met. 5h OT at 1.25× rate correctly calculated. AI confidence 97%.",
     dailyEntries:[
       {date:"2026-03-31",dayOfWeek:"Mon",regularHours:8,overtimeHours:0},
       {date:"2026-04-01",dayOfWeek:"Tue",regularHours:8,overtimeHours:2},
@@ -614,8 +614,8 @@ export const timesheets: Timesheet[] = [
     submittedAt:"2026-04-07T06:15:00Z", source:"portal", sourceDetail:"CloudSpire", portalId:"cloudspire",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:44000, validationScore:100, aiConfidence:100,
-    approvedBy:"Agent Mark", approvedAt:"2026-04-07T06:15:38Z",
-    notes:"Auto-approved by Agent Mark (v2.1) — 38-second processing time (new record for this employee). Divya Krishnan: 5-year tenure, zero-anomaly history. Confidence floor raised to 100% via trust tier T3.",
+    approvedBy:"JARVIS", approvedAt:"2026-04-07T06:15:38Z",
+    notes:"Auto-approved by JARVIS (v2.1) — 38-second processing time (new record for this employee). Divya Krishnan: 5-year tenure, zero-anomaly history. Confidence floor raised to 100% via trust tier T3.",
     dailyEntries:[
       {date:"2026-03-31",dayOfWeek:"Mon",regularHours:8,overtimeHours:0},
       {date:"2026-04-01",dayOfWeek:"Tue",regularHours:8,overtimeHours:0},
@@ -638,8 +638,8 @@ export const timesheets: Timesheet[] = [
     submittedAt:"2026-04-07T09:20:00Z", source:"email", sourceDetail:"candidatemanager@buzzworks.com",
     status:"approved", totalHours:45, regularHours:40, overtimeHours:5, leaveHours:0,
     totalPayable:48875, validationScore:97, aiConfidence:95,
-    approvedBy:"Agent Mark", approvedAt:"2026-04-07T09:22:14Z",
-    notes:"Auto-approved by Agent Mark (v2.1) — Email parsed via NLP pipeline v3.4 with 95% field-extraction confidence. OT pre-auth found in email thread #LTI-OT-0407. All 5 policy checks cleared. Minor note: PDF attachment quality low but all figures extractable.",
+    approvedBy:"JARVIS", approvedAt:"2026-04-07T09:22:14Z",
+    notes:"Auto-approved by JARVIS (v2.1) — Email parsed via NLP pipeline v3.4 with 95% field-extraction confidence. OT pre-auth found in email thread #LTI-OT-0407. All 5 policy checks cleared. Minor note: PDF attachment quality low but all figures extractable.",
     dailyEntries:[
       {date:"2026-03-31",dayOfWeek:"Mon",regularHours:8,overtimeHours:0},
       {date:"2026-04-01",dayOfWeek:"Tue",regularHours:8,overtimeHours:0},
@@ -714,7 +714,7 @@ export const policyRules: PolicyRule[] = [
   // PEP-004 · Payroll Eligibility Policy (CORE)
   // Eligible ONLY IF: is_active AND contract active AND work_order exists AND no violations AND manager approved
   { id:"pol-pep-001", clientId:"tci", category:"payroll", name:"Payroll Eligibility Gate (Core)",
-    description:"Composite gate: employee must satisfy ALL five conditions before entering payroll queue — (1) is_active = true, (2) contract_end_date ≥ today, (3) work_order is valid and non-expired, (4) no unresolved policy violations on current timesheet, (5) manager has approved or Agent Mark has auto-approved.",
+    description:"Composite gate: employee must satisfy ALL five conditions before entering payroll queue — (1) is_active = true, (2) contract_end_date ≥ today, (3) work_order is valid and non-expired, (4) no unresolved policy violations on current timesheet, (5) manager has approved or JARVIS has auto-approved.",
     triggerCondition:"is_active = false OR contract_expired OR work_order_invalid OR open_violations > 0 OR !manager_approved",
     actionOnTrigger:"Block payroll entry · Surface failed gate(s) to ops · Salary HOLD until all conditions met",
     severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-03-01", createdBy:"system", aiGenerated:false, appliedCount:156, triggerCount:12 },
