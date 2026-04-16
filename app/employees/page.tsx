@@ -9,8 +9,8 @@ import type { Employee, JobCategory, EmploymentStatus } from "@/lib/types"
 import {
   Search, Users, Download, ChevronDown, X, ChevronLeft, ChevronRight,
   ArrowUpDown, MapPin, Briefcase, Calendar, Mail, FileText,
-  CheckCircle2, AlertTriangle, Shield, Activity, Star, Eye,
-  BarChart3, TrendingUp, Clock,
+  CheckCircle2, AlertTriangle, Shield, Activity, Star,
+  BarChart3, Clock,
 } from "lucide-react"
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip,
@@ -484,7 +484,7 @@ function RiskTab({ emp }: { emp: Employee }) {
       <div className="p-4 rounded-xl" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
         <div className="flex items-center gap-2 mb-2">
           <BarChart3 size={12} style={{ color: "var(--accent)" }} />
-          <span className="text-xs font-semibold" style={{ color: "var(--text-1)" }}>Mark&apos;s Recommendation</span>
+          <span className="text-xs font-semibold" style={{ color: "var(--text-1)" }}>MARK&apos;s Recommendation</span>
         </div>
         <div className="space-y-1.5 text-xs" style={{ color: "var(--text-2)" }}>
           {riskLevel === "Low" && <>

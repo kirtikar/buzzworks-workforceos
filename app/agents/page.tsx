@@ -78,8 +78,8 @@ const AGENTS: Agent[] = [
   // ── Mark Sharma — Inspector ──────────────────────────────────────────────
   {
     id:       "mark",
-    name:     "Mark Sharma",
-    initials: "MS",
+    name:     "MARK",
+    initials: "M",
     codename: "MARK",
     version:  "v2.1",
     category: "inspector",
@@ -133,8 +133,8 @@ const AGENTS: Agent[] = [
   // ── Asha Menon — Compliance ───────────────────────────────────────────────
   {
     id:       "asha",
-    name:     "Asha Menon",
-    initials: "AM",
+    name:     "ASHA",
+    initials: "A",
     codename: "ASHA",
     version:  "v1.3",
     category: "compliance",
@@ -224,8 +224,8 @@ const AGENTS: Agent[] = [
   // ── Priya Nair — Communication ────────────────────────────────────────────
   {
     id:       "priya",
-    name:     "Priya Nair",
-    initials: "PN",
+    name:     "PRIYA",
+    initials: "P",
     codename: "PRIYA",
     version:  "v1.8",
     category: "communication",
@@ -301,8 +301,8 @@ const AGENTS: Agent[] = [
   // ── Rohan Kapoor — Communication ─────────────────────────────────────────
   {
     id:       "rohan",
-    name:     "Rohan Kapoor",
-    initials: "RK",
+    name:     "ROHAN",
+    initials: "R",
     codename: "RELAY",
     version:  "v1.5",
     category: "communication",
@@ -353,8 +353,8 @@ const AGENTS: Agent[] = [
   // ── Neha Iyer — Data ─────────────────────────────────────────────────────
   {
     id:       "neha",
-    name:     "Neha Iyer",
-    initials: "NI",
+    name:     "NEHA",
+    initials: "N",
     codename: "NEXUS",
     version:  "v1.9",
     category: "data",
