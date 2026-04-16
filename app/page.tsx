@@ -108,42 +108,37 @@ export default function DashboardPage() {
 
       <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Header */}
-        <header className="px-5 lg:px-7 py-5 border-b flex-shrink-0"
-          style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
-          <h1 className="text-lg font-bold" style={{ color: "var(--text-1)" }}>
-            Operations Overview
-          </h1>
-          <p className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>
-            April 2026 · {clients.length} active clients · 636 timesheets this month
-          </p>
-        </header>
-
         {/* Body */}
-        <main className="flex-1 overflow-y-auto p-5 lg:p-7 space-y-6 pb-nav lg:pb-7">
+        <main className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8 pb-nav lg:pb-8">
+
+          {/* Page title */}
+          <div>
+            <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>
+              Good morning, Riya
+            </h1>
+            <p className="text-sm mt-1" style={{ color: "var(--text-3)" }}>
+              April 2026 · {clients.length} clients · 636 timesheets processed
+            </p>
+          </div>
 
           {/* ── 4 KPI cards ──────────────────────────────────────── */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {kpis.map(k => (
-              <div
-                key={k.label}
-                className="p-5 rounded-xl"
-                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <k.icon size={16} style={{ color: k.color }} />
-                  <div className="flex items-center gap-1 text-[11px]"
-                    style={{ color: k.trend === "up" ? "var(--accent)" : "var(--accent)" }}>
-                    {k.trend === "up" ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+              <div key={k.label} className="glass p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <k.icon size={18} strokeWidth={1.5} style={{ color: "var(--text-3)" }} />
+                  <div className="flex items-center gap-1 text-xs"
+                    style={{ color: "var(--accent)" }}>
+                    {k.trend === "up" ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
                   </div>
                 </div>
-                <div className="text-2xl font-bold" style={{ color: "var(--text-1)" }}>
+                <div className="text-2xl font-semibold tracking-tight" style={{ color: "var(--text-1)" }}>
                   {k.value}
                 </div>
-                <div className="text-xs mt-1" style={{ color: "var(--text-2)" }}>
+                <div className="text-[13px] mt-1" style={{ color: "var(--text-2)" }}>
                   {k.label}
                 </div>
-                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                <div className="text-xs mt-1" style={{ color: "var(--text-3)" }}>
                   {k.delta}
                 </div>
               </div>
@@ -154,17 +149,14 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
             {/* 1. Ops Cost Trend */}
-            <div
-              className="p-5 rounded-xl"
-              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-            >
-              <div className="mb-4">
-                <div className="text-sm font-semibold" style={{ color: "var(--text-1)" }}>Ops Cost Trend</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                  Monthly operations cost — declining as AI automation increases
+            <div className="glass p-6">
+              <div className="mb-5">
+                <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>Ops Cost Trend</div>
+                <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  Declining as AI automation increases
                 </div>
               </div>
-              <div className="flex items-center gap-4 mb-3 text-[10px]" style={{ color: "var(--text-3)" }}>
+              <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: "var(--text-3)" }}>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--accent)", opacity: 0.3 }} /> Manual
                 </span>
@@ -201,14 +193,11 @@ export default function DashboardPage() {
             </div>
 
             {/* 2. Cost per Client */}
-            <div
-              className="p-5 rounded-xl"
-              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-            >
-              <div className="mb-4">
-                <div className="text-sm font-semibold" style={{ color: "var(--text-1)" }}>Ops Cost by Client</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                  Processing cost per client — April 2026
+            <div className="glass p-6">
+              <div className="mb-5">
+                <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>Ops Cost by Client</div>
+                <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  Processing cost — April 2026
                 </div>
               </div>
               <div style={{ height: 200 }}>
@@ -229,17 +218,14 @@ export default function DashboardPage() {
             </div>
 
             {/* 3. Agent Performance */}
-            <div
-              className="p-5 rounded-xl"
-              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-            >
-              <div className="mb-4">
-                <div className="text-sm font-semibold" style={{ color: "var(--text-1)" }}>JARVIS Performance</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                  Auto-approval rate vs manual — 6 month trend
+            <div className="glass p-6">
+              <div className="mb-5">
+                <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>JARVIS Performance</div>
+                <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  Auto vs manual — 6 month trend
                 </div>
               </div>
-              <div className="flex items-center gap-4 mb-3 text-[10px]" style={{ color: "var(--text-3)" }}>
+              <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: "var(--text-3)" }}>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--accent)" }} /> Auto-approved
                 </span>
@@ -266,17 +252,14 @@ export default function DashboardPage() {
             </div>
 
             {/* 4. Resource Utilization */}
-            <div
-              className="p-5 rounded-xl"
-              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-            >
-              <div className="mb-4">
-                <div className="text-sm font-semibold" style={{ color: "var(--text-1)" }}>Resource Utilization</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                  Timesheets processed per ops person — efficiency improving as AI takes over
+            <div className="glass p-6">
+              <div className="mb-5">
+                <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>Resource Utilization</div>
+                <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  Timesheets per ops person — efficiency trend
                 </div>
               </div>
-              <div className="flex items-center gap-4 mb-3 text-[10px]" style={{ color: "var(--text-3)" }}>
+              <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: "var(--text-3)" }}>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--accent)" }} /> Per person
                 </span>
