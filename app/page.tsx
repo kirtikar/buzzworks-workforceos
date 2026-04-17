@@ -245,7 +245,7 @@ export default function DashboardPage() {
                       formatter={(v: number) => `${v}%`}
                     />
                     <Bar dataKey="autoRate"   stackId="a" fill="var(--accent)"       radius={[0,0,0,0]} barSize={20} name="Auto-approved" />
-                    <Bar dataKey="manualRate" stackId="a" fill="var(--border-strong)" radius={[4,4,0,0]} barSize={20} name="Manual" />
+                    <Bar dataKey="manualRate" stackId="a" fill="var(--gold)" radius={[4,4,0,0]} barSize={20} name="Manual" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -264,7 +264,7 @@ export default function DashboardPage() {
                   <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--accent)" }} /> Per person
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--info)", opacity: 0.4 }} /> Headcount
+                  <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--gold)", opacity: 0.5 }} /> Headcount
                 </span>
               </div>
               <div style={{ height: 200 }}>
@@ -278,7 +278,7 @@ export default function DashboardPage() {
                       contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
                     />
                     <Bar yAxisId="left" dataKey="perPerson" fill="var(--accent)" radius={[4,4,0,0]} barSize={20} name="Timesheets / person" opacity={0.7} />
-                    <Bar yAxisId="right" dataKey="headcount" fill="var(--info)" radius={[4,4,0,0]} barSize={8} name="Ops headcount" opacity={0.35} />
+                    <Bar yAxisId="right" dataKey="headcount" fill="var(--gold)" radius={[4,4,0,0]} barSize={8} name="Ops headcount" opacity={0.35} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
