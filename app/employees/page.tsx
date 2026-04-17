@@ -710,8 +710,9 @@ export default function EmployeesPage() {
         </header>
 
         {/* Filter bar */}
-        <div className="flex items-center gap-2 px-4 lg:px-6 py-2.5 border-b flex-shrink-0 overflow-x-auto scrollbar-none"
+        <div className="border-b flex-shrink-0 relative z-20"
           style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
+        <div className="flex items-center gap-2 px-4 lg:px-6 py-2.5 overflow-x-auto scrollbar-none">
           <div className="relative flex-shrink-0">
             <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
             <input
@@ -754,6 +755,7 @@ export default function EmployeesPage() {
               <X size={11} /> Clear ({activeFilterCount})
             </button>
           )}
+        </div>
         </div>
 
         {/* Table */}

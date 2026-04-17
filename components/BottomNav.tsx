@@ -4,26 +4,24 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  LayoutDashboard, Inbox, Building2, CreditCard, MoreHorizontal,
-  Users, FileText, BarChart3, Plug, Bot, Settings, X, ClipboardCheck, Scale,
+  LayoutDashboard, Inbox, Building2, MoreHorizontal,
+  Users, FileText, Plug, Bot, Settings, X, ClipboardCheck, Scale,
 } from "lucide-react"
 import clsx from "clsx"
 
 const PRIMARY = [
-  { href: "/",           icon: LayoutDashboard, label: "Overview",   badge: null },
+  { href: "/",           icon: LayoutDashboard, label: "Home",       badge: null },
   { href: "/timesheets", icon: Inbox,           label: "Inbox",      badge: "23" },
   { href: "/clients",    icon: Building2,       label: "Clients",    badge: null },
-  { href: "/payroll",    icon: CreditCard,      label: "Payroll",    badge: "12" },
+  { href: "/compliance", icon: Scale,           label: "Compliance", badge: null },
 ]
 
 const MORE = [
-  { href: "/employees",    icon: Users,      label: "Employees"    },
-  { href: "/compliance",   icon: Scale,      label: "Compliance"   },
-  { href: "/policy",       icon: FileText,   label: "AI Engine"    },
-  { href: "/reports",      icon: BarChart3,  label: "Reports"      },
-  { href: "/integrations", icon: Plug,       label: "Integrations" },
-  { href: "/agents",       icon: Bot,        label: "AI Agents"    },
-  { href: "/settings",     icon: Settings,   label: "Settings"     },
+  { href: "/employees",    icon: Users,      label: "Employees"      },
+  { href: "/policy",       icon: FileText,   label: "AI Policy"      },
+  { href: "/integrations", icon: Plug,       label: "Integrations"   },
+  { href: "/agents",       icon: Bot,        label: "AI Agents"      },
+  { href: "/settings",     icon: Settings,   label: "Settings"       },
 ]
 
 export default function BottomNav() {

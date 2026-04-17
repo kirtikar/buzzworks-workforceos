@@ -4,262 +4,289 @@ import { useState, useMemo } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import {
-  Scale, ExternalLink, Search, Filter, AlertTriangle,
-  FileText, Building2, MapPin, Calendar, ChevronDown,
+  Scale, ExternalLink, Search, AlertTriangle,
+  MapPin, ChevronDown, Calendar, Building2,
 } from "lucide-react"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Category = "Labour" | "Finance & Taxation" | "EHS" | "Commercial" | "Secretarial" | "General"
+type Category = "Labour" | "Finance & Taxation" | "EHS" | "Commercial" | "Secretarial"
 
-interface LegalUpdate {
-  id:           number
-  title:        string
-  date:         string
-  category:     Category
-  regulator:    string
-  state:        string
-  impact:       string
-  clients:      string[]
-  sourceUrl:    string
-  notification: "compliance" | "informational"
+interface Regulation {
+  id:             number
+  title:          string
+  date:           string
+  category:       Category
+  authority:      string
+  reference:      string
+  jurisdiction:   string
+  summary:        string
+  keyChanges:     string[]
+  effectiveDate:  string
+  actionRequired: boolean
+  sourceUrl:      string
+  sourceName:     string
+  clientsAffected: string[]
 }
 
 // ─── Category config ──────────────────────────────────────────────────────────
 
-const CATEGORIES: { value: Category | "all"; label: string; color: string }[] = [
-  { value: "all",                 label: "All",               color: "var(--text-2)" },
-  { value: "Labour",             label: "Labour",            color: "#8B5CF6" },
-  { value: "Finance & Taxation", label: "Finance & Tax",     color: "#F59E0B" },
-  { value: "EHS",                label: "EHS",               color: "#EF4444" },
-  { value: "Commercial",         label: "Commercial",        color: "#3B82F6" },
-  { value: "Secretarial",       label: "Secretarial",       color: "#10B981" },
-  { value: "General",           label: "General",           color: "#6B7280" },
+const CATEGORIES: { value: Category | "all"; label: string }[] = [
+  { value: "all",                 label: "All" },
+  { value: "Labour",             label: "Labour" },
+  { value: "Finance & Taxation", label: "Finance & Tax" },
+  { value: "EHS",                label: "EHS" },
+  { value: "Commercial",         label: "Commercial" },
+  { value: "Secretarial",       label: "Secretarial" },
 ]
 
 const STATES = [
-  "All States", "Central", "Karnataka", "Maharashtra", "Delhi", "Tamil Nadu",
-  "Telangana", "Gujarat", "Uttar Pradesh", "Rajasthan", "Haryana",
-  "West Bengal", "Kerala", "Andhra Pradesh", "Madhya Pradesh", "Punjab",
+  "All", "Central", "Karnataka", "Maharashtra", "Delhi", "Tamil Nadu",
+  "Telangana", "Gujarat", "Uttar Pradesh", "Haryana", "Kerala",
 ]
 
-// ─── Mock regulatory updates (based on TeamLease RegTech schema) ──────────────
+// ─── Regulations data ─────────────────────────────────────────────────────────
 
-const UPDATES: LegalUpdate[] = [
+const REGULATIONS: Regulation[] = [
   {
-    id: 54852,
-    title: "EPFO Circular: PF Wage Ceiling Revised to ₹21,000 — Effective May 1, 2026",
+    id: 1,
+    title: "Transition from Form 15G/15H to Consolidated Form 121 for TDS-Exempted Incomes",
     date: "Apr 16, 2026",
     category: "Labour",
-    regulator: "Employees' Provident Fund Organisation (EPFO)",
-    state: "Central",
-    impact: "All blue-collar contract workers at ₹15,000 ceiling will see revised PF deductions. Payroll templates need updating before May cycle. Employer contribution increases proportionally.",
-    clients: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54852/",
-    notification: "compliance",
+    authority: "Employees' Provident Fund Organisation (EPFO)",
+    reference: "WSU/TDS Issues/E-772040/2026-27/11",
+    jurisdiction: "Central",
+    summary: "Forms 15G and 15H have been replaced by consolidated Form 121 under the Income-tax Act, 2025, effective April 1, 2026. Resident taxpayers with nil estimated tax liability may submit Form 121. Payers must generate a Unique Identification Number (UIN) for each form and report it in monthly statements and quarterly TDS returns.",
+    keyChanges: [
+      "Form 15G/15H replaced by consolidated Form 121",
+      "Payers must generate UIN for each form submission",
+      "UIN must be reported in monthly statements and quarterly TDS returns",
+      "Physical signed forms acceptable until online systems available",
+      "Non-compliance on missing UINs may attract penalties",
+    ],
+    effectiveDate: "Apr 1, 2026",
+    actionRequired: true,
+    sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
+    sourceName: "EPFO Circulars Portal",
+    clientsAffected: ["All clients with PF-enrolled workers"],
   },
   {
-    id: 54848,
+    id: 2,
+    title: "Offline Utility Enabled for Form 145 and Form 146 on e-Filing Portal",
+    date: "Apr 16, 2026",
+    category: "Finance & Taxation",
+    authority: "Income Tax Department",
+    reference: "e-Filing Portal Update — Apr 15, 2026",
+    jurisdiction: "Central",
+    summary: "The Income Tax Department has enabled offline utility for Form 145 and Form 146 on the e-Filing Portal. Users can download, fill, and submit these forms via the portal under Downloads → Income Tax Forms → Income Tax Act, 2025.",
+    keyChanges: [
+      "Offline utility now available for Form 145 and Form 146",
+      "Forms can be prepared offline and submitted via e-Filing Portal",
+      "Accessible under Downloads → Income Tax Forms → Income Tax Act, 2025",
+    ],
+    effectiveDate: "Apr 15, 2026",
+    actionRequired: false,
+    sourceUrl: "https://www.incometax.gov.in/iec/foportal/",
+    sourceName: "Income Tax e-Filing Portal",
+    clientsAffected: ["TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech"],
+  },
+  {
+    id: 3,
     title: "Karnataka Shops & Establishments Act — Amended Overtime Rules for Blue-Collar Workers",
     date: "Apr 15, 2026",
     category: "Labour",
-    regulator: "Department of Labour, Govt. of Karnataka",
-    state: "Karnataka",
-    impact: "OT rate for blue-collar workers in Karnataka increased from 1.5x to 2x for hours beyond 9hrs/day. JARVIS OT validation rules for Bangalore clients require immediate update.",
-    clients: ["Dine-In Brands", "Swiggy", "Urban Company", "Infosys BPM"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54848/",
-    notification: "compliance",
+    authority: "Department of Labour, Govt. of Karnataka",
+    reference: "KAR/LABOUR/OT-2026/Amendment-04",
+    jurisdiction: "Karnataka",
+    summary: "OT rate for blue-collar workers in Karnataka increased from 1.5x to 2x for hours beyond 9hrs/day. This amendment applies to all establishments registered under the Karnataka Shops and Establishments Act. JARVIS OT validation rules for Bangalore-based clients require immediate update.",
+    keyChanges: [
+      "Overtime rate increased from 1.5x to 2x for hours beyond 9/day",
+      "Applies to all establishments under KS&E Act",
+      "Immediate effect — no transition period",
+      "JARVIS OT validation rules need updating for Karnataka clients",
+    ],
+    effectiveDate: "Apr 15, 2026",
+    actionRequired: true,
+    sourceUrl: "https://labour.karnataka.gov.in/page/Acts+and+Rules/en",
+    sourceName: "Karnataka Labour Department",
+    clientsAffected: ["Dine-In Brands", "Swiggy", "Urban Company", "Infosys BPM"],
   },
   {
-    id: 54842,
-    title: "CBIC: Revised TDS Threshold for Contract Payments Under Section 194C Raised to ₹1 Lakh",
-    date: "Apr 15, 2026",
-    category: "Finance & Taxation",
-    regulator: "Central Board of Indirect Taxes & Customs (CBIC)",
-    state: "Central",
-    impact: "IT contract workers below ₹1L annual contract value now exempt from TDS. Vendor payment configurations for impacted contractors need updating across payroll systems.",
-    clients: ["TechCorp India", "Infosys BPM", "Wipro GE", "Hexaware", "L&T Infotech"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54842/",
-    notification: "compliance",
-  },
-  {
-    id: 54838,
-    title: "ESIC Circular: Gig Worker Coverage Framework — Mandatory ESI for Platform Workers",
+    id: 4,
+    title: "PF Wage Ceiling Revised to ₹21,000 — Effective May 1, 2026",
     date: "Apr 14, 2026",
     category: "Labour",
-    regulator: "Employees' State Insurance Corporation (ESIC)",
-    state: "Central",
-    impact: "Draft proposes mandatory ESI for platform gig workers earning ₹21,000+/month. Currently in consultation phase — no immediate action required but monitor for final notification. Could impact all platform-based client engagements.",
-    clients: ["Swiggy", "Zomato", "Urban Company", "BigBasket"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54838/",
-    notification: "informational",
+    authority: "Employees' Provident Fund Organisation (EPFO)",
+    reference: "EPFO/Wage-Ceiling/2026-27/Circular-03",
+    jurisdiction: "Central",
+    summary: "The EPFO has revised the PF wage ceiling from ₹15,000 to ₹21,000 per month. All blue-collar contract workers currently at the ₹15,000 ceiling will see revised PF deductions. Employer contribution increases proportionally. Payroll templates must be updated before the May cycle.",
+    keyChanges: [
+      "PF wage ceiling raised from ₹15,000 to ₹21,000/month",
+      "Both employer and employee contribution bases revised",
+      "Payroll templates need updating before May 2026 cycle",
+      "Affects all workers currently at or near ₹15,000 ceiling",
+    ],
+    effectiveDate: "May 1, 2026",
+    actionRequired: true,
+    sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
+    sourceName: "EPFO Circulars Portal",
+    clientsAffected: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company"],
   },
   {
-    id: 54830,
-    title: "Maharashtra Minimum Wages Revision — Zone I and Zone II Manufacturing Workers",
+    id: 5,
+    title: "Revised TDS Threshold for Contract Payments Under Section 194C Raised to ₹1 Lakh",
     date: "Apr 13, 2026",
-    category: "Labour",
-    regulator: "Labour Commissioner, Govt. of Maharashtra",
-    state: "Maharashtra",
-    impact: "Minimum daily wages for unskilled manufacturing workers in Zone I (Mumbai, Thane) increased from ₹570 to ₹620. Zone II (Pune, Nagpur) from ₹520 to ₹570. Effective immediately.",
-    clients: ["Dine-In Brands", "MedSure Healthcare", "Capgemini"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54830/",
-    notification: "compliance",
-  },
-  {
-    id: 54825,
-    title: "CBDT Notification: Updated Form 16A for Contract Worker Tax Deduction Certificates",
-    date: "Apr 12, 2026",
     category: "Finance & Taxation",
-    regulator: "Central Board of Direct Taxes (CBDT)",
-    state: "Central",
-    impact: "New Form 16A format mandatory for all contract worker TDS certificates issued from Q1 FY27. Payroll systems must update certificate generation templates before June 30.",
-    clients: ["Hexaware", "Infosys BPM", "L&T Infotech", "Mindtree", "Capgemini", "TechCorp India"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54825/",
-    notification: "compliance",
+    authority: "Central Board of Direct Taxes (CBDT)",
+    reference: "CBDT/Notification/2026/48",
+    jurisdiction: "Central",
+    summary: "IT contract workers below ₹1L annual contract value are now exempt from TDS under Section 194C. Previous threshold was ₹30,000 per single transaction or ₹1,00,000 aggregate. Vendor payment configurations for impacted contractors need updating across payroll systems.",
+    keyChanges: [
+      "Single transaction TDS threshold raised under Section 194C",
+      "IT contractors below ₹1L annual value now exempt",
+      "Vendor payment configurations need updating",
+      "Effective for FY 2026-27 onwards",
+    ],
+    effectiveDate: "Apr 1, 2026",
+    actionRequired: true,
+    sourceUrl: "https://incometaxindia.gov.in/Pages/communications/notifications.aspx",
+    sourceName: "Income Tax India — Notifications",
+    clientsAffected: ["TechCorp India", "Infosys BPM", "Wipro GE", "Hexaware", "L&T Infotech"],
   },
   {
-    id: 54820,
-    title: "Delhi Factories Act Amendment — Fire Safety Compliance for Contract Workers on Site",
-    date: "Apr 11, 2026",
-    category: "EHS",
-    regulator: "Department of Industries, Govt. of Delhi",
-    state: "Delhi",
-    impact: "All principal employers engaging contract workers must ensure fire safety training within 30 days of deployment. Non-compliance penalty increased from ₹10,000 to ₹50,000 per incident.",
-    clients: ["FinanceHub Ltd", "GlobalStaff Solutions"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54820/",
-    notification: "compliance",
-  },
-  {
-    id: 54815,
-    title: "Tamil Nadu Labour Welfare Board — Revised Contribution Rates for Contract Establishments",
-    date: "Apr 10, 2026",
+    id: 6,
+    title: "Maharashtra Minimum Wages Revision — Zone I and Zone II Manufacturing Workers",
+    date: "Apr 12, 2026",
     category: "Labour",
-    regulator: "Tamil Nadu Labour Welfare Board",
-    state: "Tamil Nadu",
-    impact: "Employer contribution to Labour Welfare Fund increased from ₹20 to ₹30 per employee per half-year. Employee contribution unchanged at ₹10. Effective from Apr 2026 half-year.",
-    clients: ["Infosys BPM", "Hexaware", "TechCorp India"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54815/",
-    notification: "compliance",
+    authority: "Labour Commissioner, Govt. of Maharashtra",
+    reference: "MAH/MW/2026/Rev-02",
+    jurisdiction: "Maharashtra",
+    summary: "Minimum daily wages for unskilled manufacturing workers in Zone I (Mumbai, Thane) increased from ₹570 to ₹620. Zone II (Pune, Nagpur) increased from ₹520 to ₹570. Effective immediately. Payroll corrections needed for Mumbai and Pune-based clients.",
+    keyChanges: [
+      "Zone I (Mumbai, Thane): ₹570 → ₹620/day for unskilled workers",
+      "Zone II (Pune, Nagpur): ₹520 → ₹570/day for unskilled workers",
+      "Immediate effect — no transition period",
+      "Payroll corrections required for affected clients",
+    ],
+    effectiveDate: "Apr 12, 2026",
+    actionRequired: true,
+    sourceUrl: "https://mahakamgar.maharashtra.gov.in/minimum-wages-702.htm",
+    sourceName: "Maharashtra Labour Department",
+    clientsAffected: ["Dine-In Brands", "MedSure Healthcare", "Capgemini"],
   },
   {
-    id: 54810,
-    title: "MCA Notification: Companies (Appointment and Remuneration) Second Amendment Rules 2026",
-    date: "Apr 9, 2026",
-    category: "Secretarial",
-    regulator: "Ministry of Corporate Affairs (MCA)",
-    state: "Central",
-    impact: "Revised remuneration disclosure requirements for managerial personnel at contract staffing firms. Annual return filings must now include contractor workforce cost breakdowns.",
-    clients: ["Hexaware", "Infosys BPM", "L&T Infotech", "Mindtree", "Capgemini"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54810/",
-    notification: "compliance",
+    id: 7,
+    title: "ESIC Circular: Gig Worker Coverage Framework — Consultation Draft",
+    date: "Apr 11, 2026",
+    category: "Labour",
+    authority: "Employees' State Insurance Corporation (ESIC)",
+    reference: "ESIC/GigWorker/2026/Draft-01",
+    jurisdiction: "Central",
+    summary: "Draft proposes mandatory ESI for platform gig workers earning ₹21,000+/month. Currently in consultation phase — no immediate action required. Monitor for final notification. Could impact all platform-based client engagements.",
+    keyChanges: [
+      "Mandatory ESI proposed for gig workers earning ₹21,000+/month",
+      "Currently a consultation draft — not yet effective",
+      "Would apply to platform-based workers (delivery, ride-hailing, etc.)",
+      "Public comments invited — deadline not yet announced",
+    ],
+    effectiveDate: "TBD (consultation)",
+    actionRequired: false,
+    sourceUrl: "https://www.esic.in/web/esicnew/circulars-and-orders",
+    sourceName: "ESIC — Circulars & Orders",
+    clientsAffected: ["Swiggy", "Zomato", "Urban Company", "BigBasket"],
   },
   {
-    id: 54805,
-    title: "Gujarat BOCW Cess — Increased Rate for Building & Construction Contract Workers",
+    id: 8,
+    title: "Delhi Factories Act Amendment — Fire Safety Compliance for Contract Workers",
+    date: "Apr 10, 2026",
+    category: "EHS",
+    authority: "Department of Industries, Govt. of Delhi",
+    reference: "DEL/FACTORIES/FIRE-SAFETY/2026/01",
+    jurisdiction: "Delhi",
+    summary: "All principal employers engaging contract workers must ensure fire safety training within 30 days of deployment. Non-compliance penalty increased from ₹10,000 to ₹50,000 per incident. Applies to all factory premises in NCT Delhi.",
+    keyChanges: [
+      "Fire safety training mandatory within 30 days of contract worker deployment",
+      "Non-compliance penalty increased from ₹10,000 to ₹50,000",
+      "Applies to all factory premises in NCT Delhi",
+      "Principal employer bears responsibility, not contractor",
+    ],
+    effectiveDate: "Apr 10, 2026",
+    actionRequired: true,
+    sourceUrl: "https://labour.delhi.gov.in/content/factories-act",
+    sourceName: "Delhi Labour Department",
+    clientsAffected: ["FinanceHub Ltd", "GlobalStaff Solutions"],
+  },
+  {
+    id: 9,
+    title: "POSH Act — Revised Compliance for Contract Staffing Intermediaries",
     date: "Apr 8, 2026",
     category: "Labour",
-    regulator: "Labour & Employment Department, Govt. of Gujarat",
-    state: "Gujarat",
-    impact: "BOCW cess rate for construction projects increased from 1% to 1.5% of construction cost. Applies to all principal employers engaging contract construction workers in Gujarat.",
-    clients: ["Dine-In Brands"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54805/",
-    notification: "compliance",
+    authority: "Ministry of Women and Child Development",
+    reference: "MWCD/POSH/2026/Amendment-02",
+    jurisdiction: "Central",
+    summary: "Contract staffing intermediaries are now explicitly required to maintain an Internal Complaints Committee and conduct annual POSH training for all deployed contract workers — not just internal employees. Applies directly to Buzzworks and all similar staffing firms.",
+    keyChanges: [
+      "ICC mandatory for staffing intermediaries, not just end-clients",
+      "Annual POSH training required for all deployed contract workers",
+      "Intermediary bears compliance responsibility regardless of principal employer",
+      "Non-compliance may result in license cancellation",
+    ],
+    effectiveDate: "Apr 8, 2026",
+    actionRequired: true,
+    sourceUrl: "https://wcd.nic.in/act/sexual-harassment-women-workplace-prevention-prohibition-and-redressal-act-2013",
+    sourceName: "Ministry of WCD — POSH Act",
+    clientsAffected: ["All clients"],
   },
   {
-    id: 54800,
-    title: "Telangana Shops & Establishments — Extended Working Hours Notification for IT Sector",
+    id: 10,
+    title: "Karnataka Professional Tax — Revised Slab for Contract Workers Above ₹25,000",
     date: "Apr 7, 2026",
-    category: "Commercial",
-    regulator: "Commissioner of Labour, Govt. of Telangana",
-    state: "Telangana",
-    impact: "IT/ITES establishments in Telangana may extend daily working hours to 12 hrs (from 9 hrs) with employee consent and 2x OT rate. Night shift for women permitted with transport. Effective immediately.",
-    clients: ["TechCorp India", "Infosys BPM", "Wipro GE"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54800/",
-    notification: "informational",
-  },
-  {
-    id: 54795,
-    title: "POSH Act — Revised Compliance Guidelines for Contract Staffing Intermediaries",
-    date: "Apr 5, 2026",
-    category: "Labour",
-    regulator: "Ministry of Women and Child Development",
-    state: "Central",
-    impact: "Contract staffing intermediaries (like Buzzworks) now explicitly required to maintain Internal Complaints Committee and conduct annual POSH training for all deployed contract workers, not just internal employees.",
-    clients: ["All clients"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54795/",
-    notification: "compliance",
-  },
-  {
-    id: 54790,
-    title: "GST Council: Clarification on GST Applicability for Manpower Supply Services",
-    date: "Apr 3, 2026",
     category: "Finance & Taxation",
-    regulator: "GST Council / CBIC",
-    state: "Central",
-    impact: "GST Council clarifies 18% GST applies uniformly on manpower supply services regardless of whether workers are skilled or unskilled. No reduced rate for blue-collar staffing. Input tax credit available to principal employer.",
-    clients: ["All clients"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54790/",
-    notification: "informational",
-  },
-  {
-    id: 54785,
-    title: "Haryana Minimum Wages — Revised Rates for Security Guards and Housekeeping Staff",
-    date: "Apr 2, 2026",
-    category: "Labour",
-    regulator: "Labour Department, Govt. of Haryana",
-    state: "Haryana",
-    impact: "Minimum wages for security guards in Haryana increased to ₹13,500/month (from ₹12,800). Housekeeping staff revised to ₹12,200/month. Effective immediately. Payroll corrections needed for Gurgaon-based clients.",
-    clients: ["FinanceHub Ltd", "GlobalStaff Solutions", "Mindtree"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54785/",
-    notification: "compliance",
-  },
-  {
-    id: 54780,
-    title: "Karnataka Professional Tax — Revised Slab for Contract Workers Earning Above ₹25,000",
-    date: "Apr 1, 2026",
-    category: "Finance & Taxation",
-    regulator: "Commercial Taxes Department, Govt. of Karnataka",
-    state: "Karnataka",
-    impact: "Professional tax for workers earning ₹25,001–₹50,000 increased from ₹150 to ₹200/month. Workers above ₹50,000 now pay ₹250/month (from ₹200). All Karnataka payroll deductions need updating.",
-    clients: ["Infosys BPM", "Wipro GE", "Swiggy", "Urban Company"],
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54780/",
-    notification: "compliance",
+    authority: "Commercial Taxes Department, Govt. of Karnataka",
+    reference: "KAR/PTAX/2026/Rev-01",
+    jurisdiction: "Karnataka",
+    summary: "Professional tax for workers earning ₹25,001–₹50,000 increased from ₹150 to ₹200/month. Workers above ₹50,000 now pay ₹250/month (from ₹200). All Karnataka payroll deductions need updating for the new slab structure.",
+    keyChanges: [
+      "₹25,001–₹50,000 bracket: ₹150 → ₹200/month",
+      "Above ₹50,000 bracket: ₹200 → ₹250/month",
+      "All Karnataka-based payroll deductions must be updated",
+      "Effective immediately for current assessment year",
+    ],
+    effectiveDate: "Apr 7, 2026",
+    actionRequired: true,
+    sourceUrl: "https://ctax.karnataka.gov.in/english",
+    sourceName: "Karnataka Commercial Taxes",
+    clientsAffected: ["Infosys BPM", "Wipro GE", "Swiggy", "Urban Company"],
   },
 ]
-
-// ─── Stats ────────────────────────────────────────────────────────────────────
-
-const SOURCE_URL = "https://www.teamleaseregtech.com/legalupdates/"
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CompliancePage() {
   const [category, setCategory]   = useState<Category | "all">("all")
-  const [state, setState]         = useState("All States")
+  const [jurisdiction, setJurisdiction] = useState("All")
   const [search, setSearch]       = useState("")
-  const [notiType, setNotiType]   = useState<"all" | "compliance" | "informational">("all")
+  const [actionOnly, setActionOnly] = useState(false)
+  const [expandedId, setExpandedId] = useState<number | null>(null)
 
   const filtered = useMemo(() => {
-    let list = [...UPDATES]
-    if (category !== "all") list = list.filter(u => u.category === category)
-    if (state !== "All States") list = list.filter(u => u.state === state || u.state === "Central")
-    if (notiType !== "all") list = list.filter(u => u.notification === notiType)
+    let list = [...REGULATIONS]
+    if (category !== "all") list = list.filter(r => r.category === category)
+    if (jurisdiction !== "All") list = list.filter(r => r.jurisdiction === jurisdiction || r.jurisdiction === "Central")
+    if (actionOnly) list = list.filter(r => r.actionRequired)
     if (search) {
       const q = search.toLowerCase()
-      list = list.filter(u =>
-        u.title.toLowerCase().includes(q) ||
-        u.regulator.toLowerCase().includes(q) ||
-        u.impact.toLowerCase().includes(q) ||
-        u.clients.some(c => c.toLowerCase().includes(q))
+      list = list.filter(r =>
+        r.title.toLowerCase().includes(q) ||
+        r.authority.toLowerCase().includes(q) ||
+        r.summary.toLowerCase().includes(q) ||
+        r.reference.toLowerCase().includes(q)
       )
     }
     return list
-  }, [category, state, search, notiType])
+  }, [category, jurisdiction, search, actionOnly])
 
-  const complianceCount = UPDATES.filter(u => u.notification === "compliance").length
-  const uniqueStates    = new Set(UPDATES.map(u => u.state)).size
-  const uniqueClients   = new Set(UPDATES.flatMap(u => u.clients).filter(c => c !== "All clients")).size
+  const actionCount = REGULATIONS.filter(r => r.actionRequired).length
 
   return (
     <div className="flex h-screen overflow-hidden app-bg">
@@ -268,53 +295,21 @@ export default function CompliancePage() {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Header */}
-        <header className="px-5 lg:px-7 py-5 border-b flex-shrink-0"
-          style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
-          <div className="flex items-start justify-between">
+        <header className="px-6 lg:px-8 py-5 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
+          <div className="flex items-center gap-3">
+            <Scale size={20} strokeWidth={1.5} style={{ color: "var(--accent)" }} />
             <div>
-              <div className="flex items-center gap-2.5">
-                <Scale size={18} style={{ color: "var(--accent)" }} />
-                <h1 className="text-lg font-bold" style={{ color: "var(--text-1)" }}>Compliance Hub</h1>
-              </div>
-              <p className="text-xs mt-1" style={{ color: "var(--text-3)" }}>
-                Regulatory intelligence powered by ORACLE · Sourced from TeamLease RegTech (16,253+ documents)
+              <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>AI Compliance</h1>
+              <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                Regulatory updates monitored by ORACLE · {REGULATIONS.length} documents · {actionCount} require action
               </p>
             </div>
-            <a
-              href={SOURCE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all flex-shrink-0"
-              style={{ background: "var(--surface-2)", color: "var(--text-2)", border: "1px solid var(--border)" }}
-            >
-              <ExternalLink size={12} />
-              TeamLease RegTech
-            </a>
           </div>
         </header>
 
-        {/* Stats row */}
-        <div className="flex border-b flex-shrink-0" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
-          {[
-            { label: "Total Updates",       value: UPDATES.length.toString(), color: "var(--text-1)" },
-            { label: "Action Required",     value: complianceCount.toString(), color: "var(--warn)"  },
-            { label: "States Covered",      value: uniqueStates.toString(),   color: "var(--accent)" },
-            { label: "Clients Impacted",    value: uniqueClients.toString(),  color: "var(--info)"   },
-          ].map((s, i) => (
-            <div
-              key={s.label}
-              className="flex-1 px-5 lg:px-7 py-4"
-              style={{ borderLeft: i > 0 ? "1px solid var(--border)" : "none" }}
-            >
-              <div className="text-xl font-bold" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-
         {/* Filter bar */}
-        <div className="flex items-center gap-3 px-5 lg:px-7 py-3 border-b flex-shrink-0 overflow-x-auto scrollbar-none"
-          style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
+        <div className="flex items-center gap-3 px-6 lg:px-8 py-3 flex-shrink-0 overflow-x-auto scrollbar-none"
+          style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
 
           {/* Category pills */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -322,11 +317,10 @@ export default function CompliancePage() {
               <button
                 key={c.value}
                 onClick={() => setCategory(c.value)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium transition-all flex-shrink-0"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0"
                 style={{
-                  background: category === c.value ? (c.value === "all" ? "var(--accent-dim)" : `${c.color}15`) : "transparent",
-                  color: category === c.value ? (c.value === "all" ? "var(--accent)" : c.color) : "var(--text-3)",
-                  border: category === c.value ? `1px solid ${c.value === "all" ? "var(--accent-border)" : c.color + "30"}` : "1px solid transparent",
+                  background: category === c.value ? "var(--accent-dim)" : "transparent",
+                  color: category === c.value ? "var(--accent)" : "var(--text-3)",
                 }}
               >
                 {c.label}
@@ -336,141 +330,172 @@ export default function CompliancePage() {
 
           <div className="w-px h-4 flex-shrink-0" style={{ background: "var(--border)" }} />
 
-          {/* State select */}
+          {/* Jurisdiction */}
           <div className="relative flex-shrink-0">
-            <MapPin size={12} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
             <select
-              value={state}
-              onChange={e => setState(e.target.value)}
-              className="glass-input pl-8 pr-7 py-1.5 text-xs appearance-none cursor-pointer"
-              style={{ width: 140 }}
+              value={jurisdiction}
+              onChange={e => setJurisdiction(e.target.value)}
+              className="glass-input py-1.5 text-xs pr-7 appearance-none cursor-pointer"
+              style={{ width: 130 }}
             >
               {STATES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
-            <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
+            <ChevronDown size={11} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
           </div>
 
-          {/* Notification type */}
-          <div className="relative flex-shrink-0">
-            <select
-              value={notiType}
-              onChange={e => setNotiType(e.target.value as typeof notiType)}
-              className="glass-input py-1.5 text-xs appearance-none cursor-pointer pr-7"
-              style={{ width: 140 }}
-            >
-              <option value="all">All types</option>
-              <option value="compliance">Action required</option>
-              <option value="informational">Informational</option>
-            </select>
-            <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
-          </div>
+          {/* Action required toggle */}
+          <button
+            onClick={() => setActionOnly(!actionOnly)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium flex-shrink-0 transition-all"
+            style={{
+              background: actionOnly ? "var(--warn-bg)" : "transparent",
+              color: actionOnly ? "var(--warn)" : "var(--text-3)",
+            }}
+          >
+            <AlertTriangle size={12} />
+            Action required ({actionCount})
+          </button>
 
           {/* Search */}
           <div className="relative flex-shrink-0 ml-auto">
-            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
             <input
-              className="glass-input pl-8 py-1.5 text-xs w-52"
-              placeholder="Search updates, regulators, clients…"
+              className="glass-input pl-8 py-1.5 text-xs w-48"
+              placeholder="Search regulations…"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
         </div>
 
-        {/* Feed */}
-        <div className="flex-1 overflow-y-auto p-5 lg:p-7 space-y-4 pb-nav lg:pb-7">
+        {/* Document feed */}
+        <div className="flex-1 overflow-y-auto pb-nav lg:pb-0">
+          <div className="max-w-4xl mx-auto px-6 lg:px-8 py-6 space-y-4">
 
-          <div className="text-xs mb-1" style={{ color: "var(--text-3)" }}>
-            Showing {filtered.length} of {UPDATES.length} updates
-          </div>
-
-          {filtered.map(u => {
-            const catConfig = CATEGORIES.find(c => c.value === u.category)
-            const catColor  = catConfig?.color ?? "var(--text-2)"
-
-            return (
-              <div
-                key={u.id}
-                className="p-5 rounded-xl"
-                style={{ background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
-              >
-                {/* Top row: badges + date */}
-                <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <span
-                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                    style={{ background: `${catColor}12`, color: catColor, border: `1px solid ${catColor}25` }}
-                  >
-                    {u.category}
-                  </span>
-                  {u.notification === "compliance" && (
-                    <span
-                      className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                      style={{ background: "var(--warn-bg)", color: "var(--warn)", border: "1px solid var(--warn-border)" }}
-                    >
-                      <AlertTriangle size={9} /> Action required
-                    </span>
-                  )}
-                  <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--text-3)" }}>
-                    <MapPin size={10} /> {u.state}
-                  </span>
-                  <span className="text-[11px] ml-auto" style={{ color: "var(--text-3)" }}>
-                    {u.date}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h3 className="text-sm font-semibold leading-snug mb-1.5" style={{ color: "var(--text-1)" }}>
-                  {u.title}
-                </h3>
-
-                {/* Regulator */}
-                <div className="text-xs mb-2" style={{ color: "var(--text-2)" }}>
-                  {u.regulator}
-                </div>
-
-                {/* Impact */}
-                <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--text-2)" }}>
-                  {u.impact}
-                </p>
-
-                {/* Bottom: affected clients + source link */}
-                <div className="flex items-end justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: "var(--text-3)" }}>
-                      Clients impacted
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {u.clients.map(c => (
-                        <span
-                          key={c}
-                          className="text-[10px] font-medium px-2 py-0.5 rounded"
-                          style={{ background: "var(--surface-2)", color: "var(--text-2)", border: "1px solid var(--border)" }}
-                        >
-                          {c}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <a
-                    href={u.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-[11px] font-medium flex-shrink-0 transition-opacity hover:opacity-70"
-                    style={{ color: "var(--accent)" }}
-                  >
-                    <ExternalLink size={11} />
-                    View source
-                  </a>
-                </div>
-              </div>
-            )
-          })}
-
-          {filtered.length === 0 && (
-            <div className="text-center py-16 text-sm" style={{ color: "var(--text-3)" }}>
-              No updates match the current filters
+            <div className="text-xs mb-2" style={{ color: "var(--text-3)" }}>
+              {filtered.length} of {REGULATIONS.length} regulations
             </div>
-          )}
+
+            {filtered.map(reg => {
+              const expanded = expandedId === reg.id
+
+              return (
+                <article
+                  key={reg.id}
+                  className="rounded-xl transition-all cursor-pointer"
+                  style={{ background: "var(--surface)", boxShadow: expanded ? "var(--shadow-md)" : "var(--shadow)" }}
+                  onClick={() => setExpandedId(expanded ? null : reg.id)}
+                >
+                  {/* Document header */}
+                  <div className="p-5 lg:p-6">
+
+                    {/* Meta row */}
+                    <div className="flex items-center gap-2 flex-wrap mb-3">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded-md"
+                        style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
+                        {reg.category}
+                      </span>
+                      {reg.actionRequired && (
+                        <span className="flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md"
+                          style={{ background: "var(--warn-bg)", color: "var(--warn)" }}>
+                          <AlertTriangle size={10} /> Action required
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text-3)" }}>
+                        <MapPin size={10} /> {reg.jurisdiction}
+                      </span>
+                      <span className="text-[11px] ml-auto" style={{ color: "var(--text-3)" }}>
+                        {reg.date}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-[15px] font-semibold leading-snug" style={{ color: "var(--text-1)" }}>
+                      {reg.title}
+                    </h3>
+
+                    {/* Authority + Reference */}
+                    <div className="flex items-center gap-3 mt-2 text-[13px]" style={{ color: "var(--text-2)" }}>
+                      <span>{reg.authority}</span>
+                      <span className="text-[11px] font-mono px-1.5 py-0.5 rounded"
+                        style={{ background: "var(--surface-2)", color: "var(--text-3)" }}>
+                        {reg.reference}
+                      </span>
+                    </div>
+
+                    {/* Summary */}
+                    <p className="text-[13px] leading-relaxed mt-3" style={{ color: "var(--text-2)" }}>
+                      {reg.summary}
+                    </p>
+                  </div>
+
+                  {/* Expanded content */}
+                  {expanded && (
+                    <div className="px-5 lg:px-6 pb-5 lg:pb-6 animate-fade-in">
+                      <div style={{ borderTop: "1px solid var(--border)" }} className="pt-4 space-y-4">
+
+                        {/* Key changes */}
+                        <div>
+                          <div className="text-[13px] font-medium mb-2" style={{ color: "var(--text-1)" }}>
+                            Key Changes
+                          </div>
+                          <ul className="space-y-1.5">
+                            {reg.keyChanges.map((change, i) => (
+                              <li key={i} className="flex items-start gap-2 text-[13px]" style={{ color: "var(--text-2)" }}>
+                                <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: "var(--accent)" }} />
+                                {change}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Effective date */}
+                        <div className="flex items-center gap-2 text-[13px]">
+                          <Calendar size={13} style={{ color: "var(--text-3)" }} />
+                          <span style={{ color: "var(--text-3)" }}>Effective:</span>
+                          <span className="font-medium" style={{ color: "var(--text-1)" }}>{reg.effectiveDate}</span>
+                        </div>
+
+                        {/* Clients affected */}
+                        <div>
+                          <div className="flex items-center gap-1.5 text-[13px] mb-2" style={{ color: "var(--text-3)" }}>
+                            <Building2 size={13} /> Clients impacted
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {reg.clientsAffected.map(c => (
+                              <span key={c} className="text-xs px-2 py-0.5 rounded-md"
+                                style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
+                                {c}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Source link */}
+                        <a
+                          href={reg.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 text-[13px] font-medium transition-opacity hover:opacity-70"
+                          style={{ color: "var(--accent)" }}
+                        >
+                          <ExternalLink size={13} />
+                          {reg.sourceName}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </article>
+              )
+            })}
+
+            {filtered.length === 0 && (
+              <div className="text-center py-20 text-sm" style={{ color: "var(--text-3)" }}>
+                No regulations match the current filters
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
