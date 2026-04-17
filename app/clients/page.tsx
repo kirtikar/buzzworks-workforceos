@@ -1,16 +1,93 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import Link from "next/link"
 import Sidebar from "@/components/Sidebar"
 import AIAgentOrb from "@/components/AIAgentOrb"
 import { clients, portals } from "@/lib/mock-data"
 import type { Industry } from "@/lib/types"
 import {
-  Search, Building2, Users, Clock, AlertTriangle, ArrowRight,
-  ChevronRight, Globe, Mail, Filter, CheckCircle2, TrendingUp,
+  Search, Building2, Users, Clock, AlertTriangle, ArrowRight, X,
+  ChevronRight, ChevronDown, Globe, Mail, CheckCircle2, TrendingUp,
+  Briefcase, ArrowUpDown,
 } from "lucide-react"
 import clsx from "clsx"
+
+// ─── Filter Dropdown (matches employees page) ─────────────────────────────────
+
+function FilterDropdown({
+  label, icon: Icon, options, selected, onToggle, onClear,
+}: {
+  label: string
+  icon?: React.ComponentType<{ size?: number }>
+  options: { value: string; label: string }[]
+  selected: string[]
+  onToggle: (v: string) => void
+  onClear: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    function h(e: MouseEvent) { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener("mousedown", h)
+    return () => document.removeEventListener("mousedown", h)
+  }, [])
+  const active = selected.length > 0
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={clsx(
+          "flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all whitespace-nowrap",
+          active ? "border-[color:var(--accent)]" : "border-[color:var(--border)] hover:border-[color:var(--border-strong)]"
+        )}
+        style={{
+          background: active ? "var(--accent-dim)" : "var(--surface)",
+          color: active ? "var(--accent)" : "var(--text-2)",
+        }}
+      >
+        {Icon && <Icon size={12} />}
+        {label}
+        {active && (
+          <span className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+            style={{ background: "var(--accent)", color: "#fff" }}>
+            {selected.length}
+          </span>
+        )}
+        <ChevronDown size={11} className={clsx("transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="absolute top-full mt-1.5 left-0 z-50 rounded-xl border shadow-xl min-w-[200px] py-1.5"
+          style={{ background: "var(--surface)", borderColor: "var(--border-strong)", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
+          {selected.length > 0 && (
+            <button onClick={() => { onClear(); setOpen(false) }}
+              className="w-full text-left px-3 py-1.5 text-xs font-semibold mb-1"
+              style={{ color: "var(--accent)" }}>
+              Clear all
+            </button>
+          )}
+          <div className="max-h-52 overflow-y-auto">
+            {options.map(opt => (
+              <button key={opt.value} onClick={() => onToggle(opt.value)}
+                className="w-full text-left flex items-center gap-2 px-3 py-1.5 text-xs transition-colors"
+                style={{
+                  color: selected.includes(opt.value) ? "var(--text-1)" : "var(--text-2)",
+                  background: selected.includes(opt.value) ? "var(--accent-dim)" : "transparent",
+                }}>
+                <span className={clsx("w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center",
+                  selected.includes(opt.value) ? "border-[color:var(--accent)]" : "border-[color:var(--border-strong)]")}
+                  style={{ background: selected.includes(opt.value) ? "var(--accent)" : "transparent" }}>
+                  {selected.includes(opt.value) && <span className="text-white text-[8px] font-bold">✓</span>}
+                </span>
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -135,16 +212,27 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ClientsPage() {
-  const [search,   setSearch]   = useState("")
-  const [industry, setIndustry] = useState<Industry | "all">("all")
-  const [portal,   setPortal]   = useState<string>("all")
-  const [sortBy,   setSortBy]   = useState<"name" | "employees" | "payroll" | "compliance">("employees")
+  const [search,        setSearch]        = useState("")
+  const [selIndustries, setSelIndustries] = useState<Industry[]>([])
+  const [selPortals,    setSelPortals]    = useState<string[]>([])
+  const [sortBy,        setSortBy]        = useState<"name" | "employees" | "payroll" | "compliance">("employees")
+
+  function toggle<T>(arr: T[], set: (v: T[]) => void, val: T) {
+    set(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val])
+  }
 
   const filtered = useMemo(() => {
     let list = [...clients]
-    if (search)           list = list.filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.code.toLowerCase().includes(search.toLowerCase()) || c.city.toLowerCase().includes(search.toLowerCase()))
-    if (industry !== "all") list = list.filter(c => c.industry === industry)
-    if (portal !== "all")   list = list.filter(c => portal === "email" ? c.emailOnly : c.portalId === portal)
+    if (search) list = list.filter(c =>
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.code.toLowerCase().includes(search.toLowerCase()) ||
+      c.city.toLowerCase().includes(search.toLowerCase())
+    )
+    if (selIndustries.length) list = list.filter(c => selIndustries.includes(c.industry as Industry))
+    if (selPortals.length) list = list.filter(c =>
+      selPortals.includes("email") ? c.emailOnly : false ||
+      (c.portalId && selPortals.includes(c.portalId))
+    )
     list.sort((a, b) =>
       sortBy === "name"       ? a.name.localeCompare(b.name) :
       sortBy === "employees"  ? b.employeeCount - a.employeeCount :
@@ -152,7 +240,15 @@ export default function ClientsPage() {
                                 b.complianceScore - a.complianceScore
     )
     return list
-  }, [search, industry, portal, sortBy])
+  }, [search, selIndustries, selPortals, sortBy])
+
+  const activeFilterCount = selIndustries.length + selPortals.length
+
+  const industryOptions = INDUSTRIES.map(i => ({ value: i, label: i }))
+  const portalOptions   = [
+    ...portals.map(p => ({ value: p.id, label: p.shortName })),
+    { value: "email", label: "Email only" },
+  ]
 
   const totalEmployees = clients.reduce((s, c) => s + c.employeeCount, 0)
   const totalPending   = clients.reduce((s, c) => s + c.pendingTimesheets, 0)
@@ -188,55 +284,56 @@ export default function ClientsPage() {
             ))}
           </div>
 
-          {/* Filters */}
-          <div className="glass p-3 flex flex-wrap items-center gap-3">
-            <Filter size={13} className="flex-shrink-0" style={{ color: "var(--text-3)" }} />
+          {/* Filters — outer div: relative z-20, no overflow (allows dropdowns to escape) */}
+          <div className="relative z-20">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+              {/* Search */}
+              <div className="relative flex-shrink-0">
+                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+                <input
+                  className="glass-input pl-8 text-xs py-2 w-52"
+                  placeholder="Search clients…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </div>
 
-            {/* Search */}
-            <div className="relative flex-1 min-w-[180px]">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
-              <input
-                className="glass-input w-full pl-8 text-[12px] py-1.5"
-                placeholder="Search clients…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
+              <div className="w-px h-5 flex-shrink-0" style={{ background: "var(--border)" }} />
+
+              <FilterDropdown label="Industry" icon={Briefcase} options={industryOptions}
+                selected={selIndustries} onToggle={v => toggle(selIndustries, setSelIndustries, v as Industry)}
+                onClear={() => setSelIndustries([])} />
+
+              <FilterDropdown label="Source" icon={Globe} options={portalOptions}
+                selected={selPortals} onToggle={v => toggle(selPortals, setSelPortals, v)}
+                onClear={() => setSelPortals([])} />
+
+              {/* Sort */}
+              <div className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs"
+                style={{ background: "var(--surface)", borderColor: "var(--border)", color: "var(--text-2)" }}>
+                <ArrowUpDown size={12} />
+                <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
+                  className="bg-transparent outline-none cursor-pointer" style={{ color: "var(--text-2)" }}>
+                  <option value="employees">Employees</option>
+                  <option value="payroll">Payroll</option>
+                  <option value="compliance">Compliance</option>
+                  <option value="name">Name</option>
+                </select>
+              </div>
+
+              {/* Clear all */}
+              {activeFilterCount > 0 && (
+                <button onClick={() => { setSelIndustries([]); setSelPortals([]); setSearch("") }}
+                  className="flex items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold flex-shrink-0"
+                  style={{ color: "var(--danger)", background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
+                  <X size={11} /> Clear ({activeFilterCount})
+                </button>
+              )}
+
+              <span className="text-xs ml-auto flex-shrink-0" style={{ color: "var(--text-3)" }}>
+                {filtered.length} of {clients.length}
+              </span>
             </div>
-
-            {/* Industry filter */}
-            <select
-              className="glass-input text-[12px] py-1.5 pr-6"
-              value={industry}
-              onChange={e => setIndustry(e.target.value as Industry | "all")}
-            >
-              <option value="all">All industries</option>
-              {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
-            </select>
-
-            {/* Portal filter */}
-            <select
-              className="glass-input text-[12px] py-1.5 pr-6"
-              value={portal}
-              onChange={e => setPortal(e.target.value)}
-            >
-              <option value="all">All sources</option>
-              {portals.map(p => <option key={p.id} value={p.id}>{p.shortName}</option>)}
-              <option value="email">Email only</option>
-            </select>
-
-            {/* Sort */}
-            <select
-              className="glass-input text-[12px] py-1.5 pr-6"
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value as typeof sortBy)}
-            >
-              <option value="employees">Sort: Employees</option>
-              <option value="payroll">Sort: Payroll</option>
-              <option value="compliance">Sort: Compliance</option>
-              <option value="name">Sort: Name</option>
-            </select>
-
-            <span className="text-[11px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} results</span>
           </div>
 
           {/* Client grid */}
