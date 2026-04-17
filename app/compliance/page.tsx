@@ -299,7 +299,7 @@ export default function CompliancePage() {
           <div className="flex items-center gap-3">
             <Scale size={20} strokeWidth={1.5} style={{ color: "var(--accent)" }} />
             <div>
-              <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>AI Compliance</h1>
+              <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Compliance</h1>
               <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
                 Regulatory updates monitored by ORACLE · {REGULATIONS.length} documents · {actionCount} require action
               </p>
