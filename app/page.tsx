@@ -9,6 +9,7 @@ import {
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
   ResponsiveContainer, Tooltip, CartesianGrid,
+  PieChart, Pie, Cell,
 } from "recharts"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -98,6 +99,21 @@ const resourceUtil = [
   { month: "Mar",  perPerson: 478,  headcount: 5 },
   { month: "Apr",  perPerson: 636,  headcount: 4 },
 ]
+
+// Ops team time & cost breakdown — sub-functions typical for Indian managed
+// HRMS ops service. Total monthly ops cost ~₹4.2L distributed across functions.
+const OPS_TOTAL = 420000
+const opsBreakdown = [
+  { fn: "Timesheet approval & validation",  pct: 26, color: "#FF3D7F" },
+  { fn: "Payroll processing & reconciliation", pct: 18, color: "#A78BFA" },
+  { fn: "Compliance & regulation checks",   pct: 15, color: "#2DD4BF" },
+  { fn: "Employee queries & grievances",    pct: 10, color: "#FACC15" },
+  { fn: "Onboarding (PAN, bank, PF, ESI)",  pct:  8, color: "#FFB4A2" },
+  { fn: "Leave & attendance reconciliation", pct:  7, color: "#F59E0B" },
+  { fn: "Client reporting & AM coordination", pct: 6, color: "#3B82F6" },
+  { fn: "HRMS portal sync & issue resolution", pct: 5, color: "#10B981" },
+  { fn: "Offboarding & F&F settlement",     pct:  5, color: "#C88A5C" },
+].map(x => ({ ...x, cost: Math.round(OPS_TOTAL * x.pct / 100) }))
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -282,6 +298,74 @@ export default function DashboardPage() {
                     <Bar yAxisId="right" dataKey="headcount" fill="var(--gold)" radius={[4,4,0,0]} barSize={8} name="Ops headcount" opacity={0.35} />
                   </BarChart>
                 </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Ops Team Time & Cost Breakdown ───────────────────── */}
+          <div className="glass p-6">
+            <div className="flex items-start justify-between mb-5">
+              <div>
+                <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
+                  Ops Team Time &amp; Cost Breakdown
+                </div>
+                <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  Where your {fmtINR(OPS_TOTAL)}/mo ops cost goes across sub-functions
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
+              {/* Pie chart */}
+              <div className="lg:col-span-2" style={{ height: 300 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={opsBreakdown}
+                      dataKey="pct"
+                      nameKey="fn"
+                      cx="50%" cy="50%"
+                      innerRadius={70}
+                      outerRadius={120}
+                      paddingAngle={2}
+                      strokeWidth={0}
+                    >
+                      {opsBreakdown.map((s, i) => (
+                        <Cell key={i} fill={s.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        background: "var(--surface)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 10,
+                        fontSize: 12,
+                        color: "var(--text-1)",
+                        boxShadow: "var(--shadow-2)",
+                      }}
+                      formatter={(v: number, _n, payload) => {
+                        const p = payload as unknown as { payload: { cost: number } }
+                        return [`${v}% · ${fmtINR(p.payload.cost)}`, "Share"]
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Legend table */}
+              <div className="lg:col-span-3 space-y-2">
+                {opsBreakdown.map(s => (
+                  <div key={s.fn} className="flex items-center gap-3">
+                    <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: s.color }} />
+                    <span className="text-[13px] flex-1 truncate" style={{ color: "var(--text-1)" }}>{s.fn}</span>
+                    <span className="text-[13px] tabular-nums" style={{ color: "var(--text-2)" }}>
+                      {fmtINR(s.cost)}
+                    </span>
+                    <span className="text-[13px] font-semibold tabular-nums w-10 text-right" style={{ color: "var(--text-1)" }}>
+                      {s.pct}%
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

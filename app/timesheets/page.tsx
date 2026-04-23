@@ -3,12 +3,14 @@
 import { useState, useMemo } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
+import ComplianceInbox from "@/components/ComplianceInbox"
 import {
   timesheets as allTimesheets,
   getEmployee,
   getClient,
   clients,
 } from "@/lib/mock-data"
+import { REGULATIONS } from "@/lib/compliance-data"
 import type { TimesheetStatus } from "@/lib/types"
 import {
   Search, Check, Flag, X, CheckCircle2, XCircle,
@@ -125,12 +127,15 @@ export default function InboxPage() {
   const detailEmp = detail ? getEmployee(detail.employeeId) : null
   const detailClient = detail ? getClient(detail.clientId) : null
 
-  // Category tabs for future expansion
+  // Compliance count = regulations needing action
+  const complianceActionCount = REGULATIONS.filter(r => r.actionRequired).length
+
+  // Category tabs
   const categories: { value: ActionCategory; label: string; count: number }[] = [
     { value: "timesheets",  label: "Timesheets",  count: actionableCount },
-    { value: "compliance",  label: "Compliance",   count: 3 },
-    { value: "documents",   label: "Documents",    count: 5 },
-    { value: "payroll",     label: "Payroll",      count: 2 },
+    { value: "compliance",  label: "Compliance",  count: complianceActionCount },
+    { value: "documents",   label: "Documents",   count: 5 },
+    { value: "payroll",     label: "Payroll",     count: 2 },
   ]
 
   return (
@@ -192,6 +197,15 @@ export default function InboxPage() {
 
         {/* Content */}
         <div className="flex-1 flex overflow-hidden">
+
+          {category === "compliance" ? (
+            <ComplianceInbox />
+          ) : category !== "timesheets" ? (
+            <div className="flex-1 flex items-center justify-center text-sm" style={{ color: "var(--text-3)" }}>
+              {categories.find(c => c.value === category)?.label ?? "Section"} — coming soon
+            </div>
+          ) : (
+          <>
 
           {/* Main list */}
           <div className="flex-1 flex flex-col overflow-hidden">
@@ -513,6 +527,8 @@ export default function InboxPage() {
                 )}
               </div>
             </div>
+          )}
+          </>
           )}
         </div>
       </div>
