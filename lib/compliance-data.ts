@@ -556,11 +556,180 @@ function buildReference(category: ComplianceCategory, id: number, rng: () => num
   return `${prefixes[category]}/Circular/${year}/${num}-${id}`
 }
 
-function buildSourceUrl(pool: typeof CATEGORY_POOLS[ComplianceCategory], _category: ComplianceCategory, region: string): string {
-  if (region !== "Central") {
-    return `https://${region.toLowerCase().replace(/\s+/g, "")}.gov.in/compliance`
+// ---------------------------------------------------------------------------
+// AUTHORITY URL RESOLVER — maps each authority to its real official portal
+// ---------------------------------------------------------------------------
+
+const AUTHORITY_URLS: Record<string, { url: string; name: string }> = {
+  // ── Labour ─────────────────────────────────────────────────────────────
+  "Employees' Provident Fund Organisation (EPFO)":
+    { url: "https://www.epfindia.gov.in/site_en/Circulars.php", name: "EPFO Circulars" },
+  "Employees' State Insurance Corporation (ESIC)":
+    { url: "https://www.esic.in/web/esicnew/circulars-and-orders", name: "ESIC Orders" },
+  "Ministry of Labour & Employment":
+    { url: "https://labour.gov.in/whatsnew", name: "Ministry of Labour" },
+  "Chief Labour Commissioner":
+    { url: "https://clc.gov.in/clc/acts-rules", name: "Chief Labour Commissioner" },
+  "Directorate General of Factory Advice Service":
+    { url: "https://dgfasli.gov.in/", name: "DGFASLI" },
+
+  // ── Finance & Taxation ─────────────────────────────────────────────────
+  "Central Board of Direct Taxes (CBDT)":
+    { url: "https://incometaxindia.gov.in/Pages/communications/notifications.aspx", name: "CBDT Notifications" },
+  "Central Board of Indirect Taxes & Customs (CBIC)":
+    { url: "https://cbic-gst.gov.in/cgst-circulars.html", name: "CBIC Circulars" },
+  "Income Tax Department":
+    { url: "https://www.incometax.gov.in/iec/foportal/latest-updates", name: "Income Tax Portal" },
+  "GST Council":
+    { url: "https://www.gstcouncil.gov.in/gst-council-meetings", name: "GST Council" },
+
+  // ── EHS ────────────────────────────────────────────────────────────────
+  "Central Pollution Control Board (CPCB)":
+    { url: "https://cpcb.nic.in/important-notifications/", name: "CPCB Notifications" },
+  "Directorate General of Mines Safety":
+    { url: "https://www.dgms.gov.in/en/notifications", name: "DGMS Notifications" },
+  "National Disaster Management Authority":
+    { url: "https://ndma.gov.in/Resources/Policies-Plans", name: "NDMA Guidelines" },
+
+  // ── Commercial ─────────────────────────────────────────────────────────
+  "Bureau of Indian Standards (BIS)":
+    { url: "https://www.bis.gov.in/index.php/standards/new-standards-formulation/", name: "BIS Standards" },
+  "Food Safety and Standards Authority (FSSAI)":
+    { url: "https://www.fssai.gov.in/cms/notifications.php", name: "FSSAI Notifications" },
+  "Directorate of Legal Metrology":
+    { url: "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology", name: "Legal Metrology" },
+  "Ministry of Commerce & Industry":
+    { url: "https://commerce.gov.in/press-releases/", name: "Ministry of Commerce" },
+  "Director General of Foreign Trade (DGFT)":
+    { url: "https://www.dgft.gov.in/CP/?opt=notifications", name: "DGFT Notifications" },
+
+  // ── Secretarial ────────────────────────────────────────────────────────
+  "Ministry of Corporate Affairs (MCA)":
+    { url: "https://www.mca.gov.in/content/mca/global/en/notifications-tender/notifications.html", name: "MCA Notifications" },
+  "Insolvency and Bankruptcy Board of India (IBBI)":
+    { url: "https://ibbi.gov.in/en/legal-framework/notices", name: "IBBI Notices" },
+  "Securities and Exchange Board of India (SEBI)":
+    { url: "https://www.sebi.gov.in/sebiweb/home/HomeAction.do?doListingAll=yes&search=&sector=no&sid=1&ssid=3&smid=0", name: "SEBI Circulars" },
+  "Reserve Bank of India (RBI)":
+    { url: "https://www.rbi.org.in/Scripts/BS_CircularIndexDisplay.aspx", name: "RBI Circulars" },
+  "Bombay Stock Exchange (BSE)":
+    { url: "https://www.bseindia.com/static/about/notices.aspx", name: "BSE Notices" },
+  "National Stock Exchange (NSE)":
+    { url: "https://www.nseindia.com/resources/exchange-communication-circulars", name: "NSE Circulars" },
+
+  // ── Industry Specific ──────────────────────────────────────────────────
+  "Directorate General of Civil Aviation (DGCA)":
+    { url: "https://www.dgca.gov.in/digigov-portal/?page=2", name: "DGCA Regulations" },
+  "Telecom Regulatory Authority of India (TRAI)":
+    { url: "https://www.trai.gov.in/notifications/regulation", name: "TRAI Regulations" },
+  "Insurance Regulatory and Development Authority (IRDAI)":
+    { url: "https://irdai.gov.in/rules", name: "IRDAI Rules" },
+  "Pharmaceutical Department":
+    { url: "https://pharmaceuticals.gov.in/whatsnew", name: "Pharma Dept" },
+
+  // ── General ────────────────────────────────────────────────────────────
+  "Ministry of Home Affairs":
+    { url: "https://www.mha.gov.in/en/commoncontent/notifications", name: "MHA Notifications" },
+  "Department of Personnel & Training":
+    { url: "https://dopt.gov.in/circulars", name: "DoPT Circulars" },
+  "Election Commission of India":
+    { url: "https://eci.gov.in/issue-details-page/instructions", name: "ECI Instructions" },
+  "Ministry of External Affairs":
+    { url: "https://www.mea.gov.in/press-releases.htm", name: "MEA Press" },
+}
+
+// ---------------------------------------------------------------------------
+// STATE-SPECIFIC URL MAPS
+// Labour, Commercial Taxes, Pollution Control, Education, Fire Services,
+// Welfare Boards — all real state-government portals
+// ---------------------------------------------------------------------------
+
+const STATE_URLS: Record<string, {
+  labour?:      string
+  commercial?:  string  // Commercial Taxes / Professional Tax
+  pcb?:         string  // Pollution Control Board
+  fire?:        string
+  education?:   string
+  welfare?:     string  // Labour Welfare Board
+  root:         string  // fallback: state main portal
+}> = {
+  "Karnataka":     { labour: "https://labour.karnataka.gov.in/english",     commercial: "https://gst.kar.nic.in/Documents/",  pcb: "https://kspcb.karnataka.gov.in/",              root: "https://www.karnataka.gov.in" },
+  "Tamil Nadu":    { labour: "https://labour.tn.gov.in",                    commercial: "https://ctd.tn.gov.in",               pcb: "https://tnpcb.gov.in",                         root: "https://www.tn.gov.in" },
+  "Maharashtra":   { labour: "https://mahakamgar.maharashtra.gov.in/",      commercial: "https://mahagst.gov.in",              pcb: "https://mpcb.gov.in",                          root: "https://www.maharashtra.gov.in" },
+  "Delhi":         { labour: "https://labour.delhi.gov.in/content/circulars", commercial: "https://dvat.gov.in",              pcb: "https://dpcc.delhi.gov.in",                    root: "https://delhi.gov.in" },
+  "Telangana":     { labour: "https://labour.telangana.gov.in",             commercial: "https://tgct.gov.in",                 pcb: "https://tspcb.cgg.gov.in",                     root: "https://www.telangana.gov.in" },
+  "Gujarat":       { labour: "https://labour.gujarat.gov.in",               commercial: "https://commercialtax.gujarat.gov.in",pcb: "https://gpcb.gujarat.gov.in",                  root: "https://www.gujaratindia.gov.in" },
+  "Uttar Pradesh": { labour: "https://uplabour.gov.in",                     commercial: "https://comtax.up.nic.in",            pcb: "https://www.uppcb.com",                        root: "https://up.gov.in" },
+  "West Bengal":   { labour: "https://wblc.gov.in",                         commercial: "https://wbcomtax.gov.in",             pcb: "https://www.wbpcb.gov.in",                     root: "https://wb.gov.in" },
+  "Kerala":        { labour: "https://lc.kerala.gov.in",                    commercial: "https://keralataxes.gov.in",          pcb: "https://keralapcb.nic.in",                     root: "https://kerala.gov.in" },
+  "Haryana":       { labour: "https://hrylabour.gov.in",                    commercial: "https://haryanatax.gov.in",           pcb: "https://hspcb.gov.in",                         root: "https://haryana.gov.in" },
+  "Punjab":        { labour: "https://pblabour.gov.in",                     commercial: "https://pextax.com",                  pcb: "https://ppcb.punjab.gov.in",                   root: "https://punjab.gov.in" },
+  "Rajasthan":     { labour: "https://labour.rajasthan.gov.in",             commercial: "https://rajtax.gov.in",               pcb: "https://environment.rajasthan.gov.in/rspcb",   root: "https://rajasthan.gov.in" },
+  "Madhya Pradesh":{ labour: "https://labour.mp.gov.in",                    commercial: "https://mptax.mp.gov.in",             pcb: "https://www.mppcb.mp.gov.in",                  root: "https://www.mp.gov.in" },
+  "Andhra Pradesh":{ labour: "https://labour.ap.gov.in",                    commercial: "https://apct.gov.in",                 pcb: "https://appcb.ap.gov.in",                      root: "https://www.ap.gov.in" },
+  "Odisha":        { labour: "https://labour.odisha.gov.in",                commercial: "https://odishatax.gov.in",            pcb: "https://ospcboard.org",                        root: "https://odisha.gov.in" },
+  "Chhattisgarh":  { labour: "https://cglabour.nic.in",                     commercial: "https://comtax.cg.nic.in",            pcb: "https://enviscecb.org",                        root: "https://cgstate.gov.in" },
+  "Assam":         { labour: "https://labourcommissioner.assam.gov.in",     commercial: "https://tax.assam.gov.in",            pcb: "https://pcba.assam.gov.in",                    root: "https://assam.gov.in" },
+  "Bihar":         { labour: "https://state.bihar.gov.in/labour",           commercial: "https://state.bihar.gov.in/commercialtaxes", pcb: "http://bspcb.bihar.gov.in",             root: "https://state.bihar.gov.in" },
+  "Jharkhand":     { labour: "https://labour.jharkhand.gov.in",             commercial: "https://jharkhandcomtax.gov.in",      pcb: "http://jspcb.jharkhand.gov.in",                root: "https://www.jharkhand.gov.in" },
+  "Himachal Pradesh": { labour: "https://himachalelfw.gov.in",              commercial: "https://hptax.gov.in",                pcb: "https://hppcb.nic.in",                         root: "https://himachal.nic.in" },
+  "Uttarakhand":   { labour: "https://labour.uk.gov.in",                    commercial: "https://comtax.uk.gov.in",            pcb: "https://ueppcb.uk.gov.in",                     root: "https://uk.gov.in" },
+  "Goa":           { labour: "https://www.labour.goa.gov.in",               commercial: "https://goagst.gov.in",               pcb: "https://goaspcb.gov.in",                       root: "https://www.goa.gov.in" },
+  "Chandigarh":    { labour: "https://chandigarh.gov.in/departments/labour", commercial: "https://excise.chd.nic.in",          pcb: "https://chandigarh.gov.in/departments/pollution-control-committee", root: "https://chandigarh.gov.in" },
+  "J&K":           { labour: "https://jklabouremp.nic.in",                  commercial: "https://jkcomtax.gov.in",             pcb: "https://jkspcb.nic.in",                        root: "https://jk.gov.in" },
+  "Arunachal Pradesh": { labour: "https://arunachallabour.nic.in",          commercial: "https://arunachaltax.nic.in",         pcb: "https://arunachalpcb.nic.in",                  root: "https://arunachalpradesh.gov.in" },
+  "Manipur":       { labour: "https://labour.manipur.gov.in",               commercial: "https://tax.manipur.gov.in",          pcb: "https://manipurpollution.gov.in",              root: "https://manipur.gov.in" },
+  "Meghalaya":     { labour: "https://meglabour.gov.in",                    commercial: "https://megvat.gov.in",               pcb: "https://megspcb.gov.in",                       root: "https://meghalaya.gov.in" },
+  "Mizoram":       { labour: "https://labour.mizoram.gov.in",               commercial: "https://zotaxes.nic.in",              pcb: "https://mpcb.mizoram.gov.in",                  root: "https://mizoram.gov.in" },
+  "Nagaland":      { labour: "https://labour.nagaland.gov.in",              commercial: "https://taxes.nagaland.gov.in",       pcb: "https://pcb.nagaland.gov.in",                  root: "https://nagaland.gov.in" },
+  "Sikkim":        { labour: "https://sikkim.gov.in/departments/labour-department", commercial: "https://sikkimtax.gov.in",  pcb: "https://sikkimspcb.org",                       root: "https://sikkim.gov.in" },
+  "Tripura":       { labour: "https://labour.tripura.gov.in",               commercial: "https://tripuratax.gov.in",           pcb: "https://tspcb.tripura.gov.in",                 root: "https://tripura.gov.in" },
+  "Central":       { root: "https://www.india.gov.in" },
+}
+
+function resolveSourceUrl(authority: string, region: string, category: ComplianceCategory): { url: string; name: string } {
+  // 1) Exact authority lookup (Central regulators)
+  if (AUTHORITY_URLS[authority]) return AUTHORITY_URLS[authority]
+
+  // 2) State-level authorities — extract state name from patterns like:
+  //    "{State} Labour Department", "{State} Pollution Control Board",
+  //    "Labour Department, Govt. of {State}", "Education Department, Govt. of {State}"
+  const stateMatch =
+    authority.match(/Govt\.\s+of\s+([A-Za-z &]+?)$/)?.[1]?.trim() ??
+    authority.match(/^([A-Za-z &]+?)\s+(Labour|Pollution|Fire|Commercial|Professional|Education)/)?.[1]?.trim()
+
+  const state = stateMatch && STATE_URLS[stateMatch] ? stateMatch : region
+  const stateUrls = STATE_URLS[state] ?? STATE_URLS["Central"]
+
+  // 3) Match authority text to the right sub-portal
+  const a = authority.toLowerCase()
+  if (a.includes("labour")        && stateUrls.labour)     return { url: stateUrls.labour,     name: `${state} Labour Dept` }
+  if (a.includes("welfare")       && stateUrls.welfare)    return { url: stateUrls.welfare,    name: `${state} Welfare Board` }
+  if (a.includes("pollution")     && stateUrls.pcb)        return { url: stateUrls.pcb,        name: `${state} Pollution Control Board` }
+  if (a.includes("commercial")    && stateUrls.commercial) return { url: stateUrls.commercial, name: `${state} Commercial Taxes` }
+  if (a.includes("professional tax") && stateUrls.commercial) return { url: stateUrls.commercial, name: `${state} Professional Tax` }
+  if (a.includes("fire")          && stateUrls.fire)       return { url: stateUrls.fire,       name: `${state} Fire Services` }
+  if (a.includes("education")     && stateUrls.education)  return { url: stateUrls.education,  name: `${state} Education Dept` }
+
+  // 4) Fallback by category to a central authority for this category
+  const CATEGORY_FALLBACK: Record<ComplianceCategory, string> = {
+    "Labour":             "Ministry of Labour & Employment",
+    "Finance & Taxation": "Central Board of Direct Taxes (CBDT)",
+    "EHS":                "Central Pollution Control Board (CPCB)",
+    "Commercial":         "Ministry of Commerce & Industry",
+    "Secretarial":        "Ministry of Corporate Affairs (MCA)",
+    "Industry Specific":  "Directorate General of Civil Aviation (DGCA)",
+    "General":            "Ministry of Home Affairs",
   }
-  return `${pool.sourceBase}${pool.urlPath}`
+  const fallback = AUTHORITY_URLS[CATEGORY_FALLBACK[category]]
+  if (fallback) return fallback
+
+  // 5) Absolute last-resort: state root portal
+  return { url: stateUrls.root, name: `${state} Govt Portal` }
+}
+
+function buildSourceUrl(_pool: typeof CATEGORY_POOLS[ComplianceCategory], category: ComplianceCategory, region: string, authority: string): { url: string; name: string } {
+  return resolveSourceUrl(authority, region, category)
 }
 
 function pickClients(pool: typeof CATEGORY_POOLS[ComplianceCategory], rng: () => number): string[] {
@@ -660,7 +829,7 @@ function generateRegulations(count: number): Regulation[] {
     const actionRequired = legalRisk === "high" || operationalImpact === "high" || rng() > 0.6
 
     const clients = pickClients(pool, rng)
-    const sourceUrl = buildSourceUrl(pool, category, region)
+    const source = buildSourceUrl(pool, category, region, authority)
 
     regulations.push({
       id,
@@ -679,8 +848,8 @@ function generateRegulations(count: number): Regulation[] {
       legalRisk,
       operationalImpact,
       actionRequired,
-      sourceUrl,
-      sourceName: pool.sourceName,
+      sourceUrl:  source.url,
+      sourceName: source.name,
       clientsAffected: clients,
     })
   }
