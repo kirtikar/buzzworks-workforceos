@@ -122,23 +122,24 @@ export default function DashboardPage() {
           </div>
 
           {/* ── 4 KPI cards ──────────────────────────────────────── */}
+          {/* KPI row — StatCard pattern: primary-50 bg + primary-200 border + primary-600 value */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {kpis.map(k => (
-              <div key={k.label} className="glass p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <k.icon size={18} strokeWidth={1.5} style={{ color: "var(--text-3)" }} />
+              <div key={k.label} className="stat-card">
+                <div className="flex items-center justify-between mb-3">
+                  <k.icon size={18} strokeWidth={1.5} style={{ color: "var(--primary-600)" }} />
                   <div className="flex items-center gap-1 text-xs"
-                    style={{ color: "var(--accent)" }}>
+                    style={{ color: "var(--primary-700)" }}>
                     {k.trend === "up" ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
                   </div>
                 </div>
-                <div className="text-2xl font-semibold tracking-tight" style={{ color: "var(--text-1)" }}>
+                <div className="text-2xl font-semibold tracking-tight" style={{ color: "var(--primary-700)" }}>
                   {k.value}
                 </div>
-                <div className="text-[13px] mt-1" style={{ color: "var(--text-2)" }}>
+                <div className="text-[13px] mt-1" style={{ color: "var(--neutral-600)" }}>
                   {k.label}
                 </div>
-                <div className="text-xs mt-1" style={{ color: "var(--text-3)" }}>
+                <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>
                   {k.delta}
                 </div>
               </div>

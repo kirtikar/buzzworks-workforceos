@@ -12,147 +12,154 @@
 .touch-target { min-height: 44px; min-width: 44px; }
 
 /* ═══════════════════════════════════════════════════════════
-   DESIGN TOKENS — Light (default)
-   Dusty rose + dusty blue · elegant wedding palette
+   LIGHT THEME (default)
+   Pink primary · neutral text · accent colors reserved for charts
    ═══════════════════════════════════════════════════════════ */
 :root {
-  /* ── Dusty Rose scale (primary) ─────────── */
-  --pink-50:   #FBF5F7;
-  --pink-100:  #F6EAEE;
-  --pink-200:  #EDD4DD;
-  --pink-300:  #DEB4C2;
-  --pink-400:  #CB98A8;
-  --pink-500:  #B77889;  /* primary brand */
-  --pink-600:  #9B5F71;  /* hover/pressed */
-  --pink-700:  #7C4A59;
-  --pink-800:  #5E3742;
-  --pink-900:  #3D242C;
+  /* ── Primary (pink scale) ─────────────── */
+  --primary-50:   #FFF1F6;
+  --primary-100:  #FFE4EC;
+  --primary-200:  #FFC7D8;
+  --primary-300:  #FF9FBC;
+  --primary-400:  #FF6F9F;
+  --primary-500:  #FF3D7F;
+  --primary-600:  #E62E6D;
+  --primary-700:  #BF255A;
+  --primary-800:  #991D47;
+  --primary-900:  #66122F;
 
-  /* ── Dusty Blue scale (secondary) ───────── */
-  --blue-50:   #F3F6FA;
-  --blue-100:  #E5ECF4;
-  --blue-200:  #C6D5E4;
-  --blue-300:  #A3B9CF;
-  --blue-400:  #829DB8;
-  --blue-500:  #6683A2;  /* secondary brand */
-  --blue-600:  #526C88;
-  --blue-700:  #40556C;
-  --blue-800:  #2E3E4F;
-  --blue-900:  #1D2834;
+  /* ── Neutral ──────────────────────────── */
+  --neutral-50:   #FAFAFB;
+  --neutral-100:  #F4F4F6;
+  --neutral-200:  #E5E7EB;
+  --neutral-300:  #D1D5DB;
+  --neutral-400:  #9CA3AF;
+  --neutral-500:  #6B7280;
+  --neutral-600:  #4B5563;
+  --neutral-700:  #374151;
+  --neutral-800:  #1F2937;
+  --neutral-900:  #111827;
 
-  /* ── Sage & cream accents ───────────────── */
-  --sage:      #A8B89A;
-  --sage-bg:   rgba(168, 184, 154, 0.12);
-  --cream:     #E8DCC4;
-  --gold:      #D4A574;
+  /* ── Accent (CHARTS / HIGHLIGHTS ONLY) ── */
+  --accent-mint:     #2DD4BF;
+  --accent-lavender: #A78BFA;
+  --accent-peach:    #FFB4A2;
+  --accent-yellow:   #FACC15;
 
-  /* ── Semantic ───────────────────────────── */
-  --green:     #6B9467;   /* muted sage-green */
-  --green-bg:  rgba(107, 148, 103, 0.10);
-  --orange:    #C88A5C;   /* muted terracotta */
-  --orange-bg: rgba(200, 138, 92, 0.10);
-  --red:       #B85656;   /* muted rose-red */
-  --red-bg:    rgba(184, 86, 86, 0.10);
-  --info:      #6683A2;   /* dusty blue */
-  --info-bg:   rgba(102, 131, 162, 0.10);
+  /* ── Semantic ─────────────────────────── */
+  --success: #22C55E;
+  --success-bg: rgba(34, 197, 94, 0.08);
+  --error:   #EF4444;
+  --error-bg: rgba(239, 68, 68, 0.08);
+  --warning: #F59E0B;
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --info:    #3B82F6;
+  --info-bg: rgba(59, 130, 246, 0.08);
 
-  /* ── Surfaces (warm cream neutrals) ─────── */
-  --bg:             #FAF7F3;
+  /* ── Theme tokens ─────────────────────── */
+  --bg:             var(--neutral-50);
+  --card:           #FFFFFF;
   --surface:        #FFFFFF;
-  --surface-2:      #F4EEE8;
-  --surface-hover:  #F8F2EC;
-  --border:         #E5DED5;
-  --border-light:   #EFE9E1;
+  --surface-2:      var(--neutral-100);
+  --surface-hover:  var(--primary-50);
+  --border:         var(--neutral-200);
+  --border-light:   #F1F0F3;
+  --border-strong: var(--neutral-300);
 
-  /* ── Typography (warm darks) ────────────── */
-  --text-primary:   #3A2F35;
-  --text-secondary: #6B5D63;
-  --text-tertiary:  #A99BA0;
+  --text-primary:   var(--neutral-800);
+  --text-secondary: var(--neutral-600);
+  --text-tertiary:  var(--neutral-400);
 
-  /* ── Elevation (warm-tinted) ────────────── */
-  --shadow-1: 0 1px 3px rgba(94, 55, 66, 0.06);
-  --shadow-2: 0 2px 8px rgba(94, 55, 66, 0.08), 0 1px 2px rgba(0,0,0,0.03);
-  --shadow-3: 0 8px 24px rgba(94, 55, 66, 0.10), 0 2px 6px rgba(0,0,0,0.04);
+  /* ── Elevation ────────────────────────── */
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-2: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-3: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.04);
 
-  /* ── Legacy aliases ─────────────────────── */
-  /* --accent/--purple map to pink-600 (not pink-500) so text/button usage
-     has readable contrast on light pink backgrounds and sufficient white-
-     text contrast. pink-500 is reserved for decorative tints. */
-  --accent:        var(--pink-600);
-  --accent-dim:    var(--pink-50);
-  --accent-border: var(--pink-200);
-  --purple:        var(--pink-600);
-  --purple-light:  var(--pink-500);
-  --purple-bg:     var(--pink-100);
-  --purple-subtle: var(--pink-50);
+  /* ── Legacy aliases (existing code) ───── */
+  --accent:        var(--primary-500);
+  --accent-dim:    var(--primary-50);
+  --accent-border: var(--primary-200);
+  --purple:        var(--primary-500);
+  --purple-light:  var(--primary-400);
+  --purple-bg:     var(--primary-100);
+  --purple-subtle: var(--primary-50);
+  --pink-50:       var(--primary-50);
+  --pink-100:      var(--primary-100);
+  --pink-200:      var(--primary-200);
+  --pink-300:      var(--primary-300);
+  --pink-400:      var(--primary-400);
+  --pink-500:      var(--primary-500);
+  --pink-600:      var(--primary-600);
+  --pink-700:      var(--primary-700);
+  --pink-800:      var(--primary-800);
+  --pink-900:      var(--primary-900);
+  --blue-50:       #EFF6FF;
+  --blue-100:      #DBEAFE;
+  --blue-500:      var(--info);
+  --blue-700:      #1D4ED8;
   --surface-nav:   #FFFFFF;
   --nav-border:    var(--border);
   --text-1:        var(--text-primary);
   --text-2:        var(--text-secondary);
   --text-3:        var(--text-tertiary);
-  --warn:          var(--orange);
-  --warn-bg:       var(--orange-bg);
-  --warn-border:   rgba(200, 138, 92, 0.20);
-  --danger:        var(--red);
-  --danger-bg:     var(--red-bg);
-  --danger-border: rgba(184, 86, 86, 0.20);
-  --info-border:   rgba(102, 131, 162, 0.20);
+  --warn:          var(--warning);
+  --warn-bg:       var(--warning-bg);
+  --warn-border:   rgba(245, 158, 11, 0.20);
+  --danger:        var(--error);
+  --danger-bg:     var(--error-bg);
+  --danger-border: rgba(239, 68, 68, 0.20);
+  --info-border:   rgba(59, 130, 246, 0.20);
+  --green:         var(--success);
+  --green-bg:      var(--success-bg);
+  --orange:        var(--warning);
+  --orange-bg:     var(--warning-bg);
+  --red:           var(--error);
+  --red-bg:        var(--error-bg);
   --glass-bg:      var(--surface);
   --glass-border:  var(--border);
-  --border-strong: #D0C7BC;
-  --gold-dim:      rgba(212, 165, 116, 0.10);
-  --chart-1:       var(--pink-500);
-  --chart-2:       var(--blue-500);
-  --chart-3:       var(--sage);
-  --lavender:      var(--blue-400);
-  --mint:          var(--sage);
-  --peach:         var(--pink-300);
-  --yellow:        var(--gold);
+  --gold:          var(--accent-yellow);
+  --gold-dim:      rgba(250, 204, 21, 0.10);
+  --chart-1:       var(--primary-500);
+  --chart-2:       var(--accent-mint);
+  --chart-3:       var(--accent-lavender);
+  --mint:          var(--accent-mint);
+  --lavender:      var(--accent-lavender);
+  --peach:         var(--accent-peach);
+  --yellow:        var(--accent-yellow);
+  --sage:          var(--accent-mint);
+  --cream:         #FFE4EC;
 }
 
 /* ═══════════════════════════════════════════════════════════
    DARK THEME
    ═══════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --pink-500:  #D28A9C;
-  --pink-100:  rgba(210, 138, 156, 0.14);
-  --pink-50:   rgba(210, 138, 156, 0.08);
-  --blue-500:  #8BA5C2;
-  --blue-400:  #A0B8D1;
-
-  --bg:             #1E1A1D;
-  --surface:        #2A2328;
-  --surface-2:      #342B30;
-  --surface-hover:  #342B30;
-  --border:         rgba(255, 255, 255, 0.08);
+  --bg:             var(--neutral-900);
+  --card:           var(--neutral-800);
+  --surface:        var(--neutral-800);
+  --surface-2:      var(--neutral-700);
+  --surface-hover:  rgba(255, 61, 127, 0.08);
+  --border:         var(--neutral-700);
   --border-light:   rgba(255, 255, 255, 0.05);
+  --border-strong: var(--neutral-600);
 
-  --text-primary:   #F0E9EC;
-  --text-secondary: #B8A9B0;
-  --text-tertiary:  #7E6E76;
+  --text-primary:   #FFFFFF;
+  --text-secondary: var(--neutral-400);
+  --text-tertiary:  var(--neutral-500);
+
+  --primary-500:  #FF5C95;
+  --primary-600:  #FF3D7F;
 
   --shadow-1: 0 1px 3px rgba(0,0,0,0.3);
   --shadow-2: 0 2px 8px rgba(0,0,0,0.3);
   --shadow-3: 0 8px 24px rgba(0,0,0,0.5);
 
-  --accent:        var(--pink-500);
-  --accent-dim:    var(--pink-50);
-  --accent-border: var(--pink-100);
-  --purple:        var(--pink-500);
-  --purple-bg:     var(--pink-100);
-  --purple-subtle: var(--pink-50);
-  --surface-nav:   #1A1618;
-  --nav-border:    rgba(255, 255, 255, 0.06);
-  --text-1:        var(--text-primary);
-  --text-2:        var(--text-secondary);
-  --text-3:        var(--text-tertiary);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --glass-bg:      var(--surface);
-  --glass-border:  var(--border);
+  --surface-nav:  #0F1520;
+  --nav-border:   rgba(255, 255, 255, 0.06);
 }
 
 /* ═══════════════════════════════════════════════════════════
-   TEXT OVERRIDES
+   TEXT OVERRIDES (Tailwind text-white compat)
    ═══════════════════════════════════════════════════════════ */
 .text-white, .text-white\/90, .text-white\/85,
 .text-white\/80, .text-white\/75                    { color: var(--text-1); }
@@ -190,19 +197,27 @@ body {
 
 /* ── Surfaces ─────────────────────────────────────────────── */
 .glass, .glass-card {
-  background: var(--surface);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
   box-shadow: var(--shadow-1);
 }
 .glass-sm {
-  background: var(--surface);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
 .glass-dark {
   background: var(--surface-2);
-  border-radius: 8px;
+  border-radius: 12px;
+}
+
+/* Stat card — ChatGPT pattern: primary-50 bg + primary-200 border */
+.stat-card {
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: 16px;
+  padding: 16px;
 }
 
 /* ── Sidebar / Nav ────────────────────────────────────────── */
@@ -228,26 +243,26 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 10px;
-  border-radius: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 }
-.badge-pending   { background: var(--surface-2); color: var(--text-secondary); }
-.badge-reviewing { background: var(--blue-100);  color: var(--blue-700); }
-.badge-flagged   { background: var(--orange-bg); color: var(--orange); }
-.badge-approved  { background: var(--green-bg);  color: var(--green); }
-.badge-processed { background: var(--pink-50);   color: var(--pink-700); }
-.badge-rejected  { background: var(--red-bg);    color: var(--red); }
-.badge-portal    { background: var(--surface-2); color: var(--text-secondary); }
-.badge-email     { background: var(--surface-2); color: var(--text-secondary); }
-.badge-manual    { background: var(--surface-2); color: var(--text-tertiary); }
+.badge-pending   { background: var(--neutral-100); color: var(--neutral-600); }
+.badge-reviewing { background: var(--info-bg);     color: var(--info); }
+.badge-flagged   { background: var(--warning-bg);  color: var(--warning); }
+.badge-approved  { background: var(--success-bg);  color: var(--success); }
+.badge-processed { background: var(--primary-50);  color: var(--primary-700); }
+.badge-rejected  { background: var(--error-bg);    color: var(--error); }
+.badge-portal    { background: var(--neutral-100); color: var(--neutral-600); }
+.badge-email     { background: var(--neutral-100); color: var(--neutral-600); }
+.badge-manual    { background: var(--neutral-100); color: var(--neutral-500); }
 
 /* ── Checks ───────────────────────────────────────────────── */
-.check-pass    { color: var(--green); }
-.check-fail    { color: var(--red); }
-.check-warning { color: var(--orange); }
+.check-pass    { color: var(--success); }
+.check-fail    { color: var(--error); }
+.check-warning { color: var(--warning); }
 .check-pending { color: var(--text-tertiary); }
 
 /* ── Table rows ───────────────────────────────────────────── */
@@ -255,53 +270,54 @@ body {
   transition: background 0.12s ease;
   cursor: pointer;
 }
-.ts-row:hover { background: var(--surface-hover); }
-.ts-row.selected { background: var(--pink-50); }
+.ts-row:hover { background: var(--primary-50); }
+.ts-row.selected { background: var(--primary-50); }
 
 .nav-active-dot {
   position: absolute; left: 0;
   width: 3px; height: 20px;
   border-radius: 0 3px 3px 0;
-  background: var(--pink-500);
+  background: var(--primary-500);
 }
 
 /* ── Inputs ───────────────────────────────────────────────── */
 .glass-input {
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-primary);
   font-size: 14px;
-  padding: 8px 12px;
+  padding: 9px 12px;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
   width: 100%;
 }
 .glass-input:focus {
-  border-color: var(--pink-500);
-  box-shadow: 0 0 0 3px var(--pink-100);
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
 }
 .glass-input::placeholder { color: var(--text-tertiary); }
-select.glass-input option { background: var(--surface); color: var(--text-primary); }
+select.glass-input option { background: var(--card); color: var(--text-primary); }
 
 /* ── Buttons ──────────────────────────────────────────────── */
+/* Primary: reserved for CTAs only per UX rules */
 .btn-primary, .btn-teal {
-  background: var(--pink-600);
+  background: var(--primary-500);
   color: #FFFFFF;
   border: none;
-  border-radius: 20px;
-  padding: 10px 24px;
+  border-radius: 12px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
 }
 .btn-primary:hover, .btn-teal:hover {
-  background: var(--pink-700);
-  box-shadow: 0 2px 12px rgba(155, 95, 113, 0.25);
+  background: var(--primary-600);
+  box-shadow: 0 4px 12px rgba(255, 61, 127, 0.25);
 }
 .btn-primary:disabled, .btn-teal:disabled {
-  background: var(--pink-300);
+  background: var(--primary-200);
   cursor: not-allowed;
   box-shadow: none;
 }
@@ -310,25 +326,25 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
   background: transparent;
   color: var(--text-secondary);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 10px 24px;
+  border-radius: 12px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
 }
 .btn-ghost:hover {
-  background: var(--surface-2);
+  background: var(--neutral-100);
   color: var(--text-primary);
   border-color: var(--border-strong);
 }
 
 .btn-coral {
-  background: var(--red-bg);
-  color: var(--red);
+  background: var(--error-bg);
+  color: var(--error);
   border: none;
-  border-radius: 20px;
-  padding: 10px 24px;
+  border-radius: 12px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -336,14 +352,14 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
 
 /* ── Login ─────────────────────────────────────────────────── */
 .login-card {
-  background: var(--surface);
-  border-radius: 16px;
+  background: var(--card);
+  border-radius: 20px;
   box-shadow: var(--shadow-3);
 }
 .login-input {
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-primary);
   font-size: 14px;
   padding: 12px 16px;
@@ -352,7 +368,7 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
   transition: border-color 0.15s, box-shadow 0.15s;
   font-family: inherit;
 }
-.login-input:focus { border-color: var(--pink-500); box-shadow: 0 0 0 3px var(--pink-100); }
+.login-input:focus { border-color: var(--primary-500); box-shadow: 0 0 0 3px var(--primary-100); }
 .login-input::placeholder { color: var(--text-tertiary); }
 
 /* ── Animations ────────────────────────────────────────────── */
