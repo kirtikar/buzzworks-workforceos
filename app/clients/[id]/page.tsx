@@ -12,7 +12,8 @@ import {
   CheckCircle2, AlertTriangle, FileText, CreditCard, Activity,
   ChevronRight, Eye, Check, Flag, ShieldCheck, Calendar, ChevronDown, Search,
 } from "lucide-react"
-import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, BarChart, Bar, XAxis } from "recharts"
+import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
+import { getRegulationsForClient, CATEGORY_META, IMPACT_META } from "@/lib/compliance-data"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -24,135 +25,249 @@ function fmtINR(n: number) {
 function fmtNum(n: number) { return n.toLocaleString("en-IN") }
 function initials(name: string) { return name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() }
 
-const TABS = ["Overview", "Timesheets", "Employees", "Policy", "Payroll"] as const
+const TABS = ["Overview", "Timesheets", "Employees", "Policy", "Compliance", "Payroll"] as const
 type Tab = typeof TABS[number]
 
-// Weekly volume (mock for this client)
-const weeklyVolume = [
-  { week: "Mar W1", submitted: 42, approved: 40, flagged: 2 },
-  { week: "Mar W2", submitted: 48, approved: 44, flagged: 4 },
-  { week: "Mar W3", submitted: 51, approved: 47, flagged: 4 },
-  { week: "Mar W4", submitted: 39, approved: 38, flagged: 1 },
-  { week: "Apr W1", submitted: 46, approved: 22, flagged: 5 },
-]
-
-const statusBreakdown = [
-  { name: "Approved",  value: 22, color: "var(--accent)" },
-  { name: "Pending",   value: 14, color: "#c89060" },
-  { name: "Flagged",   value: 5,  color: "#c07070" },
-  { name: "Reviewed",  value: 5,  color: "#7090c8" },
-]
-
 // ─── Tab: Overview ───────────────────────────────────────────────────────────
+//
+// CEO-focused metrics: what does this client cost us, what do we earn from
+// them, and how much of the work is automated by agents?
 
-function OverviewTab({ client, portal }: { client: NonNullable<ReturnType<typeof getClient>>; portal: ReturnType<typeof getPortal> }) {
+function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClient>>; portal: ReturnType<typeof getPortal> }) {
+
+  // Revenue estimate: monthly payroll * margin factor (typical staffing margin ~15-25%)
+  const monthlyRev   = Math.round(client.monthlyPayroll * 0.20)
+  // Ops cost estimate: per-timesheet ops cost * timesheet volume
+  const monthlyOps   = Math.round(client.pendingTimesheets * 180 + client.activeEmployeeCount * 80)
+  const opsPercent   = Math.round((monthlyOps / monthlyRev) * 100)
+
+  // Month-on-month revenue vs ops cost (6 months)
+  const revVsCost = [
+    { month: "Nov", revenue: Math.round(monthlyRev * 0.82), opsCost: Math.round(monthlyOps * 1.18) },
+    { month: "Dec", revenue: Math.round(monthlyRev * 0.86), opsCost: Math.round(monthlyOps * 1.12) },
+    { month: "Jan", revenue: Math.round(monthlyRev * 0.92), opsCost: Math.round(monthlyOps * 1.06) },
+    { month: "Feb", revenue: Math.round(monthlyRev * 0.95), opsCost: Math.round(monthlyOps * 1.02) },
+    { month: "Mar", revenue: Math.round(monthlyRev * 0.98), opsCost: Math.round(monthlyOps * 0.98) },
+    { month: "Apr", revenue: monthlyRev,                     opsCost: monthlyOps },
+  ]
+
+  // Agent coverage by work type (% automated vs manual)
+  const agentCoverage = [
+    { work: "Timesheet validation", automated: 82, manual: 18 },
+    { work: "Compliance tracking",  automated: 68, manual: 32 },
+    { work: "Policy checks",        automated: 74, manual: 26 },
+    { work: "Payroll processing",   automated: 56, manual: 44 },
+    { work: "Communications",       automated: 61, manual: 39 },
+  ]
+  const avgCoverage = Math.round(agentCoverage.reduce((s, w) => s + w.automated, 0) / agentCoverage.length)
+
+  const kpis = [
+    { label: "Monthly revenue",    value: fmtINR(monthlyRev),   sub: "+4.2% vs last month",    color: "var(--success)" },
+    { label: "Ops cost",           value: fmtINR(monthlyOps),   sub: "−2.8% vs last month",    color: "var(--primary-600)" },
+    { label: "Agent coverage",     value: `${avgCoverage}%`,    sub: "Across 5 work streams",   color: "var(--primary-700)" },
+    { label: "Ops cost % of rev",  value: `${opsPercent}%`,     sub: opsPercent < 25 ? "Healthy margin" : "Watch margin", color: opsPercent < 25 ? "var(--success)" : "var(--warning)" },
+  ]
+
   return (
-    <div className="space-y-4">
-      {/* Weekly trend */}
-      <div className="glass p-4">
-        <div className="text-[13px] font-semibold text-white mb-0.5">Weekly Submission Volume</div>
-        <div className="text-[11px] text-white/35 mb-4">Last 5 weeks</div>
-        <div style={{ height: 120 }}>
+    <div className="space-y-5">
+
+      {/* 4 KPI row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {kpis.map(k => (
+          <div key={k.label} className="stat-card">
+            <div className="text-xs" style={{ color: "var(--neutral-600)" }}>{k.label}</div>
+            <div className="text-2xl font-semibold tracking-tight mt-2" style={{ color: k.color }}>
+              {k.value}
+            </div>
+            <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>{k.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chart 1: Revenue vs Ops Cost (monthly) */}
+      <div className="glass p-6">
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>
+              Revenue vs Ops Cost
+            </div>
+            <div className="text-xs mt-0.5" style={{ color: "var(--neutral-500)" }}>
+              6-month trend · values in INR
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-xs" style={{ color: "var(--neutral-600)" }}>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-sm" style={{ background: "var(--success)" }} />
+              Revenue
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-sm" style={{ background: "var(--primary-500)" }} />
+              Ops Cost
+            </span>
+          </div>
+        </div>
+
+        <div style={{ height: 260 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={weeklyVolume}>
-              <defs>
-                <linearGradient id="csubGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="week" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }} />
-              <Area type="monotone" dataKey="submitted" stroke="rgba(75,143,255,0.35)" strokeWidth={1.5} fill="url(#csubGrad)" dot={false} name="Submitted" />
-              <Area type="monotone" dataKey="approved"  stroke="var(--accent)" strokeWidth={1.5} fill="none" dot={false} name="Approved" />
-            </AreaChart>
+            <BarChart data={revVsCost} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis
+                dataKey="month"
+                tick={{ fontSize: 12, fill: "var(--neutral-600)" }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "var(--neutral-500)" }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={v => `₹${(v/100000).toFixed(1)}L`}
+                width={55}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 10,
+                  fontSize: 12,
+                  color: "var(--text-primary)",
+                  boxShadow: "var(--shadow-2)",
+                }}
+                formatter={(v: number) => fmtINR(v)}
+                labelStyle={{ color: "var(--text-secondary)", fontWeight: 600 }}
+              />
+              <Bar dataKey="revenue" fill="var(--success)" radius={[6, 6, 0, 0]} barSize={22} name="Revenue" />
+              <Bar dataKey="opsCost" fill="var(--primary-500)" radius={[6, 6, 0, 0]} barSize={22} name="Ops Cost" />
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Status donut */}
-        <div className="glass p-4">
-          <div className="text-[13px] font-semibold text-white mb-3">Status Breakdown — Apr W1</div>
-          <div className="flex items-center gap-4">
-            <div style={{ width: 100, height: 100 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={28} outerRadius={44} paddingAngle={2} dataKey="value" strokeWidth={0}>
-                    {statusBreakdown.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+      {/* Chart 2: Agent Coverage by work type */}
+      <div className="glass p-6">
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>
+              Agent Coverage by Work Stream
             </div>
-            <div className="space-y-2 flex-1">
-              {statusBreakdown.map(s => (
-                <div key={s.name} className="flex items-center gap-2 text-[12px]">
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: s.color }} />
-                  <span className="flex-1 text-white/60">{s.name}</span>
-                  <span className="font-semibold text-white/80">{s.value}</span>
-                </div>
-              ))}
+            <div className="text-xs mt-0.5" style={{ color: "var(--neutral-500)" }}>
+              What % of each work type is handled by AI agents vs ops team
             </div>
+          </div>
+          <div className="flex items-center gap-4 text-xs" style={{ color: "var(--neutral-600)" }}>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-sm" style={{ background: "var(--primary-500)" }} />
+              Automated
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-sm" style={{ background: "var(--neutral-200)" }} />
+              Manual
+            </span>
           </div>
         </div>
 
-        {/* Portal sync info */}
-        <div className="glass p-4">
-          <div className="text-[13px] font-semibold text-white mb-3">Integration Status</div>
-          {client.emailOnly ? (
-            <div className="flex items-start gap-3">
-              <Mail size={18} className="text-violet-400 mt-0.5" />
-              <div>
-                <div className="text-[13px] font-medium text-white">Email-only client</div>
-                <div className="text-[11px] text-white/35 mt-1">Timesheets submitted to candidatemanager@buzzworks.com — manually parsed by AI.</div>
+        <div className="space-y-3">
+          {agentCoverage.map(w => (
+            <div key={w.work}>
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>{w.work}</span>
+                <span style={{ color: "var(--neutral-600)" }}>
+                  <span className="font-semibold" style={{ color: "var(--primary-700)" }}>{w.automated}%</span> automated
+                </span>
               </div>
-            </div>
-          ) : portal ? (
-            <div className="space-y-2.5 text-[12px]">
-              <div className="flex items-center justify-between">
-                <span className="text-white/40">Portal</span>
-                <span className="font-semibold text-white/80">{portal.name}</span>
+              <div className="h-2 rounded-full overflow-hidden flex" style={{ background: "var(--neutral-200)" }}>
+                <div className="h-full rounded-l-full transition-all"
+                  style={{ width: `${w.automated}%`, background: "var(--primary-500)" }} />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/40">Status</span>
-                <span className="text-blue-400 flex items-center gap-1"><CheckCircle2 size={11} /> {portal.status}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/40">Sync frequency</span>
-                <span className="text-white/70">{{ "15min":"Every 15 min","1hr":"Hourly","4hr":"Every 4 hrs","24hr":"Daily" }[portal.syncFrequency]}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/40">Success rate</span>
-                <span style={{ color: portal.successRate > 98 ? "var(--accent)" : "#c89060" }}>{portal.successRate}%</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/40">API version</span>
-                <span className="text-white/50 font-mono text-[11px]">{portal.apiVersion}</span>
-              </div>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      {/* Policy snapshot */}
-      <div className="glass p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-[13px] font-semibold text-white">Policy Snapshot</div>
-          <span className="text-[11px] text-white/35">v{client.policyVersion.replace("v", "")}</span>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[12px]">
-          {[
-            { label: "Weekly limit",     value: `${client.weeklyHoursLimit}h` },
-            { label: "Daily limit",      value: `${client.dailyHoursLimit}h` },
-            { label: "OT multiplier",    value: client.overtimeMultiplier === 0 ? "No OT" : `${client.overtimeMultiplier}×` },
-            { label: "SLA turnaround",   value: `${client.slaHours}h` },
-          ].map(s => (
-            <div key={s.label} className="rounded-xl p-3" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
-              <div className="text-[18px] font-black text-white">{s.value}</div>
-              <div className="text-[10px] text-white/30 mt-0.5">{s.label}</div>
             </div>
           ))}
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Tab: Compliance ─────────────────────────────────────────────────────────
+
+function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getClient>> }) {
+  const regulations = getRegulationsForClient(client.name)
+  const actionable  = regulations.filter(r => r.actionRequired)
+
+  return (
+    <div className="space-y-5">
+      {/* Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="stat-card">
+          <div className="text-xs" style={{ color: "var(--neutral-600)" }}>Total regulations</div>
+          <div className="text-2xl font-semibold mt-2" style={{ color: "var(--primary-700)" }}>
+            {regulations.length}
+          </div>
+          <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>Affecting this client</div>
+        </div>
+        <div className="stat-card">
+          <div className="text-xs" style={{ color: "var(--neutral-600)" }}>Action required</div>
+          <div className="text-2xl font-semibold mt-2" style={{ color: "var(--warning)" }}>
+            {actionable.length}
+          </div>
+          <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>Needs follow-up</div>
+        </div>
+        <div className="stat-card">
+          <div className="text-xs" style={{ color: "var(--neutral-600)" }}>High impact</div>
+          <div className="text-2xl font-semibold mt-2" style={{ color: "var(--error)" }}>
+            {regulations.filter(r => r.impact === "high").length}
+          </div>
+          <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>Review priority</div>
+        </div>
+      </div>
+
+      {/* Feed */}
+      <div className="space-y-3">
+        {regulations.length === 0 ? (
+          <div className="glass p-8 text-center text-sm" style={{ color: "var(--neutral-500)" }}>
+            No regulations currently affecting this client
+          </div>
+        ) : regulations.map(reg => {
+          const catMeta    = CATEGORY_META[reg.category]
+          const impactMeta = IMPACT_META[reg.impact]
+          return (
+            <article key={reg.id} className="glass p-5">
+              <div className="flex items-center gap-2 flex-wrap mb-3">
+                <span className="text-[11px] font-medium px-2.5 py-1 rounded-md flex items-center gap-1.5"
+                  style={{ background: catMeta.bg, color: catMeta.color }}>
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: catMeta.color }} />
+                  {catMeta.label}
+                </span>
+                <span className="text-[11px] font-medium px-2.5 py-1 rounded-md"
+                  style={{ background: impactMeta.bg, color: impactMeta.color }}>
+                  {impactMeta.label}
+                </span>
+                {reg.actionRequired && (
+                  <span className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md"
+                    style={{ background: "var(--warning-bg)", color: "var(--warning)" }}>
+                    <AlertTriangle size={10} /> Action required
+                  </span>
+                )}
+                <span className="text-[11px] ml-auto" style={{ color: "var(--neutral-500)" }}>
+                  {reg.date}
+                </span>
+              </div>
+              <h3 className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>
+                {reg.title}
+              </h3>
+              <div className="text-xs mt-1" style={{ color: "var(--neutral-600)" }}>
+                {reg.authority} · Effective {reg.effectiveDate}
+              </div>
+              <p className="text-[13px] leading-relaxed mt-3" style={{ color: "var(--neutral-600)" }}>
+                {reg.summary}
+              </p>
+              <a href={reg.sourceUrl} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] font-medium mt-3 transition-opacity hover:opacity-70"
+                style={{ color: "var(--primary-600)" }}>
+                View official source — {reg.sourceName}
+              </a>
+            </article>
+          )
+        })}
       </div>
     </div>
   )
@@ -584,6 +699,7 @@ export default function ClientDetailPage() {
           {tab === "Timesheets"  && <TimesheetsTab clientId={client.id} />}
           {tab === "Employees"   && <EmployeesTab clientId={client.id} employeeCount={client.employeeCount} />}
           {tab === "Policy"      && <PolicyTab clientId={client.id} />}
+          {tab === "Compliance"  && <ComplianceTab client={client} />}
           {tab === "Payroll"     && <PayrollTab clientId={client.id} />}
         </main>
       </div>

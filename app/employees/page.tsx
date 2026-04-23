@@ -322,7 +322,7 @@ function OverviewTab({ emp }: { emp: Employee }) {
           {[
             { label: "Code",       value: emp.employeeCode },
             { label: "Department", value: emp.department   },
-            { label: "Category",   value: emp.jobCategory  },
+            { label: "Department", value: emp.jobCategory  },
             { label: "Rate",       value: `₹${emp.ratePerHour}/hr` },
             { label: "Joined",     value: fmtDate(emp.startDate) },
             { label: "Manager",    value: emp.managerEmail ?? "Not assigned" },
@@ -727,9 +727,9 @@ export default function EmployeesPage() {
 
           <FilterDropdown label="Client" options={clientOptions}
             selected={selClients} onToggle={v => toggle(selClients, setSelClients, v)} onClear={() => setSelClients([])} />
-          <FilterDropdown label="Category" icon={Briefcase} options={categoryOptions}
+          <FilterDropdown label="Department" icon={Briefcase} options={categoryOptions}
             selected={selCategories} onToggle={v => toggle(selCategories, setSelCategories, v as JobCategory)} onClear={() => setSelCategories([])} />
-          <FilterDropdown label="City" icon={MapPin} options={cityOptions}
+          <FilterDropdown label="Region" icon={MapPin} options={cityOptions}
             selected={selCities} onToggle={v => toggle(selCities, setSelCities, v)} onClear={() => setSelCities([])} />
           <FilterDropdown label="Status" options={statusOptions}
             selected={selStatuses} onToggle={v => toggle(selStatuses, setSelStatuses, v as EmploymentStatus)} onClear={() => setSelStatuses([])} />
@@ -763,7 +763,7 @@ export default function EmployeesPage() {
           <table className="w-full min-w-[700px] border-collapse">
             <thead className="sticky top-0 z-10" style={{ background: "var(--surface)" }}>
               <tr className="border-b" style={{ borderColor: "var(--border)" }}>
-                {["Employee","Client","Role / Category","City","Joined","Rate / hr","Leave","Status"].map(h => (
+                {["Employee","Client","Role / Department","Region","Joined","Rate / hr","Leave","Status"].map(h => (
                   <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold whitespace-nowrap"
                     style={{ color: "var(--text-3)" }}>{h}</th>
                 ))}
