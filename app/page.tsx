@@ -26,8 +26,8 @@ function fmtINR(n: number) {
 const kpis = [
   {
     label: "Monthly Ops Cost",
-    value: "₹4.2L",
-    delta: "-12% vs last month",
+    value: "₹18L",
+    delta: "-22% vs without AI",
     trend: "down" as const,
     icon: IndianRupee,
     color: "var(--accent)",
@@ -58,26 +58,28 @@ const kpis = [
   },
 ]
 
-// Ops cost trend (6 months) — shows cost declining as automation increases
+// Ops cost as % of revenue — projected (without AI) vs reality (with AI)
+// Apr 2026 actual: ₹18L cost on ₹85L revenue = 21.2% with AI
+// Without AI projection assumes manual ops scales linearly with revenue
 const opsCostTrend = [
-  { month: "Nov",  cost: 680000,  manual: 520000,  automated: 160000 },
-  { month: "Dec",  cost: 640000,  manual: 470000,  automated: 170000 },
-  { month: "Jan",  cost: 580000,  manual: 400000,  automated: 180000 },
-  { month: "Feb",  cost: 530000,  manual: 340000,  automated: 190000 },
-  { month: "Mar",  cost: 480000,  manual: 280000,  automated: 200000 },
-  { month: "Apr",  cost: 420000,  manual: 220000,  automated: 200000 },
+  { month: "Nov",  withoutAI: 28.0, withAI: 27.4 },
+  { month: "Dec",  withoutAI: 28.5, withAI: 26.8 },
+  { month: "Jan",  withoutAI: 29.2, withAI: 25.5 },
+  { month: "Feb",  withoutAI: 29.8, withAI: 24.2 },
+  { month: "Mar",  withoutAI: 30.5, withAI: 22.6 },
+  { month: "Apr",  withoutAI: 31.2, withAI: 21.2 },
 ]
 
-// Ops cost per client (horizontal bar)
+// Ops cost per client (horizontal bar) — values in lakhs (₹L)
 const clientCost = [
-  { name: "Infosys BPM",  cost: 82000,  timesheets: 124 },
-  { name: "Hexaware",     cost: 68000,  timesheets: 87  },
-  { name: "L&T Infotech", cost: 62000,  timesheets: 78  },
-  { name: "Mindtree",     cost: 54000,  timesheets: 71  },
-  { name: "Capgemini",    cost: 48000,  timesheets: 52  },
-  { name: "FinanceHub",   cost: 38000,  timesheets: 29  },
-  { name: "MedSure",      cost: 22000,  timesheets: 20  },
-  { name: "GlobalStaff",  cost: 14000,  timesheets: 16  },
+  { name: "Infosys BPM",  cost: 350000, timesheets: 124 },
+  { name: "Hexaware",     cost: 290000, timesheets: 87  },
+  { name: "L&T Infotech", cost: 265000, timesheets: 78  },
+  { name: "Mindtree",     cost: 230000, timesheets: 71  },
+  { name: "Capgemini",    cost: 205000, timesheets: 52  },
+  { name: "FinanceHub",   cost: 165000, timesheets: 29  },
+  { name: "MedSure",      cost: 95000,  timesheets: 20  },
+  { name: "GlobalStaff",  cost: 60000,  timesheets: 16  },
 ]
 
 // Agent performance trend
@@ -100,9 +102,9 @@ const resourceUtil = [
   { month: "Apr",  perPerson: 636,  headcount: 4 },
 ]
 
-// Ops team time & cost breakdown — sub-functions typical for Indian managed
-// HRMS ops service. Total monthly ops cost ~₹4.2L distributed across functions.
-const OPS_TOTAL = 420000
+// Ops cost breakup — sub-functions typical for Indian managed HRMS ops
+// service. Total monthly ops cost ₹18L distributed across functions.
+const OPS_TOTAL = 1800000
 const opsBreakdown = [
   { fn: "Timesheet approval & validation",  pct: 26, color: "#FF3D7F" },
   { fn: "Payroll processing & reconciliation", pct: 18, color: "#A78BFA" },
@@ -165,47 +167,116 @@ export default function DashboardPage() {
           {/* ── Charts grid ──────────────────────────────────────── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-            {/* 1. Ops Cost Trend */}
+            {/* 1. Ops Cost as % of Revenue — without AI vs with AI */}
             <div className="glass p-6">
-              <div className="mb-5">
-                <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>Ops Cost Trend</div>
-                <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                  Declining as AI automation increases
+              <div className="mb-5 flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
+                    Ops Cost as % of Revenue
+                  </div>
+                  <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                    AI savings: 10pp lower than projected without AI
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs" style={{ color: "var(--text-3)" }}>Apr 2026</div>
+                  <div className="text-[15px] font-semibold" style={{ color: "#059669" }}>
+                    21.2%
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: "var(--text-3)" }}>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--lavender)" }} /> Manual
+                  <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--lavender)" }} /> Without AI (projected)
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--accent)" }} /> Automated
+                  <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--accent)" }} /> With AI (actual)
                 </span>
               </div>
               <div style={{ height: 200 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={opsCostTrend}>
                     <defs>
-                      <linearGradient id="manualGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor="var(--lavender)" stopOpacity={0.28} />
+                      <linearGradient id="withoutAIGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%"  stopColor="var(--lavender)" stopOpacity={0.18} />
                         <stop offset="95%" stopColor="var(--lavender)" stopOpacity={0.02} />
                       </linearGradient>
-                      <linearGradient id="autoGrad" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="withAIGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%"  stopColor="var(--accent)" stopOpacity={0.35} />
                         <stop offset="95%" stopColor="var(--accent)" stopOpacity={0.05} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} width={45}
-                      tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: "var(--text-3)" }}
+                      axisLine={false} tickLine={false} width={40}
+                      tickFormatter={v => `${v}%`}
+                      domain={[15, 35]}
+                    />
                     <Tooltip
                       contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
-                      formatter={(v: number) => fmtINR(v)}
+                      formatter={(v: number) => `${v}%`}
                     />
-                    <Area type="monotone" dataKey="manual"    stackId="1" stroke="var(--lavender)" strokeWidth={1.5} fill="url(#manualGrad)" name="Manual ops cost" />
-                    <Area type="monotone" dataKey="automated" stackId="1" stroke="var(--accent)"   strokeWidth={2}   fill="url(#autoGrad)"   name="AI processing cost" />
+                    <Area type="monotone" dataKey="withoutAI" stroke="var(--lavender)" strokeWidth={1.5} strokeDasharray="4 4" fill="url(#withoutAIGrad)" name="Without AI (projected)" />
+                    <Area type="monotone" dataKey="withAI"    stroke="var(--accent)"   strokeWidth={2.5} fill="url(#withAIGrad)"   name="With AI (actual)" />
                   </AreaChart>
                 </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* 2. Ops Cost Breakup (moved up from bottom, half-width) */}
+            <div className="glass p-6">
+              <div className="mb-5 flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
+                    Ops cost breakup
+                  </div>
+                  <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                    {fmtINR(OPS_TOTAL)}/mo across sub-functions
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div style={{ width: 160, height: 160, flexShrink: 0 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={opsBreakdown}
+                        dataKey="pct"
+                        nameKey="fn"
+                        cx="50%" cy="50%"
+                        innerRadius={48}
+                        outerRadius={78}
+                        paddingAngle={2}
+                        strokeWidth={0}
+                      >
+                        {opsBreakdown.map((s, i) => <Cell key={i} fill={s.color} />)}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          background: "var(--surface)", border: "1px solid var(--border)",
+                          borderRadius: 8, fontSize: 11, color: "var(--text-1)",
+                        }}
+                        formatter={(v: number, _n, payload) => {
+                          const p = payload as unknown as { payload: { cost: number } }
+                          return [`${v}% · ${fmtINR(p.payload.cost)}`, "Share"]
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex-1 min-w-0 space-y-1.5 max-h-[200px] overflow-y-auto">
+                  {opsBreakdown.map(s => (
+                    <div key={s.fn} className="flex items-center gap-2 text-[12px]">
+                      <span className="w-2 h-2 rounded-sm flex-shrink-0" style={{ background: s.color }} />
+                      <span className="flex-1 truncate" style={{ color: "var(--text-1)" }}>{s.fn}</span>
+                      <span className="tabular-nums font-semibold w-9 text-right" style={{ color: "var(--text-1)" }}>
+                        {s.pct}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -217,18 +288,29 @@ export default function DashboardPage() {
                   Processing cost — April 2026
                 </div>
               </div>
-              <div style={{ height: 200 }}>
+              <div style={{ height: 280 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={clientCost} layout="vertical" margin={{ left: 0 }}>
+                  <BarChart data={clientCost} layout="vertical" margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false}
-                      tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "var(--text-2)" }} axisLine={false} tickLine={false} width={90} />
+                    <XAxis
+                      type="number"
+                      tick={{ fontSize: 10, fill: "var(--text-3)" }}
+                      axisLine={false} tickLine={false}
+                      tickFormatter={v => `₹${(v/100000).toFixed(1)}L`}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      tick={{ fontSize: 11, fill: "var(--text-2)" }}
+                      axisLine={false} tickLine={false}
+                      width={110}
+                      interval={0}
+                    />
                     <Tooltip
                       contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
                       formatter={(v: number) => fmtINR(v)}
                     />
-                    <Bar dataKey="cost" fill="var(--accent)" radius={[0, 4, 4, 0]} barSize={14} name="Ops cost" opacity={0.7} />
+                    <Bar dataKey="cost" fill="var(--accent)" radius={[0, 4, 4, 0]} barSize={16} name="Ops cost" opacity={0.85} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -298,74 +380,6 @@ export default function DashboardPage() {
                     <Bar yAxisId="right" dataKey="headcount" fill="var(--gold)" radius={[4,4,0,0]} barSize={8} name="Ops headcount" opacity={0.35} />
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Ops Team Time & Cost Breakdown ───────────────────── */}
-          <div className="glass p-6">
-            <div className="flex items-start justify-between mb-5">
-              <div>
-                <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
-                  Ops Team Time &amp; Cost Breakdown
-                </div>
-                <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                  Where your {fmtINR(OPS_TOTAL)}/mo ops cost goes across sub-functions
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
-              {/* Pie chart */}
-              <div className="lg:col-span-2" style={{ height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={opsBreakdown}
-                      dataKey="pct"
-                      nameKey="fn"
-                      cx="50%" cy="50%"
-                      innerRadius={70}
-                      outerRadius={120}
-                      paddingAngle={2}
-                      strokeWidth={0}
-                    >
-                      {opsBreakdown.map((s, i) => (
-                        <Cell key={i} fill={s.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        background: "var(--surface)",
-                        border: "1px solid var(--border)",
-                        borderRadius: 10,
-                        fontSize: 12,
-                        color: "var(--text-1)",
-                        boxShadow: "var(--shadow-2)",
-                      }}
-                      formatter={(v: number, _n, payload) => {
-                        const p = payload as unknown as { payload: { cost: number } }
-                        return [`${v}% · ${fmtINR(p.payload.cost)}`, "Share"]
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Legend table */}
-              <div className="lg:col-span-3 space-y-2">
-                {opsBreakdown.map(s => (
-                  <div key={s.fn} className="flex items-center gap-3">
-                    <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: s.color }} />
-                    <span className="text-[13px] flex-1 truncate" style={{ color: "var(--text-1)" }}>{s.fn}</span>
-                    <span className="text-[13px] tabular-nums" style={{ color: "var(--text-2)" }}>
-                      {fmtINR(s.cost)}
-                    </span>
-                    <span className="text-[13px] font-semibold tabular-nums w-10 text-right" style={{ color: "var(--text-1)" }}>
-                      {s.pct}%
-                    </span>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
