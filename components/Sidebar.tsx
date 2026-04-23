@@ -13,7 +13,7 @@ const NAV = [
   { href: "/clients",       icon: Building2,       label: "Clients"        },
   { href: "/employees",     icon: Users,           label: "Employees"      },
   { href: "/compliance",    icon: Scale,           label: "Compliance"     },
-  { href: "/policy",        icon: FileText,        label: "AI Policy"      },
+  { href: "/policy",        icon: FileText,        label: "Policies"       },
   { href: "/integrations",  icon: Plug,            label: "Integrations"   },
   { href: "/agents",        icon: Bot,             label: "AI Agents"      },
 ]
