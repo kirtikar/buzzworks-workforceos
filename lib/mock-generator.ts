@@ -4,7 +4,11 @@
  * This lets us "generate" tens of thousands of employees without storing them.
  */
 
-import type { Employee, JobCategory, EmploymentStatus } from "./types"
+import type {
+  Employee, JobCategory, EmploymentStatus,
+  Timesheet, TimesheetSource, TimesheetStatus,
+  ValidationCheck, DailyEntry, PortalSlug,
+} from "./types"
 
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
@@ -234,4 +238,202 @@ function clientEmailDomain(clientId: string): string {
     idn: "intellectdesign.com",
   }
   return domainMap[clientId] ?? `${clientId}.in`
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// TIMESHEET GENERATOR
+// ═════════════════════════════════════════════════════════════════════════════
+
+const TIMESHEET_STATUS_WEIGHTS: TimesheetStatus[] = [
+  "pending",  "pending",  "pending",  "pending",  "pending",   // ~25% pending
+  "reviewing", "reviewing",                                     // ~10% reviewing
+  "flagged",  "flagged",  "flagged",                            // ~15% flagged
+  "approved", "approved", "approved", "approved",               // ~20% approved
+  "processed","processed","processed",                          // ~15% processed
+  "rejected",                                                    // ~5%  rejected
+]
+
+const SOURCE_WEIGHTS: TimesheetSource[] = [
+  "portal", "portal", "portal", "portal", "portal", "portal",  // ~60% portal
+  "email",  "email",  "email",                                  // ~30% email
+  "manual",                                                      // ~10% manual
+]
+
+const FLAG_REASONS = [
+  "OT cap exceeded",
+  "Missing work order reference",
+  "Sandwich leave detected",
+  "Daily hours > 12h",
+  "Weekend work without prior approval",
+  "Email parsing low confidence",
+  "Duplicate submission detected",
+  "Rate mismatch with master data",
+  "Pre-approval missing",
+  "Hours total mismatch",
+]
+
+const VALIDATION_RULES = [
+  { id: "r-cap",    cat: "Hours",     rule: "Weekly hours within cap" },
+  { id: "r-daily",  cat: "Hours",     rule: "Daily hours under 12h" },
+  { id: "r-ot",     cat: "Overtime",  rule: "OT pre-approval" },
+  { id: "r-leave",  cat: "Leave",     rule: "Leave balance available" },
+  { id: "r-rate",   cat: "Pay",       rule: "Rate matches master data" },
+  { id: "r-wo",     cat: "Reference", rule: "Work order valid" },
+  { id: "r-dup",    cat: "Integrity", rule: "No duplicate submission" },
+] as const
+
+const PORTAL_POOL: PortalSlug[] = [
+  "veltrix", "hrloop", "peoplehive", "orbithcm", "cloudspire",
+  "leafhr", "humanedge", "payaxis", "talentweave", "staffpulse",
+]
+
+function portalForClient(clientId: string): PortalSlug {
+  const idx = hashStr(clientId) % PORTAL_POOL.length
+  return PORTAL_POOL[idx]
+}
+
+/**
+ * Generate a deterministic timesheet for a given employee + week index.
+ * weekIndex 0 = current week, increases backwards
+ */
+export function generateTimesheet(employee: Employee, weekIndex: number): Timesheet {
+  const seed = hashStr(`${employee.id}::ts::${weekIndex}`)
+  const rng  = seededRng(seed)
+
+  // Period dates: weekIndex back from this week
+  const today = new Date("2026-04-17")
+  const weekStart = new Date(today)
+  weekStart.setDate(today.getDate() - today.getDay() - (weekIndex * 7) + 1)  // Monday
+  const weekEnd   = new Date(weekStart)
+  weekEnd.setDate(weekStart.getDate() + 4) // Friday
+
+  const fmtMD = (d: Date) => d.toLocaleDateString("en-IN", { month: "short", day: "numeric" })
+  const fmtY  = (d: Date) => d.getFullYear()
+  const period = `${fmtMD(weekStart)}–${fmtMD(weekEnd)}, ${fmtY(weekEnd)}`
+  const periodStart = weekStart.toISOString().split("T")[0]
+  const periodEnd   = weekEnd.toISOString().split("T")[0]
+
+  // Hours: usually 40h regular, 0–8h OT, 0 leave (or full leave week)
+  const hasLeave   = rng.next() < 0.10
+  const leaveHours = hasLeave ? rng.int(8, 24) : 0
+  const otHours    = rng.next() < 0.30 ? rng.int(2, 10) : 0
+  const regular    = Math.max(8, 40 - leaveHours)
+  const totalHours = regular + otHours + leaveHours
+  const totalPayable = Math.round(
+    regular * employee.ratePerHour +
+    otHours * employee.ratePerHour * 1.5 +
+    leaveHours * employee.ratePerHour
+  )
+
+  // Source weighted
+  const source = rng.pick(SOURCE_WEIGHTS)
+  const portalId = source === "portal" ? portalForClient(employee.clientId) : undefined
+
+  // Submitted timestamp (1-3 days after period end)
+  const submittedDays = rng.int(1, 3)
+  const submitted = new Date(weekEnd)
+  submitted.setDate(submitted.getDate() + submittedDays)
+  submitted.setHours(rng.int(8, 19), rng.int(0, 59))
+
+  // Status: weekIndex affects status — older weeks are more likely processed
+  let status: TimesheetStatus
+  if (weekIndex === 0) status = rng.pick(["pending", "pending", "pending", "reviewing", "flagged"])
+  else if (weekIndex === 1) status = rng.pick(["pending", "reviewing", "flagged", "approved", "approved"])
+  else status = rng.pick(["approved", "processed", "processed", "processed", "rejected"])
+
+  // Override status if rng says so for variety
+  if (rng.next() < 0.15) status = rng.pick(TIMESHEET_STATUS_WEIGHTS)
+
+  // Validation checks
+  const validationChecks: ValidationCheck[] = VALIDATION_RULES.map(vr => {
+    const r = rng.next()
+    let result: ValidationCheck["result"]
+    if (r < 0.78) result = "pass"
+    else if (r < 0.92) result = "warning"
+    else result = "fail"
+    return {
+      id:          vr.id,
+      category:    vr.cat as ValidationCheck["category"],
+      rule:        vr.rule,
+      result,
+      detail:      result === "pass"
+        ? "OK"
+        : result === "warning"
+          ? "Borderline — review recommended"
+          : "Failed validation",
+      autoChecked: true,
+    }
+  })
+
+  // Score: based on pass count
+  const passCount = validationChecks.filter(v => v.result === "pass").length
+  const failCount = validationChecks.filter(v => v.result === "fail").length
+  const baseScore = Math.round((passCount / validationChecks.length) * 100)
+  const validationScore = Math.max(0, baseScore - (failCount * 8))
+
+  const flagReason = (status === "flagged" || status === "rejected") ? rng.pick(FLAG_REASONS) : undefined
+
+  // Daily entries
+  const dailyEntries: DailyEntry[] = ["Mon","Tue","Wed","Thu","Fri"].map((dow, i) => {
+    const d = new Date(weekStart)
+    d.setDate(weekStart.getDate() + i)
+    const isLeaveDay = hasLeave && i < Math.ceil(leaveHours / 8)
+    return {
+      date:         d.toISOString().split("T")[0],
+      dayOfWeek:    dow,
+      regularHours: isLeaveDay ? 0 : 8,
+      overtimeHours: !isLeaveDay && i === 4 ? otHours : 0,
+      leaveType:    isLeaveDay ? rng.pick(["annual", "sick", "casual"]) : undefined,
+      leaveHours:   isLeaveDay ? 8 : undefined,
+    }
+  })
+
+  return {
+    id:                `ts-${employee.id}-w${weekIndex}`,
+    employeeId:        employee.id,
+    clientId:          employee.clientId,
+    period,
+    periodStart,
+    periodEnd,
+    submittedAt:       submitted.toISOString(),
+    source,
+    portalId,
+    emailFrom:         source === "email" ? employee.email : undefined,
+    emailSubject:      source === "email" ? `Timesheet ${period}` : undefined,
+    status,
+    totalHours,
+    regularHours:      regular,
+    overtimeHours:     otHours,
+    leaveHours,
+    totalPayable,
+    dailyEntries,
+    validationChecks,
+    validationScore,
+    flagReason,
+    flaggedBy:         flagReason ? "ai" : undefined,
+    approvedBy:        (status === "approved" || status === "processed")
+      ? (rng.next() < 0.6 ? "JARVIS" : "Riya Shah")
+      : undefined,
+    approvedAt:        (status === "approved" || status === "processed")
+      ? new Date(submitted.getTime() + rng.int(1, 8) * 3600_000).toISOString()
+      : undefined,
+    aiConfidence:      Math.max(40, validationScore + rng.int(-5, 8)),
+  }
+}
+
+/**
+ * Generate `count` timesheets across the given employees pool, distributing
+ * over the last 4 weeks. Deterministic by employee + week.
+ */
+export function generateTimesheets(employees: Employee[], count: number): Timesheet[] {
+  const result: Timesheet[] = []
+  const weeks = 4
+  let i = 0
+  while (result.length < count && i < count * 2) {
+    const emp = employees[i % employees.length]
+    const week = Math.floor(i / employees.length) % weeks
+    result.push(generateTimesheet(emp, week))
+    i++
+  }
+  return result
 }

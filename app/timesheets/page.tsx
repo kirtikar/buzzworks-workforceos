@@ -1,21 +1,24 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import ComplianceInbox from "@/components/ComplianceInbox"
 import {
-  timesheets as allTimesheets,
-  getEmployee,
+  timesheets as seedTimesheets,
+  getEmployee as seedGetEmployee,
   getClient,
   clients,
+  employees as seedEmployees,
 } from "@/lib/mock-data"
+import { generateEmployeesForClient, generateTimesheets } from "@/lib/mock-generator"
 import { REGULATIONS } from "@/lib/compliance-data"
-import type { TimesheetStatus } from "@/lib/types"
+import type { TimesheetStatus, Timesheet, Employee } from "@/lib/types"
+import clsx from "clsx"
 import {
   Search, Check, Flag, X, CheckCircle2, XCircle,
   AlertTriangle, Clock, Mail, Globe, Edit3,
-  ChevronDown, Sparkles,
+  ChevronDown, Sparkles, Building2, Activity, Tag,
 } from "lucide-react"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -25,8 +28,34 @@ type ActionCategory = "all" | "timesheets" | "compliance" | "documents" | "payro
 interface BulkRule {
   label: string
   description: string
-  match: (ts: typeof allTimesheets[0]) => boolean
+  match: (ts: Timesheet) => boolean
   count: number
+}
+
+// ─── Build pool: 500+ timesheets across all clients & employees ───────────────
+
+const TIMESHEET_POOL: Timesheet[] = (() => {
+  // Build a wider employee pool across all clients (mirror of /employees page logic)
+  const empPool: Employee[] = [...seedEmployees]
+  for (const client of clients) {
+    const seedCount = seedEmployees.filter(e => e.clientId === client.id).length
+    const need = Math.min(80, client.employeeCount) - seedCount
+    if (need > 0) empPool.push(...generateEmployeesForClient(client.id, need, seedCount))
+  }
+  // Generate ~600 timesheets distributed across the employee pool over 4 weeks
+  const generated = generateTimesheets(empPool, 600)
+  return [...seedTimesheets, ...generated]
+})()
+
+// Pool-aware getEmployee that falls back to generated employee
+function getEmployeeFromPool(employeeId: string): Employee | undefined {
+  const seeded = seedGetEmployee(employeeId)
+  if (seeded) return seeded
+  // Generated id format: ${clientId}-emp-${index}
+  const m = employeeId.match(/^([a-z]+)-emp-(\d+)$/)
+  if (!m) return undefined
+  const [, clientId, idxStr] = m
+  return generateEmployeesForClient(clientId, 1, parseInt(idxStr))[0]
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -35,40 +64,163 @@ function initials(name: string) {
   return name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
 }
 
+// ─── FilterDropdown (multi-select) ────────────────────────────────────────────
+
+function FilterDropdown({
+  label, icon: Icon, options, selected, onToggle, onClear,
+}: {
+  label: string
+  icon?: React.ComponentType<{ size?: number }>
+  options: { value: string; label: string; color?: string }[]
+  selected: string[]
+  onToggle: (v: string) => void
+  onClear: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    function h(e: MouseEvent) { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener("mousedown", h)
+    return () => document.removeEventListener("mousedown", h)
+  }, [])
+  const active = selected.length > 0
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={clsx(
+          "flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all whitespace-nowrap",
+          active ? "border-[color:var(--accent)]" : "border-[color:var(--border)] hover:border-[color:var(--border-strong)]"
+        )}
+        style={{
+          background: active ? "var(--pink-100)" : "var(--surface)",
+          color: active ? "var(--pink-700)" : "var(--text-2)",
+        }}
+      >
+        {Icon && <Icon size={12} />}
+        {label}
+        {active && (
+          <span className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+            style={{ background: "var(--accent)", color: "#fff" }}>{selected.length}</span>
+        )}
+        <ChevronDown size={11} className={clsx("transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="absolute top-full mt-1.5 left-0 z-[100] rounded-xl border shadow-xl min-w-[200px] py-1.5"
+          style={{ background: "var(--surface)", borderColor: "var(--border-strong)", boxShadow: "0 12px 32px rgba(0,0,0,0.15)" }}>
+          {selected.length > 0 && (
+            <button onClick={() => { onClear(); setOpen(false) }}
+              className="w-full text-left px-3 py-1.5 text-xs font-semibold mb-1"
+              style={{ color: "var(--accent)" }}>Clear all</button>
+          )}
+          <div className="max-h-64 overflow-y-auto">
+            {options.map(opt => (
+              <button key={opt.value} onClick={() => onToggle(opt.value)}
+                className="w-full text-left flex items-center gap-2 px-3 py-1.5 text-xs"
+                style={{
+                  color: selected.includes(opt.value) ? "var(--text-1)" : "var(--text-2)",
+                  background: selected.includes(opt.value) ? "var(--pink-50)" : "transparent",
+                }}>
+                <span className={clsx("w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center",
+                  selected.includes(opt.value) ? "border-[color:var(--accent)]" : "border-[color:var(--border-strong)]")}
+                  style={{ background: selected.includes(opt.value) ? "var(--accent)" : "transparent" }}>
+                  {selected.includes(opt.value) && <span className="text-white text-[8px] font-bold">✓</span>}
+                </span>
+                {opt.color && <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: opt.color }} />}
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InboxPage() {
-  const [localTs, setLocalTs]     = useState(allTimesheets)
+  const [localTs, setLocalTs]     = useState(TIMESHEET_POOL)
   const [search, setSearch]       = useState("")
   const [category, setCategory]   = useState<ActionCategory>("timesheets")
-  const [statusFilter, setStatusFilter] = useState<string>("actionable")
-  const [clientFilter, setClientFilter] = useState<string>("all")
-  const [selectedIds, setSelectedIds]   = useState<Set<string>>(new Set())
-  const [detailId, setDetailId]         = useState<string | null>(null)
+
+  // Multi-select filters
+  const [selStatuses, setSelStatuses]       = useState<TimesheetStatus[]>([])
+  const [selClients,  setSelClients]        = useState<string[]>([])
+  const [selSources,  setSelSources]        = useState<string[]>([])
+  const [selScoreBands, setSelScoreBands]   = useState<string[]>([])  // "high" "med" "low"
+  const [selOTOnly, setSelOTOnly]           = useState<boolean>(false)
+  const [actionableOnly, setActionableOnly] = useState<boolean>(true)
+
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [detailId, setDetailId]       = useState<string | null>(null)
+  const [page, setPage]               = useState<number>(1)
+  const PAGE_SIZE = 50
+
+  function toggle<T>(arr: T[], set: (v: T[]) => void, val: T) {
+    set(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val])
+    setPage(1)
+  }
 
   // Counts
   const actionableCount = localTs.filter(t => ["pending", "reviewing", "flagged"].includes(t.status)).length
-  const pendingCount    = localTs.filter(t => t.status === "pending").length
   const flaggedCount    = localTs.filter(t => t.status === "flagged").length
+  const otCount         = localTs.filter(t => t.overtimeHours > 0 && ["pending", "reviewing", "flagged"].includes(t.status)).length
+
+  function scoreBand(score: number): "high" | "med" | "low" {
+    if (score >= 85) return "high"
+    if (score >= 60) return "med"
+    return "low"
+  }
 
   // Filtered list
   const filtered = useMemo(() => {
     return localTs.filter(ts => {
-      const emp    = getEmployee(ts.employeeId)
+      const emp    = getEmployeeFromPool(ts.employeeId)
       const client = getClient(ts.clientId)
-      // Status
-      if (statusFilter === "actionable" && !["pending", "reviewing", "flagged"].includes(ts.status)) return false
-      if (statusFilter !== "actionable" && statusFilter !== "all" && ts.status !== statusFilter) return false
-      // Client
-      if (clientFilter !== "all" && ts.clientId !== clientFilter) return false
-      // Search
+      if (actionableOnly && !["pending", "reviewing", "flagged"].includes(ts.status)) return false
+      if (selStatuses.length && !selStatuses.includes(ts.status)) return false
+      if (selClients.length && !selClients.includes(ts.clientId)) return false
+      if (selSources.length && !selSources.includes(ts.source)) return false
+      if (selScoreBands.length && !selScoreBands.includes(scoreBand(ts.validationScore))) return false
+      if (selOTOnly && ts.overtimeHours === 0) return false
       if (search) {
         const q = search.toLowerCase()
         if (!emp?.name.toLowerCase().includes(q) && !client?.name.toLowerCase().includes(q) && !ts.period.toLowerCase().includes(q)) return false
       }
       return true
     })
-  }, [localTs, search, statusFilter, clientFilter])
+  }, [localTs, search, selStatuses, selClients, selSources, selScoreBands, selOTOnly, actionableOnly])
+
+  const paginated = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page]
+  )
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+
+  const activeFilterCount =
+    selStatuses.length + selClients.length + selSources.length +
+    selScoreBands.length + (selOTOnly ? 1 : 0)
+
+  const statusOptions = [
+    { value: "pending",    label: "Pending" },
+    { value: "reviewing",  label: "Reviewing" },
+    { value: "flagged",    label: "Flagged" },
+    { value: "approved",   label: "Approved" },
+    { value: "processed",  label: "Processed" },
+    { value: "rejected",   label: "Rejected" },
+  ]
+  const sourceOptions = [
+    { value: "portal", label: "Portal sync" },
+    { value: "email",  label: "Email" },
+    { value: "manual", label: "Manual entry" },
+  ]
+  const scoreOptions = [
+    { value: "high", label: "High score (≥85)",  color: "#059669" },
+    { value: "med",  label: "Medium (60–84)",    color: "var(--warn)" },
+    { value: "low",  label: "Low (<60)",         color: "var(--danger)" },
+  ]
+  const clientOptions = clients.map(c => ({ value: c.id, label: c.name }))
 
   // Bulk rules
   const bulkRules: BulkRule[] = useMemo(() => [
@@ -124,7 +276,7 @@ export default function InboxPage() {
   }
 
   const detail = detailId ? localTs.find(t => t.id === detailId) : null
-  const detailEmp = detail ? getEmployee(detail.employeeId) : null
+  const detailEmp = detail ? getEmployeeFromPool(detail.employeeId) : null
   const detailClient = detail ? getClient(detail.clientId) : null
 
   // Compliance count = regulations needing action
@@ -210,59 +362,87 @@ export default function InboxPage() {
           {/* Main list */}
           <div className="flex-1 flex flex-col overflow-hidden">
 
-            {/* Filter + bulk bar */}
-            <div className="flex items-center gap-3 px-6 lg:px-8 py-3 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
+            {/* Filter bar — multi-select dropdowns */}
+            <div className="px-6 lg:px-8 py-3 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Search */}
+                <div className="relative flex-shrink-0">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+                  <input
+                    className="glass-input pl-9 py-2 text-[13px] w-52"
+                    placeholder="Search employee, client…"
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setPage(1) }}
+                  />
+                </div>
 
-              {/* Search */}
-              <div className="relative flex-shrink-0">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
-                <input
-                  className="glass-input pl-9 py-2 text-[13px] w-52"
-                  placeholder="Search…"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
-              </div>
-
-              {/* Status filter */}
-              <div className="relative flex-shrink-0">
-                <select
-                  value={statusFilter}
-                  onChange={e => setStatusFilter(e.target.value)}
-                  className="glass-input py-2 text-[13px] pr-8 appearance-none cursor-pointer"
-                  style={{ width: 150 }}
+                {/* Actionable toggle */}
+                <button
+                  onClick={() => { setActionableOnly(!actionableOnly); setPage(1) }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all whitespace-nowrap"
+                  style={{
+                    background: actionableOnly ? "var(--pink-100)" : "var(--surface)",
+                    color: actionableOnly ? "var(--pink-700)" : "var(--text-2)",
+                    borderColor: actionableOnly ? "var(--accent)" : "var(--border)",
+                  }}
                 >
-                  <option value="actionable">Needs action ({actionableCount})</option>
-                  <option value="all">All timesheets</option>
-                  <option value="pending">Pending ({pendingCount})</option>
-                  <option value="flagged">Flagged ({flaggedCount})</option>
-                  <option value="approved">Approved</option>
-                  <option value="processed">Processed</option>
-                </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
-              </div>
+                  <Activity size={12} />
+                  Needs action ({actionableCount})
+                </button>
 
-              {/* Client filter */}
-              <div className="relative flex-shrink-0">
-                <select
-                  value={clientFilter}
-                  onChange={e => setClientFilter(e.target.value)}
-                  className="glass-input py-2 text-[13px] pr-8 appearance-none cursor-pointer"
-                  style={{ width: 150 }}
+                <FilterDropdown label="Status" icon={Tag} options={statusOptions}
+                  selected={selStatuses as string[]}
+                  onToggle={v => toggle(selStatuses, setSelStatuses, v as TimesheetStatus)}
+                  onClear={() => { setSelStatuses([]); setPage(1) }} />
+
+                <FilterDropdown label="Client" icon={Building2} options={clientOptions}
+                  selected={selClients}
+                  onToggle={v => toggle(selClients, setSelClients, v)}
+                  onClear={() => { setSelClients([]); setPage(1) }} />
+
+                <FilterDropdown label="Source" options={sourceOptions}
+                  selected={selSources}
+                  onToggle={v => toggle(selSources, setSelSources, v)}
+                  onClear={() => { setSelSources([]); setPage(1) }} />
+
+                <FilterDropdown label="Score" options={scoreOptions}
+                  selected={selScoreBands}
+                  onToggle={v => toggle(selScoreBands, setSelScoreBands, v)}
+                  onClear={() => { setSelScoreBands([]); setPage(1) }} />
+
+                <button
+                  onClick={() => { setSelOTOnly(!selOTOnly); setPage(1) }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all whitespace-nowrap"
+                  style={{
+                    background: selOTOnly ? "var(--warn-bg)" : "var(--surface)",
+                    color: selOTOnly ? "var(--warn)" : "var(--text-2)",
+                    borderColor: selOTOnly ? "var(--warn-border)" : "var(--border)",
+                  }}
                 >
-                  <option value="all">All clients</option>
-                  {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-                <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
-              </div>
+                  <AlertTriangle size={12} />
+                  Has overtime ({otCount})
+                </button>
 
-              <span className="text-[13px] ml-auto" style={{ color: "var(--text-3)" }}>
-                {filtered.length} items
-              </span>
+                {activeFilterCount > 0 && (
+                  <button onClick={() => {
+                    setSelStatuses([]); setSelClients([]); setSelSources([]);
+                    setSelScoreBands([]); setSelOTOnly(false); setSearch(""); setPage(1)
+                  }}
+                    className="flex items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold"
+                    style={{ color: "var(--danger)", background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
+                    <X size={11} /> Clear ({activeFilterCount})
+                  </button>
+                )}
+
+                <span className="text-[13px] ml-auto flex-shrink-0" style={{ color: "var(--text-3)" }}>
+                  {filtered.length.toLocaleString()} of {TIMESHEET_POOL.length.toLocaleString()}
+                  {filtered.length > 0 && ` · page ${page}/${totalPages}`}
+                </span>
+              </div>
             </div>
 
             {/* Bulk rules bar */}
-            {statusFilter === "actionable" && bulkRules.some(r => r.count > 0) && (
+            {actionableOnly && bulkRules.some(r => r.count > 0) && (
               <div className="flex items-center gap-3 px-6 lg:px-8 py-2.5 flex-shrink-0 overflow-x-auto scrollbar-none"
                 style={{ background: "var(--bg)" }}>
                 <Sparkles size={14} style={{ color: "var(--accent)" }} className="flex-shrink-0" />
@@ -307,9 +487,10 @@ export default function InboxPage() {
                 </div>
               )}
 
-              {filtered.map(ts => {
-                const emp    = getEmployee(ts.employeeId)!
-                const client = getClient(ts.clientId)!
+              {paginated.map(ts => {
+                const emp    = getEmployeeFromPool(ts.employeeId)
+                const client = getClient(ts.clientId)
+                if (!emp || !client) return null
                 const isActionable = ["pending", "reviewing", "flagged"].includes(ts.status)
                 const isSelected = selectedIds.has(ts.id)
                 const isDetail = detailId === ts.id
@@ -401,6 +582,39 @@ export default function InboxPage() {
               {filtered.length === 0 && (
                 <div className="text-center py-20 text-sm" style={{ color: "var(--text-3)" }}>
                   No items match current filters
+                </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-1 px-6 lg:px-8 py-4">
+                  <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center disabled:opacity-30 transition-all"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-2)" }}>
+                    ‹
+                  </button>
+                  {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
+                    const p = totalPages <= 7 ? i + 1
+                      : page <= 4 ? i + 1
+                      : page >= totalPages - 3 ? totalPages - 6 + i
+                      : page - 3 + i
+                    return (
+                      <button key={p} onClick={() => setPage(p)}
+                        className="w-8 h-8 rounded-lg text-xs font-medium transition-all"
+                        style={{
+                          background: p === page ? "var(--accent)" : "var(--surface)",
+                          color: p === page ? "#fff" : "var(--text-2)",
+                          border: p === page ? "none" : "1px solid var(--border)",
+                        }}>
+                        {p}
+                      </button>
+                    )
+                  })}
+                  <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center disabled:opacity-30 transition-all"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-2)" }}>
+                    ›
+                  </button>
                 </div>
               )}
             </div>
