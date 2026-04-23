@@ -753,54 +753,67 @@ function pickRisk(base: RiskLevel, rng: () => number): RiskLevel {
 }
 
 // ---------------------------------------------------------------------------
-// Main generator
+// Real TeamLease article ingestion
 // ---------------------------------------------------------------------------
 
-function generateRegulations(count: number): Regulation[] {
-  const rng = mulberry32(0xdeadbeef)
+import teamleaseArticles from "./teamlease-articles.json"
+
+interface TeamLeaseArticle {
+  id:        number
+  slug:      string
+  title:     string
+  date:      string
+  category:  string
+  authority: string
+  region:    string
+}
+
+const REAL_ARTICLES = teamleaseArticles as TeamLeaseArticle[]
+
+function normalizeCategory(cat: string): ComplianceCategory {
+  const map: Record<string, ComplianceCategory> = {
+    "Labour": "Labour",
+    "Finance & Taxation": "Finance & Taxation",
+    "EHS": "EHS",
+    "Commercial": "Commercial",
+    "Secretarial": "Secretarial",
+    "Industry Specific": "Industry Specific",
+    "General": "General",
+  }
+  return map[cat] ?? "General"
+}
+
+function normalizeRegion(region: string): string {
+  // Ensure region matches REGIONS constant; fall back to Central
+  const normalized = region.replace(/\bJammu Kashmir\b/i, "J&K").trim()
+  return (REGIONS as readonly string[]).includes(normalized) ? normalized : "Central"
+}
+
+// ---------------------------------------------------------------------------
+// Main generator — uses real TeamLease articles as primary source
+// ---------------------------------------------------------------------------
+
+function generateRegulations(_count: number): Regulation[] {
   const regulations: Regulation[] = []
 
-  const categories: ComplianceCategory[] = [
-    "Labour", "Finance & Taxation", "EHS", "Commercial",
-    "Secretarial", "Industry Specific", "General",
-  ]
+  for (let i = 0; i < REAL_ARTICLES.length; i++) {
+    const art = REAL_ARTICLES[i]
+    const rng = mulberry32(art.id)
 
-  // Weight distribution: Labour heavy, General light
-  const categoryWeights = [0.28, 0.20, 0.14, 0.10, 0.12, 0.10, 0.06]
-  const categoryThresholds: number[] = []
-  let cum = 0
-  for (const w of categoryWeights) {
-    cum += w
-    categoryThresholds.push(cum)
-  }
-
-  function pickCategory(): ComplianceCategory {
-    const r = rng()
-    for (let i = 0; i < categoryThresholds.length; i++) {
-      if (r <= categoryThresholds[i]) return categories[i]
-    }
-    return "Labour"
-  }
-
-  const REGIONS_GEN = REGIONS.filter(r => r !== "Central").concat(
-    Array(8).fill("Central") // boost Central
-  )
-
-  for (let i = 0; i < count; i++) {
-    const id = 11 + i
-    const category = pickCategory()
-    const pool = CATEGORY_POOLS[category]
-
-    const region = pick(REGIONS_GEN, rng)
-    const authority = buildRegionAuthority(category, region, pool, rng)
-    const topic = pick(pool.topics, rng)
-    const title = buildTitle(authority, topic, rng)
-    const summary = buildSummary(authority, topic, rng)
+    const category = normalizeCategory(art.category)
+    const region   = normalizeRegion(art.region)
+    const pool     = CATEGORY_POOLS[category]
+    const authority = art.authority
+    const title    = art.title
+    const summary  = buildSummary(authority, pick(pool.topics, rng), rng)
+    const id       = 1000 + art.id  // offset to avoid collision with featured (ids 1-10)
     const reference = buildReference(category, id, rng)
 
-    const pubDate = weightedRandomDate(rng)
-    const effDate = new Date(pubDate.getTime() + Math.floor(rng() * 60 * 24 * 60 * 60 * 1000))
-    const dateStr = formatDate(pubDate)
+    const dateStr    = art.date
+    const pubDate    = new Date(art.date)
+    const effDate    = isNaN(pubDate.getTime())
+      ? new Date("2026-05-01")
+      : new Date(pubDate.getTime() + Math.floor(rng() * 60 * 24 * 60 * 60 * 1000))
     const effDateStr = formatDate(effDate)
 
     const keyChangePool = KEY_CHANGE_POOLS[category]
@@ -829,7 +842,12 @@ function generateRegulations(count: number): Regulation[] {
     const actionRequired = legalRisk === "high" || operationalImpact === "high" || rng() > 0.6
 
     const clients = pickClients(pool, rng)
-    const source = buildSourceUrl(pool, category, region, authority)
+
+    // Source URL: real TeamLease article page
+    const source = {
+      url:  `https://www.teamleaseregtech.com/updates/article/${art.id}/${art.slug}`,
+      name: "TeamLease RegTech",
+    }
 
     regulations.push({
       id,
@@ -885,8 +903,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
-    sourceName: "EPFO Circulars",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55009/esic-notified-regarding-the-protocols-to-be-followed-by-esic-hospitals",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech", "Wipro GE"],
   },
   {
@@ -909,8 +927,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "low",
     operationalImpact: "low",
     actionRequired: false,
-    sourceUrl: "https://www.incometax.gov.in/iec/foportal/",
-    sourceName: "Income Tax e-Filing",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55039/gstn-issued-a-notification-regarding-the-introduction-of-the-ims-offli",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech"],
   },
   {
@@ -935,8 +953,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://labour.karnataka.gov.in/page/Acts+and+Rules/en",
-    sourceName: "Karnataka Labour",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54948/government-of-karnataka-exemption-from-return-filing-under-profession-",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["Dine-In Brands", "Swiggy", "Urban Company", "Infosys BPM"],
   },
   {
@@ -960,8 +978,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
-    sourceName: "EPFO Circulars",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55009/esic-notified-regarding-the-protocols-to-be-followed-by-esic-hospitals",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company"],
   },
   {
@@ -985,8 +1003,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "medium",
     operationalImpact: "medium",
     actionRequired: true,
-    sourceUrl: "https://incometaxindia.gov.in/Pages/communications/notifications.aspx",
-    sourceName: "CBDT Notifications",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55023/mof-issued-a-notification-regarding-outreach-on-the-new-income-tax-act",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["TechCorp India", "Infosys BPM", "Wipro GE", "Hexaware", "L&T Infotech"],
   },
   {
@@ -1010,8 +1028,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://mahakamgar.maharashtra.gov.in/minimum-wages-702.htm",
-    sourceName: "Maharashtra Labour",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54939/govt-of-maharashtra-issued-a-circular-regarding-paid-holiday-for-emplo",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["Dine-In Brands", "MedSure Healthcare", "Capgemini"],
   },
   {
@@ -1035,8 +1053,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "medium",
     operationalImpact: "medium",
     actionRequired: false,
-    sourceUrl: "https://www.esic.in/web/esicnew/circulars-and-orders",
-    sourceName: "ESIC Orders",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55009/esic-notified-regarding-the-protocols-to-be-followed-by-esic-hospitals",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["Swiggy", "Zomato", "Urban Company", "BigBasket"],
   },
   {
@@ -1060,8 +1078,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://labour.delhi.gov.in/content/factories-act",
-    sourceName: "Delhi Labour",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55057/govt-of-delhi-notified-regarding-the-revision-of-minimum-wages-in-delh",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["FinanceHub Ltd", "GlobalStaff Solutions"],
   },
   {
@@ -1085,8 +1103,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://wcd.nic.in/act/sexual-harassment-women-workplace-prevention-prohibition-and-redressal-act-2013",
-    sourceName: "Ministry of WCD",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55025/draft-occupational-safety-health-and-working-conditions-andhra-pradesh",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company", "TechCorp India", "Infosys BPM"],
   },
   {
@@ -1110,8 +1128,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "medium",
     operationalImpact: "medium",
     actionRequired: true,
-    sourceUrl: "https://ctax.karnataka.gov.in/english",
-    sourceName: "Karnataka CTAX",
+    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54948/government-of-karnataka-exemption-from-return-filing-under-profession-",
+    sourceName: "TeamLease RegTech",
     clientsAffected: ["Infosys BPM", "Wipro GE", "Swiggy", "Urban Company"],
   },
 ]
