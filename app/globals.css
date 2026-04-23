@@ -13,61 +13,76 @@
 
 /* ═══════════════════════════════════════════════════════════
    DESIGN TOKENS — Light (default)
-   Sweat-inspired: layered pinks + warm neutrals + fresh accents
+   Dusty rose + dusty blue · elegant wedding palette
    ═══════════════════════════════════════════════════════════ */
 :root {
-  /* ── Primary (Pink scale) ───────────────── */
-  --pink-50:   #FFF1F6;
-  --pink-100:  #FFE4EC;
-  --pink-200:  #FFC7D8;
-  --pink-300:  #FF9FBC;
-  --pink-400:  #FF6F9F;
-  --pink-500:  #FF3D7F;
-  --pink-600:  #E62E6D;
-  --pink-700:  #BF255A;
-  --pink-800:  #991D47;
-  --pink-900:  #66122F;
+  /* ── Dusty Rose scale (primary) ─────────── */
+  --pink-50:   #FBF5F7;
+  --pink-100:  #F6EAEE;
+  --pink-200:  #EDD4DD;
+  --pink-300:  #DEB4C2;
+  --pink-400:  #CB98A8;
+  --pink-500:  #B77889;  /* primary brand */
+  --pink-600:  #9B5F71;  /* hover/pressed */
+  --pink-700:  #7C4A59;
+  --pink-800:  #5E3742;
+  --pink-900:  #3D242C;
 
-  /* ── Chart accents (avoid all-pink charts) */
-  --mint:      #2DD4BF;
-  --lavender:  #A78BFA;
-  --peach:     #FFB4A2;
-  --yellow:    #FACC15;
+  /* ── Dusty Blue scale (secondary) ───────── */
+  --blue-50:   #F3F6FA;
+  --blue-100:  #E5ECF4;
+  --blue-200:  #C6D5E4;
+  --blue-300:  #A3B9CF;
+  --blue-400:  #829DB8;
+  --blue-500:  #6683A2;  /* secondary brand */
+  --blue-600:  #526C88;
+  --blue-700:  #40556C;
+  --blue-800:  #2E3E4F;
+  --blue-900:  #1D2834;
+
+  /* ── Sage & cream accents ───────────────── */
+  --sage:      #A8B89A;
+  --sage-bg:   rgba(168, 184, 154, 0.12);
+  --cream:     #E8DCC4;
+  --gold:      #D4A574;
 
   /* ── Semantic ───────────────────────────── */
-  --green:     #22C55E;
-  --green-bg:  rgba(34, 197, 94, 0.08);
-  --orange:    #F59E0B;
-  --orange-bg: rgba(245, 158, 11, 0.08);
-  --red:       #EF4444;
-  --red-bg:    rgba(239, 68, 68, 0.08);
-  --blue:      #3B82F6;
-  --blue-bg:   rgba(59, 130, 246, 0.08);
+  --green:     #6B9467;   /* muted sage-green */
+  --green-bg:  rgba(107, 148, 103, 0.10);
+  --orange:    #C88A5C;   /* muted terracotta */
+  --orange-bg: rgba(200, 138, 92, 0.10);
+  --red:       #B85656;   /* muted rose-red */
+  --red-bg:    rgba(184, 86, 86, 0.10);
+  --info:      #6683A2;   /* dusty blue */
+  --info-bg:   rgba(102, 131, 162, 0.10);
 
-  /* ── Surfaces (warm grays) ──────────────── */
-  --bg:             #FAFAFB;
+  /* ── Surfaces (warm cream neutrals) ─────── */
+  --bg:             #FAF7F3;
   --surface:        #FFFFFF;
-  --surface-2:      #F4F4F6;
-  --surface-hover:  #FFF1F6;
-  --border:         #E5E7EB;
-  --border-light:   #F4F4F6;
+  --surface-2:      #F4EEE8;
+  --surface-hover:  #F8F2EC;
+  --border:         #E5DED5;
+  --border-light:   #EFE9E1;
 
-  /* ── Typography ─────────────────────────── */
-  --text-primary:   #1F2937;
-  --text-secondary: #4B5563;
-  --text-tertiary:  #9CA3AF;
+  /* ── Typography (warm darks) ────────────── */
+  --text-primary:   #3A2F35;
+  --text-secondary: #6B5D63;
+  --text-tertiary:  #A99BA0;
 
-  /* ── Elevation ──────────────────────────── */
-  --shadow-1: 0 1px 3px rgba(153, 29, 71, 0.06);
-  --shadow-2: 0 2px 8px rgba(153, 29, 71, 0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-3: 0 8px 24px rgba(153, 29, 71, 0.10), 0 2px 6px rgba(0,0,0,0.04);
+  /* ── Elevation (warm-tinted) ────────────── */
+  --shadow-1: 0 1px 3px rgba(94, 55, 66, 0.06);
+  --shadow-2: 0 2px 8px rgba(94, 55, 66, 0.08), 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-3: 0 8px 24px rgba(94, 55, 66, 0.10), 0 2px 6px rgba(0,0,0,0.04);
 
-  /* ── Legacy aliases (used by existing pages) */
-  --accent:        var(--pink-500);
+  /* ── Legacy aliases ─────────────────────── */
+  /* --accent/--purple map to pink-600 (not pink-500) so text/button usage
+     has readable contrast on light pink backgrounds and sufficient white-
+     text contrast. pink-500 is reserved for decorative tints. */
+  --accent:        var(--pink-600);
   --accent-dim:    var(--pink-50);
   --accent-border: var(--pink-200);
-  --purple:        var(--pink-500);
-  --purple-light:  var(--pink-400);
+  --purple:        var(--pink-600);
+  --purple-light:  var(--pink-500);
   --purple-bg:     var(--pink-100);
   --purple-subtle: var(--pink-50);
   --surface-nav:   #FFFFFF;
@@ -77,86 +92,67 @@
   --text-3:        var(--text-tertiary);
   --warn:          var(--orange);
   --warn-bg:       var(--orange-bg);
-  --warn-border:   rgba(245, 158, 11, 0.18);
+  --warn-border:   rgba(200, 138, 92, 0.20);
   --danger:        var(--red);
   --danger-bg:     var(--red-bg);
-  --danger-border: rgba(239, 68, 68, 0.18);
-  --info:          var(--blue);
-  --info-bg:       var(--blue-bg);
-  --info-border:   rgba(59, 130, 246, 0.18);
+  --danger-border: rgba(184, 86, 86, 0.20);
+  --info-border:   rgba(102, 131, 162, 0.20);
   --glass-bg:      var(--surface);
   --glass-border:  var(--border);
-  --border-strong: #D1D5DB;
-  --gold:          var(--yellow);
-  --gold-dim:      rgba(250, 204, 21, 0.10);
+  --border-strong: #D0C7BC;
+  --gold-dim:      rgba(212, 165, 116, 0.10);
   --chart-1:       var(--pink-500);
-  --chart-2:       var(--mint);
-  --chart-3:       var(--lavender);
+  --chart-2:       var(--blue-500);
+  --chart-3:       var(--sage);
+  --lavender:      var(--blue-400);
+  --mint:          var(--sage);
+  --peach:         var(--pink-300);
+  --yellow:        var(--gold);
 }
 
 /* ═══════════════════════════════════════════════════════════
    DARK THEME
    ═══════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --pink-50:   rgba(255, 61, 127, 0.08);
-  --pink-100:  rgba(255, 61, 127, 0.14);
-  --pink-200:  rgba(255, 61, 127, 0.24);
-  --pink-500:  #FF5C95;
-  --pink-600:  #FF3D7F;
+  --pink-500:  #D28A9C;
+  --pink-100:  rgba(210, 138, 156, 0.14);
+  --pink-50:   rgba(210, 138, 156, 0.08);
+  --blue-500:  #8BA5C2;
+  --blue-400:  #A0B8D1;
 
-  --bg:             #111827;
-  --surface:        #1F2937;
-  --surface-2:      #273141;
-  --surface-hover:  #273141;
+  --bg:             #1E1A1D;
+  --surface:        #2A2328;
+  --surface-2:      #342B30;
+  --surface-hover:  #342B30;
   --border:         rgba(255, 255, 255, 0.08);
   --border-light:   rgba(255, 255, 255, 0.05);
 
-  --text-primary:   #F3F4F6;
-  --text-secondary: #9CA3AF;
-  --text-tertiary:  #6B7280;
+  --text-primary:   #F0E9EC;
+  --text-secondary: #B8A9B0;
+  --text-tertiary:  #7E6E76;
 
-  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-2: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-3: 0 8px 24px rgba(0,0,0,0.5);
 
   --accent:        var(--pink-500);
   --accent-dim:    var(--pink-50);
-  --accent-border: var(--pink-200);
+  --accent-border: var(--pink-100);
   --purple:        var(--pink-500);
-  --purple-light:  #FF80AE;
   --purple-bg:     var(--pink-100);
   --purple-subtle: var(--pink-50);
-  --surface-nav:   #0F1520;
+  --surface-nav:   #1A1618;
   --nav-border:    rgba(255, 255, 255, 0.06);
   --text-1:        var(--text-primary);
   --text-2:        var(--text-secondary);
   --text-3:        var(--text-tertiary);
-  --warn:          #FBBF24;
-  --warn-bg:       rgba(251, 191, 36, 0.10);
-  --warn-border:   rgba(251, 191, 36, 0.20);
-  --danger:        #F87171;
-  --danger-bg:     rgba(248, 113, 113, 0.10);
-  --danger-border: rgba(248, 113, 113, 0.20);
-  --info:          #60A5FA;
-  --info-bg:       rgba(96, 165, 250, 0.10);
-  --info-border:   rgba(96, 165, 250, 0.20);
+  --border-strong: rgba(255, 255, 255, 0.14);
   --glass-bg:      var(--surface);
   --glass-border:  var(--border);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  --gold:          #FDE047;
-  --gold-dim:      rgba(253, 224, 71, 0.10);
-  --green:         #4ADE80;
-  --green-bg:      rgba(74, 222, 128, 0.10);
-  --orange:        #FBBF24;
-  --orange-bg:     rgba(251, 191, 36, 0.10);
-  --red:           #F87171;
-  --red-bg:        rgba(248, 113, 113, 0.10);
-  --blue:          #60A5FA;
-  --blue-bg:       rgba(96, 165, 250, 0.10);
 }
 
 /* ═══════════════════════════════════════════════════════════
-   TEXT OVERRIDES (Tailwind text-white compat)
+   TEXT OVERRIDES
    ═══════════════════════════════════════════════════════════ */
 .text-white, .text-white\/90, .text-white\/85,
 .text-white\/80, .text-white\/75                    { color: var(--text-1); }
@@ -239,10 +235,10 @@ body {
   white-space: nowrap;
 }
 .badge-pending   { background: var(--surface-2); color: var(--text-secondary); }
-.badge-reviewing { background: var(--pink-100);  color: var(--pink-700); }
+.badge-reviewing { background: var(--blue-100);  color: var(--blue-700); }
 .badge-flagged   { background: var(--orange-bg); color: var(--orange); }
 .badge-approved  { background: var(--green-bg);  color: var(--green); }
-.badge-processed { background: var(--pink-50);   color: var(--pink-600); }
+.badge-processed { background: var(--pink-50);   color: var(--pink-700); }
 .badge-rejected  { background: var(--red-bg);    color: var(--red); }
 .badge-portal    { background: var(--surface-2); color: var(--text-secondary); }
 .badge-email     { background: var(--surface-2); color: var(--text-secondary); }
@@ -290,7 +286,7 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
 
 /* ── Buttons ──────────────────────────────────────────────── */
 .btn-primary, .btn-teal {
-  background: var(--pink-500);
+  background: var(--pink-600);
   color: #FFFFFF;
   border: none;
   border-radius: 20px;
@@ -301,11 +297,11 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
   transition: background 0.15s, box-shadow 0.15s;
 }
 .btn-primary:hover, .btn-teal:hover {
-  background: var(--pink-600);
-  box-shadow: 0 2px 12px rgba(255, 61, 127, 0.25);
+  background: var(--pink-700);
+  box-shadow: 0 2px 12px rgba(155, 95, 113, 0.25);
 }
 .btn-primary:disabled, .btn-teal:disabled {
-  background: var(--pink-200);
+  background: var(--pink-300);
   cursor: not-allowed;
   box-shadow: none;
 }

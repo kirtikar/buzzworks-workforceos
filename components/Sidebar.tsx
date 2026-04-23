@@ -28,7 +28,7 @@ export default function Sidebar() {
       <div className="px-6 pt-6 pb-6">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: "var(--purple)" }}>
+            style={{ background: "var(--pink-700)" }}>
             <span className="text-white text-sm font-bold">O</span>
           </div>
           <div>
@@ -48,8 +48,8 @@ export default function Sidebar() {
               href={item.href}
               className="relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all"
               style={{
-                background: active ? "var(--purple-bg)" : "transparent",
-                color:      active ? "var(--purple)" : "var(--text-secondary)",
+                background: active ? "var(--pink-100)" : "transparent",
+                color:      active ? "var(--pink-700)" : "var(--text-secondary)",
                 fontWeight:  active ? 600 : 400,
               }}
             >
@@ -68,10 +68,10 @@ export default function Sidebar() {
       <div className="px-3 pb-5 space-y-3">
         {/* AI Agents status */}
         <div className="mx-1 px-3 py-2.5 rounded-lg"
-          style={{ background: "var(--purple-subtle)", border: "1px solid var(--purple-bg)" }}>
+          style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
           <div className="flex items-center gap-2">
-            <Zap size={14} style={{ color: "var(--purple)" }} />
-            <span className="text-[12px] font-medium" style={{ color: "var(--purple)" }}>5 agents active</span>
+            <Zap size={14} style={{ color: "var(--pink-700)" }} />
+            <span className="text-[12px] font-medium" style={{ color: "var(--pink-700)" }}>5 agents active</span>
             <span className="w-1.5 h-1.5 rounded-full animate-dot-blink ml-auto" style={{ background: "var(--green)" }} />
           </div>
         </div>
@@ -87,7 +87,7 @@ export default function Sidebar() {
         {/* User */}
         <div className="flex items-center gap-3 px-4 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-semibold"
-            style={{ background: "var(--purple)", color: "#fff" }}>
+            style={{ background: "var(--pink-700)", color: "#fff" }}>
             RS
           </div>
           <div>
