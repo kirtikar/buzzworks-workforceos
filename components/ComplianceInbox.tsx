@@ -5,6 +5,7 @@ import {
   REGULATIONS, CATEGORY_META, IMPACT_AREA_META,
   type Regulation, type ImpactArea, type ComplianceCategory,
 } from "@/lib/compliance-data"
+import NotifyPanel, { buildComplianceNotify, type NotifyContext } from "@/components/NotifyPanel"
 import {
   AlertTriangle, Calendar, IndianRupee, Sparkles, Mail, Check,
   Clock, ExternalLink, Search, ChevronDown, Building2, Tag, X,
@@ -171,6 +172,22 @@ export default function ComplianceInbox() {
   const [sortBy,         setSortBy]         = useState<SortMode>("deadline")
   const [selectedIds,    setSelectedIds]    = useState<Set<number>>(new Set())
   const [expandedId,     setExpandedId]     = useState<number | null>(null)
+  const [notifyCtx,      setNotifyCtx]      = useState<NotifyContext | null>(null)
+
+  function openNotify(reg: Regulation) {
+    const cost = totalCostOfNonCompliance(reg)
+    setNotifyCtx(buildComplianceNotify({
+      title:         reg.title,
+      authority:     reg.authority,
+      region:        reg.region,
+      effectiveDate: reg.effectiveDate,
+      deadline:      deadlineLabel(daysUntil(reg.effectiveDate)),
+      penalty:       fmtPenalty(cost),
+      sourceUrl:     reg.sourceUrl,
+      sourceName:    reg.sourceName,
+      clients:       reg.clientsAffected,
+    }))
+  }
 
   function toggle<T>(arr: T[], set: (v: T[]) => void, val: T) {
     set(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val])
@@ -330,7 +347,13 @@ export default function ComplianceInbox() {
             style={{ padding: "6px 12px" }}>
             <Check size={12} /> Mark done
           </button>
-          <button className="btn-ghost flex items-center gap-1.5 text-xs py-1.5 px-3"
+          <button
+            onClick={() => {
+              const firstId = Array.from(selectedIds)[0]
+              const reg = filtered.find(r => r.id === firstId)
+              if (reg) openNotify(reg)
+            }}
+            className="btn-ghost flex items-center gap-1.5 text-xs py-1.5 px-3"
             style={{ padding: "6px 12px" }}>
             <Mail size={12} /> Notify team
           </button>
@@ -524,7 +547,8 @@ export default function ComplianceInbox() {
                       style={{ padding: "8px 14px" }}>
                       <Check size={12} /> Mark done
                     </button>
-                    <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                    <button onClick={e => { e.stopPropagation(); openNotify(reg) }}
+                      className="btn-ghost flex items-center gap-1.5 text-xs"
                       style={{ padding: "8px 14px" }}>
                       <Mail size={12} /> Notify team
                     </button>
@@ -550,6 +574,12 @@ export default function ComplianceInbox() {
           )
         })}
       </div>
+
+      {/* Notify panel (bottom-right slide-in) */}
+      <NotifyPanel
+        context={notifyCtx}
+        onClose={() => setNotifyCtx(null)}
+      />
     </div>
   )
 }

@@ -4,6 +4,10 @@ import { useState, useMemo, useRef, useEffect } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import ComplianceInbox from "@/components/ComplianceInbox"
+import NotifyPanel, {
+  buildTimesheetFlag, buildTimesheetReject, buildTimesheetApprove,
+  type NotifyContext,
+} from "@/components/NotifyPanel"
 import {
   timesheets as seedTimesheets,
   getEmployee as seedGetEmployee,
@@ -156,7 +160,36 @@ export default function InboxPage() {
   const [expandedId, setExpandedId]   = useState<string | null>(null)
   const [sortBy, setSortBy]           = useState<"date" | "score-asc" | "score-desc" | "client" | "hours">("date")
   const [page, setPage]               = useState<number>(1)
+  const [notifyCtx, setNotifyCtx]     = useState<NotifyContext | null>(null)
   const PAGE_SIZE = 50
+
+  function openNotifyFor(ts: Timesheet, kind: "flag" | "reject" | "approve") {
+    const emp = getEmployeeFromPool(ts.employeeId)
+    if (!emp) return
+    const common = {
+      employeeName:  emp.name,
+      employeeEmail: emp.email,
+      period:        ts.period,
+      managerEmail:  emp.managerEmail,
+    }
+    if (kind === "flag") {
+      setNotifyCtx(buildTimesheetFlag({
+        ...common,
+        reason: ts.flagReason ?? "Review required — validation score below threshold",
+      }))
+    } else if (kind === "reject") {
+      setNotifyCtx(buildTimesheetReject({
+        ...common,
+        reason: ts.flagReason ?? "Submission does not meet policy criteria",
+      }))
+    } else {
+      setNotifyCtx(buildTimesheetApprove({
+        ...common,
+        totalHours:   ts.totalHours,
+        totalPayable: ts.totalPayable,
+      }))
+    }
+  }
 
   function toggle<T>(arr: T[], set: (v: T[]) => void, val: T) {
     set(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val])
@@ -476,11 +509,23 @@ export default function InboxPage() {
                   style={{ padding: "6px 12px" }}>
                   <Check size={12} /> Approve selected
                 </button>
-                <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                <button
+                  onClick={() => {
+                    const firstId = Array.from(selectedIds)[0]
+                    const ts = localTs.find(t => t.id === firstId)
+                    if (ts) openNotifyFor(ts, "flag")
+                  }}
+                  className="btn-ghost flex items-center gap-1.5 text-xs"
                   style={{ padding: "6px 12px", color: "var(--warn)", borderColor: "var(--warn-border)" }}>
                   <Flag size={12} /> Flag
                 </button>
-                <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                <button
+                  onClick={() => {
+                    const firstId = Array.from(selectedIds)[0]
+                    const ts = localTs.find(t => t.id === firstId)
+                    if (ts) openNotifyFor(ts, "reject")
+                  }}
+                  className="btn-ghost flex items-center gap-1.5 text-xs"
                   style={{ padding: "6px 12px", color: "var(--danger)", borderColor: "var(--danger-border)" }}>
                   <XCircle size={12} /> Reject
                 </button>
@@ -745,11 +790,15 @@ export default function InboxPage() {
                               style={{ padding: "8px 14px" }}>
                               <CheckCircle2 size={13} /> Approve
                             </button>
-                            <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                            <button
+                              onClick={e => { e.stopPropagation(); openNotifyFor(ts, "flag") }}
+                              className="btn-ghost flex items-center gap-1.5 text-xs"
                               style={{ padding: "8px 14px", color: "var(--warn)" }}>
                               <Flag size={13} /> Flag
                             </button>
-                            <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                            <button
+                              onClick={e => { e.stopPropagation(); openNotifyFor(ts, "reject") }}
+                              className="btn-ghost flex items-center gap-1.5 text-xs"
                               style={{ padding: "8px 14px", color: "var(--danger)" }}>
                               <XCircle size={13} /> Reject
                             </button>
@@ -806,6 +855,11 @@ export default function InboxPage() {
           )}
         </div>
       </div>
+
+      <NotifyPanel
+        context={notifyCtx}
+        onClose={() => setNotifyCtx(null)}
+      />
 
       <BottomNav />
     </div>
