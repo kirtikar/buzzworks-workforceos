@@ -13,7 +13,7 @@ import {
   ChevronRight, Eye, Check, Flag, ShieldCheck, Calendar, ChevronDown, Search,
 } from "lucide-react"
 import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
-import { getRegulationsForClient, CATEGORY_META, IMPACT_META } from "@/lib/compliance-data"
+import { getRegulationsForClient, CATEGORY_META, RISK_META } from "@/lib/compliance-data"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -212,9 +212,9 @@ function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getCl
           <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>Needs follow-up</div>
         </div>
         <div className="stat-card">
-          <div className="text-xs" style={{ color: "var(--neutral-600)" }}>High impact</div>
+          <div className="text-xs" style={{ color: "var(--neutral-600)" }}>High legal risk</div>
           <div className="text-2xl font-semibold mt-2" style={{ color: "var(--error)" }}>
-            {regulations.filter(r => r.impact === "high").length}
+            {regulations.filter(r => r.legalRisk === "high").length}
           </div>
           <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>Review priority</div>
         </div>
@@ -227,8 +227,8 @@ function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getCl
             No regulations currently affecting this client
           </div>
         ) : regulations.map(reg => {
-          const catMeta    = CATEGORY_META[reg.category]
-          const impactMeta = IMPACT_META[reg.impact]
+          const catMeta  = CATEGORY_META[reg.category]
+          const riskMeta = RISK_META[reg.legalRisk]
           return (
             <article key={reg.id} className="glass p-5">
               <div className="flex items-center gap-2 flex-wrap mb-3">
@@ -238,8 +238,8 @@ function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getCl
                   {catMeta.label}
                 </span>
                 <span className="text-[11px] font-medium px-2.5 py-1 rounded-md"
-                  style={{ background: impactMeta.bg, color: impactMeta.color }}>
-                  {impactMeta.label}
+                  style={{ background: riskMeta.bg, color: riskMeta.color }}>
+                  {riskMeta.label} legal risk
                 </span>
                 {reg.actionRequired && (
                   <span className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md"

@@ -5,14 +5,17 @@ import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import {
   Scale, ExternalLink, Search, AlertTriangle, ChevronDown,
-  Calendar, Building2, X, Tag,
+  Calendar, Building2, X, Tag, MapPin, Briefcase,
+  ChevronLeft, ChevronRight, IndianRupee,
 } from "lucide-react"
 import {
-  REGULATIONS, CATEGORY_META, IMPACT_META,
+  REGULATIONS, CATEGORY_META, RISK_META, IMPACT_AREA_META, REGIONS,
   getAllAffectedClients,
-  type ComplianceCategory, type ImpactLevel,
+  type ComplianceCategory, type RiskLevel, type ImpactArea,
 } from "@/lib/compliance-data"
 import clsx from "clsx"
+
+const PAGE_SIZE = 25
 
 // ─── Filter Dropdown ──────────────────────────────────────────────────────────
 
@@ -95,30 +98,52 @@ function FilterDropdown({
 
 // ─── Categories & Options ─────────────────────────────────────────────────────
 
-const CATEGORIES: ComplianceCategory[] = ["Labour", "Finance & Taxation", "EHS", "Commercial", "Secretarial"]
-const IMPACTS:    ImpactLevel[]         = ["high", "medium", "low"]
+const CATEGORIES: ComplianceCategory[] = [
+  "Labour", "Finance & Taxation", "EHS", "Commercial",
+  "Secretarial", "Industry Specific", "General",
+]
+const IMPACT_AREAS: ImpactArea[] = [
+  "Payroll", "HR Operations", "Compliance Management", "Worker Onboarding",
+  "Employee Welfare", "Tax Filing", "Legal Documentation", "Workplace Safety",
+  "Contract Management", "Account Management",
+]
+const RISK_LEVELS: RiskLevel[] = ["high", "medium", "low"]
+
+function fmtPenalty(n: number) {
+  if (n === 0) return "—"
+  if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)}Cr`
+  if (n >= 100000)   return `₹${(n / 100000).toFixed(1)}L`
+  if (n >= 1000)     return `₹${(n / 1000).toFixed(0)}k`
+  return `₹${n.toLocaleString("en-IN")}`
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CompliancePage() {
-  const [selCategories, setSelCategories] = useState<ComplianceCategory[]>([])
-  const [selClients,    setSelClients]    = useState<string[]>([])
-  const [selImpact,     setSelImpact]     = useState<ImpactLevel[]>([])
-  const [search,        setSearch]        = useState("")
-  const [actionOnly,    setActionOnly]    = useState(false)
+  const [selCategories,   setSelCategories]   = useState<ComplianceCategory[]>([])
+  const [selClients,      setSelClients]      = useState<string[]>([])
+  const [selRegions,      setSelRegions]      = useState<string[]>([])
+  const [selImpactAreas,  setSelImpactAreas]  = useState<ImpactArea[]>([])
+  const [selRisk,         setSelRisk]         = useState<RiskLevel[]>([])
+  const [search,          setSearch]          = useState("")
+  const [actionOnly,      setActionOnly]      = useState(false)
+  const [page,            setPage]            = useState(1)
 
   function toggle<T>(arr: T[], set: (v: T[]) => void, val: T) {
     set(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val])
+    setPage(1)
   }
 
   const allClients = useMemo(() => getAllAffectedClients(), [])
 
   const filtered = useMemo(() => {
     let list = [...REGULATIONS]
-    if (selCategories.length) list = list.filter(r => selCategories.includes(r.category))
-    if (selImpact.length)     list = list.filter(r => selImpact.includes(r.impact))
-    if (selClients.length)    list = list.filter(r => r.clientsAffected.some(c => selClients.includes(c)))
-    if (actionOnly)           list = list.filter(r => r.actionRequired)
+    if (selCategories.length)  list = list.filter(r => selCategories.includes(r.category))
+    if (selRegions.length)     list = list.filter(r => selRegions.includes(r.region))
+    if (selImpactAreas.length) list = list.filter(r => r.impactAreas.some(ia => selImpactAreas.includes(ia)))
+    if (selRisk.length)        list = list.filter(r => selRisk.includes(r.legalRisk))
+    if (selClients.length)     list = list.filter(r => r.clientsAffected.some(c => selClients.includes(c)))
+    if (actionOnly)            list = list.filter(r => r.actionRequired)
     if (search) {
       const q = search.toLowerCase()
       list = list.filter(r =>
@@ -129,15 +154,29 @@ export default function CompliancePage() {
       )
     }
     return list
-  }, [selCategories, selImpact, selClients, search, actionOnly])
+  }, [selCategories, selRegions, selImpactAreas, selRisk, selClients, search, actionOnly])
 
-  const activeFilterCount = selCategories.length + selImpact.length + selClients.length + (actionOnly ? 1 : 0)
-  const highImpactCount = REGULATIONS.filter(r => r.impact === "high").length
-  const actionCount     = REGULATIONS.filter(r => r.actionRequired).length
+  const totalPenaltyExposure = useMemo(
+    () => filtered.reduce((s, r) => s + r.penaltyAmount, 0),
+    [filtered]
+  )
 
-  const categoryOptions = CATEGORIES.map(c => ({ value: c, label: CATEGORY_META[c].label, color: CATEGORY_META[c].color }))
-  const impactOptions   = IMPACTS.map(i => ({ value: i, label: IMPACT_META[i].label, color: IMPACT_META[i].color }))
-  const clientOptions   = allClients.map(c => ({ value: c, label: c }))
+  const paginated = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page]
+  )
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+
+  const activeFilterCount =
+    selCategories.length + selRisk.length + selClients.length +
+    selRegions.length + selImpactAreas.length + (actionOnly ? 1 : 0)
+  const actionCount = REGULATIONS.filter(r => r.actionRequired).length
+
+  const categoryOptions    = CATEGORIES.map(c => ({ value: c, label: CATEGORY_META[c].label, color: CATEGORY_META[c].color }))
+  const riskOptions        = RISK_LEVELS.map(r => ({ value: r, label: RISK_META[r].label, color: RISK_META[r].color }))
+  const clientOptions      = allClients.map(c => ({ value: c, label: c }))
+  const regionOptions      = REGIONS.map(r => ({ value: r, label: r }))
+  const impactAreaOptions  = IMPACT_AREAS.map(a => ({ value: a, label: IMPACT_AREA_META[a].label, color: IMPACT_AREA_META[a].color }))
 
   return (
     <div className="flex h-screen overflow-hidden app-bg">
@@ -153,34 +192,47 @@ export default function CompliancePage() {
               <div>
                 <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Compliance</h1>
                 <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                  {REGULATIONS.length} regulations · {highImpactCount} high impact · {actionCount} need action
+                  {REGULATIONS.length.toLocaleString()} regulations · {actionCount} need action ·
+                  <span className="ml-1" style={{ color: "var(--warn)" }}>
+                    {fmtPenalty(totalPenaltyExposure)} potential exposure
+                  </span>
                 </p>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Filters — flex-wrap allows dropdowns to escape without clipping */}
+        {/* Filters */}
         <div className="px-6 lg:px-8 py-3 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
           <div className="flex flex-wrap items-center gap-2">
 
             <FilterDropdown label="Category" icon={Tag} options={categoryOptions}
               selected={selCategories as string[]}
               onToggle={v => toggle(selCategories, setSelCategories, v as ComplianceCategory)}
-              onClear={() => setSelCategories([])} />
+              onClear={() => { setSelCategories([]); setPage(1) }} />
+
+            <FilterDropdown label="Impact area" icon={Briefcase} options={impactAreaOptions}
+              selected={selImpactAreas as string[]}
+              onToggle={v => toggle(selImpactAreas, setSelImpactAreas, v as ImpactArea)}
+              onClear={() => { setSelImpactAreas([]); setPage(1) }} />
+
+            <FilterDropdown label="Region" icon={MapPin} options={regionOptions}
+              selected={selRegions}
+              onToggle={v => toggle(selRegions, setSelRegions, v)}
+              onClear={() => { setSelRegions([]); setPage(1) }} />
 
             <FilterDropdown label="Client" icon={Building2} options={clientOptions}
               selected={selClients}
               onToggle={v => toggle(selClients, setSelClients, v)}
-              onClear={() => setSelClients([])} />
+              onClear={() => { setSelClients([]); setPage(1) }} />
 
-            <FilterDropdown label="Impact" options={impactOptions}
-              selected={selImpact as string[]}
-              onToggle={v => toggle(selImpact, setSelImpact, v as ImpactLevel)}
-              onClear={() => setSelImpact([])} />
+            <FilterDropdown label="Legal risk" options={riskOptions}
+              selected={selRisk as string[]}
+              onToggle={v => toggle(selRisk, setSelRisk, v as RiskLevel)}
+              onClear={() => { setSelRisk([]); setPage(1) }} />
 
             <button
-              onClick={() => setActionOnly(!actionOnly)}
+              onClick={() => { setActionOnly(!actionOnly); setPage(1) }}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all whitespace-nowrap"
               style={{
                 background: actionOnly ? "var(--warn-bg)" : "var(--surface)",
@@ -199,12 +251,16 @@ export default function CompliancePage() {
                 className="glass-input pl-8 text-xs py-2 w-full"
                 placeholder="Search regulations, authorities…"
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={e => { setSearch(e.target.value); setPage(1) }}
               />
             </div>
 
             {activeFilterCount > 0 && (
-              <button onClick={() => { setSelCategories([]); setSelClients([]); setSelImpact([]); setActionOnly(false); setSearch("") }}
+              <button onClick={() => {
+                setSelCategories([]); setSelClients([]); setSelRisk([]);
+                setSelRegions([]); setSelImpactAreas([]);
+                setActionOnly(false); setSearch(""); setPage(1)
+              }}
                 className="flex items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold"
                 style={{ color: "var(--danger)", background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
                 <X size={11} /> Clear ({activeFilterCount})
@@ -217,14 +273,27 @@ export default function CompliancePage() {
         <div className="flex-1 overflow-y-auto pb-nav lg:pb-0">
           <div className="max-w-4xl mx-auto px-6 lg:px-8 py-6">
 
-            <div className="text-xs mb-4" style={{ color: "var(--text-3)" }}>
-              {filtered.length} of {REGULATIONS.length} regulations
+            <div className="flex items-center justify-between mb-4 text-xs" style={{ color: "var(--text-3)" }}>
+              <span>
+                Showing {paginated.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–
+                {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length.toLocaleString()} regulations
+              </span>
+              {totalPenaltyExposure > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <IndianRupee size={11} style={{ color: "var(--warn)" }} />
+                  <span style={{ color: "var(--warn)", fontWeight: 600 }}>
+                    {fmtPenalty(totalPenaltyExposure)}
+                  </span>
+                  potential penalty exposure in current view
+                </span>
+              )}
             </div>
 
             <div className="space-y-3">
-              {filtered.map(reg => {
+              {paginated.map(reg => {
                 const catMeta    = CATEGORY_META[reg.category]
-                const impactMeta = IMPACT_META[reg.impact]
+                const legalMeta  = RISK_META[reg.legalRisk]
+                const opMeta     = RISK_META[reg.operationalImpact]
 
                 return (
                   <article key={reg.id} className="glass p-6 transition-shadow hover:shadow-lg">
@@ -236,9 +305,9 @@ export default function CompliancePage() {
                         <span className="w-1.5 h-1.5 rounded-full" style={{ background: catMeta.color }} />
                         {catMeta.label}
                       </span>
-                      <span className="text-[11px] font-medium px-2.5 py-1 rounded-md"
-                        style={{ background: impactMeta.bg, color: impactMeta.color }}>
-                        {impactMeta.label}
+                      <span className="text-[11px] font-medium px-2.5 py-1 rounded-md flex items-center gap-1"
+                        style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
+                        <MapPin size={10} /> {reg.region}
                       </span>
                       {reg.actionRequired && (
                         <span className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md"
@@ -256,7 +325,7 @@ export default function CompliancePage() {
                       {reg.title}
                     </h3>
 
-                    {/* Authority · Reference · Effective */}
+                    {/* Authority · Effective */}
                     <div className="flex items-center gap-3 mt-2 text-xs flex-wrap" style={{ color: "var(--text-2)" }}>
                       <span>{reg.authority}</span>
                       <span className="flex items-center gap-1" style={{ color: "var(--text-3)" }}>
@@ -269,19 +338,59 @@ export default function CompliancePage() {
                       {reg.summary}
                     </p>
 
-                    {/* Key changes */}
-                    {reg.keyChanges.length > 0 && (
-                      <ul className="mt-4 space-y-1.5">
-                        {reg.keyChanges.slice(0, 3).map((c, i) => (
-                          <li key={i} className="flex items-start gap-2 text-[13px]" style={{ color: "var(--text-2)" }}>
-                            <span className="w-1 h-1 rounded-full mt-2 flex-shrink-0" style={{ background: catMeta.color }} />
-                            {c}
-                          </li>
-                        ))}
-                      </ul>
+                    {/* Impact area chips */}
+                    {reg.impactAreas.length > 0 && (
+                      <div className="flex items-center gap-1.5 flex-wrap mt-3">
+                        <Briefcase size={11} style={{ color: "var(--text-3)" }} />
+                        {reg.impactAreas.map(ia => {
+                          const m = IMPACT_AREA_META[ia]
+                          return (
+                            <span key={ia} className="text-[11px] px-2 py-0.5 rounded-md font-medium"
+                              style={{ background: `${m.color}12`, color: m.color }}>
+                              {m.label}
+                            </span>
+                          )
+                        })}
+                      </div>
                     )}
 
-                    {/* Impacted clients as tags */}
+                    {/* Cost of non-compliance row */}
+                    <div className="grid grid-cols-3 gap-3 mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                          Penalty exposure
+                        </div>
+                        <div className="text-[14px] font-semibold tabular-nums"
+                          style={{ color: reg.penaltyAmount > 0 ? "var(--warn)" : "var(--text-3)" }}>
+                          {fmtPenalty(reg.penaltyAmount)}
+                        </div>
+                        {reg.penaltyDescription && (
+                          <div className="text-[10px] mt-0.5 line-clamp-2" style={{ color: "var(--text-3)" }}>
+                            {reg.penaltyDescription}
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                          Legal risk
+                        </div>
+                        <div className="inline-flex items-center text-[11px] font-medium px-2 py-0.5 rounded-md"
+                          style={{ background: legalMeta.bg, color: legalMeta.color }}>
+                          {legalMeta.label}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                          Operational impact
+                        </div>
+                        <div className="inline-flex items-center text-[11px] font-medium px-2 py-0.5 rounded-md"
+                          style={{ background: opMeta.bg, color: opMeta.color }}>
+                          {opMeta.label}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Impacted clients + source */}
                     <div className="flex items-center gap-2 flex-wrap mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
                       <span className="text-[11px] font-medium" style={{ color: "var(--text-3)" }}>Impacted:</span>
                       {reg.clientsAffected.map(c => (
@@ -302,9 +411,42 @@ export default function CompliancePage() {
               })}
             </div>
 
-            {filtered.length === 0 && (
+            {paginated.length === 0 && (
               <div className="text-center py-20 text-sm" style={{ color: "var(--text-3)" }}>
                 No regulations match the current filters
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-1 mt-6">
+                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center disabled:opacity-30 transition-all"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-2)" }}>
+                  <ChevronLeft size={14} />
+                </button>
+                {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
+                  const p = totalPages <= 7 ? i + 1
+                    : page <= 4 ? i + 1
+                    : page >= totalPages - 3 ? totalPages - 6 + i
+                    : page - 3 + i
+                  return (
+                    <button key={p} onClick={() => setPage(p)}
+                      className="w-8 h-8 rounded-lg text-xs font-medium transition-all"
+                      style={{
+                        background: p === page ? "var(--accent)" : "var(--surface)",
+                        color: p === page ? "#fff" : "var(--text-2)",
+                        border: p === page ? "none" : "1px solid var(--border)",
+                      }}>
+                      {p}
+                    </button>
+                  )
+                })}
+                <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center disabled:opacity-30 transition-all"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-2)" }}>
+                  <ChevronRight size={14} />
+                </button>
               </div>
             )}
           </div>
