@@ -1,78 +1,4439 @@
 [
-  { "id": 55095, "slug": "bse-notified-regarding-the-designated-market-maker-dmm-framework-for-i", "title": "BSE notified regarding the Designated Market Maker (DMM) framework for illiquid securities", "date": "Apr 23, 2026", "category": "Secretarial", "authority": "Bombay Stock Exchange (BSE)", "region": "Central" },
-  { "id": 55091, "slug": "bse-issued-a-notification-regarding-mock-trading-on-saturday-april-25-", "title": "BSE issued a notification regarding Mock Trading on Saturday, April 25, 2026", "date": "Apr 23, 2026", "category": "Secretarial", "authority": "Bombay Stock Exchange (BSE)", "region": "Central" },
-  { "id": 55110, "slug": "promotion-and-regulation-of-online-gaming-rules-2026", "title": "Promotion and Regulation of Online Gaming Rules 2026", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Ministry of Electronics and Information Technology (MeitY)", "region": "Central" },
-  { "id": 55074, "slug": "caqm-notified-regarding-the-implementation-of-actions-under-stage-i-po", "title": "CAQM notified regarding the implementation of actions under Stage-I Pollution", "date": "Apr 23, 2026", "category": "EHS", "authority": "Commission for Air Quality Management (CAQM)", "region": "Central" },
-  { "id": 55103, "slug": "derc-invited-commentssuggestionsobjections-on-draft-delhi-electricity-", "title": "DERC Invited Comments on Draft Delhi Electricity Regulations", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Delhi Electricity Regulatory Commission (DERC)", "region": "Delhi" },
-  { "id": 55113, "slug": "ckyccr-notified-regarding-the-modification-of-customer-information-mob", "title": "CKYCRR notified regarding modification of customer information", "date": "Apr 23, 2026", "category": "Secretarial", "authority": "Central KYC Records Registry (CKYCRR)", "region": "Central" },
-  { "id": 55094, "slug": "iccl-issued-circular-regarding-the-calendar-spread-margin-benefit-for-", "title": "ICCL issued circular regarding calendar spread margin benefit", "date": "Apr 23, 2026", "category": "Secretarial", "authority": "Indian Clearing Corporation Limited (ICCL)", "region": "Central" },
-  { "id": 55116, "slug": "haryana-govt-notified-regarding-the-exemption-of-factory-workers-for-v", "title": "Haryana Govt. notified exemption of factory workers for voting", "date": "Apr 23, 2026", "category": "Labour", "authority": "Government of Haryana", "region": "Haryana" },
-  { "id": 55107, "slug": "labour-department-government-of-haryana-paid-holiday-for-tamil-nadu-as", "title": "Labour Department Government of Haryana paid holiday for Tamil Nadu assembly election", "date": "Apr 23, 2026", "category": "Labour", "authority": "Labour Department, Government of Haryana", "region": "Haryana" },
-  { "id": 55046, "slug": "andhra-pradesh-govt-notified-regarding-the-paid-holiday-for-electors-o", "title": "Andhra Pradesh Govt. notified paid holiday for electors", "date": "Apr 22, 2026", "category": "Labour", "authority": "Commissioner of Labour, Vijayawada", "region": "Andhra Pradesh" },
-  { "id": 55057, "slug": "govt-of-delhi-notified-regarding-the-revision-of-minimum-wages-in-delh", "title": "Govt. of Delhi notified revision of minimum wages in Delhi", "date": "Apr 22, 2026", "category": "Labour", "authority": "Labour Department, Govt. of Delhi", "region": "Delhi" },
-  { "id": 55062, "slug": "govt-of-uttar-pradesh-issued-a-notification-regarding-the-revised-mini", "title": "Govt. of Uttar Pradesh issued notification on revised minimum wages", "date": "Apr 22, 2026", "category": "Labour", "authority": "Government of Uttar Pradesh", "region": "Uttar Pradesh" },
-  { "id": 55048, "slug": "govt-of-telangana-notified-regarding-the-prime-minister-internship-sch", "title": "Govt. of Telangana notified Prime Minister Internship Scheme", "date": "Apr 22, 2026", "category": "Labour", "authority": "Industries & Commerce Department, Government of Telangana", "region": "Telangana" },
-  { "id": 55009, "slug": "esic-notified-regarding-the-protocols-to-be-followed-by-esic-hospitals", "title": "ESIC notified protocols to be followed by ESIC hospitals", "date": "Apr 21, 2026", "category": "Labour", "authority": "Employees' State Insurance Corporation (ESIC)", "region": "Central" },
-  { "id": 55025, "slug": "draft-occupational-safety-health-and-working-conditions-andhra-pradesh", "title": "Draft Occupational Safety, Health and Working Conditions — Andhra Pradesh", "date": "Apr 21, 2026", "category": "Labour", "authority": "Department of Labour, Factories, Boilers & Insurance Medical Services, Andhra Pradesh", "region": "Andhra Pradesh" },
-  { "id": 55117, "slug": "rbi-notified-regarding-the-redemption-price-for-premature-redemption-d", "title": "RBI notified Redemption Price for Premature Redemption", "date": "Apr 23, 2026", "category": "Finance & Taxation", "authority": "Reserve Bank of India (RBI)", "region": "Central" },
-  { "id": 55034, "slug": "cbic-notified-regarding-the-exemption-from-basic-excise-duty-and-cess-", "title": "CBIC notified Exemption from Basic Excise Duty and Cess", "date": "Apr 22, 2026", "category": "Finance & Taxation", "authority": "Central Board of Indirect Taxes and Customs (CBIC)", "region": "Central" },
-  { "id": 55035, "slug": "cbic-notified-regarding-the-levy-of-special-additional-excise-duty-on-", "title": "CBIC notified Levy of Special Additional Excise Duty", "date": "Apr 22, 2026", "category": "Finance & Taxation", "authority": "Central Board of Indirect Taxes and Customs (CBIC)", "region": "Central" },
-  { "id": 55036, "slug": "cbic-notified-regarding-the-duty-drawback-on-the-export-of-unlocked-mo", "title": "CBIC notified Duty Drawback on Export of Unlocked Mobile Phones", "date": "Apr 22, 2026", "category": "Finance & Taxation", "authority": "Central Board of Indirect Taxes and Customs (CBIC)", "region": "Central" },
-  { "id": 55053, "slug": "cbic-extension-of-due-date-for-gstr-3b", "title": "CBIC Extension of Due Date for GST Return Form GSTR-3B", "date": "Apr 22, 2026", "category": "Finance & Taxation", "authority": "Central Board of Indirect Taxes and Customs (CBIC)", "region": "Central" },
-  { "id": 55039, "slug": "gstn-issued-a-notification-regarding-the-introduction-of-the-ims-offli", "title": "GSTN issued notification on IMS Offline Mode", "date": "Apr 22, 2026", "category": "Finance & Taxation", "authority": "Goods and Services Tax Network (GSTN)", "region": "Central" },
-  { "id": 55002, "slug": "cbic-rescinded-of-notification-regarding-the-special-additional-excise", "title": "CBIC Rescinded Notification regarding Special Additional Excise Duty", "date": "Apr 21, 2026", "category": "Finance & Taxation", "authority": "Central Board of Indirect Taxes and Customs (CBIC)", "region": "Central" },
-  { "id": 55016, "slug": "cbic-issued-an-amendment-to-the-older-notification-of-the-ministry-of-", "title": "CBIC issued Amendment to Older Ministry of Finance Notification", "date": "Apr 21, 2026", "category": "Finance & Taxation", "authority": "Central Board of Indirect Taxes and Customs (CBIC)", "region": "Central" },
-  { "id": 55023, "slug": "mof-issued-a-notification-regarding-outreach-on-the-new-income-tax-act", "title": "Ministry of Finance issued Outreach on New Income Tax Act", "date": "Apr 21, 2026", "category": "Finance & Taxation", "authority": "Ministry of Finance (MoF)", "region": "Central" },
-  { "id": 55044, "slug": "government-of-kerala-issued-a-circular-regarding-the-implementation-of", "title": "Government of Kerala issued circular regarding implementation of standards", "date": "Apr 22, 2026", "category": "EHS", "authority": "Government of Kerala", "region": "Kerala" },
-  { "id": 55001, "slug": "bio-medical-waste-management-amendment-rules-2026", "title": "Bio-Medical Waste Management (Amendment) Rules 2026", "date": "Apr 21, 2026", "category": "EHS", "authority": "Ministry of Environment, Forest and Climate Change", "region": "Central" },
-  { "id": 54997, "slug": "door-to-door-garbage-collection-and-disposal-bye-laws-2026-of-special-", "title": "Door-to-Door Garbage Collection and Disposal Bye-laws 2026", "date": "Apr 21, 2026", "category": "EHS", "authority": "Government of Himachal Pradesh", "region": "Himachal Pradesh" },
-  { "id": 55014, "slug": "govt-of-punjab-notified-regarding-the-implementation-of-action-plans-f", "title": "Govt. of Punjab notified implementation of action plans", "date": "Apr 21, 2026", "category": "EHS", "authority": "Government of Punjab", "region": "Punjab" },
-  { "id": 54985, "slug": "district-administration-amritsar-constitution-of-parali-surakhya-force", "title": "District Administration Amritsar: Constitution of Parali Surakhya Force", "date": "Apr 20, 2026", "category": "EHS", "authority": "District Administration, Amritsar", "region": "Punjab" },
-  { "id": 54987, "slug": "government-of-kerala-issued-the-pre-monsoon-sanitation-campaign-guidel", "title": "Government of Kerala issued Pre-monsoon Sanitation Campaign Guidelines", "date": "Apr 20, 2026", "category": "EHS", "authority": "Government of Kerala, Local Self Government Department", "region": "Kerala" },
-  { "id": 54895, "slug": "caqm-issued-a-notification-regarding-relaxation-in-the-standard-list-o", "title": "CAQM issued notification on relaxation in the standard list", "date": "Apr 17, 2026", "category": "EHS", "authority": "Commission for Air Quality Management", "region": "Delhi" },
-  { "id": 54915, "slug": "peso-notified-regarding-the-complete-ban-on-the-export-of-ammonium-nit", "title": "PESO notified complete ban on export of Ammonium Nitrate", "date": "Apr 17, 2026", "category": "EHS", "authority": "Petroleum and Explosives Safety Organization (PESO)", "region": "Central" },
-  { "id": 55056, "slug": "bis-issued-date-of-establishment-and-withdrawal-of-the-societal-securi", "title": "BIS issued date of establishment and withdrawal of Indian Standards", "date": "Apr 22, 2026", "category": "Commercial", "authority": "Bureau of Indian Standards (BIS)", "region": "Central" },
-  { "id": 55049, "slug": "govt-of-maharashtra-notified-regarding-the-cancellation-of-industrial-", "title": "Govt. of Maharashtra notified cancellation of industrial license", "date": "Apr 22, 2026", "category": "Commercial", "authority": "Department of Industry, Energy, Labor and Mining, Govt. of Maharashtra", "region": "Maharashtra" },
-  { "id": 55038, "slug": "kerala-foreign-liquor-approval-of-label-amendment-rules-2026", "title": "Kerala Foreign Liquor (Approval of Label) Amendment Rules 2026", "date": "Apr 22, 2026", "category": "Commercial", "authority": "Government of Kerala", "region": "Kerala" },
-  { "id": 55004, "slug": "bis-issued-the-date-of-establishment-and-withdrawal-for-recommendation", "title": "BIS issued date of establishment and withdrawal for recommendations", "date": "Apr 21, 2026", "category": "Commercial", "authority": "Bureau of Indian Standards (BIS)", "region": "Central" },
-  { "id": 55028, "slug": "himachal-pradesh-value-added-tax-amendment-act-2026", "title": "Himachal Pradesh Value Added Tax Amendment Act 2026", "date": "Apr 21, 2026", "category": "Commercial", "authority": "Government of Himachal Pradesh", "region": "Himachal Pradesh" },
-  { "id": 54974, "slug": "draft-bureau-of-energy-efficiency-energy-audit-and-energy-accounting-i", "title": "Draft Bureau of Energy Efficiency Energy Audit and Accounting Rules", "date": "Apr 20, 2026", "category": "Commercial", "authority": "Bureau of Energy Efficiency (BEE)", "region": "Central" },
-  { "id": 54989, "slug": "government-of-jammu-kashmir-compliance-requirements-for-packaged-drink", "title": "Government of J&K Compliance Requirements for Packaged Drinking Water", "date": "Apr 20, 2026", "category": "Commercial", "authority": "Government of Jammu & Kashmir", "region": "J&K" },
-  { "id": 54947, "slug": "bis-notification-on-establishment-and-withdrawal-of-indian-standards-f", "title": "BIS Notification on Establishment and Withdrawal of Indian Standards", "date": "Apr 19, 2026", "category": "Commercial", "authority": "Bureau of Indian Standards (BIS)", "region": "Central" },
-  { "id": 55112, "slug": "dot-notified-regarding-the-direction-to-block-rogue-streaming-websites", "title": "DoT Notified Regarding Direction to Block Rogue Streaming Websites", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Department of Telecommunications (DoT)", "region": "Central" },
-  { "id": 55109, "slug": "goa-daman-diu-registration-of-tourist-trade-3r-amendment-rules-2026", "title": "Goa, Daman & Diu Registration of Tourist Trade Amendment Rules 2026", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Department of Tourism, Goa, Daman and Diu", "region": "Goa" },
-  { "id": 55068, "slug": "dgft-activation-of-online-module-for-post-export-epcg-scrips", "title": "DGFT Activation of Online Module for Post-Export EPCG Scrips", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Directorate General of Foreign Trade (DGFT)", "region": "Central" },
-  { "id": 55070, "slug": "cbse-launch-of-integrated-payment-system-for-board-exam-2026-payments", "title": "CBSE Launch of Integrated Payment System for Board Exam 2026", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Central Board of Secondary Education (CBSE)", "region": "Central" },
-  { "id": 55076, "slug": "govt-of-hp-notified-the-amendment-to-the-himachal-pradesh-liquor-licen", "title": "Govt. of HP Notified Amendment to Himachal Pradesh Liquor License Rules", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "State Taxes and Excise Department, Himachal Pradesh", "region": "Himachal Pradesh" },
-  { "id": 55099, "slug": "government-of-himachal-pradesh-amendment-to-rule-95-brand-registration", "title": "Government of Himachal Pradesh Amendment to Rule 95 Brand Registration", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Excise Department, Himachal Pradesh", "region": "Himachal Pradesh" },
-  { "id": 55083, "slug": "dot-issued-a-notification-regarding-the-blocking-of-websites-as-per-th", "title": "DoT Issued Notification Regarding Blocking of Websites", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Department of Telecommunications (DoT)", "region": "Central" },
-  { "id": 54982, "slug": "draft-karnataka-excise-excise-duties-and-fees-amendment-rules-2026", "title": "Draft Karnataka Excise (Excise Duties and Fees) Amendment Rules 2026", "date": "Apr 20, 2026", "category": "Industry Specific", "authority": "Government of Karnataka", "region": "Karnataka" },
-  { "id": 54948, "slug": "government-of-karnataka-exemption-from-return-filing-under-profession-", "title": "Government of Karnataka Exemption from Return Filing Under Profession Tax", "date": "Apr 19, 2026", "category": "Labour", "authority": "Government of Karnataka - Commissioner of Commercial Taxes", "region": "Karnataka" },
-  { "id": 54871, "slug": "karnataka-gram-swaraj-and-panchayat-raj-amendment-act-2026", "title": "Karnataka Gram Swaraj and Panchayat Raj Amendment Act 2026", "date": "Apr 16, 2026", "category": "Industry Specific", "authority": "Government of Karnataka", "region": "Karnataka" },
-  { "id": 54830, "slug": "government-of-karnataka-issued-an-order-regarding-the-prescribed-age-c", "title": "Government of Karnataka Issued Order Regarding Prescribed Age Criteria", "date": "Apr 15, 2026", "category": "Industry Specific", "authority": "Government of Karnataka", "region": "Karnataka" },
-  { "id": 54834, "slug": "draft-greater-bengaluru-area-advertisement-amendment-rules-2026", "title": "Draft Greater Bengaluru Area (Advertisement) Amendment Rules 2026", "date": "Apr 15, 2026", "category": "Industry Specific", "authority": "Government of Karnataka", "region": "Karnataka" },
-  { "id": 54752, "slug": "draft-karnataka-excise-lease-of-the-right-of-retail-vend-of-wine-or-fo", "title": "Draft Karnataka Excise (Lease of the Right of Retail Vend of Wine)", "date": "Apr 14, 2026", "category": "Industry Specific", "authority": "Government of Karnataka", "region": "Karnataka" },
-  { "id": 54783, "slug": "draft-karnataka-municipalities-estate-management-rules-2026", "title": "Draft Karnataka Municipalities (Estate Management) Rules 2026", "date": "Apr 14, 2026", "category": "Industry Specific", "authority": "Government of Karnataka", "region": "Karnataka" },
-  { "id": 54748, "slug": "karnataka-jnana-bhandar-manuscripts-and-digitisation-act-2026", "title": "Karnataka Jnana Bhandar Manuscripts and Digitisation Act 2026", "date": "Apr 14, 2026", "category": "Industry Specific", "authority": "Government of Karnataka", "region": "Karnataka" },
-  { "id": 54939, "slug": "govt-of-maharashtra-issued-a-circular-regarding-paid-holiday-for-emplo", "title": "Govt. of Maharashtra issued circular regarding paid holiday for employees", "date": "Apr 18, 2026", "category": "Labour", "authority": "Government of Maharashtra", "region": "Maharashtra" },
-  { "id": 54913, "slug": "maharashtra-co-operative-societies-amendment-act-2026", "title": "Maharashtra Co-operative Societies Amendment Act 2026", "date": "Apr 17, 2026", "category": "Industry Specific", "authority": "Government of Maharashtra", "region": "Maharashtra" },
-  { "id": 54919, "slug": "maharashtra-tenancy-and-agricultural-lands-laws-amendment-act-2026", "title": "Maharashtra Tenancy and Agricultural Lands Laws Amendment Act 2026", "date": "Apr 17, 2026", "category": "Industry Specific", "authority": "Government of Maharashtra", "region": "Maharashtra" },
-  { "id": 54894, "slug": "maharashtra-land-revenue-code-second-amendment-act-2026", "title": "Maharashtra Land Revenue Code (Second Amendment) Act 2026", "date": "Apr 17, 2026", "category": "Industry Specific", "authority": "Government of Maharashtra", "region": "Maharashtra" },
-  { "id": 54780, "slug": "mpcb-issued-a-circular-regarding-strict-compliance-with-timelines-for-", "title": "MPCB issued circular on Strict Compliance with Timelines", "date": "Apr 14, 2026", "category": "EHS", "authority": "Maharashtra Pollution Control Board (MPCB)", "region": "Maharashtra" },
-  { "id": 54702, "slug": "maharashtra-govt-issued-amendments-to-the-sand-mining-policy-2025", "title": "Maharashtra Govt. issued amendments to the Sand Mining Policy 2025", "date": "Apr 13, 2026", "category": "Industry Specific", "authority": "Government of Maharashtra", "region": "Maharashtra" },
-  { "id": 55114, "slug": "govt-of-tamil-nadu-notified-regarding-the-imposition-of-a-one-year-ban", "title": "Govt. of Tamil Nadu notified imposition of a one-year ban", "date": "Apr 23, 2026", "category": "Industry Specific", "authority": "Commissioner of Food Safety and Drug Administration, Tamil Nadu", "region": "Tamil Nadu" },
-  { "id": 54704, "slug": "government-of-tamil-nadu-issued-an-amendment-to-the-tamil-nadu-legal-m", "title": "Government of Tamil Nadu issued amendment to Tamil Nadu Legal Metrology Rules", "date": "Apr 13, 2026", "category": "Commercial", "authority": "Government of Tamil Nadu", "region": "Tamil Nadu" },
-  { "id": 54707, "slug": "tnpcb-issued-temporary-relaxation-for-use-of-alternate-fuels-by-indust", "title": "TNPCB issued temporary relaxation for use of alternate fuels by industries", "date": "Apr 13, 2026", "category": "EHS", "authority": "Tamil Nadu Pollution Control Board (TNPCB)", "region": "Tamil Nadu" },
-  { "id": 54290, "slug": "tn-declares-april-23-2026-as-public-holiday-for-assembly-election-poll", "title": "TN declares April 23 2026 as public holiday for assembly election", "date": "Apr 01, 2026", "category": "Labour", "authority": "Government of Tamil Nadu", "region": "Tamil Nadu" },
-  { "id": 54061, "slug": "govt-of-tamil-nadu-notified-regarding-the-paid-holiday-to-workers-and-", "title": "Govt. of Tamil Nadu notified paid holiday to workers", "date": "Mar 27, 2026", "category": "Labour", "authority": "Labour Welfare and Skill Development Department, Govt. of Tamil Nadu", "region": "Tamil Nadu" },
-  { "id": 53753, "slug": "govt-of-tamil-nadu-issued-amendments-to-the-tamil-nadu-private-schools", "title": "Govt. of Tamil Nadu issued amendments to Tamil Nadu Private Schools Rules", "date": "Mar 18, 2026", "category": "Industry Specific", "authority": "Government of Tamil Nadu", "region": "Tamil Nadu" },
-  { "id": 53541, "slug": "tamil-nadu-agroforestry-policy-2026", "title": "Tamil Nadu Agroforestry Policy 2026", "date": "Mar 12, 2026", "category": "Industry Specific", "authority": "Government of Tamil Nadu", "region": "Tamil Nadu" },
-  { "id": 55005, "slug": "gujarat-govt-notified-regarding-the-prohibitory-order-in-valsad-distri", "title": "Gujarat Govt. notified Prohibitory Order in Valsad District", "date": "Apr 21, 2026", "category": "Labour", "authority": "Government of Gujarat", "region": "Gujarat" },
-  { "id": 54892, "slug": "department-of-finance-gujarat-issued-a-notification-regarding-the-exte", "title": "Department of Finance, Gujarat, issued notification regarding extension", "date": "Apr 17, 2026", "category": "Finance & Taxation", "authority": "Department of Finance, Gujarat", "region": "Gujarat" },
-  { "id": 54850, "slug": "master-of-planning-courses-regulation-of-admission-and-payment-of-fees", "title": "Master of Planning Courses (Regulation of Admission and Payment of Fees)", "date": "Apr 16, 2026", "category": "Industry Specific", "authority": "Education Department, Government of Gujarat", "region": "Gujarat" },
-  { "id": 54840, "slug": "bachelor-of-engineering-and-technology-regulation-of-admission-and-pay", "title": "Bachelor of Engineering and Technology (Regulation of Admission and Payment)", "date": "Apr 15, 2026", "category": "Industry Specific", "authority": "Education Department, Government of Gujarat", "region": "Gujarat" },
-  { "id": 54807, "slug": "master-of-engineering-and-technology-and-master-of-pharmacy-courses-re", "title": "Master of Engineering and Technology and Master of Pharmacy Courses", "date": "Apr 15, 2026", "category": "Industry Specific", "authority": "Education Department, Gujarat", "region": "Gujarat" },
-  { "id": 54673, "slug": "gujarat-labour-dept-paid-leave-for-umreth-by-election", "title": "Gujarat Labour Dept Paid Leave for Umreth By-Election", "date": "Apr 11, 2026", "category": "Labour", "authority": "Labour Department, Government of Gujarat", "region": "Gujarat" },
-  { "id": 54553, "slug": "gujarat-land-revenue-amendment-rules-2026", "title": "Gujarat Land Revenue (Amendment) Rules 2026", "date": "Apr 08, 2026", "category": "Industry Specific", "authority": "Government of Gujarat", "region": "Gujarat" },
-  { "id": 42460, "slug": "govt-of-tripura-notified-regarding-the-tripura-co-operative-societies-", "title": "Govt. of Tripura notified Tripura Co-operative Societies (Amendment)", "date": "May 09, 2025", "category": "General", "authority": "Government of Tripura", "region": "Tripura" }
+  {
+    "id": 55117,
+    "slug": "rbi-notified-regarding-the-redemption-price-for-premature-redemption-d",
+    "title": "RBI notified Redemption Price for Premature Redemption",
+    "date": "Apr 23, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Reserve Bank of India (RBI)",
+    "region": "Central"
+  },
+  {
+    "id": 55116,
+    "slug": "haryana-govt-notified-regarding-the-exemption-of-factory-workers-for-v",
+    "title": "Haryana Govt. notified exemption of factory workers for voting",
+    "date": "Apr 23, 2026",
+    "category": "Labour",
+    "authority": "Government of Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 55114,
+    "slug": "govt-of-tamil-nadu-notified-regarding-the-imposition-of-a-one-year-ban",
+    "title": "Govt. of Tamil Nadu notified imposition of a one-year ban",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Commissioner of Food Safety and Drug Administration, Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 55113,
+    "slug": "ckyccr-notified-regarding-the-modification-of-customer-information-mob",
+    "title": "CKYCRR notified regarding the modification of customer information",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Central KYC Records Registry (CKYCRR)",
+    "region": "Central"
+  },
+  {
+    "id": 55112,
+    "slug": "dot-notified-regarding-the-direction-to-block-rogue-streaming-websites",
+    "title": "DoT Notified Regarding Direction to Block Rogue Streaming Websites",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Telecommunications (DoT)",
+    "region": "Central"
+  },
+  {
+    "id": 55110,
+    "slug": "promotion-and-regulation-of-online-gaming-rules-2026",
+    "title": "Promotion and Regulation of Online Gaming Rules 2026",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Ministry of Electronics and Information Technology (MeitY)",
+    "region": "Central"
+  },
+  {
+    "id": 55109,
+    "slug": "goa-daman-diu-registration-of-tourist-trade-3r-amendment-rules-2026",
+    "title": "Goa, Daman & Diu Registration of Tourist Trade Amendment Rules 2026",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Tourism, Goa, Daman and Diu",
+    "region": "Goa"
+  },
+  {
+    "id": 55107,
+    "slug": "labour-department-government-of-haryana-paid-holiday-for-tamil-nadu-as",
+    "title": "Labour Department Government of Haryana paid holiday for Tamil Nadu assembly election",
+    "date": "Apr 23, 2026",
+    "category": "Labour",
+    "authority": "Labour Department, Government of Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 55106,
+    "slug": "government-of-himachal-pradesh-amendment-to-sweets-manufacture-rules-1",
+    "title": "Government of Himachal Pradesh Amendment to Sweets Manufacture Rules",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise Department, Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55103,
+    "slug": "derc-invited-commentssuggestionsobjections-on-draft-delhi-electricity-",
+    "title": "DERC Invited Comments on Draft Delhi Electricity Regulations",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Delhi Electricity Regulatory Commission (DERC)",
+    "region": "Delhi"
+  },
+  {
+    "id": 55102,
+    "slug": "bse-notified-regarding-the-mock-trading-on-saturday-april-25-2026-for-",
+    "title": "BSE notified regarding the Mock Trading on Saturday, April 25, 2026 (for SEBI)",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Bombay Stock Exchange (BSE)",
+    "region": "Central"
+  },
+  {
+    "id": 55101,
+    "slug": "bse-notified-regarding-the-mock-trading-on-saturday-april-25-2026-for-",
+    "title": "BSE notified regarding the Mock Trading on Saturday, April 25, 2026 (for EQ)",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Bombay Stock Exchange (BSE)",
+    "region": "Central"
+  },
+  {
+    "id": 55100,
+    "slug": "govt-of-telangana-issued-an-amendment-to-the-telangana-town-planning-s",
+    "title": "Govt. of Telangana issued amendment to Telangana Town Planning",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 55099,
+    "slug": "government-of-himachal-pradesh-amendment-to-rule-95-brand-registration",
+    "title": "Government of Himachal Pradesh Amendment to Rule 95 Brand Registration",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise Department, Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55098,
+    "slug": "government-of-himachal-pradesh-under-excise-administration-amendment-t",
+    "title": "Government of Himachal Pradesh Under Excise Administration Amendment",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise Department Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55096,
+    "slug": "government-of-himachal-pradesh-amends-the-punjab-distillery-rules-1932",
+    "title": "Government of Himachal Pradesh Amends Punjab Distillery Rules 1932",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise Department Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55095,
+    "slug": "bse-notified-regarding-the-designated-market-maker-dmm-framework-for-i",
+    "title": "BSE notified regarding the Designated Market Maker (DMM) framework for illiquid securities",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Bombay Stock Exchange (BSE)",
+    "region": "Central"
+  },
+  {
+    "id": 55094,
+    "slug": "iccl-issued-circular-regarding-the-calendar-spread-margin-benefit-for-",
+    "title": "ICCL issued circular regarding calendar spread margin benefit",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Indian Clearing Corporation Limited (ICCL)",
+    "region": "Central"
+  },
+  {
+    "id": 55093,
+    "slug": "bse-issued-a-notification-regarding-mock-trading-on-saturday-april-25-",
+    "title": "BSE issued a notification regarding Mock Trading on Saturday, April 25, 2026 (F&O)",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Bombay Stock Exchange (BSE)",
+    "region": "Central"
+  },
+  {
+    "id": 55092,
+    "slug": "bse-issued-a-notification-regarding-mock-trading-on-saturday-april-25-",
+    "title": "BSE issued a notification regarding Mock Trading on Saturday, April 25, 2026 (Member)",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Bombay Stock Exchange (BSE)",
+    "region": "Central"
+  },
+  {
+    "id": 55091,
+    "slug": "bse-issued-a-notification-regarding-mock-trading-on-saturday-april-25-",
+    "title": "BSE issued a notification regarding Mock Trading on Saturday, April 25, 2026",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Bombay Stock Exchange (BSE)",
+    "region": "Central"
+  },
+  {
+    "id": 55085,
+    "slug": "govt-of-himachal-pradesh-issued-amendments-in-the-himachal-pradesh-liq",
+    "title": "Govt. of Himachal Pradesh issued amendments in Himachal Pradesh Liquor",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55084,
+    "slug": "govt-of-hp-notified-the-amendment-to-the-himachal-pradesh-liquor-licen",
+    "title": "Govt. of HP notified amendment to Himachal Pradesh Liquor License",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "State Taxes and Excise Department, Govt. of Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55083,
+    "slug": "dot-issued-a-notification-regarding-the-blocking-of-websites-as-per-th",
+    "title": "DoT Issued Notification Regarding Blocking of Websites",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Telecommunications (DoT)",
+    "region": "Central"
+  },
+  {
+    "id": 55080,
+    "slug": "himachal-pradesh-govt-issued-amendment-to-the-himachal-pradesh-liquor-",
+    "title": "Himachal Pradesh Govt. issued amendment to HP Liquor rules",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55077,
+    "slug": "bse-issued-a-notification-regarding-an-update-in-the-enhancement-in-th",
+    "title": "BSE issued a notification regarding an update in the enhancement in the Interoperability framework",
+    "date": "Apr 23, 2026",
+    "category": "Secretarial",
+    "authority": "Bombay Stock Exchange (BSE)",
+    "region": "Central"
+  },
+  {
+    "id": 55076,
+    "slug": "govt-of-hp-notified-the-amendment-to-the-himachal-pradesh-liquor-licen",
+    "title": "Govt. of HP Notified Amendment to Himachal Pradesh Liquor License Rules",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "State Taxes and Excise Department, Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55074,
+    "slug": "caqm-notified-regarding-the-implementation-of-actions-under-stage-i-po",
+    "title": "CAQM notified regarding the implementation of actions under Stage-I Pollution",
+    "date": "Apr 23, 2026",
+    "category": "EHS",
+    "authority": "Commission for Air Quality Management (CAQM)",
+    "region": "Central"
+  },
+  {
+    "id": 55073,
+    "slug": "himachal-pradesh-govt-issued-amendment-in-the-himachal-pradesh-liquor-",
+    "title": "Himachal Pradesh Govt. issued amendment in HP Liquor rules",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55070,
+    "slug": "cbse-launch-of-integrated-payment-system-for-board-exam-2026-payments",
+    "title": "CBSE Launch of Integrated Payment System for Board Exam 2026",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Central Board of Secondary Education (CBSE)",
+    "region": "Central"
+  },
+  {
+    "id": 55068,
+    "slug": "dgft-activation-of-online-module-for-post-export-epcg-scrips",
+    "title": "DGFT Activation of Online Module for Post-Export EPCG Scrips",
+    "date": "Apr 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Directorate General of Foreign Trade (DGFT)",
+    "region": "Central"
+  },
+  {
+    "id": 55062,
+    "slug": "govt-of-uttar-pradesh-issued-a-notification-regarding-the-revised-mini",
+    "title": "Govt. of Uttar Pradesh issued notification on revised minimum wages",
+    "date": "Apr 22, 2026",
+    "category": "Labour",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 55057,
+    "slug": "govt-of-delhi-notified-regarding-the-revision-of-minimum-wages-in-delh",
+    "title": "Govt. of Delhi notified revision of minimum wages in Delhi",
+    "date": "Apr 22, 2026",
+    "category": "Labour",
+    "authority": "Labour Department, Govt. of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 55056,
+    "slug": "bis-issued-date-of-establishment-and-withdrawal-of-the-societal-securi",
+    "title": "BIS issued date of establishment and withdrawal of Indian Standards",
+    "date": "Apr 22, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "region": "Central"
+  },
+  {
+    "id": 55053,
+    "slug": "cbic-extension-of-due-date-for-gstr-3b",
+    "title": "CBIC Extension of Due Date for GST Return Form GSTR-3B",
+    "date": "Apr 22, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Indirect Taxes and Customs (CBIC)",
+    "region": "Central"
+  },
+  {
+    "id": 55049,
+    "slug": "govt-of-maharashtra-notified-regarding-the-cancellation-of-industrial-",
+    "title": "Govt. of Maharashtra notified cancellation of industrial license",
+    "date": "Apr 22, 2026",
+    "category": "Commercial",
+    "authority": "Department of Industry, Energy, Labor and Mining, Govt. of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 55048,
+    "slug": "govt-of-telangana-notified-regarding-the-prime-minister-internship-sch",
+    "title": "Govt. of Telangana notified Prime Minister Internship Scheme",
+    "date": "Apr 22, 2026",
+    "category": "Labour",
+    "authority": "Industries & Commerce Department, Government of Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 55047,
+    "slug": "goa-govt-notified-regarding-the-modification-of-restrictions-to-permit",
+    "title": "Goa Govt. notified Modification of restrictions to permit",
+    "date": "Apr 22, 2026",
+    "category": "Labour",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 55046,
+    "slug": "andhra-pradesh-govt-notified-regarding-the-paid-holiday-for-electors-o",
+    "title": "Andhra Pradesh Govt. notified paid holiday for electors",
+    "date": "Apr 22, 2026",
+    "category": "Labour",
+    "authority": "Commissioner of Labour, Vijayawada",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 55044,
+    "slug": "government-of-kerala-issued-a-circular-regarding-the-implementation-of",
+    "title": "Government of Kerala issued circular regarding implementation of standards",
+    "date": "Apr 22, 2026",
+    "category": "EHS",
+    "authority": "Government of Kerala",
+    "region": "Kerala"
+  },
+  {
+    "id": 55039,
+    "slug": "gstn-issued-a-notification-regarding-the-introduction-of-the-ims-offli",
+    "title": "GSTN issued notification on IMS Offline Mode",
+    "date": "Apr 22, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Goods and Services Tax Network (GSTN)",
+    "region": "Central"
+  },
+  {
+    "id": 55038,
+    "slug": "kerala-foreign-liquor-approval-of-label-amendment-rules-2026",
+    "title": "Kerala Foreign Liquor (Approval of Label) Amendment Rules 2026",
+    "date": "Apr 22, 2026",
+    "category": "Commercial",
+    "authority": "Government of Kerala",
+    "region": "Kerala"
+  },
+  {
+    "id": 55036,
+    "slug": "cbic-notified-regarding-the-duty-drawback-on-the-export-of-unlocked-mo",
+    "title": "CBIC notified Duty Drawback on Export of Unlocked Mobile Phones",
+    "date": "Apr 22, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Indirect Taxes and Customs (CBIC)",
+    "region": "Central"
+  },
+  {
+    "id": 55035,
+    "slug": "cbic-notified-regarding-the-levy-of-special-additional-excise-duty-on-",
+    "title": "CBIC notified Levy of Special Additional Excise Duty",
+    "date": "Apr 22, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Indirect Taxes and Customs (CBIC)",
+    "region": "Central"
+  },
+  {
+    "id": 55034,
+    "slug": "cbic-notified-regarding-the-exemption-from-basic-excise-duty-and-cess-",
+    "title": "CBIC notified Exemption from Basic Excise Duty and Cess",
+    "date": "Apr 22, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Indirect Taxes and Customs (CBIC)",
+    "region": "Central"
+  },
+  {
+    "id": 55033,
+    "slug": "goa-verification-of-tenants-rules-2026",
+    "title": "Goa (Verification of Tenants) Rules, 2026",
+    "date": "Apr 22, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 55032,
+    "slug": "bci-provisional-extension-of-approval-of-affiliation-madhya-pradesh",
+    "title": "BCI Provisional Extension of Approval of Affiliation",
+    "date": "Apr 21, 2026",
+    "category": "Industry Specific",
+    "authority": "Bar Council of India",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 55031,
+    "slug": "government-of-jammu-kashmir-guidance-manual-for-wholesale-drug-license",
+    "title": "Government of Jammu & Kashmir Guidance Manual for Wholesale Drug License",
+    "date": "Apr 21, 2026",
+    "category": "Industry Specific",
+    "authority": "State Drugs Controller, Drugs & Food Control Organization (DFCO J&K)",
+    "region": "J&K"
+  },
+  {
+    "id": 55028,
+    "slug": "himachal-pradesh-value-added-tax-amendment-act-2026",
+    "title": "Himachal Pradesh Value Added Tax Amendment Act 2026",
+    "date": "Apr 21, 2026",
+    "category": "Commercial",
+    "authority": "Government of Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 55025,
+    "slug": "draft-occupational-safety-health-and-working-conditions-andhra-pradesh",
+    "title": "Draft Occupational Safety, Health and Working Conditions — Andhra Pradesh",
+    "date": "Apr 21, 2026",
+    "category": "Labour",
+    "authority": "Department of Labour, Factories, Boilers & Insurance Medical Services, Andhra Pradesh",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 55023,
+    "slug": "mof-issued-a-notification-regarding-outreach-on-the-new-income-tax-act",
+    "title": "Ministry of Finance issued Outreach on New Income Tax Act",
+    "date": "Apr 21, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Ministry of Finance (MoF)",
+    "region": "Central"
+  },
+  {
+    "id": 55018,
+    "slug": "draft-odisha-electricity-regulatory-commission-renewable-consumption-o",
+    "title": "Draft Odisha Electricity Regulatory Commission Renewable Consumption Order",
+    "date": "Apr 21, 2026",
+    "category": "Industry Specific",
+    "authority": "Odisha Electricity Regulatory Commission (OERC)",
+    "region": "Odisha"
+  },
+  {
+    "id": 55017,
+    "slug": "andhra-pradesh-directorate-of-electrical-safety-measures-relating-to-s",
+    "title": "Andhra Pradesh Directorate of Electrical Safety Measures",
+    "date": "Apr 21, 2026",
+    "category": "Industry Specific",
+    "authority": "Energy Department, Govt. of Andhra Pradesh",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 55016,
+    "slug": "cbic-issued-an-amendment-to-the-older-notification-of-the-ministry-of-",
+    "title": "CBIC issued Amendment to Older Ministry of Finance Notification",
+    "date": "Apr 21, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Indirect Taxes and Customs (CBIC)",
+    "region": "Central"
+  },
+  {
+    "id": 55014,
+    "slug": "govt-of-punjab-notified-regarding-the-implementation-of-action-plans-f",
+    "title": "Govt. of Punjab notified implementation of action plans",
+    "date": "Apr 21, 2026",
+    "category": "EHS",
+    "authority": "Government of Punjab",
+    "region": "Punjab"
+  },
+  {
+    "id": 55010,
+    "slug": "draft-delhi-electricity-regulatory-commission-terms-and-conditions-for",
+    "title": "Draft Delhi Electricity Regulatory Commission Terms and Conditions",
+    "date": "Apr 21, 2026",
+    "category": "Industry Specific",
+    "authority": "Delhi Electricity Regulatory Commission (DERC)",
+    "region": "Delhi"
+  },
+  {
+    "id": 55009,
+    "slug": "esic-notified-regarding-the-protocols-to-be-followed-by-esic-hospitals",
+    "title": "ESIC notified protocols to be followed by ESIC hospitals",
+    "date": "Apr 21, 2026",
+    "category": "Labour",
+    "authority": "Employees' State Insurance Corporation (ESIC)",
+    "region": "Central"
+  },
+  {
+    "id": 55005,
+    "slug": "gujarat-govt-notified-regarding-the-prohibitory-order-in-valsad-distri",
+    "title": "Gujarat Govt. notified Prohibitory Order in Valsad District",
+    "date": "Apr 21, 2026",
+    "category": "Labour",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 55004,
+    "slug": "bis-issued-the-date-of-establishment-and-withdrawal-for-recommendation",
+    "title": "BIS issued date of establishment and withdrawal for recommendations",
+    "date": "Apr 21, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "region": "Central"
+  },
+  {
+    "id": 55002,
+    "slug": "cbic-rescinded-of-notification-regarding-the-special-additional-excise",
+    "title": "CBIC Rescinded Notification regarding Special Additional Excise Duty",
+    "date": "Apr 21, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Indirect Taxes and Customs (CBIC)",
+    "region": "Central"
+  },
+  {
+    "id": 55001,
+    "slug": "bio-medical-waste-management-amendment-rules-2026",
+    "title": "Bio-Medical Waste Management (Amendment) Rules 2026",
+    "date": "Apr 21, 2026",
+    "category": "EHS",
+    "authority": "Ministry of Environment, Forest and Climate Change",
+    "region": "Central"
+  },
+  {
+    "id": 54997,
+    "slug": "door-to-door-garbage-collection-and-disposal-bye-laws-2026-of-special-",
+    "title": "Door-to-Door Garbage Collection and Disposal Bye-laws 2026",
+    "date": "Apr 21, 2026",
+    "category": "EHS",
+    "authority": "Government of Himachal Pradesh",
+    "region": "Himachal Pradesh"
+  },
+  {
+    "id": 54996,
+    "slug": "govt-of-goa-notified-regarding-the-temporary-closure-order-for-commerc",
+    "title": "Govt. of Goa notified Temporary Closure Order for Commercial",
+    "date": "Apr 20, 2026",
+    "category": "Labour",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 54989,
+    "slug": "government-of-jammu-kashmir-compliance-requirements-for-packaged-drink",
+    "title": "Government of J&K Compliance Requirements for Packaged Drinking Water",
+    "date": "Apr 20, 2026",
+    "category": "Commercial",
+    "authority": "Government of Jammu & Kashmir",
+    "region": "J&K"
+  },
+  {
+    "id": 54988,
+    "slug": "government-of-jammu-and-kashmir-broadcast-of-food-safety-healthy-diet",
+    "title": "Government of Jammu and Kashmir Broadcast of Food Safety Healthy Diet",
+    "date": "Apr 20, 2026",
+    "category": "Industry Specific",
+    "authority": "Office of the Commissioner, Food & Drugs Administration (FDA)",
+    "region": "J&K"
+  },
+  {
+    "id": 54987,
+    "slug": "government-of-kerala-issued-the-pre-monsoon-sanitation-campaign-guidel",
+    "title": "Government of Kerala issued Pre-monsoon Sanitation Campaign Guidelines",
+    "date": "Apr 20, 2026",
+    "category": "EHS",
+    "authority": "Government of Kerala, Local Self Government Department",
+    "region": "Kerala"
+  },
+  {
+    "id": 54986,
+    "slug": "rajasthan-finance-department-extension-of-operative-period-under-inves",
+    "title": "Rajasthan Finance Department Extension of Operative Period Under Investment",
+    "date": "Apr 20, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Rajasthan, Finance Department (Tax Division)",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54985,
+    "slug": "district-administration-amritsar-constitution-of-parali-surakhya-force",
+    "title": "District Administration Amritsar: Constitution of Parali Surakhya Force",
+    "date": "Apr 20, 2026",
+    "category": "EHS",
+    "authority": "District Administration, Amritsar",
+    "region": "Punjab"
+  },
+  {
+    "id": 54982,
+    "slug": "draft-karnataka-excise-excise-duties-and-fees-amendment-rules-2026",
+    "title": "Draft Karnataka Excise (Excise Duties and Fees) Amendment Rules 2026",
+    "date": "Apr 20, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54980,
+    "slug": "govt-of-mizoram-issued-a-notification-regarding-aadhaar-authentication",
+    "title": "Govt. of Mizoram issued notification on Aadhaar authentication",
+    "date": "Apr 20, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 54979,
+    "slug": "government-of-goa-paid-holiday-declaration-for-polling-day",
+    "title": "Government of Goa Paid Holiday Declaration for Polling Day",
+    "date": "Apr 20, 2026",
+    "category": "Labour",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 54978,
+    "slug": "government-of-meghalaya-holiday-declaration-for-shad-suk-mynsiem-festi",
+    "title": "Government of Meghalaya Holiday Declaration for Shad Suk Mynsiem Festival",
+    "date": "Apr 20, 2026",
+    "category": "Labour",
+    "authority": "Government of Meghalaya",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 54975,
+    "slug": "nagaland-jan-vishwas-amendment-of-provisions-bill-2026",
+    "title": "Nagaland Jan Vishwas (Amendment of Provisions) Bill 2026",
+    "date": "Apr 20, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 54974,
+    "slug": "draft-bureau-of-energy-efficiency-energy-audit-and-energy-accounting-i",
+    "title": "Draft Bureau of Energy Efficiency Energy Audit and Accounting Rules",
+    "date": "Apr 20, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Energy Efficiency (BEE)",
+    "region": "Central"
+  },
+  {
+    "id": 54972,
+    "slug": "delhi-jan-vishwas-amendment-of-provisions-act-2026",
+    "title": "Delhi Jan Vishwas (Amendment of Provisions) Act 2026",
+    "date": "Apr 20, 2026",
+    "category": "Labour",
+    "authority": "Department of Law, Justice, and Legislative Affairs",
+    "region": "Delhi"
+  },
+  {
+    "id": 54951,
+    "slug": "government-of-west-bengal-finance-dept-enforcement-of-west-bengal-gst-",
+    "title": "Government of West Bengal Finance Dept Enforcement of West Bengal GST",
+    "date": "Apr 19, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of West Bengal Finance Department (Revenue)",
+    "region": "West Bengal"
+  },
+  {
+    "id": 54950,
+    "slug": "government-of-west-bengal-finance-dept-enforcement-of-bengal-agricultu",
+    "title": "Government of West Bengal Finance Dept Enforcement of Bengal Agriculture",
+    "date": "Apr 19, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of West Bengal Finance Department (Revenue)",
+    "region": "West Bengal"
+  },
+  {
+    "id": 54949,
+    "slug": "delhi-govt-issued-paid-holiday-for-employees-voting-in-tamil-nadu-and-",
+    "title": "Delhi Govt. issued Paid Holiday for Employees Voting in Tamil Nadu",
+    "date": "Apr 19, 2026",
+    "category": "Labour",
+    "authority": "Government of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 54948,
+    "slug": "government-of-karnataka-exemption-from-return-filing-under-profession-",
+    "title": "Government of Karnataka Exemption from Return Filing Under Profession Tax",
+    "date": "Apr 19, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka - Commissioner of Commercial Taxes",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54947,
+    "slug": "bis-notification-on-establishment-and-withdrawal-of-indian-standards-f",
+    "title": "BIS Notification on Establishment and Withdrawal of Indian Standards",
+    "date": "Apr 19, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "region": "Central"
+  },
+  {
+    "id": 54946,
+    "slug": "bis-notification-on-establishment-and-withdrawal-of-indian-standards-f",
+    "title": "BIS Notification on Establishment and Withdrawal of Indian Standards (extra)",
+    "date": "Apr 19, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "region": "Central"
+  },
+  {
+    "id": 54943,
+    "slug": "govt-of-madhya-pradesh-issued-a-notification-regarding-the-reduction-o",
+    "title": "Government of Madhya Pradesh Notification Regarding Reduction",
+    "date": "Apr 18, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 54939,
+    "slug": "govt-of-maharashtra-issued-a-circular-regarding-paid-holiday-for-emplo",
+    "title": "Govt. of Maharashtra issued circular regarding paid holiday for employees",
+    "date": "Apr 18, 2026",
+    "category": "Labour",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54919,
+    "slug": "maharashtra-tenancy-and-agricultural-lands-laws-amendment-act-2026",
+    "title": "Maharashtra Tenancy and Agricultural Lands Laws Amendment Act 2026",
+    "date": "Apr 17, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54915,
+    "slug": "peso-notified-regarding-the-complete-ban-on-the-export-of-ammonium-nit",
+    "title": "PESO notified complete ban on export of Ammonium Nitrate",
+    "date": "Apr 17, 2026",
+    "category": "EHS",
+    "authority": "Petroleum and Explosives Safety Organization (PESO)",
+    "region": "Central"
+  },
+  {
+    "id": 54913,
+    "slug": "maharashtra-co-operative-societies-amendment-act-2026",
+    "title": "Maharashtra Co-operative Societies Amendment Act 2026",
+    "date": "Apr 17, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54895,
+    "slug": "caqm-issued-a-notification-regarding-relaxation-in-the-standard-list-o",
+    "title": "CAQM issued notification on relaxation in the standard list",
+    "date": "Apr 17, 2026",
+    "category": "EHS",
+    "authority": "Commission for Air Quality Management",
+    "region": "Delhi"
+  },
+  {
+    "id": 54894,
+    "slug": "maharashtra-land-revenue-code-second-amendment-act-2026",
+    "title": "Maharashtra Land Revenue Code (Second Amendment) Act 2026",
+    "date": "Apr 17, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54892,
+    "slug": "department-of-finance-gujarat-issued-a-notification-regarding-the-exte",
+    "title": "Department of Finance, Gujarat, issued notification regarding extension",
+    "date": "Apr 17, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Department of Finance, Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54877,
+    "slug": "government-of-mizoram-declares-dry-days-ahead-of-amc-election-2026",
+    "title": "Government of Mizoram declares Dry Days ahead of AMC Election 2026",
+    "date": "Apr 17, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 54871,
+    "slug": "karnataka-gram-swaraj-and-panchayat-raj-amendment-act-2026",
+    "title": "Karnataka Gram Swaraj and Panchayat Raj Amendment Act 2026",
+    "date": "Apr 16, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54850,
+    "slug": "master-of-planning-courses-regulation-of-admission-and-payment-of-fees",
+    "title": "Master of Planning Courses (Regulation of Admission and Payment of Fees)",
+    "date": "Apr 16, 2026",
+    "category": "Industry Specific",
+    "authority": "Education Department, Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54840,
+    "slug": "bachelor-of-engineering-and-technology-regulation-of-admission-and-pay",
+    "title": "Bachelor of Engineering and Technology (Regulation of Admission and Payment)",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Education Department, Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54837,
+    "slug": "maharashtra-maritime-board-regulation-of-display-of-advertisements-reg",
+    "title": "Maharashtra Maritime Board Regulation of Display of Advertisements",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Maharashtra Maritime Board, Govt. of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54835,
+    "slug": "govt-of-up-issued-the-amendment-to-the-older-notification-under-the-ut",
+    "title": "Govt. of UP issued amendment to older notification",
+    "date": "Apr 15, 2026",
+    "category": "EHS",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 54834,
+    "slug": "draft-greater-bengaluru-area-advertisement-amendment-rules-2026",
+    "title": "Draft Greater Bengaluru Area (Advertisement) Amendment Rules 2026",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54833,
+    "slug": "rspcb-notified-regarding-the-amendment-to-the-older-notifications-rela",
+    "title": "RSPCB Notified Amendment to Older Notifications",
+    "date": "Apr 15, 2026",
+    "category": "EHS",
+    "authority": "Rajasthan State Pollution Control Board (RSPCB)",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54832,
+    "slug": "agriculture-department-telangana-misbranded-pesticide-alert-paraquat-d",
+    "title": "Agriculture Department Telangana Misbranded Pesticide Alert",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Office of the Commissioner & Director of Agriculture, Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 54831,
+    "slug": "ctd-odisha-issued-a-notification-under-para-115-of-the-odisha-electric",
+    "title": "CTD Odisha Notification Under Para 115 of Odisha Electricity Act",
+    "date": "Apr 15, 2026",
+    "category": "Commercial",
+    "authority": "Commerce & Transport Department, Odisha",
+    "region": "Odisha"
+  },
+  {
+    "id": 54830,
+    "slug": "government-of-karnataka-issued-an-order-regarding-the-prescribed-age-c",
+    "title": "Government of Karnataka Issued Order Regarding Prescribed Age Criteria",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54829,
+    "slug": "ppcb-notified-regarding-the-monitoring-of-groundwater-quality-of-large",
+    "title": "PPCB notified monitoring of Groundwater Quality",
+    "date": "Apr 15, 2026",
+    "category": "EHS",
+    "authority": "Punjab State Pollution Control Board",
+    "region": "Punjab"
+  },
+  {
+    "id": 54825,
+    "slug": "jserc-fees-fines-charges-regulations-first-amendment-regulations-2026",
+    "title": "JSERC (Fees, Fines & Charges) Regulations, First Amendment, 2026",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Jharkhand State Electricity Regulatory Commission (JSERC)",
+    "region": "Jharkhand"
+  },
+  {
+    "id": 54824,
+    "slug": "govt-of-jharkhand-notified-regarding-the-declaration-of-snakebite-case",
+    "title": "Govt. of Jharkhand notified declaration of snakebite case",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Health, Medical Education and Family Welfare, Govt. of Jharkhand",
+    "region": "Jharkhand"
+  },
+  {
+    "id": 54822,
+    "slug": "govt-of-telangana-issued-a-notification-regarding-the-misbranded-pesti",
+    "title": "Govt. of Telangana issued notification on Misbranded Pesticide",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 54821,
+    "slug": "jharkhand-goods-and-services-tax-fourth-amendment-rules-2025",
+    "title": "Jharkhand Goods and Services Tax (Fourth Amendment) Rules, 2025",
+    "date": "Apr 15, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Department of Commercial Taxes, Jharkhand",
+    "region": "Jharkhand"
+  },
+  {
+    "id": 54820,
+    "slug": "state-election-commission-haryana-issued-a-notification-regarding-gene",
+    "title": "State Election Commission, Haryana issued notification on general elections",
+    "date": "Apr 15, 2026",
+    "category": "Labour",
+    "authority": "State Election Commission, Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 54815,
+    "slug": "government-of-delhi-issued-a-circular-regarding-transition-of-sku-vali",
+    "title": "Government of Delhi issued circular regarding transition of SKU",
+    "date": "Apr 15, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of NCT of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 54814,
+    "slug": "government-of-rajasthan-issued-a-notification-granting-a-partial-fee-e",
+    "title": "Government of Rajasthan Notification Granting Partial Fee Exemption",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Rajasthan",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54811,
+    "slug": "jharkhand-goods-and-services-tax-fifth-amendment-rules-2025",
+    "title": "Jharkhand Goods and Services Tax (Fifth Amendment) Rules, 2025",
+    "date": "Apr 15, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Jharkhand",
+    "region": "Jharkhand"
+  },
+  {
+    "id": 54808,
+    "slug": "jharkhand-govt-amended-an-older-notification-related-to-the-supply-of-",
+    "title": "Jharkhand Govt. amended older notification on supply",
+    "date": "Apr 15, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Commercial Taxes Department, Government of Jharkhand",
+    "region": "Jharkhand"
+  },
+  {
+    "id": 54807,
+    "slug": "master-of-engineering-and-technology-and-master-of-pharmacy-courses-re",
+    "title": "Master of Engineering and Technology and Master of Pharmacy Courses",
+    "date": "Apr 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Education Department, Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54797,
+    "slug": "master-of-business-administration-course-regulation-of-admission-and-p",
+    "title": "Master of Business Administration Course (Regulation of Admission and Payment)",
+    "date": "Apr 14, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Education, Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54794,
+    "slug": "department-of-general-administration-delhi-issued-a-notification-regar",
+    "title": "Department of General Administration Delhi issued a notification",
+    "date": "Apr 14, 2026",
+    "category": "Labour",
+    "authority": "Department of General Administration, Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 54786,
+    "slug": "apcb-issued-a-notification-regarding-the-mandatory-submission-of-gst-n",
+    "title": "APCB issued notification on mandatory submission of GST N",
+    "date": "Apr 14, 2026",
+    "category": "EHS",
+    "authority": "Assam Pollution Control Board (APCB)",
+    "region": "Assam"
+  },
+  {
+    "id": 54785,
+    "slug": "rspcb-issued-a-notification-regarding-the-regulation-of-effluent-dispo",
+    "title": "RSPCB Issued Notification on Effluent Disposal Regulation",
+    "date": "Apr 14, 2026",
+    "category": "EHS",
+    "authority": "Rajasthan State Pollution Control Board (RSPCB)",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54784,
+    "slug": "draft-karnataka-excise-manufacture-of-fortified-wine-from-grapes-amend",
+    "title": "Draft Karnataka Excise (Manufacture of Fortified Wine from Grapes) Amendment",
+    "date": "Apr 14, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54783,
+    "slug": "draft-karnataka-municipalities-estate-management-rules-2026",
+    "title": "Draft Karnataka Municipalities (Estate Management) Rules 2026",
+    "date": "Apr 14, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54782,
+    "slug": "rajasthan-excise-grant-of-hotel-barclub-bar-licenses-amendment-rules-2",
+    "title": "Rajasthan Excise Grant of Hotel Bar/Club Licenses Amendment Rules",
+    "date": "Apr 14, 2026",
+    "category": "Industry Specific",
+    "authority": "Finance (Excise) Department, Government of Rajasthan",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54781,
+    "slug": "kspcb-issued-a-circular-regarding-the-consent-management-of-non-bedded",
+    "title": "KSPCB Circular on Consent Management of Non-Bedded Facilities",
+    "date": "Apr 14, 2026",
+    "category": "EHS",
+    "authority": "Kerala State Pollution Control Board",
+    "region": "Kerala"
+  },
+  {
+    "id": 54780,
+    "slug": "mpcb-issued-a-circular-regarding-strict-compliance-with-timelines-for-",
+    "title": "MPCB issued circular on Strict Compliance with Timelines",
+    "date": "Apr 14, 2026",
+    "category": "EHS",
+    "authority": "Maharashtra Pollution Control Board (MPCB)",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54779,
+    "slug": "npcb-notified-regarding-the-disposal-of-application-for-grant-of-autho",
+    "title": "NPCB Notified Disposal of Application for Grant of Authority",
+    "date": "Apr 14, 2026",
+    "category": "EHS",
+    "authority": "Nagaland Pollution Control Board",
+    "region": "Nagaland"
+  },
+  {
+    "id": 54775,
+    "slug": "ppcb-issued-revised-directions-to-the-revenue-authorities-and-to-the-p",
+    "title": "PPCB issued revised directions to revenue authorities",
+    "date": "Apr 14, 2026",
+    "category": "EHS",
+    "authority": "Punjab Pollution Control Board",
+    "region": "Punjab"
+  },
+  {
+    "id": 54774,
+    "slug": "rspcb-issued-extension-of-deadline-for-conversion-of-batch-type-tyre-p",
+    "title": "RSPCB Issued Extension of Deadline for Batch-Type Tyre Conversion",
+    "date": "Apr 14, 2026",
+    "category": "EHS",
+    "authority": "Rajasthan State Pollution Control Board (RSPCB)",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54773,
+    "slug": "state-election-commission-haryana-issued-notification-on-generalbye-el",
+    "title": "State Election Commission, Haryana issued notification on general/bye-elections",
+    "date": "Apr 14, 2026",
+    "category": "Labour",
+    "authority": "State Election Commission, Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 54767,
+    "slug": "maharashtra-maritime-board-leasing-of-stalls-and-leasing-of-land-for-s",
+    "title": "Maharashtra Maritime Board (Leasing of stalls and leasing of land)",
+    "date": "Apr 14, 2026",
+    "category": "Industry Specific",
+    "authority": "Maharashtra Maritime Board",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54762,
+    "slug": "k-rera-notified-regarding-the-mandatory-compliance-with-clause-20-of-a",
+    "title": "K-RERA notified Mandatory Compliance with Clause 20",
+    "date": "Apr 14, 2026",
+    "category": "Industry Specific",
+    "authority": "Kerala Real Estate Regulatory Authority",
+    "region": "Kerala"
+  },
+  {
+    "id": 54761,
+    "slug": "delhi-govt-declares-public-holiday-on-april-14-2026-dr-b-r-ambedkar-ja",
+    "title": "Delhi Govt. declares Public Holiday on April 14, 2026 - Dr. B.R. Ambedkar Jayanti",
+    "date": "Apr 14, 2026",
+    "category": "Labour",
+    "authority": "Government of NCT of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 54752,
+    "slug": "draft-karnataka-excise-lease-of-the-right-of-retail-vend-of-wine-or-fo",
+    "title": "Draft Karnataka Excise (Lease of the Right of Retail Vend of Wine)",
+    "date": "Apr 14, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54748,
+    "slug": "karnataka-jnana-bhandar-manuscripts-and-digitisation-act-2026",
+    "title": "Karnataka Jnana Bhandar Manuscripts and Digitisation Act 2026",
+    "date": "Apr 14, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54747,
+    "slug": "kerala-govt-issued-circular-on-solid-waste-management-rules-2026",
+    "title": "Kerala Government Circular on Solid Waste Management Rules 2026",
+    "date": "Apr 14, 2026",
+    "category": "EHS",
+    "authority": "Government of Kerala",
+    "region": "Kerala"
+  },
+  {
+    "id": 54743,
+    "slug": "cbdt-issued-corrigendum-to-income-tax-sixth-amendment-rules-2026",
+    "title": "CBDT issued corrigendum to Income-tax Sixth Amendment Rules, 2026",
+    "date": "Apr 13, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54733,
+    "slug": "karnataka-motor-vehicles-taxation-amendment-act-2026",
+    "title": "Karnataka Motor Vehicles Taxation Amendment Act 2026",
+    "date": "Apr 13, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Department of Parliamentary Affairs and Legislation Secretariat (DPAL)",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54731,
+    "slug": "uttarakhand-excise-dept-directions-on-renewal-management-of-liquor-sho",
+    "title": "Uttarakhand Excise Dept Directions on Renewal Management",
+    "date": "Apr 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Uttarakhand Excise Commissioner",
+    "region": "Uttarakhand"
+  },
+  {
+    "id": 54717,
+    "slug": "rajasthan-excise-amendment-rules-2026",
+    "title": "Rajasthan Excise Amendment Rules 2026",
+    "date": "Apr 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Finance (Excise), Rajasthan",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54716,
+    "slug": "govt-of-mp-issued-the-amendments-to-the-madhya-pradesh-transit-forest-",
+    "title": "Amendments to Madhya Pradesh Transit Forest Regulations",
+    "date": "Apr 13, 2026",
+    "category": "EHS",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 54715,
+    "slug": "govt-of-kerala-issued-a-notification-regarding-the-fake-heatwave-alert",
+    "title": "Government of Kerala Notification on Fake Heatwave Alert",
+    "date": "Apr 13, 2026",
+    "category": "EHS",
+    "authority": "Government of Kerala",
+    "region": "Kerala"
+  },
+  {
+    "id": 54714,
+    "slug": "goa-land-revenue-code-amendment-ordinance-2026",
+    "title": "Goa Land Revenue Code (Amendment) Ordinance, 2026",
+    "date": "Apr 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 54712,
+    "slug": "manipur-govt-issued-notification-on-mandatory-online-registration-and-",
+    "title": "Manipur Govt. issued notification on Mandatory Online Registration",
+    "date": "Apr 13, 2026",
+    "category": "Labour",
+    "authority": "Government of Manipur",
+    "region": "Manipur"
+  },
+  {
+    "id": 54710,
+    "slug": "haryana-govt-issued-revision-in-the-minimum-wages-in-haryana",
+    "title": "Haryana Govt. issued revision in minimum wages in Haryana",
+    "date": "Apr 13, 2026",
+    "category": "Labour",
+    "authority": "Government of Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 54709,
+    "slug": "rajasthan-govt-amended-older-notification-for-fifty-percent-exemption-",
+    "title": "Rajasthan Government Amended Notification for 50% Exemption",
+    "date": "Apr 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Rajasthan",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54707,
+    "slug": "tnpcb-issued-temporary-relaxation-for-use-of-alternate-fuels-by-indust",
+    "title": "TNPCB issued temporary relaxation for use of alternate fuels",
+    "date": "Apr 13, 2026",
+    "category": "EHS",
+    "authority": "Tamil Nadu Pollution Control Board (TNPCB)",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 54704,
+    "slug": "government-of-tamil-nadu-issued-an-amendment-to-the-tamil-nadu-legal-m",
+    "title": "Government of Tamil Nadu issued amendment to Tamil Nadu Legal Metrology Rules",
+    "date": "Apr 13, 2026",
+    "category": "Commercial",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 54703,
+    "slug": "government-of-madhya-pradesh-issued-an-amendment-to-the-madhya-pradesh",
+    "title": "Government of Madhya Pradesh Amendment to MP Factories Rules",
+    "date": "Apr 13, 2026",
+    "category": "Labour",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 54702,
+    "slug": "maharashtra-govt-issued-amendments-to-the-sand-mining-policy-2025",
+    "title": "Maharashtra Govt. issued amendments to the Sand Mining Policy 2025",
+    "date": "Apr 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54699,
+    "slug": "punjab-excise-fiscal-chandigarh-1st-amendment-orders-2026",
+    "title": "Punjab Excise Fiscal (Chandigarh 1st Amendment) Orders, 2026",
+    "date": "Apr 13, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Excise and Taxation Department, Chandigarh",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 54698,
+    "slug": "punjab-intoxicants-licence-and-sale-chandigarh-1st-amendment-orders-20",
+    "title": "Punjab Intoxicants Licence and Sale - Chandigarh 1st Amendment Orders 2026",
+    "date": "Apr 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise and Taxation Department, Chandigarh",
+    "region": "Punjab"
+  },
+  {
+    "id": 54697,
+    "slug": "cbdt-issued-corrigendum-to-notification-of-income-tax-return-form-u",
+    "title": "CBDT issued corrigendum to Notification of Income-tax Return Form U",
+    "date": "Apr 13, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54695,
+    "slug": "rajasthan-electricity-regulatory-commission-electricity-supply-code-an",
+    "title": "Rajasthan Electricity Regulatory Commission Electricity Supply Code",
+    "date": "Apr 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Rajasthan Electricity Regulatory Commission (RERC)",
+    "region": "Rajasthan"
+  },
+  {
+    "id": 54693,
+    "slug": "cbdt-issued-corrigendum-to-notification-of-income-tax-return-form-3",
+    "title": "CBDT issued corrigendum to notification of Income-tax Return Form 3",
+    "date": "Apr 13, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54691,
+    "slug": "department-of-information-publicity-goa-issued-a-heatwave-advisory",
+    "title": "Department of Information & Publicity Goa issued Heatwave Advisory",
+    "date": "Apr 12, 2026",
+    "category": "EHS",
+    "authority": "Department of Information & Publicity, Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 54688,
+    "slug": "kerala-headload-workers-welfare-board-employees-contributory-provident",
+    "title": "Kerala Headload Workers Welfare Board Employees Contributory Provident",
+    "date": "Apr 12, 2026",
+    "category": "Labour",
+    "authority": "Kerala Labour and Skill Department",
+    "region": "Kerala"
+  },
+  {
+    "id": 54678,
+    "slug": "cbdt-issued-a-corrigendum-regarding-the-income-tax-return-form-5",
+    "title": "CBDT issued a corrigendum regarding Income-tax Return Form 5",
+    "date": "Apr 11, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54673,
+    "slug": "gujarat-labour-dept-paid-leave-for-umreth-by-election",
+    "title": "Gujarat Labour Dept Paid Leave for Umreth By-Election",
+    "date": "Apr 11, 2026",
+    "category": "Labour",
+    "authority": "Labour Department, Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54648,
+    "slug": "andhra-pradesh-labour-department-cost-of-living-allowance-notification",
+    "title": "Andhra Pradesh Labour Department Cost of Living Allowance Notification",
+    "date": "Apr 10, 2026",
+    "category": "Labour",
+    "authority": "Commissioner of Labour, Andhra Pradesh",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 54633,
+    "slug": "haryana-labour-department-revision-of-minimum-wages",
+    "title": "Haryana Labour Department Revision of minimum wages",
+    "date": "Apr 10, 2026",
+    "category": "Labour",
+    "authority": "Labour Department, Government of Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 54614,
+    "slug": "haryana-govt-notified-district-kaithal-as-controlled-area",
+    "title": "Haryana Govt. notified District Kaithal as controlled area",
+    "date": "Apr 10, 2026",
+    "category": "EHS",
+    "authority": "Animal Husbandry & Dairying Department, Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 54595,
+    "slug": "government-of-goa-declaration-of-paid-holiday-on-polling-day",
+    "title": "Government of Goa Declaration of Paid Holiday on Polling Day",
+    "date": "Apr 9, 2026",
+    "category": "Labour",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 54583,
+    "slug": "govt-of-goa-issued-a-notification-regarding-the-cancellation-of-ponda-",
+    "title": "Govt. of Goa issued notification on cancellation of Ponda",
+    "date": "Apr 9, 2026",
+    "category": "Labour",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 54581,
+    "slug": "cbdt-issued-a-notification-regarding-the-procedure-formats-and-standar",
+    "title": "CBDT issued notification on procedure, formats and standards",
+    "date": "Apr 9, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54566,
+    "slug": "nagaland-govt-issued-the-nagaland-town-and-country-planning-fifth-amen",
+    "title": "Nagaland Town and Country Planning (Fifth Amendment) Rules",
+    "date": "Apr 8, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 54557,
+    "slug": "professional-diploma-courses-of-engineering-and-technology-regulation-",
+    "title": "Professional Diploma Courses of Engineering and Technology (Regulation)",
+    "date": "Apr 8, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54553,
+    "slug": "gujarat-land-revenue-amendment-rules-2026",
+    "title": "Gujarat Land Revenue (Amendment) Rules 2026",
+    "date": "Apr 8, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54544,
+    "slug": "draft-tripura-industrial-relations-rules-2026",
+    "title": "Draft Tripura Industrial Relations Rules, 2026",
+    "date": "Apr 8, 2026",
+    "category": "Labour",
+    "authority": "Government of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 54533,
+    "slug": "haryana-ahd-charkhi-dadri-declared-controlled-area-for-glanders-diseas",
+    "title": "Haryana AH&D – Charkhi Dadri Declared controlled area",
+    "date": "Apr 7, 2026",
+    "category": "Industry Specific",
+    "authority": "Animal Husbandry and Dairying Department Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 54527,
+    "slug": "draft-manipur-governance-reform-unified-trade-licensing-bill-2026",
+    "title": "Draft Manipur Governance Reform & Unified Trade Licensing Bill 2026",
+    "date": "Apr 7, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Manipur",
+    "region": "Manipur"
+  },
+  {
+    "id": 54510,
+    "slug": "department-of-labour-factories-boilers-insurance-medical-services-andh",
+    "title": "Department of Labour, Factories, Boilers & Insurance Medical Services",
+    "date": "Apr 7, 2026",
+    "category": "Labour",
+    "authority": "Department of Labour, Factories, Boilers & Insurance Medical Services",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 54498,
+    "slug": "mp-govt-revised-duty-rates-for-foreign-liquor-fy-202627",
+    "title": "MP Revised Duty Rates for Foreign Liquor FY 2026-27",
+    "date": "Apr 7, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 54486,
+    "slug": "govt-of-madhya-pradesh-issued-a-notification-regarding-compliance-with",
+    "title": "Government of Madhya Pradesh Notification on Compliance",
+    "date": "Apr 6, 2026",
+    "category": "Labour",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 54485,
+    "slug": "bihar-jan-vishwas-amendment-of-provisions-act-2026",
+    "title": "Bihar Jan Vishwas (Amendment of Provisions) Act 2026",
+    "date": "Apr 6, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Bihar",
+    "region": "Bihar"
+  },
+  {
+    "id": 54462,
+    "slug": "madhya-pradesh-govt-notified-regarding-the-revised-excise-duty-rates-o",
+    "title": "MP Revised Excise Duty Rates Notification",
+    "date": "Apr 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 54461,
+    "slug": "madhya-pradesh-issued-the-amendments-in-the-madhya-pradesh-control-of-",
+    "title": "Amendments to Madhya Pradesh Control Regulations",
+    "date": "Apr 5, 2026",
+    "category": "EHS",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 54459,
+    "slug": "punjab-govt-issued-the-extension-of-deadline-for-filing-annual-product",
+    "title": "Punjab Govt. issued extension of deadline for filing annual product",
+    "date": "Apr 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Excise and Taxation, Punjab",
+    "region": "Punjab"
+  },
+  {
+    "id": 54458,
+    "slug": "punjab-intoxicants-license-and-sales-first-amendment-orders-2026",
+    "title": "Punjab Intoxicants License and Sales - First Amendment Orders 2026",
+    "date": "Apr 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Excise and Taxation, Punjab",
+    "region": "Punjab"
+  },
+  {
+    "id": 54455,
+    "slug": "bihar-govt-notified-the-revised-minimum-wages-with-vda-effective-april",
+    "title": "Bihar Govt. notified Revised Minimum Wages with VDA Effective April",
+    "date": "Apr 5, 2026",
+    "category": "Labour",
+    "authority": "Government of Bihar",
+    "region": "Bihar"
+  },
+  {
+    "id": 54454,
+    "slug": "assam-govt-issued-amendment-to-assam-value-added-tax-act-2003",
+    "title": "Assam Govt. issued amendment to Assam Value Added Tax Act, 2003",
+    "date": "Apr 5, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Finance Department, Assam",
+    "region": "Assam"
+  },
+  {
+    "id": 54450,
+    "slug": "goa-govt-issued-restrictions-on-sale-of-liquor-during-bye-election",
+    "title": "Goa Govt. issued restrictions on Sale of Liquor during Bye-Election",
+    "date": "Apr 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 54430,
+    "slug": "punjab-govt-issued-the-guidelines-for-ews-and-disadvantaged-group-rese",
+    "title": "Punjab Govt. issued Guidelines for EWS and Disadvantaged Group",
+    "date": "Apr 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Punjab",
+    "region": "Punjab"
+  },
+  {
+    "id": 54428,
+    "slug": "andhra-pradesh-govt-amended-the-andhra-pradesh-prohibition-compounding",
+    "title": "Andhra Pradesh Govt. amended the Andhra Pradesh Prohibition Compounding",
+    "date": "Apr 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Revenue Department, Andhra Pradesh",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 54426,
+    "slug": "chhattisgarh-govt-notified-regarding-the-aadhaar-based-identification-",
+    "title": "Chhattisgarh Govt. notified Aadhaar-Based Identification",
+    "date": "Apr 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 54422,
+    "slug": "income-tax-amendment-rules-2026",
+    "title": "Income-tax (Amendment) Rules, 2026",
+    "date": "Apr 5, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54420,
+    "slug": "punjab-state-electricity-regulatory-commission-electricity-supply-code",
+    "title": "Punjab State Electricity Regulatory Commission - Electricity Supply Code",
+    "date": "Apr 4, 2026",
+    "category": "Industry Specific",
+    "authority": "Punjab State Electricity Regulatory Commission",
+    "region": "Punjab"
+  },
+  {
+    "id": 54418,
+    "slug": "government-of-mp-draft-amendment-to-agriculture-medicinal-produce-sche",
+    "title": "Draft Amendment to Agriculture Medicinal Produce Scheme",
+    "date": "Apr 4, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 54411,
+    "slug": "gok-revision-of-minimum-wages-for-plantation-sector",
+    "title": "Government of Kerala Revision of Minimum Wages for Plantation Sector",
+    "date": "Apr 4, 2026",
+    "category": "Labour",
+    "authority": "Government of Kerala",
+    "region": "Kerala"
+  },
+  {
+    "id": 54407,
+    "slug": "govt-of-gujarat-issued-a-notification-regarding-the-revised-da-compone",
+    "title": "Govt. of Gujarat issued notification on revised DA Component",
+    "date": "Apr 4, 2026",
+    "category": "Labour",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54385,
+    "slug": "bspcb-issued-the-frequently-asked-questions-on-epr",
+    "title": "BSPCB issued FAQs on EPR",
+    "date": "Apr 3, 2026",
+    "category": "EHS",
+    "authority": "Bihar State Pollution Control Board",
+    "region": "Bihar"
+  },
+  {
+    "id": 54363,
+    "slug": "meghalaya-govt-issued-notification-regarding-local-holiday-in-the-east",
+    "title": "Meghalaya Govt. issued notification on local holiday in East",
+    "date": "Apr 3, 2026",
+    "category": "Labour",
+    "authority": "Government of Meghalaya",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 54354,
+    "slug": "govt-of-uttar-pradesh-issued-a-notification-regarding-the-revision-of-",
+    "title": "Govt. of Uttar Pradesh issued notification on revision",
+    "date": "Apr 2, 2026",
+    "category": "Labour",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 54317,
+    "slug": "punjab-liquor-permit-pass-chandigarh-01st-amendment-rules-2026",
+    "title": "Punjab Liquor Permit & Pass (Chandigarh 1st Amendment) Rules, 2026",
+    "date": "Apr 2, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise & Taxation Department, Chandigarh Administration",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 54314,
+    "slug": "govt-of-up-issued-the-wheat-procurement-policy-under-the-msp-for-the-r",
+    "title": "Govt. of UP issued Wheat Procurement Policy under MSP",
+    "date": "Apr 2, 2026",
+    "category": "Commercial",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 54306,
+    "slug": "jharkhand-platform-based-gig-workers-registration-and-welfare-act-2025",
+    "title": "Jharkhand Platform-Based Gig Workers (Registration and Welfare) Act, 2025",
+    "date": "Apr 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Jharkhand",
+    "region": "Jharkhand"
+  },
+  {
+    "id": 54297,
+    "slug": "govt-of-gujarat-issued-a-notification-regarding-the-announcement-of-sp",
+    "title": "Govt. of Gujarat issued notification on announcement of Special DA",
+    "date": "Apr 1, 2026",
+    "category": "Labour",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 54290,
+    "slug": "tn-declares-april-23-2026-as-public-holiday-for-assembly-election-poll",
+    "title": "TN declares April 23 2026 as public holiday for assembly election",
+    "date": "Apr 1, 2026",
+    "category": "Labour",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 54287,
+    "slug": "karnataka-notifies-rules-for-social-security-and-welfare-of-platform-b",
+    "title": "Karnataka Notifies Rules for Social Security and Welfare of Platform Workers",
+    "date": "Apr 1, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54284,
+    "slug": "dc-meghalaya-private-coaching-centre-rules-2026-notified",
+    "title": "DC Meghalaya Private Coaching Centre Rules 2026 Notified",
+    "date": "Apr 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Meghalaya",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 54280,
+    "slug": "government-of-maharashtra-amends-lifts-escalators-and-moving-walks-act",
+    "title": "Government of Maharashtra amends Lifts, Escalators and Moving Walks Act",
+    "date": "Apr 1, 2026",
+    "category": "EHS",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54279,
+    "slug": "west-bengal-finance-dept-declares-poll-day-holidays-for-assembly-elect",
+    "title": "West Bengal Finance Dept Declares Poll Day Holidays for Assembly Election",
+    "date": "Apr 1, 2026",
+    "category": "Labour",
+    "authority": "Finance Department, West Bengal",
+    "region": "West Bengal"
+  },
+  {
+    "id": 54252,
+    "slug": "cbdt-notified-regarding-the-referencing-of-document-identification-num",
+    "title": "CBDT notified Referencing of Document Identification Number",
+    "date": "Apr 1, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54240,
+    "slug": "govt-of-telangana-issued-a-notification-regarding-a-revision-in-the-mi",
+    "title": "Govt of Telangana issued notification on minimum wage revision",
+    "date": "Apr 1, 2026",
+    "category": "Labour",
+    "authority": "Government of Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 54236,
+    "slug": "jharkhand-excise-entry-and-operation-of-shops-for-retail-sale-of-liquo",
+    "title": "Jharkhand Excise (Entry and Operation of Shops for Retail Sale of Liquor)",
+    "date": "Apr 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Jharkhand Excise Department",
+    "region": "Jharkhand"
+  },
+  {
+    "id": 54220,
+    "slug": "income-tax-ninth-amendment-rules-2026",
+    "title": "Income-tax (Ninth Amendment) Rules, 2026",
+    "date": "Mar 31, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54212,
+    "slug": "department-of-labour-haryana-issued-a-notification-regarding-exemption",
+    "title": "Department of Labour, Haryana issued notification regarding exemption",
+    "date": "Mar 31, 2026",
+    "category": "Labour",
+    "authority": "Department of Labour, Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 54181,
+    "slug": "income-tax-fourth-amendment-rules-2026",
+    "title": "Income-tax (Fourth Amendment) Rules, 2026",
+    "date": "Mar 31, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Central Board of Direct Taxes (CBDT)",
+    "region": "Central"
+  },
+  {
+    "id": 54178,
+    "slug": "nagaland-shops-and-establishments-1st-amendment-bill-2025",
+    "title": "Nagaland Shops and Establishments (1st Amendment) Bill 2025",
+    "date": "Mar 31, 2026",
+    "category": "Labour",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 54177,
+    "slug": "department-of-health-and-family-welfare-tamil-nadu-issued-an-order-reg",
+    "title": "Department of Health and Family Welfare Tamil Nadu issued an order",
+    "date": "Mar 31, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Health and Family Welfare, Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 54171,
+    "slug": "tamil-nadu-govt-declared-public-holiday-for-assembly-election-poll-day",
+    "title": "Tamil Nadu Govt. declared Public Holiday for assembly election poll day",
+    "date": "Mar 31, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 54144,
+    "slug": "department-of-industry-energy-labour-and-mining-maharashtra-issued-a-n",
+    "title": "Department of Industry, Energy, Labour and Mining, Maharashtra",
+    "date": "Mar 30, 2026",
+    "category": "Labour",
+    "authority": "Department of Industry, Energy, Labour and Mining, Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54134,
+    "slug": "govt-of-karnataka-issued-a-corrigendum-regarding-an-older-notification",
+    "title": "Government of Karnataka Corrigendum on Older Notification",
+    "date": "Mar 30, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 54115,
+    "slug": "nagaland-media-accreditation-rules-2025",
+    "title": "Nagaland Media Accreditation Rules 2025",
+    "date": "Mar 29, 2026",
+    "category": "Labour",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 54114,
+    "slug": "odisha-govt-notified-regarding-the-mukhyamantri-poshan-yojana",
+    "title": "Odisha Govt. Notification Regarding Mukhyamantri Poshan Yojana",
+    "date": "Mar 29, 2026",
+    "category": "Industry Specific",
+    "authority": "School and Mass Education Department, Odisha",
+    "region": "Odisha"
+  },
+  {
+    "id": 54113,
+    "slug": "odisha-govt-issued-the-scheme-guidelines-for-utkarsh-iti-yojana",
+    "title": "Odisha Govt. Scheme Guidelines for Utkarsh ITI Yojana",
+    "date": "Mar 29, 2026",
+    "category": "Labour",
+    "authority": "Skill Development and Technical Education Department, Odisha",
+    "region": "Odisha"
+  },
+  {
+    "id": 54104,
+    "slug": "govt-of-maharashtra-notified-regarding-the-statewide-posh-committee-au",
+    "title": "Govt. of Maharashtra notified regarding the statewide POSH Committee",
+    "date": "Mar 29, 2026",
+    "category": "Labour",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54061,
+    "slug": "govt-of-tamil-nadu-notified-regarding-the-paid-holiday-to-workers-and-",
+    "title": "Govt. of Tamil Nadu notified paid holiday to workers",
+    "date": "Mar 27, 2026",
+    "category": "Labour",
+    "authority": "Labour Welfare and Skill Development Department, Govt. of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 54055,
+    "slug": "arunachal-pradesh-govt-issued-fixation-of-mrp-for-alcoholic-beverages-",
+    "title": "Arunachal Pradesh Govt. issued Fixation of MRP for Alcoholic Beverages",
+    "date": "Mar 26, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Arunachal Pradesh",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 54032,
+    "slug": "apetnc-measures-for-monitoring-and-regulation-of-bulk-spirit-and-liquo",
+    "title": "APETNC Measures for Monitoring and Regulation of Bulk Spirit",
+    "date": "Mar 26, 2026",
+    "category": "Industry Specific",
+    "authority": "Office of the Tax, Excise & Narcotics Commissioner",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 54031,
+    "slug": "govt-of-up-notified-regarding-the-additional-public-holiday-on-march-2",
+    "title": "Govt. of UP notified additional Public Holiday on March",
+    "date": "Mar 26, 2026",
+    "category": "Labour",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 54030,
+    "slug": "govt-of-tripura-notified-regarding-the-grant-of-paid-holiday-to-employ",
+    "title": "Govt. of Tripura notified Grant of Paid Holiday",
+    "date": "Mar 26, 2026",
+    "category": "Labour",
+    "authority": "Factories Department, Govt. of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 54021,
+    "slug": "mgst-relaxation-in-registration-and-return-filing-under-the-profession",
+    "title": "MGST Relaxation in Registration and Return Filing",
+    "date": "Mar 26, 2026",
+    "category": "Labour",
+    "authority": "Maharashtra Goods and Services Tax Department",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 54020,
+    "slug": "meghalaya-identification-registration-safety-security-of-migrant-worke",
+    "title": "Meghalaya Identification, Registration, Safety & Security of Migrant Workers",
+    "date": "Mar 26, 2026",
+    "category": "Labour",
+    "authority": "Government of Meghalaya",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 54003,
+    "slug": "government-of-karnataka-issued-a-notification-to-revise-the-tax-rate-o",
+    "title": "Government of Karnataka Tax Rate Revision Notification",
+    "date": "Mar 25, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 53998,
+    "slug": "chandigarh-administration-issued-a-notification-under-section-28-of-th",
+    "title": "Chandigarh Administration Section 28 Notification",
+    "date": "Mar 25, 2026",
+    "category": "Labour",
+    "authority": "Chandigarh Administration",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 53995,
+    "slug": "punjab-distillery-chandigarh-1st-amendment-rules-2026",
+    "title": "Punjab Distillery (Chandigarh 1st Amendment) Rules, 2026",
+    "date": "Mar 25, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise and Taxation Department, Chandigarh Administration",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 53988,
+    "slug": "uttar-pradesh-minor-minerals-concession-second-amendment-rules-2026",
+    "title": "Uttar Pradesh Minor Minerals (Concession) Second Amendment Rules 2026",
+    "date": "Mar 25, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 53983,
+    "slug": "punjab-excise-bonded-warehouse-chandigarh-1st-amendment-rules-2026",
+    "title": "Punjab Excise Bonded Warehouse (Chandigarh 1st Amendment) Rules, 2026",
+    "date": "Mar 25, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise & Taxation Department, Chandigarh Administration",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 53982,
+    "slug": "chandigarh-administration-issued-the-amendment-to-the-older-notificati",
+    "title": "Chandigarh Administration Amendment Notification",
+    "date": "Mar 25, 2026",
+    "category": "Labour",
+    "authority": "Labour & Employment Department, Chandigarh Administration",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 53972,
+    "slug": "upmc-regulation-of-sky-signs-and-advertisements-rules-2026",
+    "title": "UPMC Regulation of Sky Signs and Advertisements Rules 2026",
+    "date": "Mar 24, 2026",
+    "category": "Commercial",
+    "authority": "Uttar Pradesh Municipal Corporation",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 53963,
+    "slug": "uttar-pradesh-excise-settlement-of-licenses-for-retail-sale-of-country",
+    "title": "Uttar Pradesh Excise (Settlement of Licenses for Retail Sale of Country)",
+    "date": "Mar 24, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 53959,
+    "slug": "govt-of-ap-issued-the-eighth-amendment-to-the-andhra-pradesh-electrici",
+    "title": "Govt. of AP issued Eighth Amendment to AP Electricity",
+    "date": "Mar 24, 2026",
+    "category": "Industry Specific",
+    "authority": "Andhra Pradesh Electricity Regulatory Commission",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 53957,
+    "slug": "uttar-pradesh-excise-settlement-of-licences-for-premium-retail-vends-o",
+    "title": "Uttar Pradesh Excise (Settlement of Licences for Premium Retail Vends)",
+    "date": "Mar 24, 2026",
+    "category": "Industry Specific",
+    "authority": "Excise Commissioner, Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 53955,
+    "slug": "govt-of-telangana-issued-the-amendment-to-the-seventh-schedule-under-s",
+    "title": "Govt. of Telangana issued amendment to Seventh Schedule",
+    "date": "Mar 24, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Transport Department, Govt. of Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 53945,
+    "slug": "wild-life-protection-maharashtra-amendment-bill-2026",
+    "title": "Wild Life (Protection) Maharashtra Amendment Bill 2026",
+    "date": "Mar 24, 2026",
+    "category": "EHS",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53931,
+    "slug": "bihar-govt-issued-extension-of-time-limit-for-filing-appeals-before-gs",
+    "title": "Bihar Govt. issued extension of Time Limit for Filing Appeals",
+    "date": "Mar 24, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Bihar",
+    "region": "Bihar"
+  },
+  {
+    "id": 53928,
+    "slug": "govt-of-wb-notified-regarding-the-exemption-of-rural-employment-cess-o",
+    "title": "Govt of WB Notified Exemption of Rural Employment Cess",
+    "date": "Mar 23, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Finance Department, Government of West Bengal",
+    "region": "West Bengal"
+  },
+  {
+    "id": 53925,
+    "slug": "government-of-meghalaya-use-of-commercial-lpg-cylinders-by-establishme",
+    "title": "Government of Meghalaya Use of Commercial LPG Cylinders",
+    "date": "Mar 23, 2026",
+    "category": "Commercial",
+    "authority": "Government of Meghalaya",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 53922,
+    "slug": "wbfd-exemption-from-education-cess-for-tea-estates",
+    "title": "WBFD Exemption from Education Cess for Tea Estates",
+    "date": "Mar 23, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Finance Department West Bengal",
+    "region": "West Bengal"
+  },
+  {
+    "id": 53901,
+    "slug": "doprca-issued-the-tip-sheet-and-faqs-on-energy-conservation-sustainabl",
+    "title": "Energy Conservation Sustainability Tip Sheet and FAQs",
+    "date": "Mar 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Public Relations, Chandigarh Administration",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 53900,
+    "slug": "tripura-land-revenue-and-land-reforms-diversion-of-land-first-amendmen",
+    "title": "Tripura Land Revenue and Land Reforms (Diversion of Land) First Amendment",
+    "date": "Mar 23, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 53891,
+    "slug": "assam-value-added-tax-amendment-act-2026",
+    "title": "Assam Value Added Tax (Amendment) Act, 2026",
+    "date": "Mar 21, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Assam",
+    "region": "Assam"
+  },
+  {
+    "id": 53888,
+    "slug": "assam-goods-and-services-tax-amendment-rules-2026",
+    "title": "Assam Goods and Services Tax (Amendment) Rules, 2026",
+    "date": "Mar 21, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Finance (Taxation) Department Assam",
+    "region": "Assam"
+  },
+  {
+    "id": 53872,
+    "slug": "assam-value-added-tax-amendment-rules-2026",
+    "title": "Assam Value Added Tax (Amendment) Rules, 2026",
+    "date": "Mar 20, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Finance Department, Govt. of Assam",
+    "region": "Assam"
+  },
+  {
+    "id": 53864,
+    "slug": "andhra-pradesh-govt-issued-the-andhra-pradesh-electricity-duty-amendme",
+    "title": "Andhra Pradesh govt. issued AP Electricity Duty Amendment",
+    "date": "Mar 20, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Andhra Pradesh",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 53862,
+    "slug": "andhra-pradesh-govt-issued-the-andhra-pradesh-motor-vehicles-taxation-",
+    "title": "Andhra Pradesh Govt. issued AP Motor Vehicles Taxation",
+    "date": "Mar 20, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Andhra Pradesh",
+    "region": "Andhra Pradesh"
+  },
+  {
+    "id": 53853,
+    "slug": "mspcb-issued-circular-regarding-the-processing-fees-for-authorization-",
+    "title": "MSPCB issued circular on processing fees for authorization",
+    "date": "Mar 20, 2026",
+    "category": "EHS",
+    "authority": "Meghalaya State Pollution Control Board",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 53852,
+    "slug": "assam-tenancy-rules-2025",
+    "title": "Assam Tenancy Rules, 2025",
+    "date": "Mar 20, 2026",
+    "category": "Industry Specific",
+    "authority": "Department of Housing and Urban Affairs, Assam",
+    "region": "Assam"
+  },
+  {
+    "id": 53848,
+    "slug": "mspcb-invitation-for-setting-up-material-recovery-facilities",
+    "title": "MSPCB Invitation for Setting up Material Recovery Facilities",
+    "date": "Mar 20, 2026",
+    "category": "EHS",
+    "authority": "Meghalaya State Pollution Control Board",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 53831,
+    "slug": "karnataka-tax-on-profession-trades-callings-and-employments-amendment",
+    "title": "Karnataka Tax on Profession, Trades, Callings and Employments Amendment",
+    "date": "Mar 19, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 53820,
+    "slug": "directorate-of-fire-emergency-services-home-guards-civil-defence-odish",
+    "title": "Directorate of Fire & Emergency Services Notification",
+    "date": "Mar 19, 2026",
+    "category": "EHS",
+    "authority": "Directorate of Fire & Emergency Services, Odisha",
+    "region": "Odisha"
+  },
+  {
+    "id": 53802,
+    "slug": "all-fee-expenses-reimbursement-and-royalty-reimbursement-rules-2025",
+    "title": "All Fee Expenses Reimbursement and Royalty Reimbursement Rules 2025",
+    "date": "Mar 19, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 53798,
+    "slug": "odisha-jan-vishwas-act-2025",
+    "title": "Odisha Jan Vishwas Act, 2025",
+    "date": "Mar 19, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Odisha",
+    "region": "Odisha"
+  },
+  {
+    "id": 53791,
+    "slug": "govt-of-tripura-notified-regarding-the-hotel-star-classification-requi",
+    "title": "Hotel Star Classification Requirements Notification",
+    "date": "Mar 18, 2026",
+    "category": "Industry Specific",
+    "authority": "Tourism Department, Govt. of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 53753,
+    "slug": "govt-of-tamil-nadu-issued-amendments-to-the-tamil-nadu-private-schools",
+    "title": "Govt. of Tamil Nadu issued amendments to Tamil Nadu Private Schools Rules",
+    "date": "Mar 18, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 53740,
+    "slug": "assam-agricultural-produce-and-livestock-marketing-promotion-and-facil",
+    "title": "Assam Agricultural Produce and Livestock Marketing Promotion and Facil",
+    "date": "Mar 18, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Assam",
+    "region": "Assam"
+  },
+  {
+    "id": 53732,
+    "slug": "draft-tripura-wages-rules-2026",
+    "title": "Draft Tripura Wages Rules, 2026",
+    "date": "Mar 18, 2026",
+    "category": "Labour",
+    "authority": "Labour Department, Govt. of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 53650,
+    "slug": "tripura-urban-planning-and-development-authority-amendment-ordinance-2",
+    "title": "Tripura Urban Planning and Development Authority Amendment Ordinance",
+    "date": "Mar 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 53639,
+    "slug": "govt-of-odisha-issued-the-odisha-tourism-amendment-policy-2026",
+    "title": "Odisha Tourism (Amendment) Policy 2026",
+    "date": "Mar 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Tourism Department, Govt. of Odisha",
+    "region": "Odisha"
+  },
+  {
+    "id": 53627,
+    "slug": "draft-odisha-code-on-social-security-rules-2026",
+    "title": "Draft Odisha Code on Social Security Rules, 2026",
+    "date": "Mar 14, 2026",
+    "category": "Labour",
+    "authority": "Labour and E.S.I Department, Govt. of Odisha",
+    "region": "Odisha"
+  },
+  {
+    "id": 53618,
+    "slug": "odisha-govt-issued-the-draft-odisha-industrial-relations-rules-2026",
+    "title": "Draft Odisha Industrial Relations Rules, 2026",
+    "date": "Mar 14, 2026",
+    "category": "Labour",
+    "authority": "Government of Odisha",
+    "region": "Odisha"
+  },
+  {
+    "id": 53551,
+    "slug": "indian-institute-of-public-health-shillong-bill-2026",
+    "title": "Indian Institute of Public Health Shillong Bill 2026",
+    "date": "Mar 12, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Meghalaya",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 53541,
+    "slug": "tamil-nadu-agroforestry-policy-2026",
+    "title": "Tamil Nadu Agroforestry Policy 2026",
+    "date": "Mar 12, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 53520,
+    "slug": "govt-of-tripura-issued-a-notification-regarding-the-partial-modificati",
+    "title": "Partial Modification Notification",
+    "date": "Mar 11, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 53516,
+    "slug": "govt-of-meghalaya-issued-a-notification-regarding-the-deadline-for-fil",
+    "title": "Govt. of Meghalaya issued notification on deadline for filing",
+    "date": "Mar 11, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Meghalaya",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 53473,
+    "slug": "govt-of-maharashtra-directs-districts-to-conduct-posh-internal-committ",
+    "title": "Govt. of Maharashtra directs districts to conduct POSH internal committees",
+    "date": "Mar 11, 2026",
+    "category": "Labour",
+    "authority": "Women Commission of Maharashtra State",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53465,
+    "slug": "tripura-guaranteed-services-to-citizens-first-amendment-rules-2026",
+    "title": "Tripura Guaranteed Services to Citizens First Amendment Rules, 2026",
+    "date": "Mar 10, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 53450,
+    "slug": "govt-of-uttarakhand-issued-a-notification-allowing-shops-and-establish",
+    "title": "Govt. of Uttarakhand issued notification allowing shops and establishments",
+    "date": "Mar 10, 2026",
+    "category": "Labour",
+    "authority": "Government of Uttarakhand",
+    "region": "Uttarakhand"
+  },
+  {
+    "id": 53435,
+    "slug": "maharashtra-lifts-escalators-and-moving-walks-amendment-bill-2026",
+    "title": "Maharashtra Lifts, Escalators and Moving Walks Amendment Bill 2026",
+    "date": "Mar 10, 2026",
+    "category": "EHS",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53434,
+    "slug": "west-bengal-govt-notified-regarding-the-proper-utilization-of-slow-mov",
+    "title": "West Bengal Govt Notified Proper Utilization of Slow Moving",
+    "date": "Mar 10, 2026",
+    "category": "Industry Specific",
+    "authority": "Health Department, West Bengal",
+    "region": "West Bengal"
+  },
+  {
+    "id": 53409,
+    "slug": "brera-issued-a-notification-regarding-the-launch-of-the-new-online-sys",
+    "title": "BRERA issued notification on launch of new online system",
+    "date": "Mar 9, 2026",
+    "category": "Industry Specific",
+    "authority": "Bihar Real Estate Regulatory Authority",
+    "region": "Bihar"
+  },
+  {
+    "id": 53352,
+    "slug": "govt-of-chhattisgarh-issued-amendments-in-chhattisgarh-foreign-liquor-",
+    "title": "Govt. of Chhattisgarh issued amendments in Chhattisgarh Foreign Liquor",
+    "date": "Mar 6, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 53346,
+    "slug": "govt-of-jammu-kashmir-notified-regarding-the-use-of-the-term-tea-for-p",
+    "title": "Govt. of Jammu & Kashmir Notified Use of Term Tea",
+    "date": "Mar 6, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Jammu & Kashmir",
+    "region": "J&K"
+  },
+  {
+    "id": 53339,
+    "slug": "govt-of-chhattisgarh-issued-the-amendment-in-the-water-prevention-and-",
+    "title": "Govt. of Chhattisgarh issued amendment in Water Prevention",
+    "date": "Mar 6, 2026",
+    "category": "EHS",
+    "authority": "Government of Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 53338,
+    "slug": "tamil-nadu-govt-issued-the-dearness-allowance-payable-with-effect-from",
+    "title": "Tamil Nadu Govt. issued dearness allowance payable with effect from",
+    "date": "Mar 6, 2026",
+    "category": "Labour",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 53329,
+    "slug": "govt-of-maharashtra-issued-the-sops-for-providing-international-employ",
+    "title": "Govt. of Maharashtra issued SOPs for international employment",
+    "date": "Mar 6, 2026",
+    "category": "Labour",
+    "authority": "Skill, Employment, Entrepreneurship Department, Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53325,
+    "slug": "govt-of-chhattisgarh-issued-a-notice-inviting-offers-for-registration-",
+    "title": "Govt. of Chhattisgarh issued Notice Inviting Offers for Registration",
+    "date": "Mar 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 53323,
+    "slug": "office-of-the-excise-commissioner-chhattisgarh-issued-notice-inviting-",
+    "title": "Office of Excise Commissioner, Chhattisgarh issued Notice Inviting Offers",
+    "date": "Mar 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Office of Excise Commissioner, Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 53234,
+    "slug": "bihar-jan-vishwas-provisions-bill-2026",
+    "title": "Bihar Jan Vishwas (Provisions) Bill 2026",
+    "date": "Mar 2, 2026",
+    "category": "EHS",
+    "authority": "Government of Bihar",
+    "region": "Bihar"
+  },
+  {
+    "id": 53217,
+    "slug": "cpcb-issued-the-guidance-document-for-registration-of-collection-agent",
+    "title": "CPCB Issued Guidance Document for Registration of Collection Agent",
+    "date": "Mar 1, 2026",
+    "category": "EHS",
+    "authority": "Central Pollution Control Board",
+    "region": "Central"
+  },
+  {
+    "id": 53216,
+    "slug": "cmd-notified-regarding-the-extension-in-implementation-of-amendment-no",
+    "title": "CMD notified extension in implementation of amendment",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Central Marks Department III",
+    "region": "Central"
+  },
+  {
+    "id": 53212,
+    "slug": "nppa-computed-the-retail-price-of-tacrolimus-ip-003-ww-ointment-for-ms",
+    "title": "NPPA Computed Retail Price of Tacrolimus IP 0.03% W/W Ointment",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "National Pharmaceutical Pricing Authority (NPPA)",
+    "region": "Central"
+  },
+  {
+    "id": 53211,
+    "slug": "nccl-notified-regarding-the-physical-withdrawal-of-goods-post-exchange",
+    "title": "NCCL notified Physical Withdrawal of Goods Post Exchange",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "National Commodity Clearing Limited (NCCL)",
+    "region": "Central"
+  },
+  {
+    "id": 53210,
+    "slug": "nhai-notified-regarding-making-toll-payments-fully-digital",
+    "title": "NHAI notified Making Toll Payments Fully Digital",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "National Highways Authority of India (NHAI)",
+    "region": "Central"
+  },
+  {
+    "id": 53209,
+    "slug": "maharashtra-govt-issued-the-maharashtra-unaided-private-professional-e",
+    "title": "Maharashtra Govt. issued the Maharashtra Unaided Private Professional",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53208,
+    "slug": "punjab-town-improvement-trust-amendment-rules-2026",
+    "title": "Punjab Town Improvement Trust (Amendment) Rules 2026",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Punjab",
+    "region": "Punjab"
+  },
+  {
+    "id": 53207,
+    "slug": "haryana-govt-notified-regarding-the-harvesting-period-of-arhar",
+    "title": "Haryana Govt. notified harvesting period of arhar",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Government of Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 53206,
+    "slug": "haryana-govt-notified-regarding-the-harvesting-period-of-nigerseed",
+    "title": "Haryana Govt. notified harvesting period of nigerseed",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Government of Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 53205,
+    "slug": "haryana-govt-notified-regarding-the-harvesting-period-of-sunflower-see",
+    "title": "Haryana Govt. notified harvesting period of sunflower seed",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Government of Haryana",
+    "region": "Haryana"
+  },
+  {
+    "id": 53202,
+    "slug": "mnre-notified-regarding-the-mandate-aadhaar-authentication-or-proof-of",
+    "title": "MNRE notified Mandate Aadhaar Authentication or Proof",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Ministry of New and Renewable Energy (MNRE)",
+    "region": "Central"
+  },
+  {
+    "id": 53199,
+    "slug": "mosde-notified-regarding-the-portal-upgrade-in-the-rebate-in-training",
+    "title": "MoSDE notified Portal upgrade in Rebate in Training",
+    "date": "Mar 1, 2026",
+    "category": "Labour",
+    "authority": "Ministry of Skill Development and Entrepreneurship (MoSDE)",
+    "region": "Central"
+  },
+  {
+    "id": 53196,
+    "slug": "bis-issued-the-date-of-establishment-for-is-on-earth-moving-machinery-",
+    "title": "BIS issued date of establishment for IS on earth moving machinery",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "region": "Central"
+  },
+  {
+    "id": 53193,
+    "slug": "moci-notified-regarding-the-index-of-eight-core-industries-base-year-2",
+    "title": "MoCI notified Index of Eight Core Industries Base Year",
+    "date": "Mar 1, 2026",
+    "category": "Labour",
+    "authority": "Ministry of Commerce and Industry (MoCI)",
+    "region": "Central"
+  },
+  {
+    "id": 53189,
+    "slug": "bis-issued-the-date-of-withdrawal-for-water-stills-for-pyrogen-free-di",
+    "title": "BIS issued date of withdrawal for water stills",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "region": "Central"
+  },
+  {
+    "id": 53188,
+    "slug": "gujarat-govt-issued-an-amendment-to-the-older-notification-stating-the",
+    "title": "Gujarat Govt. issued an amendment to the older notification",
+    "date": "Mar 1, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 53187,
+    "slug": "esic-notified-regarding-the-downward-rate-revision-for-item-no-1813-un",
+    "title": "ESIC notified Downward rate revision for Item No 1813",
+    "date": "Mar 1, 2026",
+    "category": "Labour",
+    "authority": "Employees' State Insurance Corporation (ESIC)",
+    "region": "Central"
+  },
+  {
+    "id": 53186,
+    "slug": "nse-notified-regarding-the-storage-charges-for-bullion-gold-10gm-in-th",
+    "title": "NSE notified storage charges for bullion gold 10gm",
+    "date": "Mar 1, 2026",
+    "category": "Secretarial",
+    "authority": "National Stock Exchange (NSE)",
+    "region": "Central"
+  },
+  {
+    "id": 53185,
+    "slug": "bis-issued-a-notification-regarding-the-date-of-the-establishment-of-t",
+    "title": "BIS issued notification on date of establishment of technical standards",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "region": "Central"
+  },
+  {
+    "id": 53183,
+    "slug": "ibbi-introduces-reforms-to-strengthen-the-valuation-and-information-di",
+    "title": "IBBI introduces reforms to strengthen valuation and information",
+    "date": "Mar 1, 2026",
+    "category": "Secretarial",
+    "authority": "Insolvency and Bankruptcy Board of India (IBBI)",
+    "region": "Central"
+  },
+  {
+    "id": 53180,
+    "slug": "mocafpd-notified-regarding-the-6th-reallocation-of-export-quota-for-ex",
+    "title": "MoCAF&PD notified 6th Reallocation of Export Quota",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Ministry of Consumer Affairs, Food & Public Distribution",
+    "region": "Central"
+  },
+  {
+    "id": 53179,
+    "slug": "uttar-pradesh-municipal-corporation-amendment-ordinance-2026",
+    "title": "Uttar Pradesh Municipal Corporation Amendment Ordinance 2026",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 53178,
+    "slug": "up-govt-issued-an-amendment-to-an-older-notification-related-to-gst-ra",
+    "title": "UP Govt. issued amendment to older notification on GST rates",
+    "date": "Mar 1, 2026",
+    "category": "Finance & Taxation",
+    "authority": "State Tax Department, Govt. of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 53177,
+    "slug": "govt-of-gujarat-notified-regarding-the-crop-calendar-and-harvesting-pe",
+    "title": "Govt. of Gujarat notified crop calendar and harvesting period",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Agriculture, Farmers Welfare and Co-Operation Department, Govt. of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 53176,
+    "slug": "bis-issued-a-notification-regarding-the-date-of-the-establishment-of-t",
+    "title": "BIS issued notification on date of establishment of technical standards 2",
+    "date": "Mar 1, 2026",
+    "category": "Commercial",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "region": "Central"
+  },
+  {
+    "id": 53175,
+    "slug": "maharashtra-government-notified-regarding-the-mid-week-holidays-for-st",
+    "title": "Maharashtra Government notified mid-week holidays for ST",
+    "date": "Mar 1, 2026",
+    "category": "Industry Specific",
+    "authority": "Industry, Energy, Labour & Mining Department, Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53174,
+    "slug": "mcx-issued-the-corrigendum-to-master-circular-network-connectivity",
+    "title": "MCX issued Corrigendum to Master circular network connectivity",
+    "date": "Mar 1, 2026",
+    "category": "Secretarial",
+    "authority": "Multi-Commodity Exchange of India Limited (MCX)",
+    "region": "Central"
+  },
+  {
+    "id": 53173,
+    "slug": "nccl-notified-regarding-the-final-settlement-price-of-contracts-expire",
+    "title": "NCCL notified Final settlement price of contracts expiring",
+    "date": "Mar 1, 2026",
+    "category": "Secretarial",
+    "authority": "National Commodity Clearing Limited (NCCL)",
+    "region": "Central"
+  },
+  {
+    "id": 53172,
+    "slug": "sebi-issued-the-revised-norms-for-appointment-of-an-independent-third-",
+    "title": "SEBI issued revised norms for appointment of independent third party",
+    "date": "Mar 1, 2026",
+    "category": "Secretarial",
+    "authority": "Securities and Exchange Board of India (SEBI)",
+    "region": "Central"
+  },
+  {
+    "id": 53169,
+    "slug": "pfrda-issued-the-guidelines-for-operational-activities-to-be-followed",
+    "title": "PFRDA issued guidelines for Operational activities",
+    "date": "Mar 1, 2026",
+    "category": "Labour",
+    "authority": "Pension Fund Regulatory and Development Authority (PFRDA)",
+    "region": "Central"
+  },
+  {
+    "id": 53168,
+    "slug": "u-t-administration-of-dadra-and-nagar-haveli-and-daman-and-diu-notifie",
+    "title": "U.T. Administration of Dadra and Nagar Haveli and Daman and Diu Notified",
+    "date": "Mar 1, 2026",
+    "category": "EHS",
+    "authority": "U.T. Administration of Dadra and Nagar Haveli and Daman and Diu",
+    "region": "Central"
+  },
+  {
+    "id": 53162,
+    "slug": "pfrda-issued-guidelines-for-operational-activities-to-be-followed-by-p",
+    "title": "PFRDA issued Guidelines for Operational Activities",
+    "date": "Feb 28, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Pension Fund Regulatory and Development Authority (PFRDA)",
+    "region": "Central"
+  },
+  {
+    "id": 53161,
+    "slug": "govt-of-nct-of-delhi-issued-a-circular-regarding-renewal-of-l-17-l-18-",
+    "title": "Govt. of NCT of Delhi issued circular on renewal of L-17, L-18",
+    "date": "Feb 28, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of NCT of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 53160,
+    "slug": "mcx-issued-a-corrigendum-to-master-circular-member-technology-related-",
+    "title": "MCX issued Corrigendum to Master circular member technology",
+    "date": "Feb 28, 2026",
+    "category": "Secretarial",
+    "authority": "Multi-Commodity Exchange of India Limited (MCX)",
+    "region": "Central"
+  },
+  {
+    "id": 53159,
+    "slug": "ncdex-issued-a-circular-regarding-e-asm-on-coriander-contracts",
+    "title": "NCDEX issued circular on e-asm on coriander contracts",
+    "date": "Feb 28, 2026",
+    "category": "Secretarial",
+    "authority": "National Commodity & Derivatives Exchange Limited (NCDEX)",
+    "region": "Central"
+  },
+  {
+    "id": 53158,
+    "slug": "nccl-issued-a-circular-regarding-the-settlement-calendar-and-timelines",
+    "title": "NCCL issued circular on settlement calendar and timelines",
+    "date": "Feb 28, 2026",
+    "category": "Secretarial",
+    "authority": "National Commodity Clearing Limited (NCCL)",
+    "region": "Central"
+  },
+  {
+    "id": 53155,
+    "slug": "pfrda-issued-a-circular-regarding-the-guidelines-for-operational-activ",
+    "title": "PFRDA issued circular on Guidelines for Operational Activities",
+    "date": "Feb 28, 2026",
+    "category": "Labour",
+    "authority": "Pension Fund Regulatory and Development Authority (PFRDA)",
+    "region": "Central"
+  },
+  {
+    "id": 53154,
+    "slug": "madhya-pradesh-labour-welfare-fund-amendment-bill-2026",
+    "title": "Madhya Pradesh Labour Welfare Fund Amendment Bill 2026",
+    "date": "Feb 28, 2026",
+    "category": "Labour",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 53152,
+    "slug": "mcx-issued-a-corrigendum-to-the-master-circular-computer-to-computer-l",
+    "title": "MCX issued corrigendum to Master circular computer to computer",
+    "date": "Feb 28, 2026",
+    "category": "Secretarial",
+    "authority": "Multi-Commodity Exchange of India Limited (MCX)",
+    "region": "Central"
+  },
+  {
+    "id": 53143,
+    "slug": "maharashtra-municipal-councils-nagar-panchayats-and-industrial-townshi",
+    "title": "Maharashtra Municipal Councils, Nagar Panchayats and Industrial Township",
+    "date": "Feb 27, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53142,
+    "slug": "govt-of-goa-issued-a-notification-regarding-paid-holiday-for-panchayat",
+    "title": "Govt. of Goa issued notification on Paid Holiday for Panchayat",
+    "date": "Feb 27, 2026",
+    "category": "Labour",
+    "authority": "Government of Goa",
+    "region": "Goa"
+  },
+  {
+    "id": 53141,
+    "slug": "pollution-control-committee-of-daman-diu-and-dadra-nagar-haveli-bans-f",
+    "title": "Pollution Control Committee of Daman & Diu and Dadra & Nagar Haveli Bans",
+    "date": "Feb 27, 2026",
+    "category": "EHS",
+    "authority": "Pollution Control Committee of Daman & Diu and Dadra & Nagar Haveli",
+    "region": "Central"
+  },
+  {
+    "id": 53140,
+    "slug": "dgtr-issued-a-notification-regarding-the-initiation-of-a-countervailin",
+    "title": "DGTR issued notification on countervailing initiation",
+    "date": "Feb 27, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Directorate General of Trade Remedies (DGTR)",
+    "region": "Central"
+  },
+  {
+    "id": 53136,
+    "slug": "maharashtra-settlement-of-arrears-of-tax-interest-penalty-or-late-fee-",
+    "title": "Maharashtra Settlement of Arrears of Tax, Interest, Penalty or Late Fee",
+    "date": "Feb 27, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53135,
+    "slug": "govt-of-telangana-notified-regarding-commencement-for-telangana-motor-",
+    "title": "Govt. of Telangana notified commencement for Telangana Motor Vehicle",
+    "date": "Feb 27, 2026",
+    "category": "Commercial",
+    "authority": "Transport, Roads & Buildings Department, Govt. of Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 53134,
+    "slug": "esic-issued-a-circular-regarding-the-declaration-of-drug-not-of-standa",
+    "title": "ESIC issued circular on Declaration of Drug Not of Standard",
+    "date": "Feb 27, 2026",
+    "category": "Labour",
+    "authority": "Employees' State Insurance Corporation (ESIC)",
+    "region": "Central"
+  },
+  {
+    "id": 53127,
+    "slug": "mspcb-notified-regarding-the-revision-of-authorization-fee-structure-u",
+    "title": "MSPCB Notified Revision of Authorization Fee Structure",
+    "date": "Feb 27, 2026",
+    "category": "EHS",
+    "authority": "Meghalaya State Pollution Control Board",
+    "region": "Meghalaya"
+  },
+  {
+    "id": 53126,
+    "slug": "govt-of-delhi-issued-the-renewal-of-license-in-the-form-of-l-11-for-th",
+    "title": "Govt. of Delhi issued renewal of license in form L-11",
+    "date": "Feb 27, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of NCT of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 53118,
+    "slug": "draft-gas-cylinders-amendment-rules-2026",
+    "title": "Draft Gas Cylinders Amendment Rules 2026",
+    "date": "Feb 27, 2026",
+    "category": "EHS",
+    "authority": "Ministry of Commerce and Industry",
+    "region": "Central"
+  },
+  {
+    "id": 53116,
+    "slug": "kerala-shops-and-commercial-establishments-workers-welfare-fund-amendm",
+    "title": "Kerala Shops and Commercial Establishments Workers Welfare Fund Amendment",
+    "date": "Feb 27, 2026",
+    "category": "Labour",
+    "authority": "Government of Kerala",
+    "region": "Kerala"
+  },
+  {
+    "id": 53112,
+    "slug": "uttar-pradesh-brick-kiln-site-standards-for-establishment-first-amendm",
+    "title": "Uttar Pradesh Brick Kiln Site Standards for Establishment First Amendment",
+    "date": "Feb 27, 2026",
+    "category": "EHS",
+    "authority": "Government of Uttar Pradesh",
+    "region": "Uttar Pradesh"
+  },
+  {
+    "id": 53104,
+    "slug": "draft-tripura-occupational-safety-health-and-working-conditions-rules-",
+    "title": "Draft Tripura Occupational Safety, Health and Working Conditions Rules",
+    "date": "Feb 26, 2026",
+    "category": "Labour",
+    "authority": "Government of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 53099,
+    "slug": "delhi-govt-issued-order-for-renewal-and-grant-of-new-hcr-and-mtp-licen",
+    "title": "Delhi Govt. issued order for renewal and grant of HCR and MTP licenses",
+    "date": "Feb 26, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 53090,
+    "slug": "bihar-municipal-amendment-bill-2026",
+    "title": "Bihar Municipal (Amendment) Bill 2026",
+    "date": "Feb 26, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Bihar",
+    "region": "Bihar"
+  },
+  {
+    "id": 53089,
+    "slug": "govt-of-the-national-capital-territory-of-delhi-issued-a-circular-rega",
+    "title": "Govt. of NCT of Delhi issued a circular",
+    "date": "Feb 26, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of NCT of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 53088,
+    "slug": "department-of-labour-sikkim-issued-a-notification-regarding-exemptions",
+    "title": "Department of Labour, Sikkim issued notification on exemptions",
+    "date": "Feb 26, 2026",
+    "category": "Labour",
+    "authority": "Department of Labour, Sikkim",
+    "region": "Sikkim"
+  },
+  {
+    "id": 53087,
+    "slug": "draft-explosives-amendment-rules-2026",
+    "title": "Draft Explosives Amendment Rules 2026",
+    "date": "Feb 26, 2026",
+    "category": "EHS",
+    "authority": "Ministry of Commerce and Industry",
+    "region": "Central"
+  },
+  {
+    "id": 53084,
+    "slug": "govt-of-maharashtra-notified-regarding-fixing-criteria-for-setting-up-",
+    "title": "Govt. of Maharashtra notified fixing criteria for setting up",
+    "date": "Feb 26, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53074,
+    "slug": "govt-of-west-bengal-notified-regarding-the-documents-required-for-obta",
+    "title": "Govt of West Bengal Notified Documents Required for Obtaining",
+    "date": "Feb 25, 2026",
+    "category": "Labour",
+    "authority": "Labour Department, Government of West Bengal",
+    "region": "West Bengal"
+  },
+  {
+    "id": 53065,
+    "slug": "mpcb-issued-a-circular-regarding-revised-timelines-for-the-grant-refus",
+    "title": "MPCB issued a circular regarding revised timelines for grant/refusal",
+    "date": "Feb 25, 2026",
+    "category": "EHS",
+    "authority": "Maharashtra Pollution Control Board (MPCB)",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 53046,
+    "slug": "kerala-govt-issued-notification-regarding-the-public-advisory-on-heatw",
+    "title": "Kerala Government Issued Notification Regarding Public Advisory on Heatwave",
+    "date": "Feb 25, 2026",
+    "category": "EHS",
+    "authority": "Government of Kerala",
+    "region": "Kerala"
+  },
+  {
+    "id": 53045,
+    "slug": "karnataka-municipal-corporations-model-building-amendment-bye-laws-202",
+    "title": "Karnataka Municipal Corporations Model Building Amendment Bye-Laws 2026",
+    "date": "Feb 25, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 53032,
+    "slug": "department-of-labour-welfare-assam-issued-a-notification-regarding-the",
+    "title": "Department of Labour Welfare, Assam issued notification",
+    "date": "Feb 24, 2026",
+    "category": "Labour",
+    "authority": "Department of Labour Welfare, Assam",
+    "region": "Assam"
+  },
+  {
+    "id": 53030,
+    "slug": "department-of-labour-welfare-assam-issued-a-notification-regarding-rev",
+    "title": "Department of Labour Welfare, Assam issued notification regarding revision",
+    "date": "Feb 24, 2026",
+    "category": "Labour",
+    "authority": "Department of Labour Welfare, Assam",
+    "region": "Assam"
+  },
+  {
+    "id": 53026,
+    "slug": "karnataka-municipalities-model-building-amendment-bye-laws-2026",
+    "title": "Karnataka Municipalities Model Building Amendment Bye-Laws 2026",
+    "date": "Feb 24, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 53020,
+    "slug": "govt-of-karnataka-notified-regarding-the-fixing-june-30-2026-as-the-la",
+    "title": "Government of Karnataka Notification Regarding June 30, 2026 Deadline",
+    "date": "Feb 24, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 53018,
+    "slug": "draft-karnataka-state-road-safety-authority-amendment-rules-2026",
+    "title": "Draft Karnataka State Road Safety Authority Amendment Rules 2026",
+    "date": "Feb 24, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52955,
+    "slug": "tamil-nadu-district-minerals-trust-rules-2025",
+    "title": "Tamil Nadu District Minerals Trust Rules 2025",
+    "date": "Feb 22, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52949,
+    "slug": "chhattisgarh-innovation-and-startup-promotion-policy-2025-30",
+    "title": "Chhattisgarh Innovation and Startup Promotion Policy 2025-30",
+    "date": "Feb 21, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 52922,
+    "slug": "code-on-social-security-gujarat-amendment-rules-2026",
+    "title": "Code on Social Security (Gujarat) Amendment Rules 2026",
+    "date": "Feb 21, 2026",
+    "category": "Labour",
+    "authority": "Labour, Skill Development and Employment Department, Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 52917,
+    "slug": "govt-of-jammu-and-kashmir-issued-a-circular-regarding-the-implementati",
+    "title": "Govt. of Jammu and Kashmir Circular on Implementation",
+    "date": "Feb 21, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Jammu and Kashmir",
+    "region": "J&K"
+  },
+  {
+    "id": 52910,
+    "slug": "west-bengal-goods-and-services-tax-amendment-rules-2026",
+    "title": "West Bengal Goods and Services Tax Amendment Rules 2026",
+    "date": "Feb 20, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of West Bengal",
+    "region": "West Bengal"
+  },
+  {
+    "id": 52894,
+    "slug": "west-bengal-govt-issued-an-amendment-to-the-older-notification-regardi",
+    "title": "West Bengal Govt Issued Amendment to Older Notification",
+    "date": "Feb 20, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of West Bengal",
+    "region": "West Bengal"
+  },
+  {
+    "id": 52889,
+    "slug": "govt-of-mizoram-issued-the-guidelines-for-taxpayers-regarding-the-enga",
+    "title": "Govt. of Mizoram issued Guidelines for Taxpayers",
+    "date": "Feb 20, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 52882,
+    "slug": "nagaland-govt-issued-amendment-to-the-guidelines-for-establishment-of-",
+    "title": "Amendment to Guidelines for Establishment",
+    "date": "Feb 19, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 52862,
+    "slug": "telangana-govt-mandated-the-fitment-of-high-security-registration-plat",
+    "title": "Telangana Govt. mandated High Security Registration Plates",
+    "date": "Feb 19, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 52858,
+    "slug": "telangana-govt-issued-the-applicant-self-verification-checklist-for-em",
+    "title": "Telangana Govt. issued Applicant Self-Verification Checklist",
+    "date": "Feb 19, 2026",
+    "category": "EHS",
+    "authority": "Government of Telangana",
+    "region": "Telangana"
+  },
+  {
+    "id": 52853,
+    "slug": "karnataka-tank-conservation-and-development-authority-amendment-act-20",
+    "title": "Karnataka Tank Conservation and Development Authority Amendment Act 2026",
+    "date": "Feb 19, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52852,
+    "slug": "govt-of-tamil-nadu-issued-a-notification-regarding-the-appointment-of-",
+    "title": "Govt. of Tamil Nadu issued notification on appointment",
+    "date": "Feb 19, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52842,
+    "slug": "govt-of-karnataka-notified-the-enforcement-date-of-the-karnataka-tradi",
+    "title": "Government of Karnataka Enforcement Date Notification",
+    "date": "Feb 19, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52827,
+    "slug": "mizoram-govt-issued-notification-regarding-the-renaming-of-commerce-in",
+    "title": "Mizoram Govt. issued notification on Renaming of Commerce",
+    "date": "Feb 18, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 52815,
+    "slug": "karnataka-good-samaritan-and-medical-professional-protection-and-regul",
+    "title": "Karnataka Good Samaritan and Medical Professional Protection Regulation",
+    "date": "Feb 18, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52809,
+    "slug": "govt-of-tamil-nadu-issued-an-amendment-to-the-tamil-nadu-minor-ports-h",
+    "title": "Govt. of Tamil Nadu amendment to Tamil Nadu Minor Ports",
+    "date": "Feb 17, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52802,
+    "slug": "govt-of-karnataka-notified-regarding-the-collection-of-the-gig-workers",
+    "title": "Government of Karnataka Gig Workers Collection Notification",
+    "date": "Feb 17, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52768,
+    "slug": "govt-of-tamil-nadu-issued-an-amendment-to-the-tamil-nadu-regularisatio",
+    "title": "Govt. of Tamil Nadu amendment to Tamil Nadu Regularisation",
+    "date": "Feb 16, 2026",
+    "category": "Industry Specific",
+    "authority": "Housing and Urban Development Department, Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52754,
+    "slug": "tamil-nadu-govt-issued-amendments-to-the-tamil-nadu-cinemas-regulation",
+    "title": "Tamil Nadu Govt. issued amendments to the Tamil Nadu Cinemas Regulation",
+    "date": "Feb 16, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52746,
+    "slug": "rera-bihar-launch-of-new-online-project-registration-system",
+    "title": "RERA Bihar Launch of New Online Project Registration System",
+    "date": "Feb 16, 2026",
+    "category": "Industry Specific",
+    "authority": "Real Estate Regulatory Authority Bihar",
+    "region": "Bihar"
+  },
+  {
+    "id": 52730,
+    "slug": "kakching-khunou-municipal-council-building-bye-laws-2025",
+    "title": "Kakching Khunou Municipal Council Building Bye-Laws 2025",
+    "date": "Feb 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Kakching Khunou Municipal Council",
+    "region": "Manipur"
+  },
+  {
+    "id": 52722,
+    "slug": "maharashtra-govt-issued-an-amendment-to-the-older-notification-stating",
+    "title": "Maharashtra Govt. issued an amendment to the older notification",
+    "date": "Feb 15, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Finance Department, Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 52721,
+    "slug": "maharashtra-govt-notified-regarding-the-use-of-aadhaar-as-an-identity-",
+    "title": "Maharashtra Govt. notified use of Aadhaar as identity",
+    "date": "Feb 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Agriculture, Animal Husbandry Dept., Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 52717,
+    "slug": "maharashtra-govt-issued-an-amendment-to-an-older-notification-related-",
+    "title": "Maharashtra Govt. issued an amendment to an older notification",
+    "date": "Feb 15, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Department of Finance, Govt. of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 52665,
+    "slug": "govt-of-nagaland-issued-the-modalities-for-the-implementation-of-gener",
+    "title": "Modalities for Implementation",
+    "date": "Feb 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 52664,
+    "slug": "nagaland-govt-introduced-the-online-system-for-registration-and-licens",
+    "title": "Online System for Registration and Licensing",
+    "date": "Feb 13, 2026",
+    "category": "Labour",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 52658,
+    "slug": "krera-issued-a-circular-regarding-imposing-a-penalty-for-delay-in-subm",
+    "title": "KRERA Circular on Penalty for Delayed Submission",
+    "date": "Feb 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Karnataka Real Estate Regulatory Authority",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52614,
+    "slug": "sugnu-municipal-council-building-bye-laws-2025",
+    "title": "Sugnu Municipal Council Building Bye-Laws 2025",
+    "date": "Feb 11, 2026",
+    "category": "Industry Specific",
+    "authority": "Sugnu Municipal Council",
+    "region": "Manipur"
+  },
+  {
+    "id": 52560,
+    "slug": "bihar-state-migrant-labour-accident-grant-scheme-amendment-rules-2026",
+    "title": "Bihar State Migrant Labour Accident Grant Scheme Amendment Rules 2026",
+    "date": "Feb 10, 2026",
+    "category": "Labour",
+    "authority": "Government of Bihar",
+    "region": "Bihar"
+  },
+  {
+    "id": 52532,
+    "slug": "chhattisgarh-govt-issued-amendments-in-chhattisgarh-country-spirit-rul",
+    "title": "Chhattisgarh Govt. issued amendments in Chhattisgarh Country Spirit Rules",
+    "date": "Feb 9, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 52526,
+    "slug": "tamil-nadu-govt-notified-the-tamil-nadu-lifts-and-escalators-amendment",
+    "title": "Tamil Nadu Govt. notified the Tamil Nadu Lifts and Escalators Amendment",
+    "date": "Feb 9, 2026",
+    "category": "EHS",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52444,
+    "slug": "ningthoukhong-municipal-council-building-bye-laws-2025",
+    "title": "Ningthoukhong Municipal Council Building Bye-Laws 2025",
+    "date": "Feb 5, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Manipur",
+    "region": "Manipur"
+  },
+  {
+    "id": 52428,
+    "slug": "govt-of-maharashtra-issued-a-notification-regarding-revised-zone-wise-",
+    "title": "Govt. of Maharashtra issued notification on revised zone-wise provisions",
+    "date": "Feb 5, 2026",
+    "category": "Labour",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 52369,
+    "slug": "tamil-nadu-govt-issued-the-tamil-nadu-schools-regulation-of-collection",
+    "title": "Tamil Nadu Govt. issued the Tamil Nadu Schools Regulation of Collection",
+    "date": "Feb 3, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52366,
+    "slug": "tamil-nadu-govt-issued-amendment-in-the-guidelines-for-starting-of-deg",
+    "title": "Tamil Nadu Govt. issued amendment in guidelines for starting degree",
+    "date": "Feb 3, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52360,
+    "slug": "govt-of-chhattisgarh-issued-a-notification-regarding-the-liquor-duty",
+    "title": "Govt. of Chhattisgarh issued notification on Liquor Duty",
+    "date": "Feb 3, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Chhattisgarh",
+    "region": "Chhattisgarh"
+  },
+  {
+    "id": 52344,
+    "slug": "government-of-maharashtra-extends-esi-act-coverage-to-educational-and-",
+    "title": "Government of Maharashtra extends ESI Act coverage to educational institutions",
+    "date": "Feb 2, 2026",
+    "category": "Labour",
+    "authority": "Public Health Department, Govt. of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 52337,
+    "slug": "sikkim-private-universities-establishment-and-regulation-act-2025",
+    "title": "Sikkim Private Universities (Establishment and Regulation) Act, 2025",
+    "date": "Feb 2, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Sikkim",
+    "region": "Sikkim"
+  },
+  {
+    "id": 52250,
+    "slug": "draft-code-on-social-security-karnataka-rules-2026",
+    "title": "Draft Code on Social Security Karnataka Rules 2026",
+    "date": "Jan 31, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52193,
+    "slug": "tamil-nadu-amendment-to-minor-mineral-concession-rules",
+    "title": "Tamil Nadu Amendment to Minor Mineral Concession Rules",
+    "date": "Jan 28, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 52183,
+    "slug": "karnataka-goods-and-services-tax-amendment-rules-2026",
+    "title": "Karnataka Goods and Services Tax Amendment Rules 2026",
+    "date": "Jan 28, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52175,
+    "slug": "karnataka-govt-issued-the-draft-code-on-wages-karnataka-rules-2021",
+    "title": "Draft Code on Wages Karnataka Rules 2021",
+    "date": "Jan 27, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52173,
+    "slug": "draft-occupational-safety-health-and-working-conditions-karnataka-rule",
+    "title": "Draft Occupational Safety, Health and Working Conditions Karnataka Rules",
+    "date": "Jan 27, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52170,
+    "slug": "govt-of-chandigarh-notified-regarding-the-zero-day-automated-ctecto-ap",
+    "title": "Zero-Day Automated CTECTO Notification",
+    "date": "Jan 27, 2026",
+    "category": "EHS",
+    "authority": "Department of Public Relations, Government of Chandigarh",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 52168,
+    "slug": "industrial-relations-karnataka-rules-2026",
+    "title": "Industrial Relations Karnataka Rules 2026",
+    "date": "Jan 27, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 52144,
+    "slug": "manipur-govt-notified-regarding-the-prohibition-and-restriction-on-sal",
+    "title": "Manipur Govt. notified Prohibition and Restriction on Sale",
+    "date": "Jan 27, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Manipur",
+    "region": "Manipur"
+  },
+  {
+    "id": 52075,
+    "slug": "government-of-uttarakhand-issued-a-notification-amending-the-uttarakha",
+    "title": "Government of Uttarakhand issued notification amending Uttarakhand rules",
+    "date": "Jan 23, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Uttarakhand",
+    "region": "Uttarakhand"
+  },
+  {
+    "id": 51970,
+    "slug": "karnataka-govt-issued-advisory-for-payment-of-profession-tax-for-the-m",
+    "title": "Karnataka Government Advisory for Profession Tax Payment",
+    "date": "Jan 20, 2026",
+    "category": "Labour",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51842,
+    "slug": "lamlai-municipal-council-building-bye-laws-2025",
+    "title": "Lamlai Municipal Council Building Bye-Laws 2025",
+    "date": "Jan 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Government of Manipur",
+    "region": "Manipur"
+  },
+  {
+    "id": 51824,
+    "slug": "samurou-municipal-council-building-bye-laws-2025",
+    "title": "Samurou Municipal Council Building Bye-Laws 2025",
+    "date": "Jan 15, 2026",
+    "category": "Industry Specific",
+    "authority": "Samurou Municipal Council",
+    "region": "Manipur"
+  },
+  {
+    "id": 51768,
+    "slug": "chandigarh-administration-unveils-energy-efficiency-conservation-activ",
+    "title": "Chandigarh Administration Energy Efficiency & Conservation Activities",
+    "date": "Jan 13, 2026",
+    "category": "Industry Specific",
+    "authority": "Chandigarh Administration",
+    "region": "Chandigarh"
+  },
+  {
+    "id": 51722,
+    "slug": "government-of-maharashtra-declared-public-holiday-on-account-of-electi",
+    "title": "Government of Maharashtra declared public holiday on account of elections",
+    "date": "Jan 12, 2026",
+    "category": "Labour",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51689,
+    "slug": "manipur-goods-and-services-tax-fifth-amendment-rules-2025",
+    "title": "Manipur Goods and Services Tax (Fifth Amendment) Rules 2025",
+    "date": "Jan 11, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Manipur",
+    "region": "Manipur"
+  },
+  {
+    "id": 51647,
+    "slug": "govt-of-nagaland-issued-the-list-of-closed-holidays-for-2026-for-the-c",
+    "title": "List of Closed Holidays for 2026",
+    "date": "Jan 8, 2026",
+    "category": "Labour",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 51643,
+    "slug": "karnataka-govt-issued-amended-to-an-older-notification-related-to-gst-",
+    "title": "Karnataka GST Notification Amendment",
+    "date": "Jan 8, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51583,
+    "slug": "govt-of-arunachal-pradesh-issued-a-notification-regarding-the-list-of-",
+    "title": "Govt. of Arunachal Pradesh issued notification on list",
+    "date": "Jan 7, 2026",
+    "category": "Labour",
+    "authority": "Government of Arunachal Pradesh",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 51571,
+    "slug": "govt-of-karnataka-issued-an-amendment-to-the-older-notification-statin",
+    "title": "Government of Karnataka Notification Amendment",
+    "date": "Jan 7, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51513,
+    "slug": "govt-of-karnataka-issued-the-amendment-to-the-older-notification-stati",
+    "title": "Karnataka Commercial Taxes Department Amendment",
+    "date": "Jan 6, 2026",
+    "category": "Finance & Taxation",
+    "authority": "Department of Commercial Taxes, Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51328,
+    "slug": "maharashtra-industry-investment-and-services-policy-2025",
+    "title": "Maharashtra Industry, Investment, and Services Policy 2025",
+    "date": "Dec 31, 2025",
+    "category": "Commercial",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51321,
+    "slug": "govt-of-gujarat-notified-regarding-the-public-holidays-for-the-year-20",
+    "title": "Govt. of Gujarat notified Public Holidays for year 2025",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Ahmedabad Municipal Corporation, Govt. of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 51318,
+    "slug": "jharkhand-govt-extended-the-time-limit-for-furnishing-the-return-in-fo",
+    "title": "Jharkhand Extension of Return Filing Time Limit",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Government of Jharkhand",
+    "region": "Jharkhand"
+  },
+  {
+    "id": 51314,
+    "slug": "amdavad-municipal-corporation-issued-a-notification-regarding-the-ban-",
+    "title": "Amdavad Municipal Corporation notified ban",
+    "date": "Dec 31, 2025",
+    "category": "EHS",
+    "authority": "Amdavad Municipal Corporation",
+    "region": "Gujarat"
+  },
+  {
+    "id": 51313,
+    "slug": "mof-notified-regarding-the-amendment-to-the-anti-dumping-duty-on-hot-r",
+    "title": "MoF Amendment to Anti-Dumping Duty on Hot-Rolled Products",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Ministry of Finance",
+    "region": "Central"
+  },
+  {
+    "id": 51311,
+    "slug": "mof-amended-an-older-notification-related-to-the-specific-customs-duty",
+    "title": "MoF Amendment to Specific Customs Duty Notification",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Ministry of Finance",
+    "region": "Central"
+  },
+  {
+    "id": 51307,
+    "slug": "mole-issued-a-notification-regarding-the-extension-of-spree-2025",
+    "title": "MoL&E issued notification on extension of SPREE 2025",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Ministry of Labour and Employment",
+    "region": "Central"
+  },
+  {
+    "id": 51304,
+    "slug": "mof-amended-an-older-notification-related-to-the-duty-concessions-unde",
+    "title": "MoF Amendment Regarding Duty Concessions",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Ministry of Finance",
+    "region": "Central"
+  },
+  {
+    "id": 51296,
+    "slug": "mole-issued-faqs-code-on-wages-2019",
+    "title": "MoLE issued FAQs - Code on Wages, 2019",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Ministry of Labour and Employment",
+    "region": "Central"
+  },
+  {
+    "id": 51295,
+    "slug": "draft-industrial-relations-central-rules-2025",
+    "title": "Draft Industrial Relations (Central) Rules, 2025",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Ministry of Labour and Employment",
+    "region": "Central"
+  },
+  {
+    "id": 51294,
+    "slug": "mole-faq-on-myths-and-realities-of-industrial-relations-code-2020",
+    "title": "MoLE FAQ on Myths and Realities of Industrial Relations Code 2020",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Ministry of Labour and Employment",
+    "region": "Central"
+  },
+  {
+    "id": 51287,
+    "slug": "mof-revising-the-applicable-customs-exemption-structure",
+    "title": "MoF Revision of Customs Exemption Structure",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Ministry of Finance",
+    "region": "Central"
+  },
+  {
+    "id": 51284,
+    "slug": "govt-of-madhya-pradesh-issued-a-list-of-holidays",
+    "title": "Govt. of Madhya Pradesh issued list of holidays",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Government of Madhya Pradesh",
+    "region": "Madhya Pradesh"
+  },
+  {
+    "id": 51279,
+    "slug": "govt-of-tamil-nadu-issued-an-amendment-to-an-earlier-notification",
+    "title": "Tamil Nadu Amendment to Earlier Notification",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 51275,
+    "slug": "tamil-nadu-goods-and-services-tax-fourth-amendment-rules-2025",
+    "title": "Tamil Nadu Goods and Services Tax (Fourth Amendment) Rules, 2025",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 51273,
+    "slug": "mof-issued-a-notification-regarding-the-imposition-of-safeguard-duty-o",
+    "title": "MoF Notification on Safeguard Duty Imposition",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Ministry of Finance",
+    "region": "Central"
+  },
+  {
+    "id": 51272,
+    "slug": "mof-amended-an-older-notification-related-to-customs-duty-on-certain-t",
+    "title": "MoF Amendment to Customs Duty Notification",
+    "date": "Dec 31, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Ministry of Finance",
+    "region": "Central"
+  },
+  {
+    "id": 51271,
+    "slug": "govt-of-nct-of-delhi-issued-a-notification-regarding-the-prohibition-o",
+    "title": "Govt. of NCT of Delhi notified prohibition",
+    "date": "Dec 31, 2025",
+    "category": "EHS",
+    "authority": "Govt. of NCT of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 51267,
+    "slug": "mole-issued-faqs-on-occupational-safety-health-and-working-conditions-",
+    "title": "MoLE issued FAQs on Occupational Safety, Health and Working Conditions",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Ministry of Labour and Employment",
+    "region": "Central"
+  },
+  {
+    "id": 51266,
+    "slug": "mole-issued-the-faqs-on-labour-codes",
+    "title": "MoLE issued the FAQs on Labour Codes",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Ministry of Labour and Employment",
+    "region": "Central"
+  },
+  {
+    "id": 51263,
+    "slug": "nagaland-govt-notified-regarding-the-clarification-on-engagement-of-wo",
+    "title": "Nagaland Govt. notified Clarification on Engagement of Workers",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Government of Nagaland",
+    "region": "Nagaland"
+  },
+  {
+    "id": 51261,
+    "slug": "punjab-govt-notified-regarding-the-adjustment-of-minimum-wage-rates-ap",
+    "title": "Punjab Govt. notified adjustment of minimum wage rates",
+    "date": "Dec 31, 2025",
+    "category": "Labour",
+    "authority": "Government of Punjab",
+    "region": "Punjab"
+  },
+  {
+    "id": 51248,
+    "slug": "maharashtra-municipal-councils-nagar-panchayats-and-industrial-townshi",
+    "title": "Maharashtra Municipal Councils, Nagar Panchayats and Industrial Township (2025)",
+    "date": "Dec 30, 2025",
+    "category": "Industry Specific",
+    "authority": "Urban Development Department, Govt. of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51246,
+    "slug": "government-of-maharashtra-issued-paid-leave-and-voting-facilitation-fo",
+    "title": "Government of Maharashtra issued Paid Leave and Voting Facilitation",
+    "date": "Dec 30, 2025",
+    "category": "Labour",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51245,
+    "slug": "mpa-amendment-to-wharfage-charges-for-iron-and-steel-cargo-at-oct",
+    "title": "MPA Amendment to Wharfage Charges for Iron and Steel Cargo",
+    "date": "Dec 30, 2025",
+    "category": "Industry Specific",
+    "authority": "Mumbai Port Authority (MPA)",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51234,
+    "slug": "mumbai-municipal-corporation-maharashtra-municipal-corporations-and-ma",
+    "title": "Mumbai Municipal Corporation and Maharashtra Municipal Corporations",
+    "date": "Dec 30, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51233,
+    "slug": "maharashtra-village-panchayats-and-the-maharashtra-zilla-parishads-and",
+    "title": "Maharashtra Village Panchayats and Zilla Parishads",
+    "date": "Dec 30, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51224,
+    "slug": "apspcb-notified-regarding-the-introduction-of-the-third-party-inspecti",
+    "title": "APSPCB notified third-party inspection introduction",
+    "date": "Dec 30, 2025",
+    "category": "EHS",
+    "authority": "Arunachal Pradesh State Pollution Control Board",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 51216,
+    "slug": "delhi-govt-issued-directions-us-5-of-the-environment-protection-act-19",
+    "title": "Delhi Govt. issued directions u/s 5 of Environment Protection Act",
+    "date": "Dec 29, 2025",
+    "category": "EHS",
+    "authority": "Government of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 51210,
+    "slug": "government-of-tamil-nadu-revised-minimum-wages-for-various-scheduled-e",
+    "title": "Government of Tamil Nadu revised minimum wages for various scheduled employments",
+    "date": "Dec 29, 2025",
+    "category": "Labour",
+    "authority": "Labour Welfare and Skill Development Department",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 51201,
+    "slug": "caqm-notified-regarding-the-revocation-of-actions-under-stage-iv-sever",
+    "title": "CAQM notified revocation of actions under stage IV",
+    "date": "Dec 29, 2025",
+    "category": "EHS",
+    "authority": "Commission for Air Quality Management (CAQM)",
+    "region": "Delhi"
+  },
+  {
+    "id": 51200,
+    "slug": "tamil-nadu-govt-issued-amendments-in-the-tamil-nadu-shops-and-establis",
+    "title": "Tamil Nadu Govt. issued amendments in Tamil Nadu Shops and Establishments",
+    "date": "Dec 29, 2025",
+    "category": "Labour",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 51196,
+    "slug": "govt-of-tamil-nadu-issued-the-amendment-to-the-inter-state-migrant-wor",
+    "title": "Govt. of Tamil Nadu issued amendment to inter state migrant workers",
+    "date": "Dec 29, 2025",
+    "category": "Labour",
+    "authority": "Labour Welfare and Skill Development",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 51190,
+    "slug": "labour-welfare-and-skill-development-j1-department-tamil-nadu-issued-a",
+    "title": "Labour Welfare and Skill Development J1 Department Tamil Nadu",
+    "date": "Dec 29, 2025",
+    "category": "Labour",
+    "authority": "Labour Welfare and Skill Development Department",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 51189,
+    "slug": "govt-of-jammu-kashmir-issued-a-circular-regarding-the-installation-of",
+    "title": "Govt. of Jammu & Kashmir Circular on Installation",
+    "date": "Dec 29, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Jammu & Kashmir",
+    "region": "J&K"
+  },
+  {
+    "id": 51186,
+    "slug": "tamil-nadu-govt-issued-draft-revision-of-minimum-rates-of-wages-for-th",
+    "title": "Tamil Nadu Govt. issued draft revision of minimum rates of wages",
+    "date": "Dec 29, 2025",
+    "category": "Labour",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 51177,
+    "slug": "govt-of-maharashtra-issued-the-guidelinesinstructions-regarding-the-de",
+    "title": "Govt. of Maharashtra Guidelines/Instructions for Development",
+    "date": "Dec 28, 2025",
+    "category": "Industry Specific",
+    "authority": "Rural Development Department, Govt. of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51174,
+    "slug": "maharashtra-municipal-councils-nagar-panchayats-and-industrial-townshi",
+    "title": "Maharashtra Municipal Councils (2025 version)",
+    "date": "Dec 28, 2025",
+    "category": "Industry Specific",
+    "authority": "Governor of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51157,
+    "slug": "delhi-govt-issued-a-notification-regarding-the-removal-of-ecc-exemptio",
+    "title": "Delhi Govt. issued notification on removal of ECC Exemption",
+    "date": "Dec 27, 2025",
+    "category": "EHS",
+    "authority": "Government of Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 51143,
+    "slug": "draft-karnataka-electricity-regulatory-commission-forecasting-scheduli",
+    "title": "Draft Karnataka Electricity Regulatory Commission Forecasting, Scheduling",
+    "date": "Dec 26, 2025",
+    "category": "Industry Specific",
+    "authority": "Karnataka Electricity Regulatory Commission (KERC)",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51142,
+    "slug": "moefcc-issued-a-notification-regarding-the-caqm-inspection-of-delhi-ro",
+    "title": "MoEF&CC issued notification on CAQM inspection of Delhi",
+    "date": "Dec 26, 2025",
+    "category": "EHS",
+    "authority": "Ministry of Environment, Forest and Climate Change",
+    "region": "Delhi"
+  },
+  {
+    "id": 51132,
+    "slug": "govt-of-uttarakhand-notified-regarding-the-declaration-of-public-holid",
+    "title": "Govt. of Uttarakhand notified declaration of public holiday",
+    "date": "Dec 26, 2025",
+    "category": "Labour",
+    "authority": "Government of Uttarakhand",
+    "region": "Uttarakhand"
+  },
+  {
+    "id": 51129,
+    "slug": "draft-karnataka-electricity-regulatory-commission-roadmap-for-reducing",
+    "title": "Draft Karnataka Electricity Regulatory Commission Roadmap for Reducing",
+    "date": "Dec 26, 2025",
+    "category": "Industry Specific",
+    "authority": "Karnataka Electricity Regulatory Commission (KERC)",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51117,
+    "slug": "karnataka-registration-refusal-and-cancellation-of-registered-document",
+    "title": "Karnataka Registration (Refusal and Cancellation of Registered Documents)",
+    "date": "Dec 25, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51114,
+    "slug": "gujarat-govt-notified-regarding-the-amendment-to-gujarat-prohibition-a",
+    "title": "Gujarat Govt. notified amendment to Gujarat Prohibition Act",
+    "date": "Dec 25, 2025",
+    "category": "Industry Specific",
+    "authority": "Home Department, Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 51104,
+    "slug": "govt-of-delhi-issued-directions-us-5-of-the-environment-protection-act",
+    "title": "Govt. of Delhi issued directions u/s 5 of Environment Protection Act",
+    "date": "Dec 25, 2025",
+    "category": "EHS",
+    "authority": "Department of Environment and Forest, Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 51087,
+    "slug": "karnataka-land-revenue-amendment-rules-2025",
+    "title": "Karnataka Land Revenue (Amendment) Rules 2025",
+    "date": "Dec 24, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51068,
+    "slug": "gujarat-rera-issued-an-order-mandating-compliance-in-project-advertise",
+    "title": "Gujarat RERA issued order mandating compliance in project advertisements",
+    "date": "Dec 24, 2025",
+    "category": "Industry Specific",
+    "authority": "Gujarat Real Estate Regulatory Authority",
+    "region": "Gujarat"
+  },
+  {
+    "id": 51065,
+    "slug": "govt-of-maharashtra-issued-a-corrigendum-to-its-older-notification-reg",
+    "title": "Govt. of Maharashtra issued a Corrigendum to its Older Notification",
+    "date": "Dec 24, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Finance Department, Govt. of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 51047,
+    "slug": "govt-of-jammu-kashmir-notified-regarding-the-dairy-units-engaged-in-sa",
+    "title": "Govt. of Jammu & Kashmir Notified Dairy Units",
+    "date": "Dec 23, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Jammu & Kashmir",
+    "region": "J&K"
+  },
+  {
+    "id": 51042,
+    "slug": "krera-issued-a-circular-regarding-the-final-extension-of-time-for-subm",
+    "title": "KRERA Circular on Final Extension of Time for Submission",
+    "date": "Dec 23, 2025",
+    "category": "Industry Specific",
+    "authority": "Karnataka Real Estate Regulatory Authority (KRERA)",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51040,
+    "slug": "delhi-excise-amendment-rules-2025",
+    "title": "Delhi Excise (Amendment) Rules, 2025",
+    "date": "Dec 23, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Finance Department, Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 51013,
+    "slug": "karnataka-private-medical-establishments-amendment-bill-2025",
+    "title": "Karnataka Private Medical Establishments Amendment Bill 2025",
+    "date": "Dec 22, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 51004,
+    "slug": "draft-delhi-electricity-regulatory-commission-group-net-metering-and-v",
+    "title": "Draft Delhi Electricity Regulatory Commission Group Net Metering",
+    "date": "Dec 22, 2025",
+    "category": "Industry Specific",
+    "authority": "Delhi Electricity Regulatory Commission",
+    "region": "Delhi"
+  },
+  {
+    "id": 50931,
+    "slug": "labour-commissioner-delhi-issued-an-advisory-regarding-the-amendments-",
+    "title": "Labour Commissioner, Delhi issued an advisory regarding amendments",
+    "date": "Dec 19, 2025",
+    "category": "Labour",
+    "authority": "Labour Commissioner, Delhi",
+    "region": "Delhi"
+  },
+  {
+    "id": 50924,
+    "slug": "draft-karnataka-inland-vessels-rules-2025",
+    "title": "Draft Karnataka Inland Vessels Rules 2025",
+    "date": "Dec 19, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 50909,
+    "slug": "karnataka-govt-issued-the-drugs-and-cosmetics-karnataka-amendment-bill",
+    "title": "Drugs and Cosmetics (Karnataka Amendment) Bill",
+    "date": "Dec 18, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 50904,
+    "slug": "arunachal-govt-notified-regarding-the-top-upadvance-payment-facility-i",
+    "title": "Arunachal Govt. notified top-up/advance payment facility",
+    "date": "Dec 18, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Government of Arunachal Pradesh",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 50900,
+    "slug": "govt-of-tamil-nadu-issued-draft-amendments-to-the-minimum-wages-tamil-",
+    "title": "Govt. of Tamil Nadu issued Draft amendments to the minimum wages Tamil Nadu",
+    "date": "Dec 18, 2025",
+    "category": "Labour",
+    "authority": "Government of Tamil Nadu",
+    "region": "Tamil Nadu"
+  },
+  {
+    "id": 50899,
+    "slug": "karnataka-irrigation-amendment-rules-2025",
+    "title": "Karnataka Irrigation (Amendment) Rules 2025",
+    "date": "Dec 18, 2025",
+    "category": "EHS",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 50897,
+    "slug": "department-of-transport-mizoram-issued-a-notification-regarding-the-ap",
+    "title": "Department of Transport, Mizoram issued notification",
+    "date": "Dec 18, 2025",
+    "category": "Commercial",
+    "authority": "Department of Transport, Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 50886,
+    "slug": "govt-of-mizoram-notified-regarding-the-fares-for-bus-maxicab-taxi",
+    "title": "Govt. of Mizoram notified Fares for Bus, Maxicab, Taxi",
+    "date": "Dec 18, 2025",
+    "category": "Commercial",
+    "authority": "Transport Department, Government of Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 50871,
+    "slug": "gujarat-shops-and-establishments-regulation-of-employment-and-conditio",
+    "title": "Gujarat Shops and Establishments (Regulation of Employment and Conditions)",
+    "date": "Dec 18, 2025",
+    "category": "Labour",
+    "authority": "Labour, Skill Development and Employment Department, Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 50860,
+    "slug": "govt-of-jk-issued-the-list-of-holidays-for-the-calendar-year-2026",
+    "title": "Govt. of J&K Issued the List of Holidays for Calendar Year 2026",
+    "date": "Dec 17, 2025",
+    "category": "Labour",
+    "authority": "Government of Jammu and Kashmir",
+    "region": "J&K"
+  },
+  {
+    "id": 50764,
+    "slug": "draft-mizoram-electricity-regulatory-commission-demand-side-management",
+    "title": "Draft Mizoram Electricity Regulatory Commission Demand Side Management",
+    "date": "Dec 15, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 50754,
+    "slug": "govt-of-sikkim-issued-an-extension-of-esi-medical-benefits-to-families",
+    "title": "Govt. of Sikkim issued extension of ESI medical benefits",
+    "date": "Dec 15, 2025",
+    "category": "Labour",
+    "authority": "Employees' State Insurance Corporation (ESIC), Government of Sikkim",
+    "region": "Sikkim"
+  },
+  {
+    "id": 50684,
+    "slug": "uttarakhand-health-population-policy",
+    "title": "Uttarakhand Health & Population Policy",
+    "date": "Dec 14, 2025",
+    "category": "EHS",
+    "authority": "Government of Uttarakhand",
+    "region": "Uttarakhand"
+  },
+  {
+    "id": 50648,
+    "slug": "gmb-notification-on-non-working-days-at-gujarat-ports-for-calendar-yea",
+    "title": "GMB Notification on Non-Working Days at Gujarat Ports",
+    "date": "Dec 13, 2025",
+    "category": "Industry Specific",
+    "authority": "Gujarat Maritime Board",
+    "region": "Gujarat"
+  },
+  {
+    "id": 50637,
+    "slug": "government-of-arunachal-pradesh-on-fixation-of-maximum-retail-price-of",
+    "title": "Government of Arunachal Pradesh on fixation of maximum retail price",
+    "date": "Dec 12, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Arunachal Pradesh",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 50288,
+    "slug": "maharashtra-bamboo-industry-policy-2025",
+    "title": "Maharashtra Bamboo Industry Policy 2025",
+    "date": "Dec 4, 2025",
+    "category": "EHS",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 50222,
+    "slug": "government-of-gujarat-amendment-to-gst-rate-notification-on-definition",
+    "title": "Government of Gujarat Amendment to GST Rate Notification",
+    "date": "Dec 3, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 50214,
+    "slug": "govt-of-mizoram-issued-a-notice-on-the-drone-rules-2021",
+    "title": "Govt. of Mizoram issued notice on Drone Rules 2021",
+    "date": "Dec 3, 2025",
+    "category": "Industry Specific",
+    "authority": "Directorate of Information & Public Relations, Govt. of Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 50151,
+    "slug": "gujarat-goods-and-services-tax-fourth-amendment-rules-2025",
+    "title": "Gujarat Goods and Services Tax (Fourth Amendment) Rules 2025",
+    "date": "Dec 2, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 50135,
+    "slug": "gujarat-govt-issued-the-list-of-public-holidays-for-the-year-2026",
+    "title": "Gujarat Govt. issued list of Public Holidays for year 2026",
+    "date": "Dec 2, 2025",
+    "category": "Labour",
+    "authority": "Government of Gujarat",
+    "region": "Gujarat"
+  },
+  {
+    "id": 50095,
+    "slug": "sikkim-spcb-on-boarding-of-industries-to-the-new-ocems-portal-odams",
+    "title": "Sikkim SPCB On-boarding of Industries to new OCEMS portal (ODAMS)",
+    "date": "Dec 2, 2025",
+    "category": "EHS",
+    "authority": "State Pollution Control Board, Sikkim",
+    "region": "Sikkim"
+  },
+  {
+    "id": 49855,
+    "slug": "pune-municipal-corporation-notified-regarding-the-ban-on-open-burning-",
+    "title": "Pune Municipal Corporation notified ban on Open Burning",
+    "date": "Nov 28, 2025",
+    "category": "EHS",
+    "authority": "Pune Municipal Corporation",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 49809,
+    "slug": "hfw-dept-mizoram-issued-sop-for-icu-and-ccu",
+    "title": "H&FW Dept., Mizoram issued SOP for ICU and CCU",
+    "date": "Nov 27, 2025",
+    "category": "Industry Specific",
+    "authority": "Health & Family Welfare Department, Government of Mizoram",
+    "region": "Mizoram"
+  },
+  {
+    "id": 49792,
+    "slug": "pune-municipal-corporation-issued-a-notification-regarding-smoke-gener",
+    "title": "Pune Municipal Corporation issued notification regarding smoke generation",
+    "date": "Nov 26, 2025",
+    "category": "EHS",
+    "authority": "Pune Municipal Corporation",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 49712,
+    "slug": "spcb-notified-regarding-the-classification-of-industriessectors-in-red",
+    "title": "SPCB notified classification of industries/sectors in red",
+    "date": "Nov 23, 2025",
+    "category": "EHS",
+    "authority": "State Pollution Control Board Sikkim",
+    "region": "Sikkim"
+  },
+  {
+    "id": 49706,
+    "slug": "govt-of-jammu-and-kashmir-issued-a-classification-of-imfl-and-bio-bran",
+    "title": "Govt. of Jammu and Kashmir Issued Classification of IMFL and Bio-Bran",
+    "date": "Nov 23, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Jammu and Kashmir",
+    "region": "J&K"
+  },
+  {
+    "id": 49609,
+    "slug": "spcb-notified-regarding-the-self-certification-declaration-form-for-re",
+    "title": "SPCB notified Self-Certification declaration form",
+    "date": "Nov 20, 2025",
+    "category": "EHS",
+    "authority": "Sikkim State Pollution Control Board",
+    "region": "Sikkim"
+  },
+  {
+    "id": 49426,
+    "slug": "government-of-arunachal-pradesh-issued-the-revised-maximum-retail-pric",
+    "title": "Government of Arunachal Pradesh issued revised maximum retail price",
+    "date": "Nov 17, 2025",
+    "category": "Industry Specific",
+    "authority": "Tax, Excise & Narcotics Commissioner",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 49418,
+    "slug": "uttarakhand-govt-issued-the-list-of-holidays-to-be-observed-by-central",
+    "title": "Uttarakhand Govt. issued list of holidays observed by Central",
+    "date": "Nov 16, 2025",
+    "category": "Labour",
+    "authority": "Government of Uttarakhand",
+    "region": "Uttarakhand"
+  },
+  {
+    "id": 49336,
+    "slug": "government-of-sikkim-declaration-of-public-and-restricted-holidays-for",
+    "title": "Government of Sikkim Declaration of public and restricted holidays",
+    "date": "Nov 14, 2025",
+    "category": "Labour",
+    "authority": "Government of Sikkim",
+    "region": "Sikkim"
+  },
+  {
+    "id": 49183,
+    "slug": "karnataka-goods-and-services-tax-fifth-amendment-rules-2025",
+    "title": "Karnataka Goods and Services Tax Fifth Amendment Rules 2025",
+    "date": "Nov 10, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Government of Karnataka",
+    "region": "Karnataka"
+  },
+  {
+    "id": 49174,
+    "slug": "arunachal-pradesh-govt-amended-notification-regarding-notifying-the-nu",
+    "title": "Arunachal Pradesh Govt. amended notification on numbering",
+    "date": "Nov 9, 2025",
+    "category": "Finance & Taxation",
+    "authority": "Department of Tax, Excise and Narcotics",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 49171,
+    "slug": "arunachal-pradesh-issued-the-draft-arunachal-pradesh-factories-amendme",
+    "title": "Arunachal Pradesh issued Draft Arunachal Pradesh Factories Amendment",
+    "date": "Nov 9, 2025",
+    "category": "Labour",
+    "authority": "Department of Industries",
+    "region": "Arunachal Pradesh"
+  },
+  {
+    "id": 49023,
+    "slug": "govt-of-maharashtra-issued-a-policy-to-promote-a-circular-economy-thro",
+    "title": "Govt. of Maharashtra issued policy to promote circular economy",
+    "date": "Nov 5, 2025",
+    "category": "EHS",
+    "authority": "Government of Maharashtra",
+    "region": "Maharashtra"
+  },
+  {
+    "id": 48961,
+    "slug": "mole-launch-of-employees-enrolment-scheme-2025",
+    "title": "MoLE Launch of Employees' Enrolment Scheme 2025",
+    "date": "Nov 3, 2025",
+    "category": "Labour",
+    "authority": "Ministry of Labour & Employment",
+    "region": "Central"
+  },
+  {
+    "id": 48282,
+    "slug": "uttarakhand-excise-policy-rules-for-the-years-202526-202627-and-202728",
+    "title": "Uttarakhand Excise Policy Rules for 2025-26, 2026-27 and 2027-28",
+    "date": "Oct 16, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Uttarakhand",
+    "region": "Uttarakhand"
+  },
+  {
+    "id": 48225,
+    "slug": "sikkim-excise-microbrewery-brewpub-rules-2025",
+    "title": "Sikkim Excise (Microbrewery/Brewpub) Rules, 2025",
+    "date": "Oct 15, 2025",
+    "category": "Industry Specific",
+    "authority": "Government of Sikkim",
+    "region": "Sikkim"
+  },
+  {
+    "id": 47790,
+    "slug": "spcb-notified-regarding-the-idol-immersion-in-water-bodies",
+    "title": "SPCB notified idol immersion in water bodies",
+    "date": "Oct 8, 2025",
+    "category": "EHS",
+    "authority": "Sikkim State Pollution Control Board",
+    "region": "Sikkim"
+  },
+  {
+    "id": 42460,
+    "slug": "govt-of-tripura-notified-regarding-the-tripura-co-operative-societies-",
+    "title": "Govt. of Tripura notified Tripura Co-operative Societies (Amendment)",
+    "date": "May 09, 2025",
+    "category": "General",
+    "authority": "Government of Tripura",
+    "region": "Tripura"
+  },
+  {
+    "id": 40917,
+    "slug": "mole-issued-a-notification-for-the-revision-of-vda-in-the-minimum-wage",
+    "title": "MoLE issued notification for revision of VDA in minimum wage",
+    "date": "Mar 28, 2025",
+    "category": "Labour",
+    "authority": "Ministry of Labour and Employment",
+    "region": "Central"
+  }
 ]

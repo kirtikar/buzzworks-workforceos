@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import {
-  Scale, ExternalLink, Search, AlertTriangle, ChevronDown,
+  ExternalLink, Search, AlertTriangle, ChevronDown,
   Calendar, Building2, X, Tag, MapPin, Briefcase,
   ChevronLeft, ChevronRight, IndianRupee,
 } from "lucide-react"
@@ -184,21 +184,13 @@ export default function CompliancePage() {
 
       <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Header */}
+        {/* Header — matches Inbox pattern (no icon, title + subtitle) */}
         <header className="px-6 lg:px-8 py-5 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Scale size={20} strokeWidth={1.5} style={{ color: "var(--accent)" }} />
-              <div>
-                <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Compliance</h1>
-                <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                  {REGULATIONS.length.toLocaleString()} regulations · {actionCount} need action ·
-                  <span className="ml-1" style={{ color: "var(--warn)" }}>
-                    {fmtPenalty(totalPenaltyExposure)} potential exposure
-                  </span>
-                </p>
-              </div>
-            </div>
+          <div>
+            <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Compliance</h1>
+            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+              {REGULATIONS.length.toLocaleString()} regulations · {actionCount} need action
+            </p>
           </div>
         </header>
 

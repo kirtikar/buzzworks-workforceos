@@ -843,11 +843,8 @@ function generateRegulations(_count: number): Regulation[] {
 
     const clients = pickClients(pool, rng)
 
-    // Source URL: real TeamLease article page
-    const source = {
-      url:  `https://www.teamleaseregtech.com/updates/article/${art.id}/${art.slug}`,
-      name: "TeamLease RegTech",
-    }
+    // Source URL: official government regulator portal (resolved from authority + region)
+    const source = resolveSourceUrl(authority, region, category)
 
     regulations.push({
       id,
@@ -903,8 +900,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55009/esic-notified-regarding-the-protocols-to-be-followed-by-esic-hospitals",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
+    sourceName: "EPFO Circulars",
     clientsAffected: ["TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech", "Wipro GE"],
   },
   {
@@ -927,8 +924,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "low",
     operationalImpact: "low",
     actionRequired: false,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55039/gstn-issued-a-notification-regarding-the-introduction-of-the-ims-offli",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://www.incometax.gov.in/iec/foportal/latest-updates",
+    sourceName: "Income Tax Portal",
     clientsAffected: ["TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech"],
   },
   {
@@ -953,8 +950,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54948/government-of-karnataka-exemption-from-return-filing-under-profession-",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://labour.karnataka.gov.in/english",
+    sourceName: "Karnataka Labour Dept",
     clientsAffected: ["Dine-In Brands", "Swiggy", "Urban Company", "Infosys BPM"],
   },
   {
@@ -978,8 +975,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55009/esic-notified-regarding-the-protocols-to-be-followed-by-esic-hospitals",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
+    sourceName: "EPFO Circulars",
     clientsAffected: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company"],
   },
   {
@@ -1003,8 +1000,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "medium",
     operationalImpact: "medium",
     actionRequired: true,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55023/mof-issued-a-notification-regarding-outreach-on-the-new-income-tax-act",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://incometaxindia.gov.in/Pages/communications/notifications.aspx",
+    sourceName: "CBDT Notifications",
     clientsAffected: ["TechCorp India", "Infosys BPM", "Wipro GE", "Hexaware", "L&T Infotech"],
   },
   {
@@ -1028,8 +1025,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54939/govt-of-maharashtra-issued-a-circular-regarding-paid-holiday-for-emplo",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://mahakamgar.maharashtra.gov.in/",
+    sourceName: "Maharashtra Labour Dept",
     clientsAffected: ["Dine-In Brands", "MedSure Healthcare", "Capgemini"],
   },
   {
@@ -1053,8 +1050,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "medium",
     operationalImpact: "medium",
     actionRequired: false,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55009/esic-notified-regarding-the-protocols-to-be-followed-by-esic-hospitals",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
+    sourceName: "EPFO Circulars",
     clientsAffected: ["Swiggy", "Zomato", "Urban Company", "BigBasket"],
   },
   {
@@ -1078,8 +1075,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55057/govt-of-delhi-notified-regarding-the-revision-of-minimum-wages-in-delh",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://labour.delhi.gov.in/content/circulars",
+    sourceName: "Delhi Labour Dept",
     clientsAffected: ["FinanceHub Ltd", "GlobalStaff Solutions"],
   },
   {
@@ -1103,8 +1100,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "high",
     operationalImpact: "high",
     actionRequired: true,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/55025/draft-occupational-safety-health-and-working-conditions-andhra-pradesh",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://wcd.nic.in/act/sexual-harassment-women-workplace-prevention-prohibition-and-redressal-act-2013",
+    sourceName: "Ministry of WCD",
     clientsAffected: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company", "TechCorp India", "Infosys BPM"],
   },
   {
@@ -1128,8 +1125,8 @@ const FEATURED: Regulation[] = [
     legalRisk: "medium",
     operationalImpact: "medium",
     actionRequired: true,
-    sourceUrl: "https://www.teamleaseregtech.com/updates/article/54948/government-of-karnataka-exemption-from-return-filing-under-profession-",
-    sourceName: "TeamLease RegTech",
+    sourceUrl: "https://labour.karnataka.gov.in/english",
+    sourceName: "Karnataka Labour Dept",
     clientsAffected: ["Infosys BPM", "Wipro GE", "Swiggy", "Urban Company"],
   },
 ]
