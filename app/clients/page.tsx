@@ -265,8 +265,6 @@ export default function ClientsPage() {
   ]
 
   const totalEmployees = clients.reduce((s, c) => s + c.employeeCount, 0)
-  const totalPending   = clients.reduce((s, c) => s + c.pendingTimesheets, 0)
-  const avgCompliance  = Math.round(clients.reduce((s, c) => s + c.complianceScore, 0) / clients.length)
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -282,22 +280,6 @@ export default function ClientsPage() {
         </header>
 
         <main className="flex-1 overflow-y-auto p-5 space-y-4">
-          {/* Summary KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { label: "Total Clients",     value: clients.length, color: "var(--accent)", sub: "25 active" },
-              { label: "Total Employees",   value: fmtNum(totalEmployees), color: "#2563EB", sub: "Across all clients" },
-              { label: "Pending Timesheets",value: totalPending,   color: totalPending > 100 ? "#c89060" : "var(--accent)", sub: "Need ops action" },
-              { label: "Avg Compliance",    value: `${avgCompliance}%`, color: avgCompliance > 90 ? "var(--accent)" : "#c89060", sub: "Across all clients" },
-            ].map(s => (
-              <div key={s.label} className="glass p-4">
-                <div className="text-[11px] mb-1" style={{ color: "var(--text-3)" }}>{s.label}</div>
-                <div className="text-[24px] font-black" style={{ color: s.color }}>{s.value}</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{s.sub}</div>
-              </div>
-            ))}
-          </div>
-
           {/* Filters — flex-wrap allows dropdowns to escape without overflow clip */}
           <div>
             <div className="flex flex-wrap items-center gap-2">

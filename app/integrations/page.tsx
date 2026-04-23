@@ -302,22 +302,6 @@ export default function IntegrationsPage() {
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 lg:space-y-5 pb-nav lg:pb-5">
-          {/* Summary KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { label: "Portal Integrations", value: "10",              sub: "8 connected · 1 syncing",        color: "var(--accent)" },
-              { label: "Total Employees",      value: fmtNum(totalEmployees), sub: "Across all connected portals",  color: "#2563EB" },
-              { label: "Synced This Month",    value: fmtNum(totalSynced),    sub: "Timesheets ingested",            color: "var(--accent)" },
-              { label: "Errors",               value: String(errored),   sub: "Portals with pending errors",    color: errored > 0 ? "#c07070" : "var(--accent)" },
-            ].map(s => (
-              <div key={s.label} className="glass p-4">
-                <div className="text-[11px] text-white/35 mb-1">{s.label}</div>
-                <div className="text-[26px] font-black" style={{ color: s.color }}>{s.value}</div>
-                <div className="text-[11px] text-white/30 mt-0.5">{s.sub}</div>
-              </div>
-            ))}
-          </div>
-
           {/* Filter tabs */}
           <div className="flex items-center gap-2">
             {(["all", "connected", "error"] as const).map(f => (
