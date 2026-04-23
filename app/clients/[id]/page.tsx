@@ -12,7 +12,7 @@ import {
   CheckCircle2, AlertTriangle, FileText, CreditCard, Activity,
   ChevronRight, Eye, Check, Flag, ShieldCheck, Calendar, ChevronDown, Search,
 } from "lucide-react"
-import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
+import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ComposedChart, Line } from "recharts"
 import { getRegulationsForClient, CATEGORY_META, RISK_META } from "@/lib/compliance-data"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -41,8 +41,8 @@ function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClie
   const monthlyOps   = Math.round(client.pendingTimesheets * 180 + client.activeEmployeeCount * 80)
   const opsPercent   = Math.round((monthlyOps / monthlyRev) * 100)
 
-  // Month-on-month revenue vs ops cost (6 months)
-  const revVsCost = [
+  // Month-on-month revenue + ops cost as % of revenue (efficiency metric)
+  const revVsCostRaw = [
     { month: "Nov", revenue: Math.round(monthlyRev * 0.82), opsCost: Math.round(monthlyOps * 1.18) },
     { month: "Dec", revenue: Math.round(monthlyRev * 0.86), opsCost: Math.round(monthlyOps * 1.12) },
     { month: "Jan", revenue: Math.round(monthlyRev * 0.92), opsCost: Math.round(monthlyOps * 1.06) },
@@ -50,6 +50,10 @@ function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClie
     { month: "Mar", revenue: Math.round(monthlyRev * 0.98), opsCost: Math.round(monthlyOps * 0.98) },
     { month: "Apr", revenue: monthlyRev,                     opsCost: monthlyOps },
   ]
+  const revVsCost = revVsCostRaw.map(r => ({
+    ...r,
+    opsCostPct: Math.round((r.opsCost / r.revenue) * 1000) / 10,
+  }))
 
   // Agent coverage by work type (% automated vs manual)
   const agentCoverage = [
@@ -84,32 +88,32 @@ function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClie
         ))}
       </div>
 
-      {/* Chart 1: Revenue vs Ops Cost (monthly) */}
+      {/* Chart 1: Revenue + Ops Cost as % of Revenue (efficiency trend) */}
       <div className="glass p-6">
-        <div className="flex items-start justify-between mb-5">
+        <div className="flex items-start justify-between mb-5 gap-3">
           <div>
             <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>
-              Revenue vs Ops Cost
+              Revenue &amp; Ops Cost Efficiency
             </div>
             <div className="text-xs mt-0.5" style={{ color: "var(--neutral-500)" }}>
-              6-month trend · values in INR
+              6-month trend · revenue bars + ops cost as % of revenue
             </div>
           </div>
           <div className="flex items-center gap-4 text-xs" style={{ color: "var(--neutral-600)" }}>
             <span className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-sm" style={{ background: "var(--success)" }} />
-              Revenue
+              Revenue (₹)
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-sm" style={{ background: "var(--primary-500)" }} />
-              Ops Cost
+              <span className="w-3 h-0.5" style={{ background: "var(--primary-500)" }} />
+              Ops cost % of rev
             </span>
           </div>
         </div>
 
         <div style={{ height: 260 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={revVsCost} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
+            <ComposedChart data={revVsCost} margin={{ top: 10, right: 40, left: 10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
               <XAxis
                 dataKey="month"
@@ -118,11 +122,20 @@ function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClie
                 tickLine={false}
               />
               <YAxis
+                yAxisId="left"
                 tick={{ fontSize: 11, fill: "var(--neutral-500)" }}
-                axisLine={false}
-                tickLine={false}
+                axisLine={false} tickLine={false}
                 tickFormatter={v => `₹${(v/100000).toFixed(1)}L`}
                 width={55}
+              />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                tick={{ fontSize: 11, fill: "var(--primary-600)" }}
+                axisLine={false} tickLine={false}
+                tickFormatter={v => `${v}%`}
+                width={40}
+                domain={[0, 40]}
               />
               <Tooltip
                 contentStyle={{
@@ -133,12 +146,20 @@ function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClie
                   color: "var(--text-primary)",
                   boxShadow: "var(--shadow-2)",
                 }}
-                formatter={(v: number) => fmtINR(v)}
+                formatter={(v: number, name: string) => {
+                  if (name === "Ops cost % of rev") return [`${v}%`, name]
+                  return [fmtINR(v), name]
+                }}
                 labelStyle={{ color: "var(--text-secondary)", fontWeight: 600 }}
               />
-              <Bar dataKey="revenue" fill="var(--success)" radius={[6, 6, 0, 0]} barSize={22} name="Revenue" />
-              <Bar dataKey="opsCost" fill="var(--primary-500)" radius={[6, 6, 0, 0]} barSize={22} name="Ops Cost" />
-            </BarChart>
+              <Bar yAxisId="left" dataKey="revenue" fill="var(--success)" radius={[6, 6, 0, 0]} barSize={32} name="Revenue" opacity={0.85} />
+              <Line yAxisId="right" type="monotone" dataKey="opsCostPct"
+                stroke="var(--primary-500)" strokeWidth={2.5}
+                dot={{ r: 4, fill: "var(--primary-500)", strokeWidth: 2, stroke: "var(--card)" }}
+                activeDot={{ r: 6 }}
+                name="Ops cost % of rev"
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
