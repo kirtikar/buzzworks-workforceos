@@ -319,7 +319,9 @@ export default function InboxPage() {
     }
   }
 
-  // (detail variables removed — inline expand uses row-local emp/client)
+  const detail = expandedId ? localTs.find(t => t.id === expandedId) : null
+  const detailEmp = detail ? getEmployeeFromPool(detail.employeeId) : null
+  const detailClient = detail ? getClient(detail.clientId) : null
 
   // Compliance count = regulations needing action
   const complianceActionCount = REGULATIONS.filter(r => r.actionRequired).length
@@ -688,124 +690,10 @@ export default function InboxPage() {
                         </button>
                       )}
 
-                      {/* Expand arrow */}
-                      <ChevronRight size={14} className="flex-shrink-0 transition-transform"
-                        style={{
-                          color: "var(--text-3)",
-                          transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
-                        }} />
+                      {/* Open detail panel */}
+                      <ChevronRight size={14} className="flex-shrink-0"
+                        style={{ color: "var(--text-3)" }} />
                     </div>
-
-                    {/* Inline expand */}
-                    {isExpanded && (
-                      <div className="px-6 lg:px-8 pb-5 animate-fade-in">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-
-                          {/* Hours + summary */}
-                          <div className="md:col-span-2 rounded-lg p-4"
-                            style={{ background: "var(--surface)" }}>
-                            <div className="flex items-center gap-2 flex-wrap mb-3">
-                              <span className="text-[10px] font-medium px-2 py-0.5 rounded uppercase tracking-wider"
-                                style={{ background: `${client.color}12`, color: client.color }}>
-                                {client.name}
-                              </span>
-                              <span className="text-[11px]" style={{ color: "var(--text-2)" }}>
-                                {emp.role} · {emp.department}
-                              </span>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-2 mb-4">
-                              <div className="rounded-md p-2.5" style={{ background: "var(--surface-2)" }}>
-                                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>Regular</div>
-                                <div className="text-base font-semibold mt-0.5" style={{ color: "var(--accent)" }}>
-                                  {ts.regularHours}h
-                                </div>
-                              </div>
-                              <div className="rounded-md p-2.5" style={{ background: "var(--surface-2)" }}>
-                                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>Overtime</div>
-                                <div className="text-base font-semibold mt-0.5" style={{ color: "var(--warn)" }}>
-                                  {ts.overtimeHours}h
-                                </div>
-                              </div>
-                              <div className="rounded-md p-2.5" style={{ background: "var(--surface-2)" }}>
-                                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>Leave</div>
-                                <div className="text-base font-semibold mt-0.5" style={{ color: "var(--info)" }}>
-                                  {ts.leaveHours}h
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center justify-between py-2 px-3 rounded"
-                              style={{ background: "var(--surface-2)" }}>
-                              <span className="text-xs" style={{ color: "var(--text-2)" }}>Total payable</span>
-                              <span className="text-sm font-semibold tabular-nums" style={{ color: "var(--text-1)" }}>
-                                ₹{ts.totalPayable.toLocaleString("en-IN")}
-                              </span>
-                            </div>
-
-                            {ts.flagReason && (
-                              <div className="mt-3 p-3 rounded" style={{ background: "var(--warn-bg)" }}>
-                                <div className="flex items-center gap-1 text-[11px] font-medium" style={{ color: "var(--warn)" }}>
-                                  <Flag size={11} /> Flagged
-                                </div>
-                                <div className="text-xs mt-1" style={{ color: "var(--text-2)" }}>{ts.flagReason}</div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Validation summary + AI rec */}
-                          <div className="space-y-3">
-                            <div className="rounded-lg p-3" style={{ background: "var(--surface)" }}>
-                              <div className="text-[10px] uppercase tracking-wider font-semibold mb-2"
-                                style={{ color: "var(--text-3)" }}>
-                                Validation
-                              </div>
-                              <div className="text-2xl font-semibold tabular-nums" style={{ color: scoreColor }}>
-                                {ts.validationScore}
-                              </div>
-                              <div className="text-[11px] mt-1" style={{ color: "var(--text-3)" }}>
-                                {ts.validationChecks.filter(c => c.result === "pass").length} pass
-                                {fails > 0 && <span style={{ color: "var(--danger)" }}> · {fails} fail</span>}
-                                {warnings > 0 && <span style={{ color: "var(--warn)" }}> · {warnings} warn</span>}
-                              </div>
-                            </div>
-                            <div className="rounded-lg p-3"
-                              style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
-                              <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold"
-                                style={{ color: "var(--pink-700)" }}>
-                                <Sparkles size={10} /> AI recommends
-                              </div>
-                              <div className="text-[13px] font-semibold mt-1" style={{ color: "var(--pink-700)" }}>
-                                {aiRec.label}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Actions */}
-                        {isActionable && (
-                          <div className="flex items-center gap-2 mt-4">
-                            <button onClick={e => { e.stopPropagation(); approveTs(ts.id) }}
-                              className="btn-primary flex items-center gap-1.5 text-xs"
-                              style={{ padding: "8px 14px" }}>
-                              <CheckCircle2 size={13} /> Approve
-                            </button>
-                            <button
-                              onClick={e => { e.stopPropagation(); openNotifyFor(ts, "flag") }}
-                              className="btn-ghost flex items-center gap-1.5 text-xs"
-                              style={{ padding: "8px 14px", color: "var(--warn)" }}>
-                              <Flag size={13} /> Flag
-                            </button>
-                            <button
-                              onClick={e => { e.stopPropagation(); openNotifyFor(ts, "reject") }}
-                              className="btn-ghost flex items-center gap-1.5 text-xs"
-                              style={{ padding: "8px 14px", color: "var(--danger)" }}>
-                              <XCircle size={13} /> Reject
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </div>
                 )
               })}
@@ -850,6 +738,239 @@ export default function InboxPage() {
               )}
             </div>
           </div>
+
+          {/* ── Detail side panel (slide in from right) ────────────── */}
+          {detail && detailEmp && detailClient && (
+            <div
+              className="hidden lg:flex flex-col w-[420px] flex-shrink-0 overflow-y-auto animate-slide-in-right"
+              style={{ background: "var(--surface)", boxShadow: "-4px 0 16px rgba(0,0,0,0.06)" }}
+            >
+              {/* Panel header */}
+              <div className="flex items-center justify-between px-5 py-4 flex-shrink-0 sticky top-0"
+                style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)", zIndex: 10 }}>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[15px] font-semibold truncate" style={{ color: "var(--text-1)" }}>
+                    {detailEmp.name}
+                  </div>
+                  <div className="text-xs mt-0.5 flex items-center gap-2" style={{ color: "var(--text-3)" }}>
+                    <span className="px-1.5 py-0.5 rounded font-medium"
+                      style={{ background: `${detailClient.color}12`, color: detailClient.color }}>
+                      {detailClient.code}
+                    </span>
+                    <span>{detail.period}</span>
+                  </div>
+                </div>
+                <button onClick={() => setExpandedId(null)}
+                  className="w-8 h-8 rounded-md flex items-center justify-center"
+                  style={{ color: "var(--text-3)" }}>
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="p-5 space-y-4">
+
+                {/* Employee meta */}
+                <div className="flex items-center gap-3 p-3 rounded-lg" style={{ background: "var(--surface-2)" }}>
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
+                    style={{ background: `${detailClient.color}14`, color: detailClient.color }}>
+                    {initials(detailEmp.name)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>
+                      {detailEmp.role}
+                    </div>
+                    <div className="text-xs" style={{ color: "var(--text-3)" }}>
+                      {detailEmp.department} · {detailClient.name}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hours */}
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wider mb-2"
+                    style={{ color: "var(--text-3)" }}>
+                    Hours
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
+                      <div className="text-lg font-semibold tabular-nums" style={{ color: "var(--accent)" }}>
+                        {detail.regularHours}h
+                      </div>
+                      <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>Regular</div>
+                    </div>
+                    <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
+                      <div className="text-lg font-semibold tabular-nums" style={{ color: "var(--warn)" }}>
+                        {detail.overtimeHours}h
+                      </div>
+                      <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>Overtime</div>
+                    </div>
+                    <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
+                      <div className="text-lg font-semibold tabular-nums" style={{ color: "var(--info)" }}>
+                        {detail.leaveHours}h
+                      </div>
+                      <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>Leave</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-2 py-2.5 px-3 rounded-lg"
+                    style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
+                    <span className="text-xs" style={{ color: "var(--pink-700)" }}>Total payable</span>
+                    <span className="text-sm font-semibold tabular-nums" style={{ color: "var(--pink-700)" }}>
+                      ₹{detail.totalPayable.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                </div>
+
+                {/* AI Validation — JARVIS */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-[10px] font-semibold uppercase tracking-wider"
+                      style={{ color: "var(--text-3)" }}>
+                      JARVIS Validation
+                    </div>
+                    <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--pink-700)" }}>
+                      <Sparkles size={10} />
+                      {detail.aiConfidence ?? detail.validationScore}% confidence
+                    </span>
+                  </div>
+
+                  {/* Score summary */}
+                  <div className="p-3 rounded-lg mb-2" style={{
+                    background: detail.validationScore >= 85 ? "rgba(5,150,105,0.06)"
+                              : detail.validationScore >= 60 ? "var(--warn-bg)"
+                              : "var(--danger-bg)"
+                  }}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs" style={{ color: "var(--text-2)" }}>Validation score</span>
+                      <span className="text-2xl font-bold tabular-nums"
+                        style={{ color: detail.validationScore >= 85 ? "#059669" : detail.validationScore >= 60 ? "var(--warn)" : "var(--danger)" }}>
+                        {detail.validationScore}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Individual checks */}
+                  <div className="space-y-1.5">
+                    {detail.validationChecks.map(check => (
+                      <div key={check.id}
+                        className="flex items-start gap-2.5 p-2.5 rounded-lg"
+                        style={{
+                          background: check.result === "pass" ? "rgba(5,150,105,0.04)"
+                                    : check.result === "fail" ? "var(--danger-bg)"
+                                    : check.result === "warning" ? "var(--warn-bg)"
+                                    : "var(--surface-2)",
+                        }}>
+                        <div className="mt-0.5 flex-shrink-0">
+                          {check.result === "pass"    && <CheckCircle2 size={14} style={{ color: "#059669" }} />}
+                          {check.result === "fail"    && <XCircle size={14} style={{ color: "var(--danger)" }} />}
+                          {check.result === "warning" && <AlertTriangle size={14} style={{ color: "var(--warn)" }} />}
+                          {check.result === "pending" && <Clock size={14} style={{ color: "var(--text-3)" }} />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[12px] font-medium" style={{ color: "var(--text-1)" }}>
+                            {check.rule}
+                          </div>
+                          <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                            {check.detail}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Flag reason */}
+                {detail.flagReason && (
+                  <div className="p-3 rounded-lg" style={{ background: "var(--warn-bg)" }}>
+                    <div className="flex items-center gap-1.5 text-xs font-medium mb-1" style={{ color: "var(--warn)" }}>
+                      <Flag size={12} /> Flagged
+                      {detail.flaggedBy && <span className="font-normal" style={{ color: "var(--text-3)" }}>
+                        by {detail.flaggedBy === "ai" ? "JARVIS" : detail.flaggedBy === "ops" ? "Ops" : "System"}
+                      </span>}
+                    </div>
+                    <div className="text-xs" style={{ color: "var(--text-2)" }}>{detail.flagReason}</div>
+                  </div>
+                )}
+
+                {/* Leave balance */}
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wider mb-2"
+                    style={{ color: "var(--text-3)" }}>
+                    Leave balance
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { label: "Annual",  total: detailEmp.leaveBalance.annual,  used: detailEmp.leaveBalance.usedAnnual,  color: "var(--accent)" },
+                      { label: "Sick",    total: detailEmp.leaveBalance.sick,    used: detailEmp.leaveBalance.usedSick,    color: "var(--danger)" },
+                      { label: "Casual",  total: detailEmp.leaveBalance.casual,  used: detailEmp.leaveBalance.usedCasual,  color: "var(--info)"   },
+                    ].map(lb => {
+                      const remain = lb.total - lb.used
+                      const pct = Math.round((lb.used / lb.total) * 100)
+                      return (
+                        <div key={lb.label} className="rounded-lg p-2.5" style={{ background: "var(--surface-2)" }}>
+                          <div className="text-[14px] font-semibold tabular-nums" style={{ color: lb.color }}>
+                            {remain}
+                            <span className="text-[10px] font-normal" style={{ color: "var(--text-3)" }}> / {lb.total}</span>
+                          </div>
+                          <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>{lb.label}</div>
+                          <div className="w-full h-1 rounded-full mt-1.5" style={{ background: "var(--border)" }}>
+                            <div className="h-full rounded-full" style={{ width: `${pct}%`, background: lb.color, opacity: 0.6 }} />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                {["pending", "reviewing", "flagged"].includes(detail.status) && (
+                  <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+                    <button
+                      onClick={() => approveTs(detail.id)}
+                      className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[13px]">
+                      <CheckCircle2 size={14} /> Approve timesheet
+                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => openNotifyFor(detail, "flag")}
+                        className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
+                        style={{ color: "var(--warn)" }}>
+                        <Flag size={12} /> Flag
+                      </button>
+                      <button
+                        onClick={() => openNotifyFor(detail, "reject")}
+                        className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
+                        style={{ color: "var(--danger)" }}>
+                        <XCircle size={12} /> Reject
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Status confirmations */}
+                {detail.status === "approved" && (
+                  <div className="text-center py-3 rounded-lg" style={{ background: "rgba(5,150,105,0.06)" }}>
+                    <CheckCircle2 size={18} className="mx-auto mb-1" style={{ color: "#059669" }} />
+                    <div className="text-[13px] font-medium" style={{ color: "#059669" }}>Approved</div>
+                    {detail.approvedBy && (
+                      <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                        by {detail.approvedBy}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {detail.status === "processed" && (
+                  <div className="text-center py-3 rounded-lg" style={{ background: "var(--accent-dim)" }}>
+                    <CheckCircle2 size={18} className="mx-auto mb-1" style={{ color: "var(--accent)" }} />
+                    <div className="text-[13px] font-medium" style={{ color: "var(--accent)" }}>Processed & Paid</div>
+                    <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                      ₹{detail.totalPayable.toLocaleString("en-IN")}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           </>
           )}
