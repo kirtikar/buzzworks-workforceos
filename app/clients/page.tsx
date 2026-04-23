@@ -6,9 +6,10 @@ import Sidebar from "@/components/Sidebar"
 import AIAgentOrb from "@/components/AIAgentOrb"
 import { clients, portals } from "@/lib/mock-data"
 import type { Industry } from "@/lib/types"
+import { getActionCountForClient } from "@/lib/compliance-data"
 import {
-  Search, Building2, Users, Clock, AlertTriangle, ArrowRight, X,
-  ChevronRight, ChevronDown, Globe, Mail, CheckCircle2, TrendingUp,
+  Search, Building2, Users, Clock, ArrowRight, X,
+  ChevronDown, Globe, Mail, CheckCircle2, TrendingUp, Bell,
   Briefcase, ArrowUpDown,
 } from "lucide-react"
 import clsx from "clsx"
@@ -42,8 +43,8 @@ function FilterDropdown({
           active ? "border-[color:var(--accent)]" : "border-[color:var(--border)] hover:border-[color:var(--border-strong)]"
         )}
         style={{
-          background: active ? "var(--accent-dim)" : "var(--surface)",
-          color: active ? "var(--accent)" : "var(--text-2)",
+          background: active ? "var(--pink-100)" : "var(--surface)",
+          color: active ? "var(--pink-700)" : "var(--text-2)",
         }}
       >
         {Icon && <Icon size={12} />}
@@ -57,8 +58,8 @@ function FilterDropdown({
         <ChevronDown size={11} className={clsx("transition-transform", open && "rotate-180")} />
       </button>
       {open && (
-        <div className="absolute top-full mt-1.5 left-0 z-50 rounded-xl border shadow-xl min-w-[200px] py-1.5"
-          style={{ background: "var(--surface)", borderColor: "var(--border-strong)", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
+        <div className="absolute top-full mt-1.5 left-0 z-[100] rounded-xl border shadow-xl min-w-[200px] py-1.5"
+          style={{ background: "var(--surface)", borderColor: "var(--border-strong)", boxShadow: "0 12px 32px rgba(0,0,0,0.15)" }}>
           {selected.length > 0 && (
             <button onClick={() => { onClear(); setOpen(false) }}
               className="w-full text-left px-3 py-1.5 text-xs font-semibold mb-1"
@@ -120,11 +121,12 @@ const INDUSTRIES: Industry[] = [
 
 function ClientCard({ client }: { client: typeof clients[0] }) {
   const portal = client.portalId ? portals.find(p => p.id === client.portalId) : null
+  const actionCount = getActionCountForClient(client.name)
 
   return (
     <Link href={`/clients/${client.id}`}>
       <div
-        className="glass rounded-2xl p-4 flex flex-col gap-3 cursor-pointer transition-all hover:scale-[1.01]"
+        className="glass rounded-2xl p-4 flex flex-col gap-3 cursor-pointer transition-all hover:shadow-md"
         style={{ borderLeft: `3px solid ${client.color}` }}
       >
         {/* Header */}
@@ -148,12 +150,24 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
               </span>
             </div>
           </div>
-          <span
-            className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0"
-            style={{ background: client.status === "active" ? "rgba(75,143,255,0.1)" : "rgba(192,112,112,0.1)", color: client.status === "active" ? "var(--accent)" : "#c07070" }}
-          >
-            {client.status}
-          </span>
+          <div className="flex flex-col items-end gap-1 flex-shrink-0">
+            <span
+              className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
+              style={{ background: client.status === "active" ? "rgba(75,143,255,0.1)" : "rgba(192,112,112,0.1)", color: client.status === "active" ? "var(--accent)" : "#c07070" }}
+            >
+              {client.status}
+            </span>
+            {actionCount > 0 && (
+              <span
+                onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/compliance` }}
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold transition-opacity hover:opacity-80"
+                style={{ background: "var(--warn-bg)", color: "var(--warn)" }}
+              >
+                <Bell size={10} />
+                {actionCount}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Stats */}
@@ -284,9 +298,9 @@ export default function ClientsPage() {
             ))}
           </div>
 
-          {/* Filters — outer div: relative z-20, no overflow (allows dropdowns to escape) */}
-          <div className="relative z-20">
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          {/* Filters — flex-wrap allows dropdowns to escape without overflow clip */}
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
               {/* Search */}
               <div className="relative flex-shrink-0">
                 <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />

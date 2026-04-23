@@ -120,8 +120,8 @@ function FilterDropdown({
           active ? "border-[color:var(--accent)]" : "border-[color:var(--border)] hover:border-[color:var(--border-strong)]"
         )}
         style={{
-          background: active ? "var(--accent-dim)" : "var(--surface)",
-          color: active ? "var(--accent)" : "var(--text-2)",
+          background: active ? "var(--pink-100)" : "var(--surface)",
+          color: active ? "var(--pink-700)" : "var(--text-2)",
         }}
       >
         {Icon && <Icon size={12} />}
@@ -135,8 +135,8 @@ function FilterDropdown({
         <ChevronDown size={11} className={clsx("transition-transform", open && "rotate-180")} />
       </button>
       {open && (
-        <div className="absolute top-full mt-1.5 left-0 z-50 rounded-xl border shadow-xl min-w-[180px] py-1.5"
-          style={{ background: "var(--surface)", borderColor: "var(--border-strong)", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
+        <div className="absolute top-full mt-1.5 left-0 z-[100] rounded-xl border shadow-xl min-w-[200px] py-1.5"
+          style={{ background: "var(--surface)", borderColor: "var(--border-strong)", boxShadow: "0 12px 32px rgba(0,0,0,0.15)" }}>
           {selected.length > 0 && (
             <button onClick={() => { onClear(); setOpen(false) }}
               className="w-full text-left px-3 py-1.5 text-xs font-semibold mb-1"
@@ -187,15 +187,15 @@ function DateRangeFilter({ fromDate, toDate, onChange }: {
           "flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all whitespace-nowrap",
           active ? "border-[color:var(--accent)]" : "border-[color:var(--border)] hover:border-[color:var(--border-strong)]"
         )}
-        style={{ background: active ? "var(--accent-dim)" : "var(--surface)", color: active ? "var(--accent)" : "var(--text-2)" }}>
+        style={{ background: active ? "var(--pink-100)" : "var(--surface)", color: active ? "var(--pink-700)" : "var(--text-2)" }}>
         <Calendar size={12} />
         Joined
         {active && <span className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />}
         <ChevronDown size={11} className={clsx("transition-transform", open && "rotate-180")} />
       </button>
       {open && (
-        <div className="absolute top-full mt-1.5 left-0 z-50 rounded-xl border shadow-xl p-4 min-w-[220px]"
-          style={{ background: "var(--surface)", borderColor: "var(--border-strong)", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
+        <div className="absolute top-full mt-1.5 left-0 z-[100] rounded-xl border shadow-xl p-4 min-w-[240px]"
+          style={{ background: "var(--surface)", borderColor: "var(--border-strong)", boxShadow: "0 12px 32px rgba(0,0,0,0.15)" }}>
           <div className="text-xs font-semibold mb-3" style={{ color: "var(--text-2)" }}>Date of Joining</div>
           <div className="space-y-2">
             <div>
@@ -710,9 +710,9 @@ export default function EmployeesPage() {
         </header>
 
         {/* Filter bar */}
-        <div className="border-b flex-shrink-0 relative z-20"
+        <div className="border-b flex-shrink-0"
           style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
-        <div className="flex items-center gap-2 px-4 lg:px-6 py-2.5 overflow-x-auto scrollbar-none">
+        <div className="flex flex-wrap items-center gap-2 px-4 lg:px-6 py-2.5">
           <div className="relative flex-shrink-0">
             <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
             <input
