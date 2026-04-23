@@ -244,31 +244,15 @@ export default function ComplianceInbox() {
   return (
     <div className="flex flex-col h-full w-full">
 
-      {/* ── Toolbar row 1: category pills + filters + search + sort ── */}
+      {/* ── Toolbar: filter dropdowns + search + sort ── */}
       <div className="px-6 lg:px-8 py-3 flex-shrink-0"
         style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
         <div className="flex flex-wrap items-center gap-2">
 
-          {/* Category pills */}
-          {CATEGORIES.map(c => {
-            const m = CATEGORY_META[c]
-            const isActive = selCategories.includes(c)
-            return (
-              <button key={c}
-                onClick={() => toggle(selCategories, setSelCategories, c)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all"
-                style={{
-                  background: isActive ? m.bg : "transparent",
-                  color:      isActive ? m.color : "var(--text-2)",
-                  border: isActive ? `1px solid ${m.color}40` : "1px solid var(--border)",
-                }}>
-                <span className="w-1.5 h-1.5 rounded-full" style={{ background: m.color }} />
-                {m.label}
-              </button>
-            )
-          })}
-
-          <div className="w-px h-5 mx-1" style={{ background: "var(--border)" }} />
+          <FilterDropdown label="Category" icon={Tag} options={categoryOptions}
+            selected={selCategories as string[]}
+            onToggle={v => toggle(selCategories, setSelCategories, v as ComplianceCategory)}
+            onClear={() => setSelCategories([])} />
 
           <FilterDropdown label="Impact area" icon={Tag} options={impactAreaOptions}
             selected={selImpactAreas as string[]}

@@ -18,7 +18,7 @@ import clsx from "clsx"
 import {
   Search, Check, Flag, X, CheckCircle2, XCircle,
   AlertTriangle, Clock, Mail, Globe, Edit3,
-  ChevronDown, Sparkles, Building2, Activity, Tag,
+  ChevronDown, ChevronRight, Sparkles, Building2, Activity, Tag,
 } from "lucide-react"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -153,7 +153,8 @@ export default function InboxPage() {
   const [actionableOnly, setActionableOnly] = useState<boolean>(true)
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [detailId, setDetailId]       = useState<string | null>(null)
+  const [expandedId, setExpandedId]   = useState<string | null>(null)
+  const [sortBy, setSortBy]           = useState<"date" | "score-asc" | "score-desc" | "client" | "hours">("date")
   const [page, setPage]               = useState<number>(1)
   const PAGE_SIZE = 50
 
@@ -192,11 +193,21 @@ export default function InboxPage() {
     })
   }, [localTs, search, selStatuses, selClients, selSources, selScoreBands, selOTOnly, actionableOnly])
 
+  const sorted = useMemo(() => {
+    const list = [...filtered]
+    if (sortBy === "score-asc")  list.sort((a, b) => a.validationScore - b.validationScore)
+    if (sortBy === "score-desc") list.sort((a, b) => b.validationScore - a.validationScore)
+    if (sortBy === "client")     list.sort((a, b) => a.clientId.localeCompare(b.clientId))
+    if (sortBy === "hours")      list.sort((a, b) => b.totalHours - a.totalHours)
+    if (sortBy === "date")       list.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+    return list
+  }, [filtered, sortBy])
+
   const paginated = useMemo(
-    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [filtered, page]
+    () => sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [sorted, page]
   )
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
 
   const activeFilterCount =
     selStatuses.length + selClients.length + selSources.length +
@@ -275,9 +286,7 @@ export default function InboxPage() {
     }
   }
 
-  const detail = detailId ? localTs.find(t => t.id === detailId) : null
-  const detailEmp = detail ? getEmployeeFromPool(detail.employeeId) : null
-  const detailClient = detail ? getClient(detail.clientId) : null
+  // (detail variables removed — inline expand uses row-local emp/client)
 
   // Compliance count = regulations needing action
   const complianceActionCount = REGULATIONS.filter(r => r.actionRequired).length
@@ -298,26 +307,11 @@ export default function InboxPage() {
 
         {/* Header */}
         <header className="px-6 lg:px-8 py-5 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Inbox</h1>
-              <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                {actionableCount} items need your attention
-              </p>
-            </div>
-            {selectedIds.size > 0 && (
-              <div className="flex items-center gap-3">
-                <span className="text-[13px] font-medium" style={{ color: "var(--text-2)" }}>
-                  {selectedIds.size} selected
-                </span>
-                <button onClick={approveSelected} className="btn-primary flex items-center gap-2 py-2 px-4 text-[13px]">
-                  <Check size={14} /> Approve selected
-                </button>
-                <button onClick={() => setSelectedIds(new Set())} className="btn-ghost py-2 px-3 text-[13px]">
-                  Clear
-                </button>
-              </div>
-            )}
+          <div>
+            <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Inbox</h1>
+            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+              {actionableCount} items need your attention
+            </p>
           </div>
 
           {/* Category tabs */}
@@ -434,12 +428,69 @@ export default function InboxPage() {
                   </button>
                 )}
 
-                <span className="text-[13px] ml-auto flex-shrink-0" style={{ color: "var(--text-3)" }}>
-                  {filtered.length.toLocaleString()} of {TIMESHEET_POOL.length.toLocaleString()}
-                  {filtered.length > 0 && ` · page ${page}/${totalPages}`}
-                </span>
+                {/* Sort dropdown — matches Compliance Inbox */}
+                <div className="flex items-center gap-2 ml-auto">
+                  <span className="text-xs whitespace-nowrap" style={{ color: "var(--text-3)" }}>Sort by</span>
+                  <div className="relative">
+                    <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
+                      className="glass-input py-2 pr-7 text-xs appearance-none cursor-pointer"
+                      style={{ width: 160, fontSize: 12 }}>
+                      <option value="date">Most recent</option>
+                      <option value="score-asc">Lowest score first</option>
+                      <option value="score-desc">Highest score first</option>
+                      <option value="hours">Highest hours</option>
+                      <option value="client">Client name</option>
+                    </select>
+                    <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "var(--text-3)" }} />
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Stats strip — matches Compliance Inbox */}
+            <div className="flex items-center gap-6 px-6 lg:px-8 py-2.5 flex-shrink-0 text-xs"
+              style={{ background: "var(--bg)", color: "var(--text-3)" }}>
+              <span>
+                <span style={{ color: "var(--text-1)", fontWeight: 600 }}>{sorted.length.toLocaleString()}</span> items
+              </span>
+              <span>
+                <span style={{ color: "var(--warn)", fontWeight: 600 }}>{flaggedCount}</span> flagged
+              </span>
+              <span>
+                <span style={{ color: "var(--text-1)", fontWeight: 600 }}>{otCount}</span> with overtime
+              </span>
+              <span className="ml-auto">
+                Page {page} of {totalPages}
+              </span>
+            </div>
+
+            {/* Bulk action bar — appears when items selected (Compliance-style) */}
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-3 px-6 lg:px-8 py-2.5 flex-shrink-0"
+                style={{ background: "var(--pink-50)", boxShadow: "0 1px 0 var(--border)" }}>
+                <span className="text-xs font-medium" style={{ color: "var(--pink-700)" }}>
+                  {selectedIds.size} selected
+                </span>
+                <button onClick={approveSelected}
+                  className="btn-primary flex items-center gap-1.5 text-xs"
+                  style={{ padding: "6px 12px" }}>
+                  <Check size={12} /> Approve selected
+                </button>
+                <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                  style={{ padding: "6px 12px", color: "var(--warn)", borderColor: "var(--warn-border)" }}>
+                  <Flag size={12} /> Flag
+                </button>
+                <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                  style={{ padding: "6px 12px", color: "var(--danger)", borderColor: "var(--danger-border)" }}>
+                  <XCircle size={12} /> Reject
+                </button>
+                <button onClick={() => setSelectedIds(new Set())}
+                  className="btn-ghost flex items-center gap-1.5 text-xs ml-auto"
+                  style={{ padding: "6px 12px" }}>
+                  Clear
+                </button>
+              </div>
+            )}
 
             {/* Bulk rules bar */}
             {actionableOnly && bulkRules.some(r => r.count > 0) && (
@@ -493,87 +544,218 @@ export default function InboxPage() {
                 if (!emp || !client) return null
                 const isActionable = ["pending", "reviewing", "flagged"].includes(ts.status)
                 const isSelected = selectedIds.has(ts.id)
-                const isDetail = detailId === ts.id
+                const isExpanded = expandedId === ts.id
                 const fails    = ts.validationChecks.filter(c => c.result === "fail").length
                 const warnings = ts.validationChecks.filter(c => c.result === "warning").length
 
                 const scoreColor = ts.validationScore >= 85 ? "#059669" : ts.validationScore >= 60 ? "var(--warn)" : "var(--danger)"
 
+                // AI suggestion chip
+                const aiRec = ts.validationScore >= 95 && fails === 0
+                  ? { label: "Auto-approve", color: "#059669" }
+                  : ts.status === "flagged"
+                    ? { label: "Notify HR", color: "var(--warn)" }
+                    : ts.overtimeHours > 0
+                      ? { label: "Verify OT pre-approval", color: "var(--warn)" }
+                      : { label: "Manual review", color: "var(--text-2)" }
+
                 return (
-                  <div
-                    key={ts.id}
-                    className="flex items-center gap-4 px-6 lg:px-8 py-3.5 transition-colors cursor-pointer"
+                  <div key={ts.id}
+                    className="group transition-colors"
                     style={{
                       borderBottom: "1px solid var(--border)",
-                      background: isDetail ? "var(--accent-dim)" : isSelected ? "var(--surface-hover)" : "var(--surface)",
-                    }}
-                    onClick={() => setDetailId(isDetail ? null : ts.id)}
-                  >
-                    {/* Checkbox */}
-                    {isActionable && (
-                      <button
-                        onClick={e => { e.stopPropagation(); toggleSelect(ts.id) }}
-                        className="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
-                        style={{
-                          borderColor: isSelected ? "var(--accent)" : "var(--border-strong)",
-                          background: isSelected ? "var(--accent)" : "transparent",
-                        }}
-                      >
-                        {isSelected && <Check size={10} className="text-white" />}
-                      </button>
-                    )}
-                    {!isActionable && <div className="w-4 flex-shrink-0" />}
+                      background: isExpanded ? "var(--pink-50)"
+                                : isSelected ? "var(--surface-hover)"
+                                : "var(--surface)",
+                    }}>
 
-                    {/* Status indicator */}
-                    <div className="flex-shrink-0">
-                      {ts.status === "pending" && <Clock size={16} style={{ color: "var(--text-3)" }} />}
-                      {ts.status === "reviewing" && <Sparkles size={16} style={{ color: "var(--accent)" }} />}
-                      {ts.status === "flagged" && <AlertTriangle size={16} style={{ color: "var(--warn)" }} />}
-                      {ts.status === "approved" && <CheckCircle2 size={16} style={{ color: "#059669" }} />}
-                      {ts.status === "processed" && <CheckCircle2 size={16} style={{ color: "var(--accent)" }} />}
-                      {ts.status === "rejected" && <XCircle size={16} style={{ color: "var(--danger)" }} />}
-                    </div>
+                    {/* Row */}
+                    <div
+                      className="flex items-center gap-3 px-6 lg:px-8 py-3 cursor-pointer"
+                      onClick={() => setExpandedId(isExpanded ? null : ts.id)}
+                    >
+                      {/* Checkbox */}
+                      {isActionable ? (
+                        <button
+                          onClick={e => { e.stopPropagation(); toggleSelect(ts.id) }}
+                          className="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
+                          style={{
+                            borderColor: isSelected ? "var(--accent)" : "var(--border-strong)",
+                            background: isSelected ? "var(--accent)" : "transparent",
+                          }}
+                        >
+                          {isSelected && <Check size={10} className="text-white" />}
+                        </button>
+                      ) : <div className="w-4 flex-shrink-0" />}
 
-                    {/* Employee + context */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      {/* Status indicator */}
+                      <div className="flex-shrink-0">
+                        {ts.status === "pending" && <Clock size={14} style={{ color: "var(--text-3)" }} />}
+                        {ts.status === "reviewing" && <Sparkles size={14} style={{ color: "var(--accent)" }} />}
+                        {ts.status === "flagged" && <AlertTriangle size={14} style={{ color: "var(--warn)" }} />}
+                        {ts.status === "approved" && <CheckCircle2 size={14} style={{ color: "#059669" }} />}
+                        {ts.status === "processed" && <CheckCircle2 size={14} style={{ color: "var(--accent)" }} />}
+                        {ts.status === "rejected" && <XCircle size={14} style={{ color: "var(--danger)" }} />}
+                      </div>
+
+                      {/* Client chip */}
+                      <span className="text-xs font-medium flex-shrink-0 px-2 py-0.5 rounded-md max-w-[140px] truncate"
+                        style={{ background: `${client.color}12`, color: client.color }}>
+                        {client.code}
+                      </span>
+
+                      {/* Employee + period + source */}
+                      <div className="flex-1 min-w-0 flex items-center gap-2">
                         <span className="text-[13px] font-medium truncate" style={{ color: "var(--text-1)" }}>
                           {emp.name}
                         </span>
-                        <span className="text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0"
-                          style={{ background: `${client.color}12`, color: client.color }}>
-                          {client.code}
+                        <span className="hidden lg:inline text-[11px] flex-shrink-0" style={{ color: "var(--text-3)" }}>
+                          · {ts.period} · {ts.totalHours}h
+                          {ts.overtimeHours > 0 && <span style={{ color: "var(--warn)" }}> (+{ts.overtimeHours} OT)</span>}
                         </span>
-                        {ts.source === "email" && <Mail size={12} style={{ color: "var(--text-3)" }} />}
-                        {ts.source === "portal" && <Globe size={12} style={{ color: "var(--text-3)" }} />}
-                        {ts.source === "manual" && <Edit3 size={12} style={{ color: "var(--text-3)" }} />}
+                        {ts.source === "email" && <Mail size={11} style={{ color: "var(--text-3)" }} className="flex-shrink-0" />}
+                        {ts.source === "portal" && <Globe size={11} style={{ color: "var(--text-3)" }} className="flex-shrink-0" />}
+                        {ts.source === "manual" && <Edit3 size={11} style={{ color: "var(--text-3)" }} className="flex-shrink-0" />}
                       </div>
-                      <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>
-                        {ts.period} · {ts.totalHours}h
-                        {ts.overtimeHours > 0 && <span style={{ color: "var(--warn)" }}> (+{ts.overtimeHours}h OT)</span>}
-                        {ts.flagReason && <span style={{ color: "var(--warn)" }}> · {ts.flagReason}</span>}
-                      </div>
+
+                      {/* AI suggestion chip */}
+                      <span className="hidden md:flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded flex-shrink-0"
+                        style={{ background: `${aiRec.color}12`, color: aiRec.color }}>
+                        <Sparkles size={10} /> {aiRec.label}
+                      </span>
+
+                      {/* Score */}
+                      <span className="text-[11px] font-semibold tabular-nums flex-shrink-0 w-14 text-right"
+                        style={{ color: scoreColor }}>
+                        {ts.validationScore} <span className="font-normal" style={{ color: "var(--text-3)" }}>
+                          {fails > 0 ? `· ${fails}F` : warnings > 0 ? `· ${warnings}W` : ""}
+                        </span>
+                      </span>
+
+                      {/* Quick approve */}
+                      {isActionable && ts.status !== "flagged" && (
+                        <button
+                          onClick={e => { e.stopPropagation(); approveTs(ts.id) }}
+                          className="flex-shrink-0 px-2.5 py-1 rounded text-[11px] font-medium transition-all"
+                          style={{ background: "rgba(5,150,105,0.08)", color: "#059669" }}
+                        >
+                          Approve
+                        </button>
+                      )}
+
+                      {/* Expand arrow */}
+                      <ChevronRight size={14} className="flex-shrink-0 transition-transform"
+                        style={{
+                          color: "var(--text-3)",
+                          transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
+                        }} />
                     </div>
 
-                    {/* Score */}
-                    <div className="flex-shrink-0 text-right">
-                      <div className="text-sm font-semibold tabular-nums" style={{ color: scoreColor }}>
-                        {ts.validationScore}
-                      </div>
-                      <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
-                        {fails > 0 ? `${fails} fail` : warnings > 0 ? `${warnings} warn` : "clean"}
-                      </div>
-                    </div>
+                    {/* Inline expand */}
+                    {isExpanded && (
+                      <div className="px-6 lg:px-8 pb-5 animate-fade-in">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 
-                    {/* Quick action */}
-                    {isActionable && ts.status !== "flagged" && (
-                      <button
-                        onClick={e => { e.stopPropagation(); approveTs(ts.id) }}
-                        className="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                        style={{ background: "rgba(5,150,105,0.08)", color: "#059669" }}
-                      >
-                        Approve
-                      </button>
+                          {/* Hours + summary */}
+                          <div className="md:col-span-2 rounded-lg p-4"
+                            style={{ background: "var(--surface)" }}>
+                            <div className="flex items-center gap-2 flex-wrap mb-3">
+                              <span className="text-[10px] font-medium px-2 py-0.5 rounded uppercase tracking-wider"
+                                style={{ background: `${client.color}12`, color: client.color }}>
+                                {client.name}
+                              </span>
+                              <span className="text-[11px]" style={{ color: "var(--text-2)" }}>
+                                {emp.role} · {emp.department}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-2 mb-4">
+                              <div className="rounded-md p-2.5" style={{ background: "var(--surface-2)" }}>
+                                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>Regular</div>
+                                <div className="text-base font-semibold mt-0.5" style={{ color: "var(--accent)" }}>
+                                  {ts.regularHours}h
+                                </div>
+                              </div>
+                              <div className="rounded-md p-2.5" style={{ background: "var(--surface-2)" }}>
+                                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>Overtime</div>
+                                <div className="text-base font-semibold mt-0.5" style={{ color: "var(--warn)" }}>
+                                  {ts.overtimeHours}h
+                                </div>
+                              </div>
+                              <div className="rounded-md p-2.5" style={{ background: "var(--surface-2)" }}>
+                                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>Leave</div>
+                                <div className="text-base font-semibold mt-0.5" style={{ color: "var(--info)" }}>
+                                  {ts.leaveHours}h
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between py-2 px-3 rounded"
+                              style={{ background: "var(--surface-2)" }}>
+                              <span className="text-xs" style={{ color: "var(--text-2)" }}>Total payable</span>
+                              <span className="text-sm font-semibold tabular-nums" style={{ color: "var(--text-1)" }}>
+                                ₹{ts.totalPayable.toLocaleString("en-IN")}
+                              </span>
+                            </div>
+
+                            {ts.flagReason && (
+                              <div className="mt-3 p-3 rounded" style={{ background: "var(--warn-bg)" }}>
+                                <div className="flex items-center gap-1 text-[11px] font-medium" style={{ color: "var(--warn)" }}>
+                                  <Flag size={11} /> Flagged
+                                </div>
+                                <div className="text-xs mt-1" style={{ color: "var(--text-2)" }}>{ts.flagReason}</div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Validation summary + AI rec */}
+                          <div className="space-y-3">
+                            <div className="rounded-lg p-3" style={{ background: "var(--surface)" }}>
+                              <div className="text-[10px] uppercase tracking-wider font-semibold mb-2"
+                                style={{ color: "var(--text-3)" }}>
+                                Validation
+                              </div>
+                              <div className="text-2xl font-semibold tabular-nums" style={{ color: scoreColor }}>
+                                {ts.validationScore}
+                              </div>
+                              <div className="text-[11px] mt-1" style={{ color: "var(--text-3)" }}>
+                                {ts.validationChecks.filter(c => c.result === "pass").length} pass
+                                {fails > 0 && <span style={{ color: "var(--danger)" }}> · {fails} fail</span>}
+                                {warnings > 0 && <span style={{ color: "var(--warn)" }}> · {warnings} warn</span>}
+                              </div>
+                            </div>
+                            <div className="rounded-lg p-3"
+                              style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
+                              <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold"
+                                style={{ color: "var(--pink-700)" }}>
+                                <Sparkles size={10} /> AI recommends
+                              </div>
+                              <div className="text-[13px] font-semibold mt-1" style={{ color: "var(--pink-700)" }}>
+                                {aiRec.label}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        {isActionable && (
+                          <div className="flex items-center gap-2 mt-4">
+                            <button onClick={e => { e.stopPropagation(); approveTs(ts.id) }}
+                              className="btn-primary flex items-center gap-1.5 text-xs"
+                              style={{ padding: "8px 14px" }}>
+                              <CheckCircle2 size={13} /> Approve
+                            </button>
+                            <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                              style={{ padding: "8px 14px", color: "var(--warn)" }}>
+                              <Flag size={13} /> Flag
+                            </button>
+                            <button className="btn-ghost flex items-center gap-1.5 text-xs"
+                              style={{ padding: "8px 14px", color: "var(--danger)" }}>
+                              <XCircle size={13} /> Reject
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 )
@@ -620,128 +802,6 @@ export default function InboxPage() {
             </div>
           </div>
 
-          {/* Detail panel */}
-          {detail && detailEmp && detailClient && (
-            <div
-              className="hidden lg:flex flex-col w-[400px] flex-shrink-0 overflow-y-auto"
-              style={{ background: "var(--surface)", boxShadow: "-1px 0 0 var(--border)" }}
-            >
-              {/* Panel header */}
-              <div className="flex items-center justify-between px-6 py-4 flex-shrink-0"
-                style={{ boxShadow: "0 1px 0 var(--border)" }}>
-                <div>
-                  <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>{detailEmp.name}</div>
-                  <div className="text-[13px]" style={{ color: "var(--text-3)" }}>{detail.period}</div>
-                </div>
-                <button onClick={() => setDetailId(null)} style={{ color: "var(--text-3)" }}>
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="p-6 space-y-5">
-                {/* Employee card */}
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
-                    style={{ background: `${detailClient.color}12`, color: detailClient.color }}
-                  >
-                    {initials(detailEmp.name)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>{detailEmp.role}</div>
-                    <div className="text-xs" style={{ color: "var(--text-3)" }}>{detailEmp.department} · {detailClient.name}</div>
-                  </div>
-                </div>
-
-                {/* Hours */}
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { label: "Regular", value: `${detail.regularHours}h`, color: "var(--accent)" },
-                    { label: "Overtime", value: `${detail.overtimeHours}h`, color: "var(--warn)" },
-                    { label: "Leave",   value: `${detail.leaveHours}h`,    color: "var(--info)"  },
-                  ].map(h => (
-                    <div key={h.label} className="glass-sm p-3 text-center">
-                      <div className="text-lg font-semibold" style={{ color: h.color }}>{h.value}</div>
-                      <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>{h.label}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between py-3 px-4 rounded-lg" style={{ background: "var(--surface-2)" }}>
-                  <span className="text-[13px]" style={{ color: "var(--text-2)" }}>Total payable</span>
-                  <span className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
-                    ₹{detail.totalPayable.toLocaleString("en-IN")}
-                  </span>
-                </div>
-
-                {/* Validation checks */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>Validation</span>
-                    <span className="text-xs" style={{ color: "var(--text-3)" }}>
-                      {detail.aiConfidence}% AI confidence
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {detail.validationChecks.map(check => (
-                      <div key={check.id} className="flex items-start gap-2.5 py-2">
-                        {check.result === "pass" && <CheckCircle2 size={15} className="flex-shrink-0 mt-0.5" style={{ color: "#059669" }} />}
-                        {check.result === "fail" && <XCircle size={15} className="flex-shrink-0 mt-0.5" style={{ color: "var(--danger)" }} />}
-                        {check.result === "warning" && <AlertTriangle size={15} className="flex-shrink-0 mt-0.5" style={{ color: "var(--warn)" }} />}
-                        {check.result === "pending" && <Clock size={15} className="flex-shrink-0 mt-0.5" style={{ color: "var(--text-3)" }} />}
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>{check.rule}</div>
-                          <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>{check.detail}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Flag info */}
-                {detail.flagReason && (
-                  <div className="p-4 rounded-lg" style={{ background: "var(--warn-bg)" }}>
-                    <div className="flex items-center gap-1.5 text-[13px] font-medium mb-1" style={{ color: "var(--warn)" }}>
-                      <Flag size={13} /> Flagged
-                    </div>
-                    <div className="text-xs" style={{ color: "var(--text-2)" }}>{detail.flagReason}</div>
-                  </div>
-                )}
-
-                {/* Actions */}
-                {["pending", "reviewing", "flagged"].includes(detail.status) && (
-                  <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
-                    <button
-                      onClick={() => approveTs(detail.id)}
-                      className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[13px]"
-                    >
-                      <CheckCircle2 size={15} /> Approve
-                    </button>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-[13px]"
-                        style={{ color: "var(--warn)" }}>
-                        <Flag size={13} /> Flag
-                      </button>
-                      <button className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-[13px]"
-                        style={{ color: "var(--danger)" }}>
-                        <XCircle size={13} /> Reject
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {detail.status === "approved" && (
-                  <div className="text-center py-4 rounded-lg" style={{ background: "rgba(5,150,105,0.06)" }}>
-                    <CheckCircle2 size={20} className="mx-auto mb-1" style={{ color: "#059669" }} />
-                    <div className="text-[13px] font-medium" style={{ color: "#059669" }}>Approved</div>
-                    {detail.approvedBy && (
-                      <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>by {detail.approvedBy}</div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
           </>
           )}
         </div>
