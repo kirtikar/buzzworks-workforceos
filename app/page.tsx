@@ -158,7 +158,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-4 mb-3 text-xs" style={{ color: "var(--text-3)" }}>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--accent)", opacity: 0.3 }} /> Manual
+                  <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--lavender)" }} /> Manual
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded" style={{ background: "var(--accent)" }} /> Automated
@@ -169,11 +169,11 @@ export default function DashboardPage() {
                   <AreaChart data={opsCostTrend}>
                     <defs>
                       <linearGradient id="manualGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor="var(--accent)" stopOpacity={0.12} />
-                        <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
+                        <stop offset="5%"  stopColor="var(--lavender)" stopOpacity={0.28} />
+                        <stop offset="95%" stopColor="var(--lavender)" stopOpacity={0.02} />
                       </linearGradient>
                       <linearGradient id="autoGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor="var(--accent)" stopOpacity={0.3} />
+                        <stop offset="5%"  stopColor="var(--accent)" stopOpacity={0.35} />
                         <stop offset="95%" stopColor="var(--accent)" stopOpacity={0.05} />
                       </linearGradient>
                     </defs>
@@ -185,8 +185,8 @@ export default function DashboardPage() {
                       contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
                       formatter={(v: number) => fmtINR(v)}
                     />
-                    <Area type="monotone" dataKey="manual"    stackId="1" stroke="none" fill="url(#manualGrad)" name="Manual ops cost" />
-                    <Area type="monotone" dataKey="automated" stackId="1" stroke="var(--accent)" strokeWidth={2} fill="url(#autoGrad)" name="AI processing cost" />
+                    <Area type="monotone" dataKey="manual"    stackId="1" stroke="var(--lavender)" strokeWidth={1.5} fill="url(#manualGrad)" name="Manual ops cost" />
+                    <Area type="monotone" dataKey="automated" stackId="1" stroke="var(--accent)"   strokeWidth={2}   fill="url(#autoGrad)"   name="AI processing cost" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>

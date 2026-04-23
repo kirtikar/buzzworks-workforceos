@@ -13,132 +13,146 @@
 
 /* ═══════════════════════════════════════════════════════════
    DESIGN TOKENS — Light (default)
-   Veyyan purple identity · Shoplytics warmth · Square clarity
+   Sweat-inspired: layered pinks + warm neutrals + fresh accents
    ═══════════════════════════════════════════════════════════ */
 :root {
-  /* ── Brand ──────────────────────────────── */
-  --purple:         #6200EA;
-  --purple-light:   #7C4DFF;
-  --purple-bg:      #EDE7F6;
-  --purple-subtle:  rgba(98, 0, 234, 0.06);
+  /* ── Primary (Pink scale) ───────────────── */
+  --pink-50:   #FFF1F6;
+  --pink-100:  #FFE4EC;
+  --pink-200:  #FFC7D8;
+  --pink-300:  #FF9FBC;
+  --pink-400:  #FF6F9F;
+  --pink-500:  #FF3D7F;
+  --pink-600:  #E62E6D;
+  --pink-700:  #BF255A;
+  --pink-800:  #991D47;
+  --pink-900:  #66122F;
 
-  /* ── Chart palette ──────────────────────── */
-  --chart-1:        #C1B8FF;
-  --chart-2:        #FED97B;
-  --chart-3:        #A5D6A7;
+  /* ── Chart accents (avoid all-pink charts) */
+  --mint:      #2DD4BF;
+  --lavender:  #A78BFA;
+  --peach:     #FFB4A2;
+  --yellow:    #FACC15;
 
   /* ── Semantic ───────────────────────────── */
-  --green:          #2E7D32;
-  --green-bg:       rgba(46, 125, 50, 0.08);
-  --orange:         #ED6C02;
-  --orange-bg:      rgba(237, 108, 2, 0.06);
-  --red:            #D32F2F;
-  --red-bg:         rgba(211, 47, 47, 0.06);
-  --blue:           #1976D2;
-  --blue-bg:        rgba(25, 118, 210, 0.06);
+  --green:     #22C55E;
+  --green-bg:  rgba(34, 197, 94, 0.08);
+  --orange:    #F59E0B;
+  --orange-bg: rgba(245, 158, 11, 0.08);
+  --red:       #EF4444;
+  --red-bg:    rgba(239, 68, 68, 0.08);
+  --blue:      #3B82F6;
+  --blue-bg:   rgba(59, 130, 246, 0.08);
 
-  /* ── Surfaces ───────────────────────────── */
-  --bg:             #F8F9FA;
+  /* ── Surfaces (warm grays) ──────────────── */
+  --bg:             #FAFAFB;
   --surface:        #FFFFFF;
-  --surface-2:      #F4F4F4;
-  --surface-hover:  #FAFAFA;
-  --border:         #E0E0E0;
-  --border-light:   #F0F0F0;
+  --surface-2:      #F4F4F6;
+  --surface-hover:  #FFF1F6;
+  --border:         #E5E7EB;
+  --border-light:   #F4F4F6;
 
   /* ── Typography ─────────────────────────── */
-  --text-primary:   #212121;
-  --text-secondary: #757575;
-  --text-tertiary:  #9E9E9E;
+  --text-primary:   #1F2937;
+  --text-secondary: #4B5563;
+  --text-tertiary:  #9CA3AF;
 
   /* ── Elevation ──────────────────────────── */
-  --shadow-1: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-2: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-3: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-1: 0 1px 3px rgba(153, 29, 71, 0.06);
+  --shadow-2: 0 2px 8px rgba(153, 29, 71, 0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-3: 0 8px 24px rgba(153, 29, 71, 0.10), 0 2px 6px rgba(0,0,0,0.04);
 
   /* ── Legacy aliases (used by existing pages) */
-  --accent:        var(--purple);
-  --accent-dim:    var(--purple-subtle);
-  --accent-border: rgba(98, 0, 234, 0.16);
+  --accent:        var(--pink-500);
+  --accent-dim:    var(--pink-50);
+  --accent-border: var(--pink-200);
+  --purple:        var(--pink-500);
+  --purple-light:  var(--pink-400);
+  --purple-bg:     var(--pink-100);
+  --purple-subtle: var(--pink-50);
   --surface-nav:   #FFFFFF;
-  --nav-border:    #E0E0E0;
+  --nav-border:    var(--border);
   --text-1:        var(--text-primary);
   --text-2:        var(--text-secondary);
   --text-3:        var(--text-tertiary);
   --warn:          var(--orange);
   --warn-bg:       var(--orange-bg);
-  --warn-border:   rgba(237, 108, 2, 0.16);
+  --warn-border:   rgba(245, 158, 11, 0.18);
   --danger:        var(--red);
   --danger-bg:     var(--red-bg);
-  --danger-border: rgba(211, 47, 47, 0.16);
+  --danger-border: rgba(239, 68, 68, 0.18);
   --info:          var(--blue);
   --info-bg:       var(--blue-bg);
-  --info-border:   rgba(25, 118, 210, 0.16);
+  --info-border:   rgba(59, 130, 246, 0.18);
   --glass-bg:      var(--surface);
   --glass-border:  var(--border);
-  --border-strong: #BDBDBD;
-  --gold:          var(--chart-2);
-  --gold-dim:      rgba(254, 217, 123, 0.08);
+  --border-strong: #D1D5DB;
+  --gold:          var(--yellow);
+  --gold-dim:      rgba(250, 204, 21, 0.10);
+  --chart-1:       var(--pink-500);
+  --chart-2:       var(--mint);
+  --chart-3:       var(--lavender);
 }
 
 /* ═══════════════════════════════════════════════════════════
    DARK THEME
    ═══════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --purple:         #B388FF;
-  --purple-light:   #D1C4E9;
-  --purple-bg:      rgba(179, 136, 255, 0.12);
-  --purple-subtle:  rgba(179, 136, 255, 0.06);
+  --pink-50:   rgba(255, 61, 127, 0.08);
+  --pink-100:  rgba(255, 61, 127, 0.14);
+  --pink-200:  rgba(255, 61, 127, 0.24);
+  --pink-500:  #FF5C95;
+  --pink-600:  #FF3D7F;
 
-  --chart-1:        #C1B8FF;
-  --chart-2:        #FED97B;
-  --chart-3:        #81C784;
+  --bg:             #111827;
+  --surface:        #1F2937;
+  --surface-2:      #273141;
+  --surface-hover:  #273141;
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-light:   rgba(255, 255, 255, 0.05);
 
-  --green:          #66BB6A;
-  --green-bg:       rgba(102, 187, 106, 0.10);
-  --orange:         #FFA726;
-  --orange-bg:      rgba(255, 167, 38, 0.10);
-  --red:            #EF5350;
-  --red-bg:         rgba(239, 83, 80, 0.10);
-  --blue:           #42A5F5;
-  --blue-bg:        rgba(66, 165, 245, 0.10);
+  --text-primary:   #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-tertiary:  #6B7280;
 
-  --bg:             #0D1117;
-  --surface:        #161B22;
-  --surface-2:      #1C2128;
-  --surface-hover:  #1C2128;
-  --border:         #30363D;
-  --border-light:   #21262D;
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.5);
 
-  --text-primary:   #E6EDF3;
-  --text-secondary: #8B949E;
-  --text-tertiary:  #6E7681;
-
-  --shadow-1: 0 1px 3px rgba(0,0,0,0.3);
-  --shadow-2: 0 2px 8px rgba(0,0,0,0.3);
-  --shadow-3: 0 8px 24px rgba(0,0,0,0.5);
-
-  --accent:        var(--purple);
-  --accent-dim:    var(--purple-subtle);
-  --accent-border: rgba(179, 136, 255, 0.2);
-  --surface-nav:   #0D1117;
-  --nav-border:    #21262D;
+  --accent:        var(--pink-500);
+  --accent-dim:    var(--pink-50);
+  --accent-border: var(--pink-200);
+  --purple:        var(--pink-500);
+  --purple-light:  #FF80AE;
+  --purple-bg:     var(--pink-100);
+  --purple-subtle: var(--pink-50);
+  --surface-nav:   #0F1520;
+  --nav-border:    rgba(255, 255, 255, 0.06);
   --text-1:        var(--text-primary);
   --text-2:        var(--text-secondary);
   --text-3:        var(--text-tertiary);
-  --warn:          var(--orange);
-  --warn-bg:       var(--orange-bg);
-  --warn-border:   rgba(255, 167, 38, 0.2);
-  --danger:        var(--red);
-  --danger-bg:     var(--red-bg);
-  --danger-border: rgba(239, 83, 80, 0.2);
-  --info:          var(--blue);
-  --info-bg:       var(--blue-bg);
-  --info-border:   rgba(66, 165, 245, 0.2);
+  --warn:          #FBBF24;
+  --warn-bg:       rgba(251, 191, 36, 0.10);
+  --warn-border:   rgba(251, 191, 36, 0.20);
+  --danger:        #F87171;
+  --danger-bg:     rgba(248, 113, 113, 0.10);
+  --danger-border: rgba(248, 113, 113, 0.20);
+  --info:          #60A5FA;
+  --info-bg:       rgba(96, 165, 250, 0.10);
+  --info-border:   rgba(96, 165, 250, 0.20);
   --glass-bg:      var(--surface);
   --glass-border:  var(--border);
-  --border-strong: #484F58;
-  --gold:          var(--chart-2);
-  --gold-dim:      rgba(254, 217, 123, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --gold:          #FDE047;
+  --gold-dim:      rgba(253, 224, 71, 0.10);
+  --green:         #4ADE80;
+  --green-bg:      rgba(74, 222, 128, 0.10);
+  --orange:        #FBBF24;
+  --orange-bg:     rgba(251, 191, 36, 0.10);
+  --red:           #F87171;
+  --red-bg:        rgba(248, 113, 113, 0.10);
+  --blue:          #60A5FA;
+  --blue-bg:       rgba(96, 165, 250, 0.10);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -197,7 +211,7 @@ body {
 
 /* ── Sidebar / Nav ────────────────────────────────────────── */
 .sidebar-surface {
-  background: var(--surface);
+  background: var(--surface-nav);
   border-right: 1px solid var(--border);
 }
 .bottom-nav-surface {
@@ -224,15 +238,15 @@ body {
   font-weight: 500;
   white-space: nowrap;
 }
-.badge-pending   { background: var(--surface-2);  color: var(--text-secondary); }
-.badge-reviewing { background: var(--purple-bg);   color: var(--purple); }
-.badge-flagged   { background: var(--orange-bg);   color: var(--orange); }
-.badge-approved  { background: var(--green-bg);    color: var(--green); }
-.badge-processed { background: var(--purple-subtle); color: var(--purple); }
-.badge-rejected  { background: var(--red-bg);      color: var(--red); }
-.badge-portal    { background: var(--surface-2);   color: var(--text-secondary); }
-.badge-email     { background: var(--surface-2);   color: var(--text-secondary); }
-.badge-manual    { background: var(--surface-2);   color: var(--text-tertiary); }
+.badge-pending   { background: var(--surface-2); color: var(--text-secondary); }
+.badge-reviewing { background: var(--pink-100);  color: var(--pink-700); }
+.badge-flagged   { background: var(--orange-bg); color: var(--orange); }
+.badge-approved  { background: var(--green-bg);  color: var(--green); }
+.badge-processed { background: var(--pink-50);   color: var(--pink-600); }
+.badge-rejected  { background: var(--red-bg);    color: var(--red); }
+.badge-portal    { background: var(--surface-2); color: var(--text-secondary); }
+.badge-email     { background: var(--surface-2); color: var(--text-secondary); }
+.badge-manual    { background: var(--surface-2); color: var(--text-tertiary); }
 
 /* ── Checks ───────────────────────────────────────────────── */
 .check-pass    { color: var(--green); }
@@ -246,13 +260,13 @@ body {
   cursor: pointer;
 }
 .ts-row:hover { background: var(--surface-hover); }
-.ts-row.selected { background: var(--purple-subtle); }
+.ts-row.selected { background: var(--pink-50); }
 
 .nav-active-dot {
   position: absolute; left: 0;
   width: 3px; height: 20px;
   border-radius: 0 3px 3px 0;
-  background: var(--purple);
+  background: var(--pink-500);
 }
 
 /* ── Inputs ───────────────────────────────────────────────── */
@@ -268,15 +282,15 @@ body {
   width: 100%;
 }
 .glass-input:focus {
-  border-color: var(--purple);
-  box-shadow: 0 0 0 3px var(--purple-subtle);
+  border-color: var(--pink-500);
+  box-shadow: 0 0 0 3px var(--pink-100);
 }
 .glass-input::placeholder { color: var(--text-tertiary); }
 select.glass-input option { background: var(--surface); color: var(--text-primary); }
 
 /* ── Buttons ──────────────────────────────────────────────── */
 .btn-primary, .btn-teal {
-  background: var(--purple);
+  background: var(--pink-500);
   color: #FFFFFF;
   border: none;
   border-radius: 20px;
@@ -284,10 +298,16 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 .btn-primary:hover, .btn-teal:hover {
-  background: var(--purple-light);
+  background: var(--pink-600);
+  box-shadow: 0 2px 12px rgba(255, 61, 127, 0.25);
+}
+.btn-primary:disabled, .btn-teal:disabled {
+  background: var(--pink-200);
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-ghost {
@@ -304,6 +324,7 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
 .btn-ghost:hover {
   background: var(--surface-2);
   color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .btn-coral {
@@ -335,7 +356,7 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
   transition: border-color 0.15s, box-shadow 0.15s;
   font-family: inherit;
 }
-.login-input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-subtle); }
+.login-input:focus { border-color: var(--pink-500); box-shadow: 0 0 0 3px var(--pink-100); }
 .login-input::placeholder { color: var(--text-tertiary); }
 
 /* ── Animations ────────────────────────────────────────────── */
@@ -360,6 +381,6 @@ select.glass-input option { background: var(--surface); color: var(--text-primar
 .score-ring { position: relative; width: 36px; height: 36px; }
 .score-text {
   position: absolute; inset: 0;
-  display: flex; align-items: center; justify-center;
+  display: flex; align-items: center; justify-content: center;
   font-size: 10px; font-weight: 700;
 }
