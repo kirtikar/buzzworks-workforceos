@@ -1,0 +1,502 @@
+"Issue Type","Summary","Description","Epic Name","Epic Link","Story Points","Status","Priority","Labels","Acceptance Criteria"
+"Epic","Inbox · Timesheets","Single largest agent-manager workqueue. JARVIS-validated timesheets with reasoning trail; bulk approval; flag/reject/notify-team flows.","Inbox · Timesheets","",,"In Progress","High","inbox-timesheets jarvis",""
+"Story","Render gmail-style flat list of timesheets in inbox","As an Agent Manager I want to see all incoming timesheets in a single scannable list so I can triage in one pass.","","Inbox · Timesheets","5","Done","High","inbox-timesheets","- Default load shows only actionable items (pending/reviewing/flagged)
+- 50 rows per page
+- Sorted by date desc by default
+- Each row shows status icon, client chip, employee, period, hours, source icon, score"
+"Story","Multi-select status filter on timesheet inbox","As an Agent Manager I want to filter by one or more statuses so I can focus on a specific workflow stage (e.g. only flagged).","","Inbox · Timesheets","2","Done","Medium","inbox-timesheets filters","- Multi-select dropdown with 6 status options
+- Selecting toggles inclusion
+- Active count shown as badge
+- Clear-all link inside dropdown when ≥1 selected"
+"Story","Multi-select client + source + score filters","As an Agent Manager I want to slice timesheets by client / source / score band so I can prioritise.","","Inbox · Timesheets","3","Done","Medium","inbox-timesheets filters","- 3 multi-select dropdowns
+- Score band: high (≥85) / medium (60-84) / low (<60)
+- Combine with AND across filters
+- Active count badges visible"
+"Story","Has-overtime quick toggle","As an Agent Manager I want a one-click toggle to see only OT submissions so I can verify pre-approvals.","","Inbox · Timesheets","1","Done","Medium","inbox-timesheets filters","- Toggle in filter bar
+- When on: only ts with overtimeHours > 0 in actionable statuses
+- Visual: warn-tinted background when on
+- Count of OT items shown in label"
+"Story","Stats strip with live filtered counts","As an Agent Manager I want quick numeric overview of my filtered queue so I know depth at a glance.","","Inbox · Timesheets","2","Done","Medium","inbox-timesheets","- Strip shows: total items / flagged count / OT count / page indicator
+- Numbers respect current filters
+- Sits between filter bar and list"
+"Story","Bulk select with sticky select-all header","As an Agent Manager I want to select multiple actionable timesheets so I can approve in batch.","","Inbox · Timesheets","3","Done","Medium","inbox-timesheets bulk","- Per-row checkbox visible only on actionable statuses
+- Sticky select-all row when ≥1 actionable in filter
+- selectedIds: Set<string> in component state
+- Bulk action bar appears when selectedCount > 0"
+"Story","Bulk approve with skip-flagged guardrail","As an Agent Manager I want to approve all selected so I can clear bulk consensus quickly without accidentally approving flagged items.","","Inbox · Timesheets","2","Done","High","inbox-timesheets bulk","- Bulk approve sets pending/reviewing → approved
+- Flagged items remain untouched (silent skip)
+- Attribution: 'Siddharth Kirtikar (Bulk)' + timestamp
+- Selection cleared after"
+"Story","Quick rules bar for one-click bulk approval","As an Agent Manager I want pre-defined rules to auto-approve clean batches so I don't have to multi-select manually.","","Inbox · Timesheets","3","Done","High","inbox-timesheets bulk rules","- 3 rules: 'Score ≥95 all checks pass' / 'Portal source no flags' / 'Under 40h single client'
+- Bar only shows when actionableOnly AND any rule has count > 0
+- Each rule shows live count
+- Click rule → approve all matching"
+"Story","Inline expand to detail drawer","As an Agent Manager I want detailed reasoning trail on a single timesheet so I can decide with full context.","","Inbox · Timesheets","5","Done","High","inbox-timesheets drawer","- Row click opens 420px right-side drawer
+- Drawer shows: employee meta, hours grid, JARVIS validation, 7 checks list, leave balance, action group
+- Score color: ≥85 green, 60-84 amber, <60 red
+- AI confidence pill in JARVIS section"
+"Story","Three-button action row in drawer (Flag/Reject/Notify-team)","As an Agent Manager I want one-click escalation paths from the drawer so I can act in 1-2 clicks.","","Inbox · Timesheets","5","Done","High","inbox-timesheets drawer notify","- Approve button (full-width, primary)
+- Notify team button (full-width, pink-50 bg)
+- 2-col grid: Flag (warn) / Reject (danger)
+- Each opens NotifyPanel with respective builder"
+"Story","Notify-team subject grammar with code + main issue + count","As an Agent Manager I want subjects that show employee code, main issue, and total count so my inbox is scannable.","","Inbox · Timesheets","3","Done","High","inbox-timesheets notify","- Format: '<prefix> — <code>: <main issue>[ (N issues)] · <period>'
+- Main issue = first failed validation check or flag reason
+- Count appended only when issues > 1
+- Period appended only when provided"
+"Story","Notify-team body excludes AI mentions","As an Agent Manager I want emails to feel ops-written so employees / HR don't feel they're talking to a bot.","","Inbox · Timesheets","2","Done","High","inbox-timesheets notify ripley","- No 'JARVIS confidence' line in body
+- No 'Drafted by RIPLEY' inline
+- Bulleted issue list
+- Footnote only: '— This message was written using RIPLEY.'"
+"Story","Sort selector with 5 modes","As an Agent Manager I want to sort by date / score / hours / client so I can attack the right item first.","","Inbox · Timesheets","2","Done","Medium","inbox-timesheets","- Sort modes: date / score-asc / score-desc / hours / client
+- Default: date desc
+- Selector right-aligned next to search
+- Sort change resets pagination to 1"
+"Story","Clear-all chip resets filters + search + page","As an Agent Manager I want to wipe state when I'm done with a slice so I'm back to default queue.","","Inbox · Timesheets","1","Done","Low","inbox-timesheets filters","- Chip visible only when ≥1 filter or search active
+- Click resets all filter dropdowns, OT toggle, search, page=1
+- Danger-coloured (intentional warning)"
+"Story","Real-time inbox via SSE/websocket","As an Agent Manager I want new timesheets to stream in so I don't need to refresh.","","Inbox · Timesheets","8","To Do","Medium","inbox-timesheets backend v3","- SSE endpoint streams new timesheets
+- New rows appear at top with subtle highlight
+- Counts in stats strip update without page reload
+- Connection auto-reconnects on drop"
+"Story","Per-row undo for accidental approvals","As an Agent Manager I want a 5-second undo after bulk approve so I can recover from misclicks.","","Inbox · Timesheets","5","To Do","Medium","inbox-timesheets bulk v3","- Toast appears after bulk approve with 'Undo' link
+- Click undo within 5s reverts state
+- After 5s, mutation is final"
+"Epic","Inbox · Onboarding","260 onboarding cases with 12 issue types across 5 stages. CASE-validated; doc-collection through compliance.","Inbox · Onboarding","",,"In Progress","High","inbox-onboarding case",""
+"Story","12 onboarding issue types with stage / severity classification","As an Agent Manager I want to see what's blocking each candidate so I know what to chase.","","Inbox · Onboarding","5","Done","High","inbox-onboarding","- 12 types: Aadhaar mismatch / PAN failure / DOB mismatch / Address conflict / Bank missing / Education / Relieving letter / BGV / Medical / ESIC / EPF UAN / Policy ack
+- Each pinned to one of 5 stages
+- Each pinned to one of 3 severities (high/medium/low)
+- Deterministic generation via mulberry32 seeded with 20260424"
+"Story","Stage filter (5 stages)","As an Agent Manager I want to filter by lifecycle stage so I can focus on doc collection vs reconciliation work.","","Inbox · Onboarding","2","Done","Medium","inbox-onboarding filters","- Multi-select with stages: doc-collection / verification / validation / reconciliation / compliance
+- Active count badge
+- Combine with AND with other filters"
+"Story","Issue type + severity + client filters","As an Agent Manager I want to narrow to specific issue type or severity so I can batch-resolve similar cases.","","Inbox · Onboarding","3","Done","Medium","inbox-onboarding filters","- 3 multi-selects: issue type (12), severity (3), client (only when not client-scoped)
+- Standard FilterDropdown component
+- Combine with AND"
+"Story","Aging color thresholds for stale issues","As an Agent Manager I want stale items visually emphasised so SLA breach is obvious.","","Inbox · Onboarding","1","Done","Medium","inbox-onboarding","- < 3 days: neutral text-3 color
+- 3 to <7 days: warn amber
+- ≥ 7 days: danger red
+- Applied to age label on each row"
+"Story","Inline expand with 3-col grid (issue / docs / AI suggests)","As an Agent Manager I want full context on one row without navigating away so I can act fast.","","Inbox · Onboarding","5","Done","High","inbox-onboarding","- Row click expands inline (no drawer)
+- Layout: 2/3 issue card + 1/3 recommended action + AI suggests cards
+- Doc chips render when documents array non-empty
+- Inconsistencies bulleted with warn icons"
+"Story","Notify team flow (onboarding-issue NotifyPanel kind)","As an Agent Manager I want one-click escalation to onboarding ops so I don't have to compose from scratch.","","Inbox · Onboarding","3","Done","High","inbox-onboarding notify ripley","- Routes to onboarding-ops@buzzworks.com (CC hr-ops)
+- Subject: 'Onboarding blocker — <candidate> · <type>'
+- Body lists candidate, client, issue type, docs, findings
+- RIPLEY footnote present"
+"Story","Request document flow (document-request NotifyPanel kind)","As an Agent Manager I want to nudge candidate for the right doc directly from the issue card.","","Inbox · Onboarding","3","Done","High","inbox-onboarding notify ripley","- Button on expanded row 'Request document'
+- docType taken from issue.documents[0]
+- Reason taken from issue.inconsistencies[0]
+- Subject: 'Document update required — <docType>'"
+"Story","Per-client onboarding tab on /clients/[id]","As an Account Manager I want to see only onboarding issues for my client so I can respond to them in context.","","Inbox · Onboarding","3","Done","Medium","inbox-onboarding clients","- Re-mounts OnboardingInbox with clientId prop
+- Hides Client filter (already scoped)
+- All other filters/sort/search remain
+- Empty state when 0 issues for client"
+"Story","Bulk mark-resolved + bulk Notify","As an Agent Manager I want to clear multiple resolved items at once so I'm not clicking each.","","Inbox · Onboarding","2","Done","Medium","inbox-onboarding bulk","- Per-row checkbox
+- Sticky select-all
+- Bulk bar: Mark resolved + Notify team + Clear
+- Notify uses first selected as template (v3 batches)"
+"Story","Sort modes: oldest / newest / severity / client","As an Agent Manager I want sort options so I can attack stale or high-severity first.","","Inbox · Onboarding","1","Done","Low","inbox-onboarding","- 4 sort modes
+- Default: oldest first (age-desc)
+- Selector right-aligned next to search"
+"Story","Real candidate emails (not synthesised)","As an Agent Manager I want the document-request to go to a real candidate email so they actually receive it.","","Inbox · Onboarding","8","To Do","High","inbox-onboarding backend v3","- Application form captures candidate email
+- Backend stores email on OnboardingIssue record
+- Document-request builder reads real email instead of '<code>@candidate.in'
+- Test: synthesise vs real email path produces correct To: line"
+"Story","Per-client SLA targets","As an Operations Lead I want each client to have its own SLA threshold so age coloring matches contract.","","Inbox · Onboarding","5","To Do","Medium","inbox-onboarding sla v3","- Client config: per-stage SLA day count
+- Aging thresholds read from client config
+- Default fallback 3/7 days
+- SLA breach badge appears past threshold"
+"Epic","Inbox · Payroll","Lighter inbox (~72) with 7 issue types across 4 stages. Ranked by ₹ exposure; tracks cycle blockers separately.","Inbox · Payroll","",,"In Progress","High","inbox-payroll tron",""
+"Story","7 payroll issue types with stage classification","As an Agent Manager I want to see payroll cycle blockers separately from pre-run prep work.","","Inbox · Payroll","3","Done","High","inbox-payroll","- 7 types: Bank validation / PT slab / LOP recon / OT pre-approval / PF ceiling / TDS / Bonus block
+- 4 stages: pre-run / cycle-block / statutory / post-run
+- 3 severities (high/medium/low)
+- Deterministic generation via mulberry32 seeded with 20260429"
+"Story","₹ exposure tracking + total in stats strip","As an Agent Manager I want to see total ₹ at risk across the filtered queue so I can prioritise.","","Inbox · Payroll","3","Done","High","inbox-payroll","- Each issue has amountImpact (₹)
+- Per-row right-edge label using fmtINR
+- Stats strip total: sum across filtered set
+- ₹0 renders as '—' not '₹0'"
+"Story","Stage / type / severity / client filters","As an Agent Manager I want to filter to one stage or issue type at a time so I can batch-resolve.","","Inbox · Payroll","2","Done","Medium","inbox-payroll filters","- 4 multi-selects, standard FilterDropdown
+- Client filter hidden in per-client view
+- Combine with AND"
+"Story","Default sort by amount-desc (highest exposure first)","As an Agent Manager I want the biggest blockers at top so I clear blocking issues first.","","Inbox · Payroll","1","Done","High","inbox-payroll","- Default sort = amount desc
+- Other modes: age-desc / severity / client
+- Selector next to search"
+"Story","Cycle blockers count in stats strip","As an Agent Manager I want a separate count of cycle blockers so I see if a payroll run is at risk.","","Inbox · Payroll","1","Done","High","inbox-payroll","- Stats strip shows: total / cycle blockers / total exposure
+- Cycle blockers = stage === 'cycle-block'
+- Numbers respect current filters"
+"Story","Inline expand with exposure card + AI suggests","As an Agent Manager I want exposure + recommendation surfaced together so I can decide in one read.","","Inbox · Payroll","3","Done","Medium","inbox-payroll","- Expand: 2/3 issue details + 1/3 exposure card + AI suggests
+- Exposure card: ₹ + 'across N employees'
+- AI suggests card: pink-tinted with sparkle icon"
+"Story","Notify team flow (payroll-issue NotifyPanel kind)","As an Agent Manager I want to escalate payroll blockers to finance team in one click.","","Inbox · Payroll","2","Done","High","inbox-payroll notify ripley","- Routes to payroll@buzzworks.com (CC finance-ops)
+- Subject: 'Payroll review — <client> · <cycle>'
+- Body lists issue type, affected count, details
+- RIPLEY footnote"
+"Story","Per-client payroll inbox tab","As an Account Manager I want to see only payroll issues for my client so I can speak to them with context.","","Inbox · Payroll","2","Done","Medium","inbox-payroll clients","- Re-mounts PayrollInbox with clientId prop
+- Hides Client filter
+- Empty state when 0 issues"
+"Story","Cycle calendar header (T-7 / T-3 / T-0 / T+3)","As an Agent Manager I want to see where in the cycle we are so I know the urgency curve for each issue.","","Inbox · Payroll","8","To Do","Medium","inbox-payroll cycle v3","- Header strip shows current cycle T-day
+- Visual markers at T-7, T-3, T-0, T+3
+- Active marker highlights current position
+- Per-client cycle config (weekly / monthly)"
+"Epic","Inbox · Compliance","Action-required regulations from ORACLE; team escalation flow; deadline + cost-of-non-compliance ranking.","Inbox · Compliance","",,"In Progress","High","inbox-compliance oracle",""
+"Story","Show only action-required regulations","As a Compliance Lead I want only the regulations that need action this period so I'm not noise-blind.","","Inbox · Compliance","2","Done","High","inbox-compliance","- Source: REGULATIONS where actionRequired === true
+- Hidden if actionRequired = false (full library is in /compliance)
+- Each row also shown in main library view"
+"Story","Cost-of-non-compliance formula in row + stats strip","As a Compliance Lead I want to see total ₹ at risk across the actionable queue so I prioritise correctly.","","Inbox · Compliance","3","Done","High","inbox-compliance","- Formula: penalty + penalty * opsMultiplier + legalFloor
+- opsMultiplier per operationalImpact band
+- legalFloor per legalRisk band (min ₹50k for high)
+- Stats strip aggregates across filtered set"
+"Story","Deadline label with color thresholds","As a Compliance Lead I want overdue and near-overdue items visually loud so I don't miss them.","","Inbox · Compliance","2","Done","High","inbox-compliance","- Days < 0 → 'Nd overdue' (red)
+- Today / Tomorrow / <7d → red
+- <30d → amber
+- else → neutral"
+"Story","Category / impact area / client filters","As a Compliance Lead I want to slice the queue by category, impact area, or client so I plan focused work.","","Inbox · Compliance","2","Done","Medium","inbox-compliance filters","- 3 multi-select dropdowns
+- Categories: 5 (Labour, Finance & Taxation, EHS, Commercial, Secretarial)
+- Impact areas: 10
+- Client filter only includes clients in actionable list"
+"Story","Sort modes: deadline / cost / risk","As a Compliance Lead I want sort options so I can attack nearest deadline OR highest cost OR highest risk first.","","Inbox · Compliance","1","Done","Medium","inbox-compliance","- Default: nearest deadline
+- Modes: deadline / cost / risk
+- Risk sort: high → low precedence"
+"Story","AI suggestion chip per category","As a Compliance Lead I want a one-line action hint so I know what to do next without reading the full reg.","","Inbox · Compliance","2","Done","Low","inbox-compliance","- Chip per row, pink-tinted
+- Mapping: Labour → 'Update payroll rules' / Finance → 'Update tax config' / EHS → 'Compliance audit' / Commercial → 'Review contracts' / Secretarial → 'Update filings'
+- Default: 'Review & assign'"
+"Story","Notify team flow (compliance NotifyPanel kind)","As a Compliance Lead I want to escalate to ops-lead in one click with full context pre-filled.","","Inbox · Compliance","3","Done","High","inbox-compliance notify ripley","- Routes to ops-lead@buzzworks.com (CC compliance@buzzworks)
+- Subject: 'Action required: <title (60 chars)>'
+- Body: title, region, effective date, deadline, penalty, impacted clients
+- RIPLEY footnote"
+"Story","Mark-done removes row from actionable queue","As a Compliance Lead I want to clear an item once handled so it's out of my queue.","","Inbox · Compliance","2","Done","Medium","inbox-compliance","- Mark-done sets actionRequired = false locally
+- Row removed from inbox immediately
+- Library still shows reg
+- v3: persist + audit trail"
+"Story","SLA breach indicator on actionable rows","As a Compliance Lead I want a red badge when an actionable reg has been open >7d so I see drift.","","Inbox · Compliance","3","To Do","Medium","inbox-compliance v3","- Per-row 'SLA breach' badge when listedDate is older than 7 days
+- Configurable threshold per category
+- Sorts to top by default when present"
+"Epic","Clients","Per-client list + 7-tab detail page; account-level KPIs; per-client compliance + onboarding + payroll cuts.","Clients","",,"In Progress","High","clients",""
+"Story","11-client list with portal/manual classification","As an Account Manager I want to see all my client accounts in one grid with method/portal info so I know who's automated vs manual.","","Clients","3","Done","High","clients","- 11 cards in 1/2/3 col responsive grid
+- Each card shows: avatar, name, code+industry, status, action count, 4 stats, compliance bar, footer
+- Method chip: Manual (lavender) or portal name (portal color)"
+"Story","Industry / Region / Source filters","As an Operations Lead I want to filter clients by industry / region / source so I can compare segments.","","Clients","2","Done","Medium","clients filters","- 3 multi-selects
+- Source options: Fieldglass / BeeLine / Manual (no portal)
+- Region: state-based, derived from clients array
+- Industry: 11 enum"
+"Story","Sort by employees / payroll / compliance / name","As an Operations Lead I want to sort the list so I can see biggest accounts or worst-compliant first.","","Clients","1","Done","Low","clients","- 4 sort modes
+- Default: employees desc
+- Sort persists across filter changes"
+"Story","Action count badge with click → /compliance","As an Account Manager I want to see how many compliance items affect each client and click through to handle them.","","Clients","2","Done","Medium","clients","- Badge with bell icon + count
+- Visible when actionable compliances > 0
+- Click → /compliance (filtered to client) (v3 deep link)"
+"Story","Compliance score color thresholds","As an Operations Lead I want compliance health visually summarised so I see weak accounts.","","Clients","1","Done","Low","clients","- Bar with color: ≥90 green / ≥75 amber / <75 red
+- % shown right of bar"
+"Story","Client detail page header with KPI pills","As an Account Manager I want a snapshot of an account's vitals when I open it.","","Clients","3","Done","High","clients detail","- Header: avatar, name, industry, method/portal chips, city/state/policy/AM
+- 4 right-side KPI pills: active employees, pending TS, monthly payroll, compliance score
+- Pending TS uses warn color when > 0"
+"Story","7-tab structure on client detail","As an Account Manager I want all client info under tabs so I can switch context fast.","","Clients","5","Done","High","clients detail","- Tabs in order: Overview / Timesheets / Employees / Onboarding / Policy / Compliance / Payroll
+- Tab change does not reload header
+- Active tab indicated with accent color"
+"Story","Overview tab: revenue & ops cost efficiency chart","As an Operations Lead I want CFO-style view of an account's economics.","","Clients","5","Done","High","clients detail charts","- Revenue bars + ops cost % line, 6-month trend
+- 4 KPI tiles: monthly revenue, ops cost, agent coverage, ops cost % of rev
+- Agent coverage chart: % automated by 5 work streams"
+"Story","Stakeholder strip on client compliance tab","As an Account Manager I want to see who'll be emailed for client comms so I'm confident before sending.","","Clients","2","Done","High","clients detail compliance notify","- Strip shows AM name + client contact name + 2 CC addresses
+- Renders above per-regulation cards
+- Resolved via getClientContacts(client)"
+"Story","Per-regulation Notify team button on client compliance tab","As an Account Manager I want to email the client about a specific regulation in one click.","","Clients","3","Done","High","clients detail compliance notify ripley","- Each regulation card: Notify team (primary) + Full article (ghost) + external source
+- Notify uses client-compliance NotifyPanel kind
+- To: clientContact + AM, CC: compliance-ops + compliance@<client-domain>"
+"Story","Onboarding tab embeds OnboardingInbox component","As an Account Manager I want client-scoped onboarding queue without leaving the client page.","","Clients","2","Done","Medium","clients detail onboarding","- OnboardingInbox component re-mounted with clientId prop
+- Client filter hidden inside the inbox
+- All other filters work"
+"Story","Policy tab lists per-client rules","As a Compliance Lead I want to see which rules apply specifically to one client.","","Clients","3","Done","Medium","clients detail policy","- Calls getClientPolicyRules(clientId)
+- Each rule: category + severity rail + name + AI badge + trigger line + usage stats
+- Empty state with 'Open Policy Engine' CTA"
+"Story","Payroll tab lists per-client batches","As an Account Manager I want to see payroll batches for my client so I can answer status questions.","","Clients","3","Done","Medium","clients detail payroll","- List of batches via getClientPayrollBatches(clientId)
+- Each batch: period, status, hold count, 3 stats (TS, hours, amount), action button
+- Pending → Approve, Draft → Review"
+"Story","Persist tab state in URL","As an Agent Manager I want to deep-link to a specific tab on a client page.","","Clients","3","To Do","Low","clients detail v3","- ?tab=Compliance encoded in URL
+- Browser back/forward works
+- Refresh stays on same tab"
+"Epic","Employees & Pay Grade","9×9 pay grade lattice (A1..I9), 3 pay modes, monthly gross derivation, employee detail with grade card.","Employees & Pay Grade","",,"In Progress","High","employees paygrade",""
+"Story","Add 9×9 pay grade lattice (A1..I9) to Employee type","As an HR / Payroll team member I want a single canonical grade reference instead of raw rates.","","Employees & Pay Grade","5","Done","High","employees paygrade","- PayBand A-I + PayStep 1-9 = 81 grades
+- Type definition in lib/types.ts
+- payGrade required field on Employee
+- 81 unique cells representable"
+"Story","Pay mode classification: hourly / monthly / daily","As an HR member I want each employee classified by pay mode so payroll computes correct figure.","","Employees & Pay Grade","3","Done","High","employees paygrade","- payMode required on Employee
+- Derivation: consultant/Consulting → hourly / Healthcare/Operations/Logistics/Manufacturing → 50/50 daily/monthly / else → monthly
+- Deterministic per employee"
+"Story","Monthly gross derivation per pay mode","As an HR member I want monthly gross computed automatically from declared rate.","","Employees & Pay Grade","2","Done","High","employees paygrade","- Hourly: rate
+- Daily: rate × 8
+- Monthly: rate × 8 × 22, rounded to nearest ₹100
+- Surfaced in detail card"
+"Story","Pay grade column in employees list (replace rate)","As an Agent Manager I want a scannable grade chip in the list instead of raw rate.","","Employees & Pay Grade","2","Done","Medium","employees paygrade list","- Pink monospace badge (E5 etc.)
+- Replaces old Rate/hr column
+- Bg pink-50, color pink-700, border pink-100"
+"Story","Rename Leave column → Leave Balance","As an Agent Manager I want consistent column naming.","","Employees & Pay Grade","1","Done","Low","employees list","- Column header label updated
+- Mini bar visual unchanged"
+"Story","Pay Grade & Compensation card on detail page","As an HR member I want to see grade + tier + step + mode + rate + monthly gross in one glance.","","Employees & Pay Grade","5","Done","High","employees paygrade detail","- Card on Overview tab, pink-tinted
+- Shows: large grade pill + band label + tier chip + step of 9
+- 2 sub-tiles: pay mode + declared rate
+- Monthly gross equivalent strip with mode-specific assumption text"
+"Story","KPI pill shows pay grade (replace bill rate)","As an Agent Manager I want pay grade in employee header so I never see raw rate by accident.","","Employees & Pay Grade","1","Done","Low","employees paygrade detail","- Header KPI pills: code / pay grade / leave left
+- Pay grade colored pink-700"
+"Story","Per-client employees tab uses same column set","As an Account Manager I want consistent employee table inside a client page.","","Employees & Pay Grade","2","Done","Medium","employees clients","- Columns: Name / Role / Department / City / Pay Grade / Leave Balance / Status
+- Pay grade rendered as same pink badge"
+"Story","Department / Region / Status / Date-range filters","As an Agent Manager I want to slice employees by attributes.","","Employees & Pay Grade","3","Done","Medium","employees filters","- 4 multi-selects + date range
+- Standard FilterDropdown
+- Date range: joined-date filter"
+"Story","Sort modes: name / rate / newest / leave","As an Agent Manager I want to sort employees by relevant axis.","","Employees & Pay Grade","1","Done","Low","employees","- 4 sort modes
+- Default: name asc"
+"Story","Generator-resolved employees have pay grade too","As a developer I want generated employees (not just seeded) to have grades so the list never shows blanks.","","Employees & Pay Grade","2","Done","Medium","employees paygrade generator","- Generator calls derivePayGradeFields()
+- Same employee always resolves to same grade (deterministic)"
+"Story","Pay grade taxonomy configurable per client","As an Operations Lead I want clients on L1-L8 (not A-I) to use their own taxonomy.","","Employees & Pay Grade","8","To Do","Low","employees paygrade v3","- Per-client config: band label override map
+- Detail card uses client's labels
+- Default falls back to A-I"
+"Epic","Compliance Library","503 regulations with editorial detail pages; 7 categories × 32 regions × 24 authorities; gov-source links only.","Compliance Library","",,"In Progress","High","compliance library oracle",""
+"Story","Ingest 493 real regulations from TeamLease scrape","As a Compliance Lead I want a populated library so I can browse the live regulatory landscape.","","Compliance Library","8","Done","High","compliance library","- 493 unique articles via WebFetch
+- Categories: Labour 120 / Finance 78 / Industry Specific 184 / Secretarial 18 / EHS 65 / Commercial 27 / General 1
+- 32 regions covered
+- Source: lib/teamlease-articles.json"
+"Story","10 hand-curated featured regulations with gov source URLs","As a Compliance Lead I want the most consequential regs surfaced with verified gov links.","","Compliance Library","3","Done","High","compliance library","- 10 featured regs hand-written
+- Each links to specific gov notification PDF (EPFO / CBDT / state labour)
+- ZERO links to TeamLease"
+"Story","Source URL resolver: authority + region → gov portal","As a Compliance Lead I want every reg to point to the official gov source.","","Compliance Library","3","Done","High","compliance library","- resolveSourceUrl(authority, region, category)
+- 24 authority → portal mapping
+- Fallback: authority home page or category gov portal
+- 0/503 regulations link to teamleaseregtech.com"
+"Story","Library list with 6 filters + search + pagination","As a Compliance Lead I want to find regs fast.","","Compliance Library","3","Done","Medium","compliance library filters","- 6 multi-selects: category / impact area / region / client / risk / impact areas
+- 1 toggle: action-required only
+- Search: title / authority / summary / reference
+- 25/page pagination"
+"Story","Article detail page editorial layout","As a Compliance Lead I want a readable article view to share or quote.","","Compliance Library","8","Done","High","compliance library detail","- Route /compliance/[id]
+- Sections: meta tags, title, byline, lead, context, key changes, requirements (numbered), deadlines card, penalty card (3 col), action steps, impact areas, affected clients, AI rec, official source, related regs
+- Max-w-3xl centered column"
+"Story","getArticleContent + getRelatedRegulations helpers","As a developer I want content derived deterministically per regulation.","","Compliance Library","5","Done","High","compliance library helpers","- getArticleContent(reg) returns intro/context/requirements/deadlines/penalty/actionSteps/affectedScope
+- Mulberry32 seeded with reg.id + 7919
+- getRelatedRegulations(reg, 5) by category OR authority match"
+"Story","Clickable list cards route to /compliance/[id]","As a Compliance Lead I want to click into any reg from the list.","","Compliance Library","2","Done","Medium","compliance library","- Whole article card clickable via router.push
+- External source link inside has stopPropagation"
+"Story","Bookmark + Share (local-only in v2)","As a Compliance Lead I want to mark regs to come back to.","","Compliance Library","2","Done","Low","compliance library","- Bookmark toggle (local state)
+- Share button (no-op v2)"
+"Story","Bookmark persistence + Share copies link to clipboard","As a Compliance Lead I want bookmarks to survive a refresh and share to be one click.","","Compliance Library","5","To Do","Medium","compliance library v3","- Bookmarks persist server-side per user
+- Share button copies URL with toast confirmation"
+"Story","Comments / annotations on regulations","As a Compliance Lead I want internal notes on a reg so the team has shared context.","","Compliance Library","8","To Do","Low","compliance library v3","- Comment thread on each reg detail
+- @mentions to AMs
+- Notification when commented on"
+"Epic","Policies & Workflows","23 policies grouped by 7 workflow subfunctions; AI Policy Creator; All-policies vs By-client view.","Policies & Workflows","",,"In Progress","High","policies lexi",""
+"Story","Add 7 workflow subfunction type","As a Compliance Lead I want policies classified by what business process they govern, not just what kind of rule.","","Policies & Workflows","3","Done","High","policies workflows","- PolicyWorkflow type: timesheet-validation / onboarding / leave-attendance / payroll / compliance / exit / fnf
+- Optional field on PolicyRule
+- Derived at module load via deriveWorkflow"
+"Story","deriveWorkflow inference from rule text","As a developer I want existing rules auto-classified by workflow without manual tagging.","","Policies & Workflows","3","Done","High","policies workflows","- Inspects name + description + trigger + action lower-cased
+- Routes by keywords (fnf / exit / onboard / payroll / leave / compliance)
+- Default: timesheet-validation
+- Used at module load + after AI creation"
+"Story","Seed 8 new rules covering onboarding/exit/fnf workflows","As a Compliance Lead I want every workflow to have visible rules so the library doesn't look empty.","","Policies & Workflows","2","Done","Medium","policies workflows","- 8 new rules: KYC completeness / bank pre-flight / sandwich leave / LOP recon / notice coverage / asset recovery / gratuity / leave encashment cap
+- Spread across 5 workflows"
+"Story","All policies vs By client tab structure","As a Compliance Lead I want to see global pool OR client-scoped view depending on context.","","Policies & Workflows","3","Done","High","policies","- 2 top tabs in header
+- All policies: full pool
+- By client: requires client selection
+- Filter state preserved across tab switch"
+"Story","Horizontal client picker rail in By client mode","As a Compliance Lead I want to switch between clients fast in by-client mode.","","Policies & Workflows","2","Done","Medium","policies","- Rail under header in By client mode
+- 11 client chips with count badges
+- Active state: tinted bg + colored border"
+"Story","Filter bar with Workflow / Category / Severity / Client / Enabled / Search","As a Compliance Lead I want fine-grained policy filtering.","","Policies & Workflows","3","Done","Medium","policies filters","- Standard FilterDropdown × 4
+- Enabled-only toggle
+- Search: name / desc / trigger
+- Clear chip when ≥1 active"
+"Story","Stats strip: rules / active / applications / triggers","As a Compliance Lead I want a numeric overview of the policy posture.","","Policies & Workflows","2","Done","Medium","policies","- 4 metrics
+- Numbers respect current filter set
+- Client name + policy version pinned right in By client mode"
+"Story","Body grouped by workflow with section headers","As a Compliance Lead I want rules organised so I read them per business process.","","Policies & Workflows","3","Done","High","policies","- Sections in WORKFLOWS order
+- Each section: icon tile + label + count chip + description
+- Empty workflow sections hide"
+"Story","RuleCard with category icon + chips + trigger line + toggle pill","As a Compliance Lead I want each rule to be readable at a glance.","","Policies & Workflows","3","Done","Medium","policies","- Border-left 3px in category color
+- Chips: severity / category / client (in All mode) / AI badge if generated
+- Mono-styled trigger line
+- Right-side labelled toggle pill (Enabled/Disabled)"
+"Story","AI Policy Creator modal: input → preview → save","As a Compliance Lead I want to add a rule by typing plain English instead of writing logic.","","Policies & Workflows","5","Done","High","policies lexi","- 4-stage flow: input / thinking / preview / saved
+- Input textarea + 6 quick suggestions
+- Preview shows inferred category + severity + AI badge + editable name + mono trigger
+- Save assigns workflow via deriveWorkflow"
+"Story","parseAIRule: regex inference of category + severity + trigger","As a Compliance Lead I want quick parsing in v2 even without backend LLM.","","Policies & Workflows","3","Done","Medium","policies lexi","- Category from keywords (overtime/leave/hour/attendance/payroll → else compliance)
+- Severity from cannot/must (violation/warning/info)
+- Trigger pulls first numeric value into per-category template"
+"Story","Real LLM call for LEXI parsing (replace regex)","As a Compliance Lead I want true policy parsing for nuanced clauses.","","Policies & Workflows","13","To Do","High","policies lexi v3","- LLM call (GPT-4o) with structured output (JSON schema)
+- Returns: workflow / category / severity / trigger expression / action
+- Fallback to regex when LLM unavailable
+- Logs raw input + parsed output for audit"
+"Story","Conflict detection: rules with overlapping triggers","As a Compliance Lead I want flagging when two rules might both fire so I can resolve precedence.","","Policies & Workflows","8","To Do","Medium","policies v3","- Static analysis on trigger expressions
+- Surface conflicts in a side panel
+- Allow override / merge / disable one"
+"Epic","Agents & NotifyPanel","6 agents (LEXI/JARVIS/ORACLE/CASE/RIPLEY/TRON) with pipelines + roster + live activity; 9 NotifyPanel builders.","Agents & NotifyPanel","",,"In Progress","High","agents notify ripley",""
+"Story","Define 6 agents with role + acronym + color + capabilities","As an Agent Manager I want each agent to have a clear named role so I know who does what.","","Agents & NotifyPanel","3","Done","High","agents","- 6 agents: LEXI (policy parser) / JARVIS (timesheet validator) / ORACLE (regulation watcher) / CASE (data integrity) / RIPLEY (email drafter) / TRON (ops broadcaster)
+- Each has acronym + role + operational copy + 4-6 capabilities
+- Per-agent color"
+"Story","Agents page header with operational copy + status pill","As an Agent Manager I want grounded copy not marketing fluff on this page.","","Agents & NotifyPanel","2","Done","High","agents copy","- Title 'Agents'
+- Subtitle: 1-paragraph operational description
+- Right side: '6 agents · all active' pill with green dot"
+"Story","Impact strip with 4 KPI tiles","As an Agent Manager I want a quick read on agent performance.","","Agents & NotifyPanel","2","Done","Medium","agents","- Auto-resolved today (318)
+- Waiting on review (47)
+- First-pass accuracy (94.1%)
+- Est. ops cost saved (₹12L)"
+"Story","Three named pipeline cards","As an Agent Manager I want to see how agents collaborate so I trust the system.","","Agents & NotifyPanel","5","Done","High","agents pipelines","- 3 pipelines: Timesheet lifecycle / Regulation to client alert / Payroll cycle & broadcast
+- Each card: title + volume tag + summary line
+- Horizontal flow: source → agent steps → sink
+- Outcome line at bottom
+- Each agent step is a clickable button"
+"Story","6-agent roster cards in pipeline order","As an Agent Manager I want roster cards ordered by pipeline position not alphabetical.","","Agents & NotifyPanel","3","Done","Medium","agents roster","- Order: LEXI / JARVIS / ORACLE / CASE / RIPLEY / TRON
+- Each card: avatar / name / role / Active dot / today volume / headline metric / in:out chips / 'works in' surface"
+"Story","Live activity feed with 1-min tick","As an Agent Manager I want to see recent agent actions so I trust the system is running.","","Agents & NotifyPanel","5","Done","Medium","agents activity","- 15 seeded rows reverse chrono
+- Each row: agent avatar + summary + status icon + agent name + age
+- Tick state updates every 60s; ages re-render without reshuffling"
+"Story","Agent detail drawer (right slide)","As an Agent Manager I want to read full agent context on demand.","","Agents & NotifyPanel","5","Done","Medium","agents drawer","- 440px right-slide on agent click
+- Shows: acronym / operational copy / today + metric tiles / capabilities / hand-off chips / 'surfaces in' footer
+- Hand-off chips clickable to switch agent"
+"Story","Principles footer (3 lines)","As an Agent Manager I want the agent design principles visible so I can articulate them to clients.","","Agents & NotifyPanel","1","Done","Low","agents copy","- Pink card with 3 principles
+- 'One agent, one job' / 'Hand-offs are visible' / 'Humans review, don't do'"
+"Story","NotifyPanel component (bottom-right slide-in)","As an Agent Manager I want a consistent email composer for all RIPLEY drafts.","","Agents & NotifyPanel","5","Done","High","notify ripley","- Fixed bottom-4 right-4, 440px wide
+- Pink-50 header with kind label + close
+- Form fields: To / CC / Subject / Body
+- Source link footer when sourceUrl provided
+- Send simulates 500ms then ✓ Sent then auto-close"
+"Story","9 NotifyPanel builders covering all flows","As a developer I want all email flows centralised in one component with named builders.","","Agents & NotifyPanel","8","Done","High","notify ripley","- compliance / client-compliance / timesheet-flag / timesheet-reject / timesheet-approve / timesheet-team / document-request / onboarding-issue / payroll-issue
+- Each returns NotifyContext with kind / to / cc / subject / body
+- Per-kind label + To/CC defaults"
+"Story","Subject grammar standardisation","As a Compliance Lead I want subject lines that scan in inboxes.","","Agents & NotifyPanel","3","Done","High","notify subjects ripley","- Timesheet emails: '<prefix> — <code>: <main issue>[ (N issues)] · <period>'
+- Compliance: 'Action required: <title>'
+- Client compliance: '<client> · action required: <title>'
+- Onboarding: 'Onboarding blocker — <candidate> · <type>'
+- Document request: 'Document update required — <docType>'
+- Payroll: 'Payroll review — <client> · <cycle>'"
+"Story","Ban AI mentions from employee-facing email bodies","As an Agent Manager I want emails to feel ops-written.","","Agents & NotifyPanel","2","Done","High","notify ripley copy","- No 'JARVIS confidence' line
+- No 'Drafted by RIPLEY' inline
+- No 'AI agent says' phrasing
+- Footnote only: '— This message was written using RIPLEY.'"
+"Story","Real LLM call replaces template builders","As an Agent Manager I want truly contextual emails not templated text.","","Agents & NotifyPanel","13","To Do","High","notify ripley v3","- LLM call from each builder
+- Structured-output JSON schema
+- Fallback to template when LLM unavailable
+- Per-client tone & signature variation"
+"Story","Real send via Postmark / SES / Gmail API","As an Agent Manager I want Send button to actually send instead of simulate.","","Agents & NotifyPanel","8","To Do","High","notify ripley backend v3","- Backend route: POST /api/notify/send
+- Provider config: Postmark / AWS SES / Gmail API
+- Delivery audit log per sent email
+- Error toast on send failure"
+"Story","Per-agent settings (pause / threshold / model)","As an Operations Lead I want to tune individual agents without code changes.","","Agents & NotifyPanel","8","To Do","Medium","agents settings v3","- Settings page section per agent
+- JARVIS auto-approve threshold slider (default 95%)
+- Pause toggle per agent
+- Model picker (GPT-4o / Claude 4.x)"
+"Story","Real activity feed via SSE","As an Agent Manager I want real-time agent activity not seeded mock.","","Agents & NotifyPanel","8","To Do","Medium","agents activity backend v3","- SSE stream of agent events
+- Feed prepends new rows
+- Connection auto-reconnects
+- 200-row buffer in client memory"
+"Epic","Home Dashboard","CFO-anchored KPIs + 4 charts; everything reconciles to ₹60Cr ARR / ₹500L/mo / 3.6% ops ratio.","Home Dashboard","",,"In Progress","High","home dashboard",""
+"Story","CFO baseline constants centralised","As a developer I want a single source of truth for ops/revenue numbers so charts can't disagree.","","Home Dashboard","2","Done","High","home dashboard cfo","- Constants in app/page.tsx top: ANNUAL_NET_REVENUE / MONTHLY_NET_REVENUE / APR_OPS_COST / APR_OPS_RATIO / APR_OPS_RATIO_WITHOUT_AI / APR_AI_SAVINGS
+- All charts and KPIs derive from these"
+"Story","Greeting block with logged-in user + dynamic counts","As an Agent Manager I want a personal greeting and a quick read on the day.","","Home Dashboard","2","Done","Medium","home dashboard","- 'Good morning, <FirstName>'
+- Subtitle: '<Month YYYY> · X clients · Y ops cases auto-resolved'
+- Numbers from CFO baseline + clients.length"
+"Story","4 KPI tiles using stat-card pattern","As an Agent Manager I want at-a-glance KPI tiles.","","Home Dashboard","2","Done","High","home dashboard","- Tiles: Monthly Ops Cost / Cases resolved per FTE / Auto-Approval Rate / SLA Adherence
+- Each: icon + value + delta line
+- pink-50 bg + pink-200 border + pink value"
+"Story","Chart 1: Ops Cost % of Net Revenue (with vs without AI)","As an Operations Lead I want to visualise the agent system's contribution to margin.","","Home Dashboard","5","Done","High","home dashboard charts","- Area chart with 2 layers: withoutAI (lavender dashed) + withAI (accent solid)
+- Y-axis [2,7]
+- 6-month trend
+- Subtitle calls out 1-4% band + ₹12L/mo savings"
+"Story","Chart 2: Ops cost breakup donut","As an Operations Lead I want to see where ops cost goes.","","Home Dashboard","3","Done","Medium","home dashboard charts","- 9 sub-functions
+- Donut + per-row legend (max-h-200, scrollable)
+- Tooltip: % + ₹"
+"Story","Chart 3: Ops Cost by Client custom bar list","As an Operations Lead I want per-client efficiency at a glance.","","Home Dashboard","5","Done","High","home dashboard charts","- Top 8 clients
+- Per row: name / bar / cost / efficiency %
+- Efficiency thresholds: <3.3% green / 3.3-4.0% amber / >4.0% red
+- Threshold legend in footer"
+"Story","Chart 4: Resource Utilization (cases/FTE bars + headcount)","As an Operations Lead I want to see the per-FTE productivity trend.","","Home Dashboard","3","Done","Medium","home dashboard charts","- Bar chart: cases per FTE per month
+- Footer cells show headcount per month
+- Right-side meta: 'Apr headcount · 4 FTE'"
+"Story","Month-aware data refresh","As an Operations Lead I want the home page to roll forward each month automatically.","","Home Dashboard","8","To Do","Medium","home dashboard backend v3","- Backend KPI store
+- Frontend reads current month constants from API
+- Charts trail last 6 months
+- Caches client-side with stale-while-revalidate"
+"Story","Drill-down: Chart 2 slice click → /timesheets filtered","As an Operations Lead I want to investigate a sub-function spike.","","Home Dashboard","3","To Do","Low","home dashboard v3","- Donut slice click navigates to relevant inbox section pre-filtered
+- E.g. Onboarding slice → /timesheets?tab=onboarding"
+"Epic","Settings & Admin","6 sub-sections: Appearance / Notifications / Account / Integrations / Security / System.","Settings & Admin","",,"In Progress","Medium","settings",""
+"Story","6 settings sub-sections with sidebar nav","As an Agent Manager I want settings organised so I find what I need.","","Settings & Admin","3","Done","Medium","settings","- Sidebar tabs on sm+, horizontal scroll on mobile
+- Sections: Appearance / Notifications / Account / Integrations / Security / System
+- Active state with accent"
+"Story","Theme picker (Light + Dark) with preview cards","As an Agent Manager I want to switch theme and see preview before committing.","","Settings & Admin","3","Done","Medium","settings appearance","- 2 cards side by side
+- Each: mini preview + label + subtitle + description
+- Selected: 2px accent border + check
+- Persists in localStorage"
+"Story","Display toggles: compact rows / animations / AI confidence","As an Agent Manager I want UI density and motion preferences.","","Settings & Admin","2","Done","Low","settings appearance","- 3 toggles
+- Local state only in v2
+- v3 persists per user"
+"Story","Notifications: email / push / SLA toggles","As an Agent Manager I want to control my notification volume.","","Settings & Admin","2","Done","Low","settings notifications","- Email: flagged TS / payroll approvals / daily digest
+- Push: urgent / approvals / SLA breach
+- All toggles local state"
+"Story","Profile section: name / email / role / timezone","As an Agent Manager I want to manage my profile.","","Settings & Admin","2","Done","Medium","settings account","- Default: Siddharth Kirtikar / siddharth.k@buzzworks.in / Ops Agent / IST
+- Role dropdown: Ops Agent (default) / Ops Manager / Payroll Lead / Analyst
+- Save profile button (no-op v2)"
+"Story","Connected portals card (Fieldglass + BeeLine)","As an Operations Lead I want to see portal connection status.","","Settings & Admin","3","Done","Medium","settings integrations","- Card per portal: status / last sync / next sync / total synced this month
+- Sync now / Configure / Disconnect buttons
+- Email ingestion card with Buzzworks ingestion mailbox"
+"Story","Webhooks config (endpoint + secret + event toggles)","As an Operations Lead I want to wire downstream systems via webhooks.","","Settings & Admin","3","Done","Low","settings integrations","- Endpoint URL field
+- Secret token (masked)
+- Event toggles: timesheet.approved / payroll.released / compliance.flagged"
+"Story","Security: sessions / 2FA / API tokens","As an Operations Lead I want session and access control.","","Settings & Admin","3","Done","Low","settings security","- Current session info (read-only)
+- Sign out all sessions button
+- 2FA toggle (off; v3 enforces)
+- API tokens list + Generate new token button"
+"Story","System: build info + operational toggles","As an Operations Lead I want product version and global toggles visible.","","Settings & Admin","2","Done","Low","settings system","- Version / last deploy / region / uptime
+- Auto-archive processed batches toggle
+- Show debug overlays / Enable experimental features toggles"
+"Story","Remove Danger Zone panel from System","As an Operations Lead I don't want destructive ops in self-serve settings.","","Settings & Admin","1","Done","Medium","settings system","- Danger Zone panel (Purge test data / Reset agent learning) removed
+- Destructive ops live in admin tooling only"
+"Story","Backend persistence for all toggles","As an Agent Manager I want my settings to survive logout.","","Settings & Admin","8","To Do","Medium","settings backend v3","- Per-user settings store
+- Sync on toggle change
+- Last-write-wins; no conflict UI"
+"Epic","Design System & Cross-cutting","Type scale / palette / shell pattern / shared components / copy conventions.","Design System & Cross-cutting","",,"In Progress","Medium","design-system",""
+"Story","Collapse 22 font sizes to 7-step ladder","As a developer I want a single defensible type scale across the product.","","Design System & Cross-cutting","5","Done","High","design-system type","- 7 sizes: 11/12/14/16/20/24/28
+- Mechanical sweep across .tsx files
+- 158 small sizes (8/9/10) → 11
+- 124 mid sizes (13/15) → 14
+- 17/18/22/26/32 collapsed appropriately
+- Documented in app/globals.css as .t-* utilities"
+"Story","Unify page header pattern across all sections","As an Agent Manager I want section navigation to feel consistent.","","Design System & Cross-cutting","3","Done","High","design-system shell","- Standard: px-6 lg:px-8 py-5 / h1 text-xl font-semibold / subtitle text-[13px] mt-0.5
+- Applied to: Clients / Employees / Integrations / Settings / Payroll
+- Drop leading icons (sidebar already signals section)"
+"Story","Pin search to right (ml-auto) on all list pages","As an Agent Manager I want consistent filter-bar layout.","","Design System & Cross-cutting","2","Done","Medium","design-system shell","- Search ml-auto on Inbox Timesheets / Employees / Clients
+- Sort selector follows search
+- Matches Compliance Inbox baseline"
+"Story","Pink palette + design tokens in globals.css","As a developer I want CSS variables for all colors so I never inline hex.","","Design System & Cross-cutting","3","Done","High","design-system color","- --pink-50..700 + accent / accent-dim
+- --bg / --surface / --surface-2 / --surface-hover
+- --border / --border-strong
+- --text-1/2/3
+- --warn / --warn-bg / --warn-border
+- --danger reserved for hard fails"
+"Story","FilterDropdown component (multi-select)","As a developer I want a single shared filter component.","","Design System & Cross-cutting","5","Done","Medium","design-system component","- Closed: pill button + label + active count badge
+- Open: portal-positioned panel with checkboxes + Clear all
+- Outside-click closes
+- Used across 6+ list pages (currently duplicated; v3 consolidates)"
+"Story","Extract FilterDropdown to single shared component","As a developer I want one source of truth for FilterDropdown.","","Design System & Cross-cutting","3","To Do","Medium","design-system component v3","- Move to components/ui/FilterDropdown.tsx
+- Replace 5 duplicate copies
+- Add unit tests
+- Storybook entry"
+"Story","Stats strip + Bulk action bar shared patterns","As an Agent Manager I want consistent strip styling across inboxes.","","Design System & Cross-cutting","2","Done","Medium","design-system shell","- Stats strip: bg / text-3 caption-style / numbers in t-body weight
+- Bulk action bar: pink-50 bg / 'N selected' label / primary + ghost buttons
+- Same padding (px-6 lg:px-8 py-2.5) on both"
+"Story","Brand rebrand: Agent Dashboard everywhere","As an Agent Manager I want consistent product naming.","","Design System & Cross-cutting","2","Done","High","design-system brand","- Login title: 'Agent Dashboard' (not OpsDesk)
+- Sidebar / BottomNav: 'Agent Dashboard'
+- Settings footer: 'Agent Dashboard v2.1.0 · JARVIS v2.1'
+- Layout <title>: 'Agent Dashboard — Agent Manager Console · Buzzworks'"
+"Story","Login copy: For Buzzworks Agent Managers","As a new joiner I want the login page to position the product clearly.","","Design System & Cross-cutting","1","Done","Low","design-system brand login","- Subtitle: 'For Buzzworks Agent Managers'
+- Access line: 'Access restricted to Buzzworks Agent Managers'
+- Demo email: agentic@buzzworks.com"
+"Story","Add accessibility audit (focus rings / ARIA / contrast)","As an Agent Manager I want keyboard nav and screen reader support.","","Design System & Cross-cutting","13","To Do","Medium","design-system a11y v3","- Focus rings on all interactive elements
+- ARIA labels on icon-only buttons
+- Contrast audit (WCAG AA min)
+- Reduced-motion support
+- Screen-reader walkthrough"
+"Story","Internationalisation (Hindi minimum)","As an Agent Manager I want to use the product in Hindi for blue-collar segment comms.","","Design System & Cross-cutting","13","To Do","Low","design-system i18n v3","- All UI strings via i18n keys
+- Locale switcher in Settings
+- Language: en-IN / hi-IN (minimum)
+- Subject grammars localised"
+"Story","Print stylesheet for compliance article detail","As a Compliance Lead I want to PDF a regulation for sharing.","","Design System & Cross-cutting","5","To Do","Low","design-system v3","- @media print rules
+- Hide sidebar / nav / interactive elements
+- Article body prints cleanly with header on top
+- Source URL printed as footnote"
