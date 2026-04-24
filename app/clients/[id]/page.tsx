@@ -5,12 +5,14 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/components/Sidebar"
 import AIAgentOrb from "@/components/AIAgentOrb"
-import { getClient, getPortal, timesheets, employees, getClientPolicyRules, getClientPayrollBatches } from "@/lib/mock-data"
+import { getClient, getPortal, timesheets, employees, getClientPolicyRules, getClientPayrollBatches, getClientContacts } from "@/lib/mock-data"
+import NotifyPanel, { buildClientComplianceNotify, type NotifyContext } from "@/components/NotifyPanel"
 import { generateEmployeesForClient } from "@/lib/mock-generator"
 import {
   ArrowLeft, Building2, Globe, Mail, Users, Clock, TrendingUp,
   CheckCircle2, AlertTriangle, FileText, CreditCard, Activity,
   ChevronRight, Eye, Check, Flag, ShieldCheck, Calendar, ChevronDown, Search,
+  ExternalLink,
 } from "lucide-react"
 import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ComposedChart, Line } from "recharts"
 import { getRegulationsForClient, CATEGORY_META, RISK_META } from "@/lib/compliance-data"
@@ -214,6 +216,38 @@ function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClie
 function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getClient>> }) {
   const regulations = getRegulationsForClient(client.name)
   const actionable  = regulations.filter(r => r.actionRequired)
+  const contacts    = useMemo(() => getClientContacts(client), [client])
+
+  const [notifyCtx, setNotifyCtx] = useState<NotifyContext | null>(null)
+
+  function fmtPenalty(n: number) {
+    if (n === 0) return "—"
+    if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)}Cr`
+    if (n >= 100000)   return `₹${(n / 100000).toFixed(1)}L`
+    return `₹${n.toLocaleString("en-IN")}`
+  }
+
+  function openNotify(reg: ReturnType<typeof getRegulationsForClient>[number]) {
+    setNotifyCtx(buildClientComplianceNotify({
+      clientName:    client.name,
+      amName:        contacts.amName,
+      amEmail:       contacts.amEmail,
+      clientContact: contacts.clientContact,
+      buzzworksCc:   contacts.buzzworksCc,
+      clientCc:      contacts.clientCc,
+      regulation: {
+        title:         reg.title,
+        authority:     reg.authority,
+        region:        reg.region,
+        effectiveDate: reg.effectiveDate,
+        penalty:       fmtPenalty(reg.penaltyAmount),
+        reference:     reg.reference,
+        sourceUrl:     reg.sourceUrl,
+        sourceName:    reg.sourceName,
+        summary:       reg.summary,
+      },
+    }))
+  }
 
   return (
     <div className="space-y-5">
@@ -240,6 +274,23 @@ function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getCl
           </div>
           <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>Review priority</div>
         </div>
+      </div>
+
+      {/* Stakeholder strip */}
+      <div className="glass p-4 flex items-center gap-3 flex-wrap text-[12px]">
+        <span className="uppercase tracking-wider text-[10px] font-semibold"
+          style={{ color: "var(--text-3)" }}>Stakeholders</span>
+        <span className="px-2 py-1 rounded-md font-medium"
+          style={{ background: "var(--pink-50)", color: "var(--pink-700)" }}>
+          AM · {contacts.amName}
+        </span>
+        <span className="px-2 py-1 rounded-md"
+          style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
+          Client contact · {contacts.clientContact.name}
+        </span>
+        <span className="text-[11px]" style={{ color: "var(--text-3)" }}>
+          + CC: {contacts.buzzworksCc}, {contacts.clientCc}
+        </span>
       </div>
 
       {/* Feed */}
@@ -282,15 +333,33 @@ function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getCl
               <p className="text-[13px] leading-relaxed mt-3" style={{ color: "var(--neutral-600)" }}>
                 {reg.summary}
               </p>
-              <a href={reg.sourceUrl} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[11px] font-medium mt-3 transition-opacity hover:opacity-70"
-                style={{ color: "var(--primary-600)" }}>
-                View official source — {reg.sourceName}
-              </a>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 mt-4 pt-3 flex-wrap"
+                style={{ borderTop: "1px solid var(--border)" }}>
+                <button onClick={() => openNotify(reg)}
+                  className="btn-primary flex items-center gap-1.5 text-xs"
+                  style={{ padding: "6px 12px" }}>
+                  <Mail size={12} /> Notify team
+                </button>
+                <Link href={`/compliance/${reg.id}`}
+                  className="btn-ghost flex items-center gap-1.5 text-xs"
+                  style={{ padding: "6px 12px" }}>
+                  <FileText size={12} /> Full article
+                </Link>
+                <a href={reg.sourceUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-medium ml-auto transition-opacity hover:opacity-70"
+                  style={{ color: "var(--primary-600)" }}>
+                  <ExternalLink size={11} />
+                  {reg.sourceName}
+                </a>
+              </div>
             </article>
           )
         })}
       </div>
+
+      <NotifyPanel context={notifyCtx} onClose={() => setNotifyCtx(null)} />
     </div>
   )
 }
@@ -486,7 +555,7 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
         <table className="w-full text-[12px]">
           <thead>
             <tr className="border-b border-white/[0.05]">
-              {["Employee", "Role", "Department", "City", "Rate/hr", "Leave", "Status"].map(h => (
+              {["Employee", "Role", "Department", "City", "Pay Grade", "Leave Balance", "Status"].map(h => (
                 <th key={h} className="text-left px-4 py-2.5 text-[11px] text-white/30 font-semibold uppercase tracking-wider">{h}</th>
               ))}
             </tr>
@@ -511,7 +580,12 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
                   <td className="px-4 py-2.5 text-white/65">{emp.role}</td>
                   <td className="px-4 py-2.5 text-white/50">{emp.department}</td>
                   <td className="px-4 py-2.5 text-white/50">{emp.city}</td>
-                  <td className="px-4 py-2.5 text-white/80 font-medium">₹{emp.ratePerHour}/h</td>
+                  <td className="px-4 py-2.5">
+                    <span className="text-[11px] font-semibold font-mono px-2 py-0.5 rounded"
+                      style={{ background: "var(--pink-50)", color: "var(--pink-700)", border: "1px solid var(--pink-100)" }}>
+                      {emp.payGrade}
+                    </span>
+                  </td>
                   <td className="px-4 py-2.5">
                     <span className="text-[11px]" style={{ color: remaining > 5 ? "var(--accent)" : remaining > 0 ? "#c89060" : "#c07070" }}>{remaining}d left</span>
                   </td>

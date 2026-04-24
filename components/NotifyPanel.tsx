@@ -7,6 +7,7 @@ import { Mail, X, Send, Sparkles, ExternalLink } from "lucide-react"
 
 export type NotifyKind =
   | "compliance"
+  | "client-compliance"
   | "timesheet-flag"
   | "timesheet-reject"
   | "timesheet-approve"
@@ -28,6 +29,61 @@ export interface NotifyContext {
 // ─── Builder: generate canned messages from context ───────────────────────────
 // Each builder returns a NotifyContext pre-filled by the Communication Agent
 // (RIPLEY). Kept short so ops team can read before sending.
+
+// Per-client compliance notification — drafted to the client's account
+// manager + primary client-side correspondent, with a Buzzworks compliance
+// CC and a client-side compliance CC so nothing falls through the cracks.
+// Used from the Compliance tab on the client detail page, where there is
+// a specific AM and client on the hook (unlike the generic inbox flow which
+// goes to ops-lead@buzzworks).
+export function buildClientComplianceNotify(input: {
+  clientName:    string
+  amName:        string
+  amEmail:       string
+  clientContact: { name: string; email: string }
+  buzzworksCc:   string
+  clientCc:      string
+  regulation: {
+    title: string
+    authority: string
+    region: string
+    effectiveDate: string
+    penalty: string
+    reference: string
+    sourceUrl?: string
+    sourceName?: string
+    summary: string
+  }
+}): NotifyContext {
+  const amFirst     = input.amName.split(" ")[0] ?? input.amName
+  const contactFirst = input.clientContact.name.split(" ")[0] ?? "team"
+
+  const body = `Hi ${contactFirst} (cc ${amFirst}),
+
+Flagging a new ${input.regulation.authority} notification that affects ${input.clientName}:
+
+"${input.regulation.title}"
+Region: ${input.regulation.region} · Effective ${input.regulation.effectiveDate} · Ref: ${input.regulation.reference}
+Penalty exposure if not actioned: ${input.regulation.penalty}
+
+Summary:
+${input.regulation.summary}
+
+Please review and confirm the action plan on your side. Happy to set up a call with our compliance team if you need help mapping this to your operational rollout. Copying ${input.amName} (Buzzworks AM), Buzzworks compliance ops, and your compliance lead for awareness.
+
+Thanks,
+— RIPLEY on behalf of Buzzworks Ops`
+
+  return {
+    kind:        "client-compliance",
+    to:          `${input.clientContact.email}, ${input.amEmail}`,
+    cc:          `${input.buzzworksCc}, ${input.clientCc}`,
+    subject:     `${input.clientName} · action required: ${input.regulation.title.slice(0, 50)}${input.regulation.title.length > 50 ? "…" : ""}`,
+    body,
+    sourceUrl:   input.regulation.sourceUrl,
+    sourceLabel: input.regulation.sourceName,
+  }
+}
 
 export function buildComplianceNotify(input: {
   title: string
@@ -344,6 +400,7 @@ export default function NotifyPanel({
 
   const kindLabel = ({
     compliance:            "Compliance alert",
+    "client-compliance":   "Client compliance alert",
     "timesheet-flag":      "Timesheet flag",
     "timesheet-reject":    "Timesheet rejection",
     "timesheet-approve":   "Approval confirmation",

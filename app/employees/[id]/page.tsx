@@ -123,6 +123,37 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
           </div>
         </div>
 
+        {/* Pay grade & compensation */}
+        <div className="glass p-4" style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-[13px] font-semibold" style={{ color: "var(--pink-700)" }}>
+              Pay Grade &amp; Compensation
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded"
+              style={{ background: "var(--pink-700)", color: "#fff" }}>{emp.payGrade}</span>
+          </div>
+          <div className="text-[12px] mb-3" style={{ color: "var(--text-2)" }}>
+            9×9 grade lattice · band <span className="font-semibold">{emp.payGrade[0]}</span> ·
+            step <span className="font-semibold">{emp.payGrade.slice(1)}</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-[11px]">
+            <div className="p-2.5 rounded-lg" style={{ background: "var(--surface)" }}>
+              <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Pay mode</div>
+              <div className="text-[13px] font-semibold mt-0.5 capitalize" style={{ color: "var(--text-1)" }}>
+                {emp.payMode}
+              </div>
+            </div>
+            <div className="p-2.5 rounded-lg" style={{ background: "var(--surface)" }}>
+              <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Declared rate</div>
+              <div className="text-[13px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--text-1)" }}>
+                {emp.payMode === "hourly" ? `₹${emp.ratePerHour.toLocaleString("en-IN")}/hr`
+                 : emp.payMode === "daily" ? `₹${emp.payRate.toLocaleString("en-IN")}/day`
+                 : `₹${emp.payRate.toLocaleString("en-IN")}/mo`}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Employment snapshot */}
         <div className="glass p-4">
           <div className="text-[13px] font-semibold mb-3" style={{ color: "var(--text-1)" }}>Employment Details</div>
@@ -131,7 +162,6 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
               { label: "Employee code", value: emp.employeeCode },
               { label: "Department",    value: emp.department },
               { label: "Job category",  value: emp.jobCategory },
-              { label: "Rate",          value: `₹${emp.ratePerHour}/hr` },
               { label: "Start date",    value: fmtDate(emp.startDate) },
               { label: "Manager",       value: emp.managerEmail ?? "Not assigned" },
             ].map(row => (
@@ -453,7 +483,7 @@ export default function EmployeeDetailPage() {
             <div className="hidden lg:flex items-center gap-3">
               {[
                 { icon: User,        value: emp.employeeCode,       label: "Employee code",  color: "var(--text-2)" },
-                { icon: Clock,       value: `₹${emp.ratePerHour}/h`, label: "Bill rate",      color: "var(--accent)" },
+                { icon: Clock,       value: emp.payGrade,           label: "Pay grade",      color: "var(--pink-700)" },
                 { icon: TrendingUp,  value: `${emp.leaveBalance.annual - emp.leaveBalance.usedAnnual}d`, label: "Leave left", color: "var(--info)" },
               ].map(k => (
                 <div key={k.label} className="glass px-3 py-2 rounded-xl text-center">

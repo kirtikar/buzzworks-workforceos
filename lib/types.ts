@@ -95,6 +95,16 @@ export interface LeaveBalance {
   usedCasual: number
 }
 
+// Pay grade is a 9x9 lattice: band (A-I) × step (1-9) = 81 grades.
+// A = entry/frontline, I = leadership. Step 1 = junior-in-band, 9 = senior-in-band.
+export type PayBand = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I"
+export type PayStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+export type PayGrade = `${PayBand}${PayStep}`
+
+// Some roles are billed hourly (contract / consulting), some monthly (full-time),
+// some daily (field / shift ops).
+export type PayMode = "hourly" | "monthly" | "daily"
+
 export interface Employee {
   id: string
   employeeCode: string
@@ -109,6 +119,11 @@ export interface Employee {
   startDate: string
   endDate?: string
   ratePerHour: number
+  payGrade: PayGrade
+  payMode: PayMode
+  // Resolved pay figure for display. For hourly → ratePerHour; for monthly →
+  // computed monthly gross; for daily → per-day rate.
+  payRate: number
   leaveBalance: LeaveBalance
   managerEmail?: string
   managerName?: string

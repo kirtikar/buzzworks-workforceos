@@ -315,6 +315,9 @@ function OverviewTab({ emp }: { emp: Employee }) {
         </div>
       </div>
 
+      {/* Pay grade & compensation */}
+      <PayGradeCard emp={emp} />
+
       {/* Employment details */}
       <div className="p-4 rounded-xl" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
         <div className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-3)" }}>Employment</div>
@@ -322,8 +325,7 @@ function OverviewTab({ emp }: { emp: Employee }) {
           {[
             { label: "Code",       value: emp.employeeCode },
             { label: "Department", value: emp.department   },
-            { label: "Department", value: emp.jobCategory  },
-            { label: "Rate",       value: `₹${emp.ratePerHour}/hr` },
+            { label: "Category",   value: emp.jobCategory  },
             { label: "Joined",     value: fmtDate(emp.startDate) },
             { label: "Manager",    value: emp.managerEmail ?? "Not assigned" },
           ].map(row => (
@@ -332,6 +334,85 @@ function OverviewTab({ emp }: { emp: Employee }) {
               <span className="text-xs font-medium" style={{ color: "var(--text-1)" }}>{row.value}</span>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Pay Grade card (reused in Overview + client detail) ──────────────────────
+
+const PAY_BAND_META: Record<string, { label: string; tier: string }> = {
+  A: { label: "A — Associate / Frontline",      tier: "Entry" },
+  B: { label: "B — Junior Specialist",          tier: "Entry" },
+  C: { label: "C — Specialist",                 tier: "Mid"   },
+  D: { label: "D — Senior Specialist",          tier: "Mid"   },
+  E: { label: "E — Lead / Senior",              tier: "Mid"   },
+  F: { label: "F — Principal",                  tier: "Senior"},
+  G: { label: "G — Staff / Manager",            tier: "Senior"},
+  H: { label: "H — Senior Manager / Architect", tier: "Leadership" },
+  I: { label: "I — Director / Partner",         tier: "Leadership" },
+}
+
+function PayGradeCard({ emp }: { emp: Employee }) {
+  const band = emp.payGrade[0] as keyof typeof PAY_BAND_META
+  const step = emp.payGrade.slice(1)
+  const meta = PAY_BAND_META[band]
+  const rateLabel =
+    emp.payMode === "hourly"  ? `₹${emp.ratePerHour.toLocaleString("en-IN")}/hr` :
+    emp.payMode === "daily"   ? `₹${emp.payRate.toLocaleString("en-IN")}/day`   :
+                                `₹${emp.payRate.toLocaleString("en-IN")}/mo`
+  const monthlyEstimate =
+    emp.payMode === "hourly" ? emp.ratePerHour * 8 * 22 :
+    emp.payMode === "daily"  ? emp.payRate * 22         :
+                               emp.payRate
+
+  return (
+    <div className="p-4 rounded-xl" style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--pink-700)" }}>
+          Pay grade &amp; compensation
+        </div>
+        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+          style={{ background: "var(--pink-100)", color: "var(--pink-700)" }}>
+          {meta.tier}
+        </span>
+      </div>
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center font-mono font-bold text-[16px]"
+          style={{ background: "var(--pink-700)", color: "#fff" }}>
+          {emp.payGrade}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>{meta.label}</div>
+          <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
+            Band {band} · Step {step} of 9 · 9×9 lattice (81 grades)
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 text-[11px]">
+        <div className="p-2.5 rounded-lg" style={{ background: "var(--surface)" }}>
+          <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Pay mode</div>
+          <div className="text-[13px] font-semibold mt-0.5 capitalize" style={{ color: "var(--text-1)" }}>
+            {emp.payMode}
+          </div>
+        </div>
+        <div className="p-2.5 rounded-lg" style={{ background: "var(--surface)" }}>
+          <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Declared rate</div>
+          <div className="text-[13px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--text-1)" }}>
+            {rateLabel}
+          </div>
+        </div>
+        <div className="p-2.5 rounded-lg col-span-2" style={{ background: "var(--surface)" }}>
+          <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Monthly gross equivalent</div>
+          <div className="text-[14px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--pink-700)" }}>
+            ₹{monthlyEstimate.toLocaleString("en-IN")}
+          </div>
+          <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>
+            {emp.payMode === "hourly" ? "Assumes 8 hr × 22 days" :
+             emp.payMode === "daily"  ? "Assumes 22 billable days" :
+                                        "Direct monthly gross before statutory deductions"}
+          </div>
         </div>
       </div>
     </div>
@@ -593,7 +674,7 @@ function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }
           {/* KPI pills */}
           <div className="flex items-center gap-2 mt-3">
             {[
-              { label: "Bill rate",  value: `₹${emp.ratePerHour}/h`, color: "var(--accent)" },
+              { label: "Pay grade",  value: emp.payGrade, color: "var(--pink-700)" },
               { label: "Leave left", value: `${emp.leaveBalance.annual - emp.leaveBalance.usedAnnual}d`, color: "var(--info)" },
               { label: "Code",       value: emp.employeeCode, color: "var(--text-2)" },
             ].map(k => (
@@ -763,7 +844,7 @@ export default function EmployeesPage() {
           <table className="w-full min-w-[700px] border-collapse">
             <thead className="sticky top-0 z-10" style={{ background: "var(--surface)" }}>
               <tr className="border-b" style={{ borderColor: "var(--border)" }}>
-                {["Employee","Client","Role / Department","Region","Joined","Rate / hr","Leave","Status"].map(h => (
+                {["Employee","Client","Role / Department","Region","Joined","Pay Grade","Leave Balance","Status"].map(h => (
                   <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold whitespace-nowrap"
                     style={{ color: "var(--text-3)" }}>{h}</th>
                 ))}
@@ -814,8 +895,9 @@ export default function EmployeesPage() {
                     </td>
 
                     <td className="px-4 py-3">
-                      <span className="text-xs font-semibold tabular-nums" style={{ color: "var(--text-1)" }}>
-                        ₹{emp.ratePerHour.toLocaleString()}
+                      <span className="text-[11px] font-semibold font-mono px-2 py-0.5 rounded"
+                        style={{ background: "var(--pink-50)", color: "var(--pink-700)", border: "1px solid var(--pink-100)" }}>
+                        {emp.payGrade}
                       </span>
                     </td>
 

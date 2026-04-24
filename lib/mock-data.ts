@@ -1,7 +1,48 @@
 import type {
   Client, Employee, Timesheet, AIInsight, PayrollSummary,
   Portal, PolicyRule, PayrollBatch,
+  PayGrade, PayBand, PayStep, PayMode,
 } from "./types"
+
+// ─── Pay grade derivation ────────────────────────────────────────────────────
+//
+// Pay grade is a letter band (A-I) × step (1-9) = 81-cell lattice.
+// Band maps to rate bracket (seniority tier), step differentiates within a band
+// deterministically from a hash of the employee id + role so each run gives
+// the same answer. Pay mode is per-role: consulting roles bill hourly, field /
+// shift roles bill daily, everyone else is monthly.
+export function derivePayGradeFields(input: {
+  id: string
+  role: string
+  jobCategory: Employee["jobCategory"]
+  ratePerHour: number
+}): { payGrade: PayGrade; payMode: PayMode; payRate: number } {
+  const brackets: [number, PayBand][] = [
+    [350, "A"], [450, "B"], [550, "C"], [650, "D"],
+    [750, "E"], [850, "F"], [950, "G"], [1050, "H"], [Number.POSITIVE_INFINITY, "I"],
+  ]
+  const band = (brackets.find(([cap]) => input.ratePerHour < cap) ?? brackets[brackets.length - 1])[1]
+
+  let h = 0
+  const s = input.id + input.role
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0
+  const step = (((Math.abs(h) % 9) + 1) as PayStep)
+
+  const role = input.role.toLowerCase()
+  const cat  = input.jobCategory
+  let payMode: PayMode = "monthly"
+  if (role.includes("consultant") || role.includes("contractor") || cat === "Consulting") {
+    payMode = "hourly"
+  } else if (["Healthcare", "Operations", "Logistics", "Manufacturing"].includes(cat as string)) {
+    payMode = (Math.abs(h) % 2) === 0 ? "monthly" : "daily"
+  }
+
+  const payRate = payMode === "hourly" ? input.ratePerHour
+    : payMode === "daily" ? input.ratePerHour * 8
+    : Math.round(input.ratePerHour * 8 * 22 / 100) * 100  // rounded monthly gross
+
+  return { payGrade: `${band}${step}` as PayGrade, payMode, payRate }
+}
 
 // ─── Portals (10) ─────────────────────────────────────────────────────────────
 
@@ -283,7 +324,9 @@ export const clients: Client[] = [
 
 // ─── Seed Employees (spread across key clients) ───────────────────────────────
 
-export const employees: Employee[] = [
+type EmployeeSeed = Omit<Employee, "payGrade" | "payMode" | "payRate">
+
+const _employeeSeeds: EmployeeSeed[] = [
   // TCI - TechCorp India
   { id:"emp001", employeeCode:"TCI0001", name:"Rahul Sharma",    email:"rahul.sharma@techcorp.in",        clientId:"tci", role:"Senior Developer",        jobCategory:"Engineering", department:"Engineering",       city:"Bangalore",  startDate:"2024-01-15", ratePerHour:500,  employmentStatus:"active",  avatarColor:"#00D4A5", managerEmail:"mgr@techcorp.in", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:5,usedSick:2,usedCasual:1} },
   { id:"emp002", employeeCode:"TCI0002", name:"Priya Menon",     email:"priya.menon@techcorp.in",         clientId:"tci", role:"UX Designer",             jobCategory:"Design",      department:"Product & Design",  city:"Bangalore",  startDate:"2024-03-01", ratePerHour:450,  employmentStatus:"active",  avatarColor:"#8B5CF6", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:8,usedSick:3,usedCasual:2} },
@@ -309,6 +352,11 @@ export const employees: Employee[] = [
   // LTI - L&T Infotech
   { id:"emp015", employeeCode:"LTI0001", name:"Ravi Menon",      email:"ravi.menon@ltimindtree.com",      clientId:"lti", role:"Tech Lead",               jobCategory:"Engineering", department:"Engineering",       city:"Mumbai",     startDate:"2022-03-01", ratePerHour:850,  employmentStatus:"active",  avatarColor:"#009A44", managerEmail:"mgr@ltimindtree.com", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:8,usedSick:2,usedCasual:3} },
 ]
+
+export const employees: Employee[] = _employeeSeeds.map(e => ({
+  ...e,
+  ...derivePayGradeFields({ id: e.id, role: e.role, jobCategory: e.jobCategory, ratePerHour: e.ratePerHour }),
+}))
 
 // ─── Timesheets ───────────────────────────────────────────────────────────────
 
@@ -914,6 +962,49 @@ export const clientDistribution = [
 export function getEmployee(id: string) { return employees.find(e => e.id === id) }
 export function getClient(id: string)   { return clients.find(c => c.id === id) }
 export function getPortal(id: string)   { return portals.find(p => p.id === id) }
+
+// Resolve the mailing group for a client-side notification — Buzzworks AM +
+// client correspondent on the To: line, with one extra Buzzworks stakeholder
+// and one extra client-side stakeholder on CC:.
+// Deterministic: same client always resolves to the same people.
+export function getClientContacts(client: Client): {
+  amName: string; amEmail: string
+  clientContact: { name: string; email: string }
+  buzzworksCc: string
+  clientCc: string
+} {
+  const amSlug = client.accountManager.toLowerCase().replace(/\s+/g, ".")
+  const amEmail = `${amSlug}@buzzworks.com`
+
+  // Import domain resolver lazily to avoid circular dep.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { clientEmailDomain } = require("./mock-generator") as typeof import("./mock-generator")
+  const domain = clientEmailDomain(client.id)
+
+  // Deterministic contact name from client id (stable across renders).
+  const CONTACT_POOL = [
+    { first: "Neha",    last: "Kapoor"    },
+    { first: "Vikas",   last: "Bhatia"    },
+    { first: "Shalini", last: "Iyer"      },
+    { first: "Manish",  last: "Khandelwal"},
+    { first: "Aarti",   last: "Shah"      },
+    { first: "Rohan",   last: "Deshpande" },
+    { first: "Kriti",   last: "Banerjee"  },
+  ]
+  let h = 0
+  for (let i = 0; i < client.id.length; i++) h = ((h << 5) - h + client.id.charCodeAt(i)) | 0
+  const pick = CONTACT_POOL[Math.abs(h) % CONTACT_POOL.length]
+  const contactName  = `${pick.first} ${pick.last}`
+  const contactEmail = `${pick.first.toLowerCase()}.${pick.last.toLowerCase()}@${domain}`
+
+  return {
+    amName:  client.accountManager,
+    amEmail,
+    clientContact: { name: contactName, email: contactEmail },
+    buzzworksCc: "compliance-ops@buzzworks.com",
+    clientCc:    `compliance@${domain}`,
+  }
+}
 
 export function getClientPolicyRules(clientId: string) {
   return policyRules.filter(r => r.clientId === clientId)

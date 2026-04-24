@@ -9,6 +9,7 @@ import type {
   Timesheet, TimesheetSource, TimesheetStatus,
   ValidationCheck, DailyEntry, PortalSlug,
 } from "./types"
+import { derivePayGradeFields } from "./mock-data"
 
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
@@ -167,8 +168,11 @@ export function generateEmployee(clientId: string, index: number): Employee {
   const slug        = name.toLowerCase().replace(/\s+/g, ".")
   const clientDomain = clientEmailDomain(clientId)
 
+  const id   = `${clientId}-emp-${index}`
+  const grade = derivePayGradeFields({ id, role, jobCategory: category, ratePerHour: rate })
+
   return {
-    id:               `${clientId}-emp-${index}`,
+    id,
     employeeCode:     `${clientId.toUpperCase().slice(0, 3)}${String(index).padStart(4, "0")}`,
     name,
     email:            `${slug}@${clientDomain}`,
@@ -179,6 +183,9 @@ export function generateEmployee(clientId: string, index: number): Employee {
     city,
     startDate,
     ratePerHour:      rate,
+    payGrade:         grade.payGrade,
+    payMode:          grade.payMode,
+    payRate:          grade.payRate,
     employmentStatus: status,
     avatarColor:      color,
     leaveBalance: {
@@ -209,7 +216,7 @@ export function generateEmployeesForClient(
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function clientEmailDomain(clientId: string): string {
+export function clientEmailDomain(clientId: string): string {
   const domainMap: Record<string, string> = {
     hex: "hexaware.com",
     ibp: "infosysbpm.com",
