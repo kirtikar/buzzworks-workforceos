@@ -189,11 +189,36 @@ body {
 
 .app-bg { background: var(--bg); }
 
-/* ── Typography scale ─────────────────────────────────────── */
-.text-display { font-size: 28px; font-weight: 700; line-height: 36px; }
-.text-title   { font-size: 18px; font-weight: 600; line-height: 24px; }
+/* ── Typography scale ──────────────────────────────────────────────────────
+   Seven-step ladder. Every size in the product is one of these.
+   Spacing ratio ~1.25 (major third) to keep hierarchy perceptible without
+   creating visual noise. Default body is 14px (dense dashboard standard).
+
+   Token         Size     Use
+   ---------------------------------------------------------------------
+   .t-caption    11px     Timestamps, chip counts, byline meta, table sub-labels
+   .t-meta       12px     Buttons, filter chips, form labels, dense table cells
+   .t-body       14px     Default paragraph, card body, list rows, table data
+   .t-heading    16px     Section titles, card titles
+   .t-title      20px     Page titles (h1)
+   .t-stat       24px     KPI tile values
+   .t-display    28px     Hero / large stat numbers
+   ─────────────────────────────────────────────────────────────────────── */
+.t-caption { font-size: 11px; font-weight: 400; line-height: 16px; }
+.t-meta    { font-size: 12px; font-weight: 500; line-height: 16px; }
+.t-body    { font-size: 14px; font-weight: 400; line-height: 20px; }
+.t-heading { font-size: 16px; font-weight: 600; line-height: 22px; }
+.t-title   { font-size: 20px; font-weight: 600; line-height: 26px; }
+.t-stat    { font-size: 24px; font-weight: 600; line-height: 28px; }
+.t-display { font-size: 28px; font-weight: 700; line-height: 32px; }
+
+/* Back-compat — retained so existing .text-display / .text-title / .text-body /
+   .text-caption usages keep working while we migrate. Prefer the .t-* tokens
+   above for new code. */
+.text-display { font-size: 28px; font-weight: 700; line-height: 32px; }
+.text-title   { font-size: 20px; font-weight: 600; line-height: 26px; }
 .text-body    { font-size: 14px; font-weight: 400; line-height: 20px; }
-.text-caption { font-size: 12px; font-weight: 400; line-height: 16px; }
+.text-caption { font-size: 11px; font-weight: 400; line-height: 16px; }
 
 /* ── Surfaces ─────────────────────────────────────────────── */
 .glass, .glass-card {

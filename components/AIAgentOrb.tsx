@@ -30,7 +30,7 @@ export default function AIAgentOrb() {
         <Sparkles size={20} className="text-white relative z-10" />
         {unread > 0 && (
           <span
-            className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center z-10"
+            className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[11px] font-bold flex items-center justify-center z-10"
             style={{ background: "#FF6B6B", color: "#fff", border: "2px solid #090915" }}
           >
             {unread}
@@ -57,9 +57,9 @@ export default function AIAgentOrb() {
               >
                 <Zap size={12} className="text-white" />
               </div>
-              <span className="text-[13px] font-semibold text-white">AI Insights</span>
+              <span className="text-[14px] font-semibold text-white">AI Insights</span>
               <span
-                className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
+                className="text-[11px] px-1.5 py-0.5 rounded-full font-semibold"
                 style={{ background: "rgba(37,99,235,0.2)", color: "#A78BFA" }}
               >
                 {unread} new

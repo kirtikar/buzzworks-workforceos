@@ -177,7 +177,7 @@ export default function DashboardPage() {
                 <div className="text-2xl font-semibold tracking-tight" style={{ color: "var(--primary-700)" }}>
                   {k.value}
                 </div>
-                <div className="text-[13px] mt-1" style={{ color: "var(--neutral-600)" }}>
+                <div className="text-[14px] mt-1" style={{ color: "var(--neutral-600)" }}>
                   {k.label}
                 </div>
                 <div className="text-xs mt-1" style={{ color: "var(--neutral-500)" }}>
@@ -194,16 +194,16 @@ export default function DashboardPage() {
             <div className="glass p-6">
               <div className="mb-5 flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
+                  <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>
                     Ops Cost as % of Net Revenue
                   </div>
-                  <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  <div className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
                     Industry band 1–4% · AI saves ₹{(APR_AI_SAVINGS / 100000).toFixed(0)}L/mo (~₹{((APR_AI_SAVINGS * 12) / 10000000).toFixed(2)}Cr/yr)
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs" style={{ color: "var(--text-3)" }}>Apr 2026</div>
-                  <div className="text-[15px] font-semibold" style={{ color: "#059669" }}>
+                  <div className="text-[14px] font-semibold" style={{ color: "#059669" }}>
                     {APR_OPS_RATIO.toFixed(1)}%
                   </div>
                 </div>
@@ -232,7 +232,7 @@ export default function DashboardPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                     <YAxis
-                      tick={{ fontSize: 10, fill: "var(--text-3)" }}
+                      tick={{ fontSize: 11, fill: "var(--text-3)" }}
                       axisLine={false} tickLine={false} width={40}
                       tickFormatter={v => `${v}%`}
                       domain={[2, 7]}
@@ -252,10 +252,10 @@ export default function DashboardPage() {
             <div className="glass p-6">
               <div className="mb-5 flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
+                  <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>
                     Ops cost breakup
                   </div>
-                  <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  <div className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
                     {fmtINR(OPS_TOTAL)}/mo across sub-functions
                   </div>
                 </div>
@@ -307,8 +307,8 @@ export default function DashboardPage() {
             <div className="glass p-6">
               <div className="mb-5 flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>Ops Cost by Client</div>
-                  <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>Ops Cost by Client</div>
+                  <div className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
                     Top 8 ≈ ₹12.6L of ₹18L · efficiency = ops cost ÷ client revenue
                   </div>
                 </div>
@@ -357,15 +357,15 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{ background: "var(--pink-100)" }}>
-                    <span className="text-[13px] font-bold" style={{ color: "var(--pink-700)" }}>J</span>
+                    <span className="text-[14px] font-bold" style={{ color: "var(--pink-700)" }}>J</span>
                   </div>
                   <div>
-                    <div className="text-[15px] font-semibold flex items-center gap-1.5" style={{ color: "var(--text-1)" }}>
+                    <div className="text-[14px] font-semibold flex items-center gap-1.5" style={{ color: "var(--text-1)" }}>
                       JARVIS
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded"
+                      <span className="text-[11px] font-medium px-1.5 py-0.5 rounded"
                         style={{ background: "var(--pink-50)", color: "var(--pink-700)" }}>Inspector Agent</span>
                     </div>
-                    <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                    <div className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
                       Auto-approval rate — 6 month trend
                     </div>
                   </div>
@@ -384,7 +384,7 @@ export default function DashboardPage() {
                   <BarChart data={agentPerformance}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} width={30}
+                    <YAxis tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} width={30}
                       tickFormatter={v => `${v}%`} domain={[0, 100]} />
                     <Tooltip
                       contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
@@ -401,14 +401,14 @@ export default function DashboardPage() {
             <div className="glass p-6">
               <div className="mb-5 flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>Resource Utilization</div>
-                  <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>Resource Utilization</div>
+                  <div className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
                     Cases resolved per FTE — across timesheet, onboarding, payroll &amp; compliance inboxes
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs" style={{ color: "var(--text-3)" }}>Apr headcount</div>
-                  <div className="text-[15px] font-semibold" style={{ color: "var(--lavender)" }}>4 FTE</div>
+                  <div className="text-[14px] font-semibold" style={{ color: "var(--lavender)" }}>4 FTE</div>
                 </div>
               </div>
               <div style={{ height: 200 }}>
@@ -416,7 +416,7 @@ export default function DashboardPage() {
                   <BarChart data={resourceUtil} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} width={36} />
+                    <YAxis tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} width={36} />
                     <Tooltip
                       contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
                       formatter={(v: number, name: string) => [v, name]}
@@ -425,7 +425,7 @@ export default function DashboardPage() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="grid grid-cols-6 gap-1 mt-2 text-[10px] text-center" style={{ color: "var(--text-3)" }}>
+              <div className="grid grid-cols-6 gap-1 mt-2 text-[11px] text-center" style={{ color: "var(--text-3)" }}>
                 {resourceUtil.map(r => (
                   <div key={r.month}>
                     <div className="tabular-nums" style={{ color: "var(--lavender)" }}>{r.headcount} HC</div>

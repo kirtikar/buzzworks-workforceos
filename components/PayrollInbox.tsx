@@ -69,7 +69,7 @@ function FilterDropdown({
         {Icon && <Icon size={12} />}
         {label}
         {active && (
-          <span className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+          <span className="w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center"
             style={{ background: "var(--accent)", color: "#fff" }}>{selected.length}</span>
         )}
         <ChevronDown size={11} className={clsx("transition-transform", open && "rotate-180")} />
@@ -95,7 +95,7 @@ function FilterDropdown({
                 <span className={clsx("w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center",
                   selected.includes(opt.value) ? "border-[color:var(--accent)]" : "border-[color:var(--border-strong)]")}
                   style={{ background: selected.includes(opt.value) ? "var(--accent)" : "transparent" }}>
-                  {selected.includes(opt.value) && <span className="text-white text-[8px] font-bold">✓</span>}
+                  {selected.includes(opt.value) && <span className="text-white text-[11px] font-bold">✓</span>}
                 </span>
                 {opt.color && <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: opt.color }} />}
                 {opt.label}
@@ -359,7 +359,7 @@ export default function PayrollInbox({ clientId }: { clientId?: string }) {
                 </span>
 
                 <div className="flex-1 min-w-0 flex items-center gap-2">
-                  <span className="text-[13px] font-medium truncate" style={{ color: "var(--text-1)" }}>
+                  <span className="text-[14px] font-medium truncate" style={{ color: "var(--text-1)" }}>
                     {issue.issueType}
                   </span>
                   <span className="hidden lg:inline text-[11px] flex-shrink-0" style={{ color: "var(--text-3)" }}>
@@ -400,21 +400,21 @@ export default function PayrollInbox({ clientId }: { clientId?: string }) {
 
                     <div className="md:col-span-2 rounded-lg p-4" style={{ background: "var(--surface)" }}>
                       <div className="flex items-center gap-2 flex-wrap mb-2">
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded"
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded"
                           style={{ background: stageMeta.bg, color: stageMeta.color }}>
                           {stageMeta.label}
                         </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded"
+                        <span className="text-[11px] px-2 py-0.5 rounded"
                           style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
                           Cycle {issue.cycle}
                         </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded flex items-center gap-1"
+                        <span className="text-[11px] px-2 py-0.5 rounded flex items-center gap-1"
                           style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
                           <Clock size={9} />{ageLabel(issue.ageDays)}
                         </span>
                       </div>
 
-                      <div className="text-[13px] font-semibold mb-2" style={{ color: "var(--text-1)" }}>
+                      <div className="text-[14px] font-semibold mb-2" style={{ color: "var(--text-1)" }}>
                         {issue.issueType}
                       </div>
 
@@ -431,23 +431,23 @@ export default function PayrollInbox({ clientId }: { clientId?: string }) {
                     <div className="space-y-3">
                       <div className="rounded-lg p-3"
                         style={{ background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
-                        <div className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "var(--danger)" }}>
+                        <div className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: "var(--danger)" }}>
                           Exposure
                         </div>
                         <div className="text-[16px] font-bold mt-0.5" style={{ color: "var(--danger)" }}>
                           {fmtINR(issue.amountImpact)}
                         </div>
-                        <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                        <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
                           across {issue.affectedCount} employees
                         </div>
                       </div>
                       <div className="rounded-lg p-3"
                         style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
-                        <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold"
+                        <div className="flex items-center gap-1 text-[11px] uppercase tracking-wider font-semibold"
                           style={{ color: "var(--pink-700)" }}>
                           <Sparkles size={10} /> AI suggests
                         </div>
-                        <div className="text-[13px] font-semibold mt-1" style={{ color: "var(--pink-700)" }}>
+                        <div className="text-[14px] font-semibold mt-1" style={{ color: "var(--pink-700)" }}>
                           {issue.aiSuggestion}
                         </div>
                       </div>

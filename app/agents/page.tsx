@@ -321,7 +321,7 @@ export default function AgentsPage() {
                 <div className="text-[11px] uppercase tracking-wider mb-1.5" style={{ color: "var(--text-3)" }}>
                   {s.label}
                 </div>
-                <div className="text-[22px] font-semibold tabular-nums leading-none" style={{ color: s.color }}>
+                <div className="text-[24px] font-semibold tabular-nums leading-none" style={{ color: s.color }}>
                   {s.value}
                 </div>
                 <div className="text-[11px] mt-1.5" style={{ color: "var(--text-3)" }}>{s.sub}</div>
@@ -338,7 +338,7 @@ export default function AgentsPage() {
               <h2 className="text-[16px] font-semibold" style={{ color: "var(--text-1)" }}>
                 How the agents collaborate
               </h2>
-              <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+              <p className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
                 Three hand-off flows power the product. Each agent only does one thing well; the glue is the pipeline.
               </p>
             </div>
@@ -349,7 +349,7 @@ export default function AgentsPage() {
                   style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                   <div className="px-5 py-3 flex items-center gap-3 flex-wrap"
                     style={{ borderBottom: "1px solid var(--border)", background: "var(--bg)" }}>
-                    <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>
+                    <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>
                       {p.title}
                     </div>
                     <span className="text-[11px] px-2 py-0.5 rounded-full"
@@ -387,7 +387,7 @@ export default function AgentsPage() {
                                 <div className="text-[12px] font-semibold leading-tight" style={{ color: a.color }}>
                                   {a.name}
                                 </div>
-                                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>
+                                <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
                                   {step.action}
                                 </div>
                               </div>
@@ -427,7 +427,7 @@ export default function AgentsPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-[16px] font-semibold" style={{ color: "var(--text-1)" }}>Agent roster</h2>
-                  <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                  <p className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
                     Click any agent to see what it can do and where in the app you will see it.
                   </p>
                 </div>
@@ -443,14 +443,14 @@ export default function AgentsPage() {
                       className="text-left rounded-xl p-4 transition-all hover:shadow-md"
                       style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-[13px]"
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-[14px]"
                           style={{ background: `${agent.color}15`, color: agent.color }}>
                           {agent.initial}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>{agent.name}</span>
-                            <span className="flex items-center gap-1 text-[10px] font-medium"
+                            <span className="flex items-center gap-1 text-[11px] font-medium"
                               style={{ color: "#059669" }}>
                               <span className="w-1.5 h-1.5 rounded-full animate-dot-blink" style={{ background: "#059669" }} />
                               Active
@@ -465,20 +465,20 @@ export default function AgentsPage() {
 
                       <div className="grid grid-cols-2 gap-2 mt-3">
                         <div className="p-2 rounded-lg" style={{ background: "var(--bg)" }}>
-                          <div className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Today</div>
-                          <div className="text-[15px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--text-1)" }}>
+                          <div className="text-[11px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Today</div>
+                          <div className="text-[14px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--text-1)" }}>
                             {agent.todayVolume.toLocaleString()}
                           </div>
                         </div>
                         <div className="p-2 rounded-lg" style={{ background: "var(--bg)" }}>
-                          <div className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>{agent.metricLabel}</div>
-                          <div className="text-[15px] font-semibold tabular-nums mt-0.5" style={{ color: agent.color }}>
+                          <div className="text-[11px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>{agent.metricLabel}</div>
+                          <div className="text-[14px] font-semibold tabular-nums mt-0.5" style={{ color: agent.color }}>
                             {agent.metricValue}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 mt-3 flex-wrap text-[10px]" style={{ color: "var(--text-3)" }}>
+                      <div className="flex items-center gap-1.5 mt-3 flex-wrap text-[11px]" style={{ color: "var(--text-3)" }}>
                         {agent.upstream.length > 0 && (
                           <>
                             <span>in:</span>
@@ -525,7 +525,7 @@ export default function AgentsPage() {
                   <Activity size={15} style={{ color: "var(--accent)" }} />
                   Live activity
                 </h2>
-                <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+                <p className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
                   Last 15 agent actions across the ops pipeline.
                 </p>
               </div>
@@ -546,7 +546,7 @@ export default function AgentsPage() {
                         onClick={() => setSelected(agent.id)}
                         className="w-full text-left flex items-start gap-2.5 px-4 py-3 transition-colors hover:bg-[color:var(--bg)]"
                         style={{ borderBottom: "1px solid var(--border)" }}>
-                        <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 text-[10px] font-bold mt-0.5"
+                        <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 text-[11px] font-bold mt-0.5"
                           style={{ background: agent.color, color: "#fff" }}>
                           {agent.initial}
                         </div>
@@ -554,7 +554,7 @@ export default function AgentsPage() {
                           <div className="text-[12px] leading-snug" style={{ color: "var(--text-1)" }}>
                             {a.summary}
                           </div>
-                          <div className="flex items-center gap-2 mt-1 text-[10px]" style={{ color: "var(--text-3)" }}>
+                          <div className="flex items-center gap-2 mt-1 text-[11px]" style={{ color: "var(--text-3)" }}>
                             <Icon size={10} style={{ color: iconColor }} />
                             <span>{agent.name}</span>
                             <span>·</span>
@@ -585,7 +585,7 @@ export default function AgentsPage() {
                     { title: "Humans review, don't do.", body: "Ops reviews the agent's reasoning trail and clicks send. The draft, the data, and the decision come pre-filled." },
                   ].map(p => (
                     <div key={p.title}>
-                      <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>{p.title}</div>
+                      <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>{p.title}</div>
                       <div className="text-[12px] mt-1 leading-relaxed" style={{ color: "var(--text-2)" }}>{p.body}</div>
                     </div>
                   ))}
@@ -610,7 +610,7 @@ export default function AgentsPage() {
                 {selected.initial}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
+                <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>
                   {selected.name}
                 </div>
                 <div className="text-[12px]" style={{ color: "var(--text-3)" }}>{selected.role}</div>
@@ -630,21 +630,21 @@ export default function AgentsPage() {
                 <div className="text-[11px] uppercase tracking-wider mb-1.5" style={{ color: "var(--text-3)" }}>
                   What it does
                 </div>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-2)" }}>
+                <p className="text-[14px] leading-relaxed" style={{ color: "var(--text-2)" }}>
                   {selected.operational}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="p-3 rounded-lg" style={{ background: "var(--bg)" }}>
-                  <div className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Today</div>
-                  <div className="text-[18px] font-semibold tabular-nums mt-1" style={{ color: "var(--text-1)" }}>
+                  <div className="text-[11px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Today</div>
+                  <div className="text-[16px] font-semibold tabular-nums mt-1" style={{ color: "var(--text-1)" }}>
                     {selected.todayVolume.toLocaleString()}
                   </div>
                 </div>
                 <div className="p-3 rounded-lg" style={{ background: "var(--bg)" }}>
-                  <div className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>{selected.metricLabel}</div>
-                  <div className="text-[18px] font-semibold tabular-nums mt-1" style={{ color: selected.color }}>
+                  <div className="text-[11px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>{selected.metricLabel}</div>
+                  <div className="text-[16px] font-semibold tabular-nums mt-1" style={{ color: selected.color }}>
                     {selected.metricValue}
                   </div>
                 </div>
@@ -656,7 +656,7 @@ export default function AgentsPage() {
                 </div>
                 <ul className="space-y-2">
                   {selected.capabilities.map(c => (
-                    <li key={c} className="flex items-start gap-2.5 text-[13px]" style={{ color: "var(--text-2)" }}>
+                    <li key={c} className="flex items-start gap-2.5 text-[14px]" style={{ color: "var(--text-2)" }}>
                       <CheckCircle2 size={14} style={{ color: selected.color }} className="flex-shrink-0 mt-0.5" />
                       {c}
                     </li>

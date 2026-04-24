@@ -47,7 +47,7 @@ export default function ComplianceArticlePage() {
         <Sidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="text-lg font-semibold mb-2" style={{ color: "var(--text-1)" }}>
+            <div className="text-base font-semibold mb-2" style={{ color: "var(--text-1)" }}>
               Regulation not found
             </div>
             <Link href="/compliance" className="text-sm" style={{ color: "var(--accent)" }}>
@@ -148,7 +148,7 @@ export default function ComplianceArticlePage() {
             </div>
 
             {/* Title */}
-            <h1 className="text-[28px] lg:text-[32px] font-bold leading-[1.2] tracking-tight mb-3"
+            <h1 className="text-[28px] lg:text-[28px] font-bold leading-[1.2] tracking-tight mb-3"
               style={{ color: "var(--text-1)" }}>
               {reg.title}
             </h1>
@@ -173,24 +173,24 @@ export default function ComplianceArticlePage() {
             </div>
 
             {/* Lead */}
-            <p className="text-[17px] leading-relaxed mb-6" style={{ color: "var(--text-1)" }}>
+            <p className="text-[16px] leading-relaxed mb-6" style={{ color: "var(--text-1)" }}>
               {article.intro}
             </p>
 
             {/* Context */}
             <section className="mb-8">
-              <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-2"
+              <h2 className="text-[14px] font-semibold uppercase tracking-wider mb-2"
                 style={{ color: "var(--text-3)" }}>
                 Background &amp; context
               </h2>
-              <p className="text-[15px] leading-relaxed" style={{ color: "var(--text-2)" }}>
+              <p className="text-[14px] leading-relaxed" style={{ color: "var(--text-2)" }}>
                 {article.context}
               </p>
             </section>
 
             {/* Key changes */}
             <section className="mb-8">
-              <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-3"
+              <h2 className="text-[14px] font-semibold uppercase tracking-wider mb-3"
                 style={{ color: "var(--text-3)" }}>
                 Key changes
               </h2>
@@ -198,7 +198,7 @@ export default function ComplianceArticlePage() {
                 {reg.keyChanges.map((c, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <span className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: catMeta.color }} />
-                    <span className="text-[15px] leading-relaxed" style={{ color: "var(--text-2)" }}>{c}</span>
+                    <span className="text-[14px] leading-relaxed" style={{ color: "var(--text-2)" }}>{c}</span>
                   </li>
                 ))}
               </ul>
@@ -206,7 +206,7 @@ export default function ComplianceArticlePage() {
 
             {/* Requirements */}
             <section className="mb-8">
-              <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-3"
+              <h2 className="text-[14px] font-semibold uppercase tracking-wider mb-3"
                 style={{ color: "var(--text-3)" }}>
                 Compliance requirements
               </h2>
@@ -217,7 +217,7 @@ export default function ComplianceArticlePage() {
                       style={{ background: "var(--pink-50)", color: "var(--pink-700)" }}>
                       {i + 1}
                     </span>
-                    <span className="text-[15px] leading-relaxed" style={{ color: "var(--text-2)" }}>{req}</span>
+                    <span className="text-[14px] leading-relaxed" style={{ color: "var(--text-2)" }}>{req}</span>
                   </li>
                 ))}
               </ol>
@@ -228,7 +228,7 @@ export default function ComplianceArticlePage() {
               style={{ background: "var(--surface-2)" }}>
               <div className="flex items-center gap-2 mb-2">
                 <Calendar size={15} style={{ color: "var(--text-2)" }} />
-                <h2 className="text-[13px] font-semibold uppercase tracking-wider"
+                <h2 className="text-[14px] font-semibold uppercase tracking-wider"
                   style={{ color: "var(--text-2)" }}>
                   Effective date &amp; timeline
                 </h2>
@@ -243,7 +243,7 @@ export default function ComplianceArticlePage() {
               style={{ background: "var(--warn-bg)", border: "1px solid var(--warn-border)" }}>
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle size={15} style={{ color: "var(--warn)" }} />
-                <h2 className="text-[13px] font-semibold uppercase tracking-wider"
+                <h2 className="text-[14px] font-semibold uppercase tracking-wider"
                   style={{ color: "var(--warn)" }}>
                   Penalty &amp; risk
                 </h2>
@@ -254,7 +254,7 @@ export default function ComplianceArticlePage() {
               <div className="grid grid-cols-3 gap-3">
                 <div className="rounded-lg p-3 bg-white dark:bg-transparent"
                   style={{ background: "var(--surface)" }}>
-                  <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                  <div className="text-[11px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
                     Max penalty
                   </div>
                   <div className="flex items-center gap-1 text-[14px] font-semibold tabular-nums"
@@ -264,7 +264,7 @@ export default function ComplianceArticlePage() {
                   </div>
                 </div>
                 <div className="rounded-lg p-3" style={{ background: "var(--surface)" }}>
-                  <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                  <div className="text-[11px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
                     Legal risk
                   </div>
                   <span className="inline-flex items-center text-[11px] font-medium px-2 py-0.5 rounded-md"
@@ -273,7 +273,7 @@ export default function ComplianceArticlePage() {
                   </span>
                 </div>
                 <div className="rounded-lg p-3" style={{ background: "var(--surface)" }}>
-                  <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                  <div className="text-[11px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
                     Ops impact
                   </div>
                   <span className="inline-flex items-center text-[11px] font-medium px-2 py-0.5 rounded-md"
@@ -286,7 +286,7 @@ export default function ComplianceArticlePage() {
 
             {/* Action steps */}
             <section className="mb-8">
-              <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-3"
+              <h2 className="text-[14px] font-semibold uppercase tracking-wider mb-3"
                 style={{ color: "var(--text-3)" }}>
                 Recommended action steps
               </h2>
@@ -304,7 +304,7 @@ export default function ComplianceArticlePage() {
             {/* Impact areas */}
             {reg.impactAreas.length > 0 && (
               <section className="mb-8">
-                <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-3"
+                <h2 className="text-[14px] font-semibold uppercase tracking-wider mb-3"
                   style={{ color: "var(--text-3)" }}>
                   Functional impact areas
                 </h2>
@@ -326,7 +326,7 @@ export default function ComplianceArticlePage() {
 
             {/* Affected scope */}
             <section className="mb-8">
-              <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-3"
+              <h2 className="text-[14px] font-semibold uppercase tracking-wider mb-3"
                 style={{ color: "var(--text-3)" }}>
                 Impact on your clients
               </h2>
@@ -352,7 +352,7 @@ export default function ComplianceArticlePage() {
               style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles size={15} style={{ color: "var(--pink-700)" }} />
-                <h2 className="text-[13px] font-semibold uppercase tracking-wider"
+                <h2 className="text-[14px] font-semibold uppercase tracking-wider"
                   style={{ color: "var(--pink-700)" }}>
                   AI recommendation
                 </h2>
@@ -374,7 +374,7 @@ export default function ComplianceArticlePage() {
 
             {/* Official source */}
             <section className="mb-8">
-              <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-3"
+              <h2 className="text-[14px] font-semibold uppercase tracking-wider mb-3"
                 style={{ color: "var(--text-3)" }}>
                 Official source
               </h2>
@@ -400,7 +400,7 @@ export default function ComplianceArticlePage() {
             {/* Related regulations */}
             {related.length > 0 && (
               <section className="pt-8" style={{ borderTop: "1px solid var(--border)" }}>
-                <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-4"
+                <h2 className="text-[14px] font-semibold uppercase tracking-wider mb-4"
                   style={{ color: "var(--text-3)" }}>
                   Related regulations
                 </h2>
@@ -413,7 +413,7 @@ export default function ComplianceArticlePage() {
                         style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                         <span className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ background: rCat.color }} />
                         <div className="flex-1 min-w-0">
-                          <div className="text-[13px] font-medium line-clamp-1" style={{ color: "var(--text-1)" }}>
+                          <div className="text-[14px] font-medium line-clamp-1" style={{ color: "var(--text-1)" }}>
                             {r.title}
                           </div>
                           <div className="text-[11px] mt-0.5 flex items-center gap-2" style={{ color: "var(--text-3)" }}>

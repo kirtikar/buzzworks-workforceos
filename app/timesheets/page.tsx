@@ -107,7 +107,7 @@ function FilterDropdown({
         {Icon && <Icon size={12} />}
         {label}
         {active && (
-          <span className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+          <span className="w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center"
             style={{ background: "var(--accent)", color: "#fff" }}>{selected.length}</span>
         )}
         <ChevronDown size={11} className={clsx("transition-transform", open && "rotate-180")} />
@@ -131,7 +131,7 @@ function FilterDropdown({
                 <span className={clsx("w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center",
                   selected.includes(opt.value) ? "border-[color:var(--accent)]" : "border-[color:var(--border-strong)]")}
                   style={{ background: selected.includes(opt.value) ? "var(--accent)" : "transparent" }}>
-                  {selected.includes(opt.value) && <span className="text-white text-[8px] font-bold">✓</span>}
+                  {selected.includes(opt.value) && <span className="text-white text-[11px] font-bold">✓</span>}
                 </span>
                 {opt.color && <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: opt.color }} />}
                 {opt.label}
@@ -369,7 +369,7 @@ export default function InboxPage() {
         <header className="px-6 lg:px-8 py-5 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
           <div>
             <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Inbox</h1>
-            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+            <p className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
               {actionableCount} items need your attention
             </p>
           </div>
@@ -380,7 +380,7 @@ export default function InboxPage() {
               <button
                 key={c.value}
                 onClick={() => setCategory(c.value)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-[14px] font-medium transition-colors"
                 style={{
                   background: category === c.value ? "var(--accent-dim)" : "transparent",
                   color: category === c.value ? "var(--accent)" : "var(--text-3)",
@@ -485,7 +485,7 @@ export default function InboxPage() {
                 <div className="relative ml-auto">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
                   <input
-                    className="glass-input pl-9 py-2 text-[13px] w-52"
+                    className="glass-input pl-9 py-2 text-[14px] w-52"
                     placeholder="Search employee, client…"
                     value={search}
                     onChange={e => { setSearch(e.target.value); setPage(1) }}
@@ -682,7 +682,7 @@ export default function InboxPage() {
 
                       {/* Employee + period + source */}
                       <div className="flex-1 min-w-0 flex items-center gap-2">
-                        <span className="text-[13px] font-medium truncate" style={{ color: "var(--text-1)" }}>
+                        <span className="text-[14px] font-medium truncate" style={{ color: "var(--text-1)" }}>
                           {emp.name}
                         </span>
                         <span className="hidden lg:inline text-[11px] flex-shrink-0" style={{ color: "var(--text-3)" }}>
@@ -778,7 +778,7 @@ export default function InboxPage() {
               <div className="flex items-center justify-between px-5 py-4 flex-shrink-0 sticky top-0"
                 style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)", zIndex: 10 }}>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[15px] font-semibold truncate" style={{ color: "var(--text-1)" }}>
+                  <div className="text-[14px] font-semibold truncate" style={{ color: "var(--text-1)" }}>
                     {detailEmp.name}
                   </div>
                   <div className="text-xs mt-0.5 flex items-center gap-2" style={{ color: "var(--text-3)" }}>
@@ -801,12 +801,12 @@ export default function InboxPage() {
                 {/* Employee meta */}
                 <div className="flex items-center gap-3 p-3 rounded-lg" style={{ background: "var(--surface-2)" }}>
                   <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-[14px] font-semibold flex-shrink-0"
                     style={{ background: `${detailClient.color}14`, color: detailClient.color }}>
                     {initials(detailEmp.name)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>
+                    <div className="text-[14px] font-medium" style={{ color: "var(--text-1)" }}>
                       {detailEmp.role}
                     </div>
                     <div className="text-xs" style={{ color: "var(--text-3)" }}>
@@ -817,28 +817,28 @@ export default function InboxPage() {
 
                 {/* Hours */}
                 <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wider mb-2"
+                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-2"
                     style={{ color: "var(--text-3)" }}>
                     Hours
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
-                      <div className="text-lg font-semibold tabular-nums" style={{ color: "var(--accent)" }}>
+                      <div className="text-base font-semibold tabular-nums" style={{ color: "var(--accent)" }}>
                         {detail.regularHours}h
                       </div>
-                      <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>Regular</div>
+                      <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Regular</div>
                     </div>
                     <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
-                      <div className="text-lg font-semibold tabular-nums" style={{ color: "var(--warn)" }}>
+                      <div className="text-base font-semibold tabular-nums" style={{ color: "var(--warn)" }}>
                         {detail.overtimeHours}h
                       </div>
-                      <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>Overtime</div>
+                      <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Overtime</div>
                     </div>
                     <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
-                      <div className="text-lg font-semibold tabular-nums" style={{ color: "var(--info)" }}>
+                      <div className="text-base font-semibold tabular-nums" style={{ color: "var(--info)" }}>
                         {detail.leaveHours}h
                       </div>
-                      <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>Leave</div>
+                      <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Leave</div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between mt-2 py-2.5 px-3 rounded-lg"
@@ -853,7 +853,7 @@ export default function InboxPage() {
                 {/* AI Validation — JARVIS */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <div className="text-[10px] font-semibold uppercase tracking-wider"
+                    <div className="text-[11px] font-semibold uppercase tracking-wider"
                       style={{ color: "var(--text-3)" }}>
                       JARVIS Validation
                     </div>
@@ -923,7 +923,7 @@ export default function InboxPage() {
 
                 {/* Leave balance */}
                 <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wider mb-2"
+                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-2"
                     style={{ color: "var(--text-3)" }}>
                     Leave balance
                   </div>
@@ -939,9 +939,9 @@ export default function InboxPage() {
                         <div key={lb.label} className="rounded-lg p-2.5" style={{ background: "var(--surface-2)" }}>
                           <div className="text-[14px] font-semibold tabular-nums" style={{ color: lb.color }}>
                             {remain}
-                            <span className="text-[10px] font-normal" style={{ color: "var(--text-3)" }}> / {lb.total}</span>
+                            <span className="text-[11px] font-normal" style={{ color: "var(--text-3)" }}> / {lb.total}</span>
                           </div>
-                          <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>{lb.label}</div>
+                          <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{lb.label}</div>
                           <div className="w-full h-1 rounded-full mt-1.5" style={{ background: "var(--border)" }}>
                             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: lb.color, opacity: 0.6 }} />
                           </div>
@@ -956,7 +956,7 @@ export default function InboxPage() {
                   <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
                     <button
                       onClick={() => approveTs(detail.id)}
-                      className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[13px]">
+                      className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[14px]">
                       <CheckCircle2 size={14} /> Approve timesheet
                     </button>
                     <button
@@ -986,7 +986,7 @@ export default function InboxPage() {
                 {detail.status === "approved" && (
                   <div className="text-center py-3 rounded-lg" style={{ background: "rgba(5,150,105,0.06)" }}>
                     <CheckCircle2 size={18} className="mx-auto mb-1" style={{ color: "#059669" }} />
-                    <div className="text-[13px] font-medium" style={{ color: "#059669" }}>Approved</div>
+                    <div className="text-[14px] font-medium" style={{ color: "#059669" }}>Approved</div>
                     {detail.approvedBy && (
                       <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
                         by {detail.approvedBy}
@@ -997,7 +997,7 @@ export default function InboxPage() {
                 {detail.status === "processed" && (
                   <div className="text-center py-3 rounded-lg" style={{ background: "var(--accent-dim)" }}>
                     <CheckCircle2 size={18} className="mx-auto mb-1" style={{ color: "var(--accent)" }} />
-                    <div className="text-[13px] font-medium" style={{ color: "var(--accent)" }}>Processed & Paid</div>
+                    <div className="text-[14px] font-medium" style={{ color: "var(--accent)" }}>Processed & Paid</div>
                     <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
                       ₹{detail.totalPayable.toLocaleString("en-IN")}
                     </div>

@@ -95,7 +95,7 @@ function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClie
       <div className="glass p-6">
         <div className="flex items-start justify-between mb-5 gap-3">
           <div>
-            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>
+            <div className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>
               Revenue &amp; Ops Cost Efficiency
             </div>
             <div className="text-xs mt-0.5" style={{ color: "var(--neutral-500)" }}>
@@ -171,7 +171,7 @@ function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClie
       <div className="glass p-6">
         <div className="flex items-start justify-between mb-5">
           <div>
-            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>
+            <div className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>
               Agent Coverage by Work Stream
             </div>
             <div className="text-xs mt-0.5" style={{ color: "var(--neutral-500)" }}>
@@ -278,7 +278,7 @@ function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getCl
 
       {/* Stakeholder strip */}
       <div className="glass p-4 flex items-center gap-3 flex-wrap text-[12px]">
-        <span className="uppercase tracking-wider text-[10px] font-semibold"
+        <span className="uppercase tracking-wider text-[11px] font-semibold"
           style={{ color: "var(--text-3)" }}>Stakeholders</span>
         <span className="px-2 py-1 rounded-md font-medium"
           style={{ background: "var(--pink-50)", color: "var(--pink-700)" }}>
@@ -330,7 +330,7 @@ function ComplianceTab({ client }: { client: NonNullable<ReturnType<typeof getCl
               <div className="text-xs mt-1" style={{ color: "var(--neutral-600)" }}>
                 {reg.authority} · Effective {reg.effectiveDate}
               </div>
-              <p className="text-[13px] leading-relaxed mt-3" style={{ color: "var(--neutral-600)" }}>
+              <p className="text-[14px] leading-relaxed mt-3" style={{ color: "var(--neutral-600)" }}>
                 {reg.summary}
               </p>
 
@@ -437,11 +437,11 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
           { label: "JARVIS only", value: "agent" },
           { label: "Human approved", value: "human" },
         ]} />
-        <span className="text-[10px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {allTs.length}</span>
+        <span className="text-[11px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {allTs.length}</span>
       </div>
 
       {filtered.length === 0 ? (
-        <div className="p-8 text-center text-[13px]" style={{ color: "var(--text-3)" }}>No timesheets match the current filters.</div>
+        <div className="p-8 text-center text-[14px]" style={{ color: "var(--text-3)" }}>No timesheets match the current filters.</div>
       ) : (
         <table className="w-full text-[12px]">
           <thead>
@@ -458,25 +458,25 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
                 <tr key={t.id} className="ts-row">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ background: "var(--surface)", color: "var(--text-2)" }}>
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-bold" style={{ background: "var(--surface)", color: "var(--text-2)" }}>
                         {emp ? initials(emp.name) : "?"}
                       </div>
                       <div>
                         <div className="font-semibold" style={{ color: "var(--text-1)" }}>{emp?.name ?? t.employeeId}</div>
-                        <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{emp?.role}</div>
+                        <div className="text-[11px]" style={{ color: "var(--text-3)" }}>{emp?.role}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-[11px]" style={{ color: "var(--text-2)" }}>{t.period}</td>
                   <td className="px-4 py-3">
                     <div className="font-semibold" style={{ color: "var(--text-1)" }}>{t.totalHours}h</div>
-                    {t.overtimeHours > 0 && <div className="text-[10px]" style={{ color: "var(--warn)" }}>+{t.overtimeHours}h OT</div>}
+                    {t.overtimeHours > 0 && <div className="text-[11px]" style={{ color: "var(--warn)" }}>+{t.overtimeHours}h OT</div>}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="badge badge-portal text-[10px]">{t.source}</span>
+                    <span className="badge badge-portal text-[11px]">{t.source}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="font-bold text-[13px]" style={{ color: t.validationScore >= 85 ? "var(--accent)" : t.validationScore >= 60 ? "var(--warn)" : "var(--danger)" }}>
+                    <span className="font-bold text-[14px]" style={{ color: t.validationScore >= 85 ? "var(--accent)" : t.validationScore >= 60 ? "var(--warn)" : "var(--danger)" }}>
                       {t.validationScore}
                     </span>
                   </td>
@@ -486,7 +486,7 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
                       : <span className="text-[11px]" style={{ color: "var(--text-2)" }}>{t.approvedBy ?? "—"}</span>}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`badge badge-${t.status} text-[10px]`}>{t.status}</span>
+                    <span className={`badge badge-${t.status} text-[11px]`}>{t.status}</span>
                   </td>
                   <td className="px-4 py-3">
                     <Link href="/timesheets">
@@ -549,7 +549,7 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
           { label: "Ended", value: "ended" },
           { label: "On hold", value: "on_hold" },
         ]} />
-        <span className="text-[10px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {fmtNum(employeeCount)}</span>
+        <span className="text-[11px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {fmtNum(employeeCount)}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-[12px]">
@@ -568,12 +568,12 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
                 <tr key={emp.id} className="ts-row">
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0" style={{ background: `${emp.avatarColor}22`, color: emp.avatarColor }}>
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0" style={{ background: `${emp.avatarColor}22`, color: emp.avatarColor }}>
                         {initials(emp.name)}
                       </div>
                       <div>
                         <div className="font-medium text-white/85">{emp.name}</div>
-                        <div className="text-white/30 text-[10px]">{emp.employeeCode}</div>
+                        <div className="text-white/30 text-[11px]">{emp.employeeCode}</div>
                       </div>
                     </div>
                   </td>
@@ -610,7 +610,7 @@ function PolicyTab({ clientId }: { clientId: string }) {
     return (
       <div className="glass p-8 text-center">
         <FileText size={32} className="text-white/15 mx-auto mb-3" />
-        <div className="text-[13px] text-white/30">No policy rules configured for this client.</div>
+        <div className="text-[14px] text-white/30">No policy rules configured for this client.</div>
         <Link href="/policy">
           <button className="btn-teal mt-4 text-[12px]">Open Policy Engine</button>
         </Link>
@@ -626,13 +626,13 @@ function PolicyTab({ clientId }: { clientId: string }) {
         <div key={rule.id} className="glass p-4 rounded-xl flex items-start gap-4">
           <div className="flex flex-col items-center gap-1.5 mt-0.5 flex-shrink-0">
             <span
-              className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase"
+              className="text-[11px] px-2 py-0.5 rounded-full font-bold uppercase"
               style={{ background: `${catColors[rule.category]}18`, color: catColors[rule.category] }}
             >
               {rule.category}
             </span>
             <span
-              className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase"
+              className="text-[11px] px-2 py-0.5 rounded-full font-bold uppercase"
               style={{ background: "var(--surface-2)", color: sevColors[rule.severity] }}
             >
               {rule.severity}
@@ -640,17 +640,17 @@ function PolicyTab({ clientId }: { clientId: string }) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-[13px] text-white">{rule.name}</span>
+              <span className="font-semibold text-[14px] text-white">{rule.name}</span>
               {rule.aiGenerated && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: "rgba(37,99,235,0.15)", color: "#2563EB" }}>AI</span>
+                <span className="text-[11px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: "rgba(37,99,235,0.15)", color: "#2563EB" }}>AI</span>
               )}
               <span className={clsx("w-2 h-2 rounded-full ml-auto", rule.enabled ? "bg-blue-400" : "bg-white/20")} />
             </div>
             <div className="text-[12px] text-white/55 mb-2">{rule.description}</div>
-            <div className="font-mono text-[10px] px-2 py-1 rounded-lg text-white/40" style={{ background: "var(--surface-2)" }}>
+            <div className="font-mono text-[11px] px-2 py-1 rounded-lg text-white/40" style={{ background: "var(--surface-2)" }}>
               if ({rule.triggerCondition}) → {rule.actionOnTrigger}
             </div>
-            <div className="flex items-center gap-3 mt-2 text-[10px] text-white/25">
+            <div className="flex items-center gap-3 mt-2 text-[11px] text-white/25">
               <span>Applied {rule.appliedCount}× this month</span>
               <span>Triggered {rule.triggerCount}×</span>
               <span>by {rule.createdBy}</span>
@@ -677,18 +677,18 @@ function PayrollTab({ clientId }: { clientId: string }) {
   return (
     <div className="space-y-3">
       {batches.length === 0 && (
-        <div className="glass p-8 text-center text-white/30 text-[13px]">No payroll batches yet.</div>
+        <div className="glass p-8 text-center text-white/30 text-[14px]">No payroll batches yet.</div>
       )}
       {batches.map(b => (
         <div key={b.id} className="glass p-4 rounded-xl flex items-center gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-[13px] text-white">{b.period}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold capitalize" style={{ background: "var(--surface-2)", color: statusColors[b.status] ?? "var(--text-2)" }}>
+              <span className="font-semibold text-[14px] text-white">{b.period}</span>
+              <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold capitalize" style={{ background: "var(--surface-2)", color: statusColors[b.status] ?? "var(--text-2)" }}>
                 {b.status.replace("_", " ")}
               </span>
               {b.onHoldCount > 0 && (
-                <span className="text-[10px] text-amber-400 flex items-center gap-1"><AlertTriangle size={10} />{b.onHoldCount} on hold</span>
+                <span className="text-[11px] text-amber-400 flex items-center gap-1"><AlertTriangle size={10} />{b.onHoldCount} on hold</span>
               )}
             </div>
             <div className="grid grid-cols-3 gap-3 text-[11px] mt-2">
@@ -751,9 +751,9 @@ export default function ClientDetailPage() {
                 <h1 className="text-[16px] font-bold text-white">{client.name}</h1>
                 <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>{client.industry}</span>
                 {client.emailOnly ? (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}><Mail size={10} />Email only</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}><Mail size={10} />Email only</span>
                 ) : portal ? (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${portal.color}15`, color: portal.color }}><Globe size={10} />{portal.shortName}</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${portal.color}15`, color: portal.color }}><Globe size={10} />{portal.shortName}</span>
                 ) : null}
               </div>
               <div className="text-[11px] text-white/35 mt-0.5">{client.city}, {client.state} · Policy {client.policyVersion} · AM: {client.accountManager}</div>
@@ -768,8 +768,8 @@ export default function ClientDetailPage() {
                 { icon: ShieldCheck, value: `${client.complianceScore}%`,        label: "Compliance",       color: client.complianceScore > 90 ? "var(--accent)" : "#c89060" },
               ].map(k => (
                 <div key={k.label} className="glass px-3 py-2 rounded-xl text-center">
-                  <div className="text-[15px] font-black" style={{ color: k.color }}>{k.value}</div>
-                  <div className="text-[9px] text-white/30">{k.label}</div>
+                  <div className="text-[14px] font-black" style={{ color: k.color }}>{k.value}</div>
+                  <div className="text-[11px] text-white/30">{k.label}</div>
                 </div>
               ))}
             </div>

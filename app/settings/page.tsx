@@ -48,7 +48,7 @@ function SettingRow({ label, description, children }: { label: string; descripti
   return (
     <div className="flex items-center justify-between gap-6 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
       <div className="flex-1 min-w-0">
-        <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>{label}</div>
+        <div className="text-[14px] font-medium" style={{ color: "var(--text-1)" }}>{label}</div>
         {description && <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{description}</div>}
       </div>
       <div className="flex-shrink-0">{children}</div>
@@ -124,8 +124,8 @@ function AppearanceSection() {
                   </div>
                 </div>
               </div>
-              <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>{t.label}</div>
-              <div className="text-[10px] font-medium mt-0.5" style={{ color: "var(--accent)" }}>{t.subtitle}</div>
+              <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>{t.label}</div>
+              <div className="text-[11px] font-medium mt-0.5" style={{ color: "var(--accent)" }}>{t.subtitle}</div>
               <div className="text-[11px] mt-1" style={{ color: "var(--text-3)" }}>{t.desc}</div>
             </button>
           ))}
@@ -271,16 +271,16 @@ function IntegrationsSection() {
           {portals.map(p => (
             <div key={p.name} className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "var(--surface)" }}>
               <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.status === "connected" ? "var(--accent)" : "var(--warn)" }} />
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-bold flex-shrink-0"
                 style={{ background: `${p.color}18`, color: p.color }}>
                 {p.name.slice(0, 2).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[12px] font-medium" style={{ color: "var(--text-1)" }}>{p.name}</div>
-                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{p.clients} client{p.clients !== 1 ? "s" : ""} · last sync {p.lastSync}</div>
+                <div className="text-[11px]" style={{ color: "var(--text-3)" }}>{p.clients} client{p.clients !== 1 ? "s" : ""} · last sync {p.lastSync}</div>
               </div>
               <span
-                className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                className="text-[11px] px-2 py-0.5 rounded-full font-medium"
                 style={{
                   background: p.status === "connected" ? "var(--accent-dim)" : "var(--warn-bg)",
                   color: p.status === "connected" ? "var(--accent)" : "var(--warn)",
@@ -350,9 +350,9 @@ function SecuritySection() {
               <div className="flex-1">
                 <div className="text-[12px] font-medium" style={{ color: "var(--text-1)" }}>
                   {s.device}
-                  {s.current && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent-dim)", color: "var(--accent)" }}>Current</span>}
+                  {s.current && <span className="ml-2 text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent-dim)", color: "var(--accent)" }}>Current</span>}
                 </div>
-                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{s.location} · {s.time}</div>
+                <div className="text-[11px]" style={{ color: "var(--text-3)" }}>{s.location} · {s.time}</div>
               </div>
               {!s.current && (
                 <button className="text-[11px]" style={{ color: "var(--danger)" }}
@@ -460,7 +460,7 @@ export default function SettingsPage() {
             <Globe size={16} style={{ color: "var(--accent)" }} />
           </div>
           <div>
-            <h1 className="text-[15px] font-bold" style={{ color: "var(--text-1)" }}>Settings</h1>
+            <h1 className="text-[14px] font-bold" style={{ color: "var(--text-1)" }}>Settings</h1>
             <p className="text-[11px]" style={{ color: "var(--text-3)" }}>Manage preferences, integrations, and system configuration</p>
           </div>
           <div className="ml-auto flex items-center gap-2">

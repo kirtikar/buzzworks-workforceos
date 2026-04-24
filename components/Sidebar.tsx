@@ -32,7 +32,7 @@ export default function Sidebar() {
             <span className="text-white text-sm font-bold">B</span>
           </div>
           <div>
-            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>Agent Dashboard</div>
+            <div className="text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>Agent Dashboard</div>
             <div className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>Buzzworks</div>
           </div>
         </div>
@@ -91,7 +91,7 @@ export default function Sidebar() {
             SK
           </div>
           <div>
-            <div className="text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>Siddharth Kirtikar</div>
+            <div className="text-[14px] font-medium" style={{ color: "var(--text-primary)" }}>Siddharth Kirtikar</div>
             <div className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>Ops Agent</div>
           </div>
         </div>

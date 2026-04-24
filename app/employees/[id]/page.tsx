@@ -73,21 +73,21 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
           <div key={k.label} className="glass p-4 rounded-xl">
             <div className="flex items-center gap-2 mb-1">
               <k.icon size={13} style={{ color: k.color }} />
-              <div className="text-[10px] text-[color:var(--text-3)] uppercase tracking-wider">{k.label}</div>
+              <div className="text-[11px] text-[color:var(--text-3)] uppercase tracking-wider">{k.label}</div>
             </div>
-            <div className="text-[22px] font-black" style={{ color: k.color }}>{k.value}</div>
+            <div className="text-[24px] font-black" style={{ color: k.color }}>{k.value}</div>
           </div>
         ))}
       </div>
 
       {/* Weekly hours trend */}
       <div className="glass p-4">
-        <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Weekly Hours — Last 7 Weeks</div>
+        <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>Weekly Hours — Last 7 Weeks</div>
         <div className="text-[11px] mb-4" style={{ color: "var(--text-3)" }}>Regular + overtime breakdown</div>
         <div style={{ height: 110 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weeklyTrend} barSize={14}>
-              <XAxis dataKey="week" tick={{ fontSize: 9, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="week" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
               <YAxis hide />
               <Tooltip
                 contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
@@ -103,9 +103,9 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Monthly earnings */}
         <div className="glass p-4">
-          <div className="text-[13px] font-semibold mb-1" style={{ color: "var(--text-1)" }}>Monthly Earnings (YTD)</div>
+          <div className="text-[14px] font-semibold mb-1" style={{ color: "var(--text-1)" }}>Monthly Earnings (YTD)</div>
           <div className="text-[11px] mb-3" style={{ color: "var(--text-3)" }}>Based on approved timesheets</div>
-          <div className="text-[26px] font-black" style={{ color: "var(--accent)" }}>{fmtINR(totalEarned)}</div>
+          <div className="text-[24px] font-black" style={{ color: "var(--accent)" }}>{fmtINR(totalEarned)}</div>
           <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{totalHours}h logged across {empTimesheets.length} periods</div>
           <div style={{ height: 60, marginTop: 12 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -116,7 +116,7 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
                     <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 10, color: "var(--text-1)" }} formatter={(v: number) => fmtINR(v)} />
+                <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }} formatter={(v: number) => fmtINR(v)} />
                 <Area type="monotone" dataKey="amount" stroke="var(--accent)" strokeWidth={1.5} fill="url(#earnGrad)" dot={false} />
               </AreaChart>
             </ResponsiveContainer>
@@ -126,10 +126,10 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
         {/* Pay grade & compensation */}
         <div className="glass p-4" style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
           <div className="flex items-center justify-between mb-3">
-            <div className="text-[13px] font-semibold" style={{ color: "var(--pink-700)" }}>
+            <div className="text-[14px] font-semibold" style={{ color: "var(--pink-700)" }}>
               Pay Grade &amp; Compensation
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded"
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded"
               style={{ background: "var(--pink-700)", color: "#fff" }}>{emp.payGrade}</span>
           </div>
           <div className="text-[12px] mb-3" style={{ color: "var(--text-2)" }}>
@@ -139,13 +139,13 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
           <div className="grid grid-cols-2 gap-2 text-[11px]">
             <div className="p-2.5 rounded-lg" style={{ background: "var(--surface)" }}>
               <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Pay mode</div>
-              <div className="text-[13px] font-semibold mt-0.5 capitalize" style={{ color: "var(--text-1)" }}>
+              <div className="text-[14px] font-semibold mt-0.5 capitalize" style={{ color: "var(--text-1)" }}>
                 {emp.payMode}
               </div>
             </div>
             <div className="p-2.5 rounded-lg" style={{ background: "var(--surface)" }}>
               <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Declared rate</div>
-              <div className="text-[13px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--text-1)" }}>
+              <div className="text-[14px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--text-1)" }}>
                 {emp.payMode === "hourly" ? `₹${emp.ratePerHour.toLocaleString("en-IN")}/hr`
                  : emp.payMode === "daily" ? `₹${emp.payRate.toLocaleString("en-IN")}/day`
                  : `₹${emp.payRate.toLocaleString("en-IN")}/mo`}
@@ -156,7 +156,7 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
 
         {/* Employment snapshot */}
         <div className="glass p-4">
-          <div className="text-[13px] font-semibold mb-3" style={{ color: "var(--text-1)" }}>Employment Details</div>
+          <div className="text-[14px] font-semibold mb-3" style={{ color: "var(--text-1)" }}>Employment Details</div>
           <div className="space-y-2.5 text-[12px]">
             {[
               { label: "Employee code", value: emp.employeeCode },
@@ -190,7 +190,7 @@ function TimesheetsTab({ empId }: { empId: string }) {
   return (
     <div className="glass overflow-hidden">
       {ts.length === 0 ? (
-        <div className="p-10 text-center text-[13px]" style={{ color: "var(--text-3)" }}>No timesheets found for this employee.</div>
+        <div className="p-10 text-center text-[14px]" style={{ color: "var(--text-3)" }}>No timesheets found for this employee.</div>
       ) : (
         <table className="w-full text-[12px]">
           <thead>
@@ -212,10 +212,10 @@ function TimesheetsTab({ empId }: { empId: string }) {
                   }
                 </td>
                 <td className="px-4 py-3">
-                  <span className="badge badge-portal text-[10px]">{t.source}</span>
+                  <span className="badge badge-portal text-[11px]">{t.source}</span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="font-bold text-[13px]" style={{ color: t.validationScore >= 85 ? "var(--accent)" : t.validationScore >= 60 ? "var(--warn)" : "var(--danger)" }}>
+                  <span className="font-bold text-[14px]" style={{ color: t.validationScore >= 85 ? "var(--accent)" : t.validationScore >= 60 ? "var(--warn)" : "var(--danger)" }}>
                     {t.validationScore}
                   </span>
                 </td>
@@ -279,7 +279,7 @@ function LeaveTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
               <div className="h-1.5 rounded-full" style={{ background: "var(--surface-hover)" }}>
                 <div className="h-1.5 rounded-full transition-all" style={{ width: `${pct}%`, background: lt.color, opacity: 0.7 }} />
               </div>
-              <div className="text-[10px] mt-1.5" style={{ color: "var(--text-3)" }}>{lt.used} used · {pct}% consumed</div>
+              <div className="text-[11px] mt-1.5" style={{ color: "var(--text-3)" }}>{lt.used} used · {pct}% consumed</div>
             </div>
           )
         })}
@@ -288,7 +288,7 @@ function LeaveTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
       {/* Leave history (mock) */}
       <div className="glass overflow-hidden">
         <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
-          <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Leave History</div>
+          <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>Leave History</div>
         </div>
         <table className="w-full text-[12px]">
           <thead>
@@ -306,14 +306,14 @@ function LeaveTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
             ].map((l, i) => (
               <tr key={i} className="ts-row">
                 <td className="px-4 py-3">
-                  <span className="badge badge-portal text-[10px]">{l.type}</span>
+                  <span className="badge badge-portal text-[11px]">{l.type}</span>
                 </td>
                 <td className="px-4 py-3" style={{ color: "var(--text-2)" }}>{fmtDate(l.from)}</td>
                 <td className="px-4 py-3" style={{ color: "var(--text-2)" }}>{fmtDate(l.to)}</td>
                 <td className="px-4 py-3 font-semibold" style={{ color: "var(--text-1)" }}>{l.days}d</td>
                 <td className="px-4 py-3" style={{ color: "var(--text-2)" }}>{l.reason}</td>
                 <td className="px-4 py-3">
-                  <span className="badge badge-approved text-[10px]">{l.status}</span>
+                  <span className="badge badge-approved text-[11px]">{l.status}</span>
                 </td>
               </tr>
             ))}
@@ -365,20 +365,20 @@ function RiskProfileTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
         </div>
         <div className="ml-auto text-right hidden md:block">
           <div className="text-[11px] mb-1" style={{ color: "var(--text-3)" }}>AI Composite Score</div>
-          <div className="text-[32px] font-black" style={{ color: riskColor }}>{avgScore}</div>
-          <div className="text-[10px]" style={{ color: "var(--text-3)" }}>/ 100</div>
+          <div className="text-[28px] font-black" style={{ color: riskColor }}>{avgScore}</div>
+          <div className="text-[11px]" style={{ color: "var(--text-3)" }}>/ 100</div>
         </div>
       </div>
 
       {/* Signals */}
       <div className="glass overflow-hidden">
         <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
-          <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>Risk Signals</div>
+          <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>Risk Signals</div>
         </div>
         <div className="divide-y" style={{ borderColor: "var(--border)" }}>
           {signals.map(s => (
             <div key={s.label} className="flex items-center gap-3 px-4 py-3">
-              <span className={clsx("text-[13px] font-bold w-4 text-center", statusCls[s.status as keyof typeof statusCls])}>
+              <span className={clsx("text-[14px] font-bold w-4 text-center", statusCls[s.status as keyof typeof statusCls])}>
                 {statusIcon[s.status as keyof typeof statusIcon]}
               </span>
               <div className="flex-1 text-[12px]" style={{ color: "var(--text-2)" }}>{s.label}</div>
@@ -392,7 +392,7 @@ function RiskProfileTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
       <div className="glass p-4 rounded-xl">
         <div className="flex items-center gap-2 mb-3">
           <BarChart3 size={13} style={{ color: "var(--accent)" }} />
-          <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>JARVIS Recommendations</div>
+          <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>JARVIS Recommendations</div>
         </div>
         <div className="space-y-2 text-[12px]" style={{ color: "var(--text-2)" }}>
           {riskLevel === "Low" && <>
@@ -461,7 +461,7 @@ export default function EmployeeDetailPage() {
           </Link>
           <div className="flex items-center gap-4">
             <div
-              className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-[15px] flex-shrink-0"
+              className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-[14px] flex-shrink-0"
               style={{ background: `${emp.avatarColor}22`, color: emp.avatarColor, border: `1px solid ${emp.avatarColor}40` }}
             >
               {initials(emp.name)}
@@ -487,8 +487,8 @@ export default function EmployeeDetailPage() {
                 { icon: TrendingUp,  value: `${emp.leaveBalance.annual - emp.leaveBalance.usedAnnual}d`, label: "Leave left", color: "var(--info)" },
               ].map(k => (
                 <div key={k.label} className="glass px-3 py-2 rounded-xl text-center">
-                  <div className="text-[15px] font-black" style={{ color: k.color }}>{k.value}</div>
-                  <div className="text-[9px]" style={{ color: "var(--text-3)" }}>{k.label}</div>
+                  <div className="text-[14px] font-black" style={{ color: k.color }}>{k.value}</div>
+                  <div className="text-[11px]" style={{ color: "var(--text-3)" }}>{k.label}</div>
                 </div>
               ))}
             </div>

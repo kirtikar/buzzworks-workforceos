@@ -131,7 +131,7 @@ function FilterDropdown({
         {Icon && <Icon size={12} />}
         {label}
         {active && (
-          <span className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+          <span className="w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center"
             style={{ background: "var(--accent)", color: "#fff" }}>{selected.length}</span>
         )}
         <ChevronDown size={11} className={clsx("transition-transform", open && "rotate-180")} />
@@ -157,7 +157,7 @@ function FilterDropdown({
                 <span className={clsx("w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center",
                   selected.includes(opt.value) ? "border-[color:var(--accent)]" : "border-[color:var(--border-strong)]")}
                   style={{ background: selected.includes(opt.value) ? "var(--accent)" : "transparent" }}>
-                  {selected.includes(opt.value) && <span className="text-white text-[8px] font-bold">✓</span>}
+                  {selected.includes(opt.value) && <span className="text-white text-[11px] font-bold">✓</span>}
                 </span>
                 {opt.color && <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: opt.color }} />}
                 {opt.label}
@@ -189,30 +189,30 @@ function RuleCard({ rule, clientName, onToggle }: { rule: PolicyRule; clientName
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="font-semibold text-[13px]" style={{ color: "var(--text-1)" }}>{rule.name}</span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full font-medium uppercase tracking-wider"
+          <span className="font-semibold text-[14px]" style={{ color: "var(--text-1)" }}>{rule.name}</span>
+          <span className="text-[11px] px-2 py-0.5 rounded-full font-medium uppercase tracking-wider"
             style={{ background: sevCfg.bg, color: sevCfg.color }}>{sevCfg.label}</span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full"
+          <span className="text-[11px] px-2 py-0.5 rounded-full"
             style={{ background: `${catCfg.color}14`, color: catCfg.color }}>{catCfg.label}</span>
           {clientName && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full"
+            <span className="text-[11px] px-2 py-0.5 rounded-full"
               style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
               {clientName}
             </span>
           )}
           {rule.aiGenerated && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-0.5"
+            <span className="text-[11px] px-1.5 py-0.5 rounded-full font-semibold flex items-center gap-0.5"
               style={{ background: "var(--pink-50)", color: "var(--pink-700)" }}>
               <Sparkles size={8} /> AI
             </span>
           )}
         </div>
         <div className="text-[12px] mb-2 leading-relaxed" style={{ color: "var(--text-2)" }}>{rule.description}</div>
-        <div className="font-mono text-[10px] px-2.5 py-1.5 rounded-lg mb-2"
+        <div className="font-mono text-[11px] px-2.5 py-1.5 rounded-lg mb-2"
           style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
           if ({rule.triggerCondition}) → {rule.actionOnTrigger}
         </div>
-        <div className="flex items-center gap-4 text-[10px]" style={{ color: "var(--text-3)" }}>
+        <div className="flex items-center gap-4 text-[11px]" style={{ color: "var(--text-3)" }}>
           <span>Applied {rule.appliedCount}× this month</span>
           <span style={{ color: rule.triggerCount > 0 ? "var(--warn)" : "var(--text-3)" }}>
             Triggered {rule.triggerCount}×
@@ -318,7 +318,7 @@ function AIPolicyCreator({
               <div>
                 <label className="text-[11px] mb-2 block" style={{ color: "var(--text-3)" }}>Describe the policy rule</label>
                 <textarea
-                  className="glass-input w-full text-[13px] leading-relaxed resize-none"
+                  className="glass-input w-full text-[14px] leading-relaxed resize-none"
                   rows={3}
                   placeholder="e.g. Employees cannot log more than 3 hours of overtime per day…"
                   value={input}
@@ -329,7 +329,7 @@ function AIPolicyCreator({
 
               {stage === "input" && (
                 <div>
-                  <div className="text-[10px] mb-2" style={{ color: "var(--text-3)" }}>Quick suggestions</div>
+                  <div className="text-[11px] mb-2" style={{ color: "var(--text-3)" }}>Quick suggestions</div>
                   <div className="flex flex-wrap gap-1.5">
                     {AI_SUGGESTIONS.map(s => (
                       <button key={s} onClick={() => setInput(s)}
@@ -345,7 +345,7 @@ function AIPolicyCreator({
               {stage === "thinking" && (
                 <div className="flex items-center gap-3 py-4 justify-center">
                   <Loader2 size={18} className="animate-spin" style={{ color: "var(--accent)" }} />
-                  <span className="text-[13px]" style={{ color: "var(--text-2)" }}>Analysing policy intent…</span>
+                  <span className="text-[14px]" style={{ color: "var(--text-2)" }}>Analysing policy intent…</span>
                 </div>
               )}
 
@@ -358,26 +358,26 @@ function AIPolicyCreator({
                     style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
                     <div className="flex items-center gap-2 flex-wrap">
                       {catCfg && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider"
+                        <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider"
                           style={{ background: `${catCfg.color}18`, color: catCfg.color }}>{catCfg.label}</span>
                       )}
                       {sevCfg && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider"
+                        <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider"
                           style={{ background: sevCfg.bg, color: sevCfg.color }}>{sevCfg.label}</span>
                       )}
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+                      <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold"
                         style={{ background: "var(--pink-100)", color: "var(--pink-700)" }}>AI</span>
                     </div>
                     <div>
-                      <div className="text-[10px] mb-1" style={{ color: "var(--text-3)" }}>Rule name</div>
+                      <div className="text-[11px] mb-1" style={{ color: "var(--text-3)" }}>Rule name</div>
                       <input
-                        className="glass-input w-full text-[13px] py-1.5"
+                        className="glass-input w-full text-[14px] py-1.5"
                         value={preview.name ?? ""}
                         onChange={e => setPreview(p => p ? { ...p, name: e.target.value } : p)}
                       />
                     </div>
                     <div>
-                      <div className="text-[10px] mb-1" style={{ color: "var(--text-3)" }}>Trigger condition</div>
+                      <div className="text-[11px] mb-1" style={{ color: "var(--text-3)" }}>Trigger condition</div>
                       <div className="font-mono text-[11px] px-3 py-1.5 rounded-lg"
                         style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>
                         if ({preview.triggerCondition}) → {preview.actionOnTrigger}
@@ -401,7 +401,7 @@ function AIPolicyCreator({
                 )}
                 {stage === "preview" && (
                   <>
-                    <button onClick={() => setStage("input")} className="btn-ghost flex-1 py-2 text-[13px]">Edit prompt</button>
+                    <button onClick={() => setStage("input")} className="btn-ghost flex-1 py-2 text-[14px]">Edit prompt</button>
                     <button onClick={handleSave}
                       className="btn-primary flex-1 flex items-center justify-center gap-2 py-2">
                       <CheckCircle2 size={14} /> Save rule
@@ -500,7 +500,7 @@ export default function PolicyPage() {
           style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Policies</h1>
-            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+            <p className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
               {rules.length} rules across 7 workflows · {rules.filter(r => r.enabled).length} active
             </p>
             <div className="flex items-center gap-1 mt-4">
@@ -511,7 +511,7 @@ export default function PolicyPage() {
                 <button
                   key={t.value}
                   onClick={() => setMode(t.value)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-[14px] font-medium transition-colors"
                   style={{
                     background: mode === t.value ? "var(--accent-dim)" : "transparent",
                     color:      mode === t.value ? "var(--accent)" : "var(--text-3)",
@@ -530,7 +530,7 @@ export default function PolicyPage() {
           </div>
 
           <button onClick={() => setShow(true)}
-            className="btn-primary flex items-center gap-1.5 text-[13px] flex-shrink-0"
+            className="btn-primary flex items-center gap-1.5 text-[14px] flex-shrink-0"
             style={{ padding: "8px 14px" }}>
             <Plus size={14} /> Add policy rule
           </button>
@@ -555,7 +555,7 @@ export default function PolicyPage() {
                   }}>
                   <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.color }} />
                   {c.name}
-                  <span className="text-[10px]" style={{ opacity: 0.7 }}>· {count}</span>
+                  <span className="text-[11px]" style={{ opacity: 0.7 }}>· {count}</span>
                 </button>
               )
             })}

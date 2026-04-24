@@ -54,7 +54,7 @@ function FilterDropdown({
         {Icon && <Icon size={12} />}
         {label}
         {active && (
-          <span className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+          <span className="w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center"
             style={{ background: "var(--accent)", color: "#fff" }}>
             {selected.length}
           </span>
@@ -82,7 +82,7 @@ function FilterDropdown({
                 <span className={clsx("w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center",
                   selected.includes(opt.value) ? "border-[color:var(--accent)]" : "border-[color:var(--border-strong)]")}
                   style={{ background: selected.includes(opt.value) ? "var(--accent)" : "transparent" }}>
-                  {selected.includes(opt.value) && <span className="text-white text-[8px] font-bold">✓</span>}
+                  {selected.includes(opt.value) && <span className="text-white text-[11px] font-bold">✓</span>}
                 </span>
                 {opt.color && (
                   <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: opt.color }} />
@@ -190,7 +190,7 @@ export default function CompliancePage() {
         <header className="px-6 lg:px-8 py-5 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
           <div>
             <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Compliance</h1>
-            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+            <p className="text-[14px] mt-0.5" style={{ color: "var(--text-3)" }}>
               {REGULATIONS.length.toLocaleString()} regulations · {actionCount} need action
             </p>
           </div>
@@ -317,7 +317,7 @@ export default function CompliancePage() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-[15px] font-semibold leading-snug" style={{ color: "var(--text-1)" }}>
+                    <h3 className="text-[14px] font-semibold leading-snug" style={{ color: "var(--text-1)" }}>
                       {reg.title}
                     </h3>
 
@@ -330,7 +330,7 @@ export default function CompliancePage() {
                     </div>
 
                     {/* Summary */}
-                    <p className="text-[13px] leading-relaxed mt-3" style={{ color: "var(--text-2)" }}>
+                    <p className="text-[14px] leading-relaxed mt-3" style={{ color: "var(--text-2)" }}>
                       {reg.summary}
                     </p>
 
@@ -353,7 +353,7 @@ export default function CompliancePage() {
                     {/* Cost of non-compliance row */}
                     <div className="grid grid-cols-3 gap-3 mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
                       <div>
-                        <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                        <div className="text-[11px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
                           Penalty exposure
                         </div>
                         <div className="text-[14px] font-semibold tabular-nums"
@@ -361,13 +361,13 @@ export default function CompliancePage() {
                           {fmtPenalty(reg.penaltyAmount)}
                         </div>
                         {reg.penaltyDescription && (
-                          <div className="text-[10px] mt-0.5 line-clamp-2" style={{ color: "var(--text-3)" }}>
+                          <div className="text-[11px] mt-0.5 line-clamp-2" style={{ color: "var(--text-3)" }}>
                             {reg.penaltyDescription}
                           </div>
                         )}
                       </div>
                       <div>
-                        <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                        <div className="text-[11px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
                           Legal risk
                         </div>
                         <div className="inline-flex items-center text-[11px] font-medium px-2 py-0.5 rounded-md"
@@ -376,7 +376,7 @@ export default function CompliancePage() {
                         </div>
                       </div>
                       <div>
-                        <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
+                        <div className="text-[11px] uppercase tracking-wider mb-1" style={{ color: "var(--text-3)" }}>
                           Operational impact
                         </div>
                         <div className="inline-flex items-center text-[11px] font-medium px-2 py-0.5 rounded-md"

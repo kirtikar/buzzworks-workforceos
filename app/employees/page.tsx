@@ -127,7 +127,7 @@ function FilterDropdown({
         {Icon && <Icon size={12} />}
         {label}
         {active && (
-          <span className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+          <span className="w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center"
             style={{ background: "var(--accent)", color: "#fff" }}>
             {selected.length}
           </span>
@@ -155,7 +155,7 @@ function FilterDropdown({
                 <span className={clsx("w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center",
                   selected.includes(opt.value) ? "border-[color:var(--accent)]" : "border-[color:var(--border-strong)]")}
                   style={{ background: selected.includes(opt.value) ? "var(--accent)" : "transparent" }}>
-                  {selected.includes(opt.value) && <span className="text-white text-[8px] font-bold">✓</span>}
+                  {selected.includes(opt.value) && <span className="text-white text-[11px] font-bold">✓</span>}
                 </span>
                 {opt.label}
               </button>
@@ -304,7 +304,7 @@ function OverviewTab({ emp }: { emp: Employee }) {
         <div style={{ height: 80 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weeklyTrend} barSize={12}>
-              <XAxis dataKey="week" tick={{ fontSize: 9, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="week" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
               <YAxis hide />
               <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
                 cursor={{ fill: "var(--surface-2)" }} />
@@ -373,7 +373,7 @@ function PayGradeCard({ emp }: { emp: Employee }) {
         <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--pink-700)" }}>
           Pay grade &amp; compensation
         </div>
-        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full"
           style={{ background: "var(--pink-100)", color: "var(--pink-700)" }}>
           {meta.tier}
         </span>
@@ -384,7 +384,7 @@ function PayGradeCard({ emp }: { emp: Employee }) {
           {emp.payGrade}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-semibold" style={{ color: "var(--text-1)" }}>{meta.label}</div>
+          <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>{meta.label}</div>
           <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
             Band {band} · Step {step} of 9 · 9×9 lattice (81 grades)
           </div>
@@ -393,13 +393,13 @@ function PayGradeCard({ emp }: { emp: Employee }) {
       <div className="grid grid-cols-2 gap-2 text-[11px]">
         <div className="p-2.5 rounded-lg" style={{ background: "var(--surface)" }}>
           <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Pay mode</div>
-          <div className="text-[13px] font-semibold mt-0.5 capitalize" style={{ color: "var(--text-1)" }}>
+          <div className="text-[14px] font-semibold mt-0.5 capitalize" style={{ color: "var(--text-1)" }}>
             {emp.payMode}
           </div>
         </div>
         <div className="p-2.5 rounded-lg" style={{ background: "var(--surface)" }}>
           <div className="uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Declared rate</div>
-          <div className="text-[13px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--text-1)" }}>
+          <div className="text-[14px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--text-1)" }}>
             {rateLabel}
           </div>
         </div>
@@ -408,7 +408,7 @@ function PayGradeCard({ emp }: { emp: Employee }) {
           <div className="text-[14px] font-semibold tabular-nums mt-0.5" style={{ color: "var(--pink-700)" }}>
             ₹{monthlyEstimate.toLocaleString("en-IN")}
           </div>
-          <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>
+          <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
             {emp.payMode === "hourly" ? "Assumes 8 hr × 22 days" :
              emp.payMode === "daily"  ? "Assumes 22 billable days" :
                                         "Direct monthly gross before statutory deductions"}
@@ -435,7 +435,7 @@ function TimesheetsTab({ empId }: { empId: string }) {
         <thead>
           <tr style={{ background: "var(--surface-2)", borderBottom: "1px solid var(--border)" }}>
             {["Period", "Hours", "OT", "Score", "Status"].map(h => (
-              <th key={h} className="text-left px-3 py-2.5 font-semibold uppercase tracking-wider text-[10px]"
+              <th key={h} className="text-left px-3 py-2.5 font-semibold uppercase tracking-wider text-[11px]"
                 style={{ color: "var(--text-3)" }}>{h}</th>
             ))}
           </tr>
@@ -637,7 +637,7 @@ function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-base font-bold" style={{ color: "var(--text-1)" }}>{emp.name}</span>
                 <span
-                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize"
+                  className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
                   style={{ background: `${statusColor[emp.employmentStatus]}12`, color: statusColor[emp.employmentStatus] }}
                 >
                   {emp.employmentStatus.replace("_", " ")}
@@ -650,7 +650,7 @@ function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }
                 <span className="flex items-center gap-1"><Clock size={10} /> {tenure}yr tenure</span>
                 {client && (
                   <span
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium"
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium"
                     style={{ background: `${client.color}18`, color: client.color }}
                   >
                     {client.code}
@@ -680,7 +680,7 @@ function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }
             ].map(k => (
               <div key={k.label} className="px-3 py-1.5 rounded-lg" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
                 <div className="text-sm font-bold tabular-nums" style={{ color: k.color }}>{k.value}</div>
-                <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{k.label}</div>
+                <div className="text-[11px]" style={{ color: "var(--text-3)" }}>{k.label}</div>
               </div>
             ))}
           </div>
@@ -866,7 +866,7 @@ export default function EmployeesPage() {
                         </div>
                         <div>
                           <div className="text-xs font-semibold" style={{ color: "var(--text-1)" }}>{emp.name}</div>
-                          <div className="text-[10px] font-mono" style={{ color: "var(--text-3)" }}>{emp.employeeCode}</div>
+                          <div className="text-[11px] font-mono" style={{ color: "var(--text-3)" }}>{emp.employeeCode}</div>
                         </div>
                       </div>
                     </td>
@@ -880,7 +880,7 @@ export default function EmployeesPage() {
 
                     <td className="px-4 py-3">
                       <div className="text-xs" style={{ color: "var(--text-1)" }}>{emp.role}</div>
-                      <div className="text-[10px]" style={{ color: "var(--text-3)" }}>{emp.jobCategory}</div>
+                      <div className="text-[11px]" style={{ color: "var(--text-3)" }}>{emp.jobCategory}</div>
                     </td>
 
                     <td className="px-4 py-3">

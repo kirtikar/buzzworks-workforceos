@@ -56,7 +56,7 @@ export default function BottomNav() {
                 style={{ background: "linear-gradient(135deg,var(--accent),#2563EB)" }}>
                 <ClipboardCheck size={14} className="text-white" />
               </div>
-              <span className="text-[13px] font-bold" style={{ color: "var(--text-1)" }}>Agent Dashboard</span>
+              <span className="text-[14px] font-bold" style={{ color: "var(--text-1)" }}>Agent Dashboard</span>
             </div>
             <button onClick={() => setOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg"
               style={{ color: "var(--text-3)", background: "var(--surface)" }}>
@@ -102,13 +102,13 @@ export default function BottomNav() {
               <div className="relative">
                 <item.icon size={20} style={{ color: isActive(item.href) ? "var(--accent)" : undefined }} />
                 {item.badge && (
-                  <span className="absolute -top-1.5 -right-2.5 text-[9px] font-bold px-1 rounded-full"
+                  <span className="absolute -top-1.5 -right-2.5 text-[11px] font-bold px-1 rounded-full"
                     style={{ background: "var(--accent)", color: "#021a14", lineHeight: "14px" }}>
                     {item.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-[11px] font-medium">{item.label}</span>
             </div>
           </Link>
         ))}
@@ -123,7 +123,7 @@ export default function BottomNav() {
               <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full" style={{ background: "var(--accent)" }} />
             )}
             <MoreHorizontal size={20} style={{ color: moreActive || open ? "var(--accent)" : undefined }} />
-            <span className="text-[10px] font-medium">More</span>
+            <span className="text-[11px] font-medium">More</span>
           </div>
         </button>
       </nav>

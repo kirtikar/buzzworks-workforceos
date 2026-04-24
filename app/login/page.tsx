@@ -46,7 +46,7 @@ export default function LoginPage() {
           >
             <ClipboardCheck size={20} style={{ color: "#ffffff" }} />
           </div>
-          <div className="text-[22px] font-black tracking-tight" style={{ color: "var(--text-1)" }}>
+          <div className="text-[24px] font-black tracking-tight" style={{ color: "var(--text-1)" }}>
             Agent Dashboard
           </div>
           <div className="text-[12px] mt-1" style={{ color: "var(--text-3)" }}>
@@ -56,7 +56,7 @@ export default function LoginPage() {
 
         {/* Form card */}
         <div className="login-card p-7">
-          <div className="text-[15px] font-semibold mb-1" style={{ color: "var(--text-1)" }}>
+          <div className="text-[14px] font-semibold mb-1" style={{ color: "var(--text-1)" }}>
             Sign in
           </div>
           <div className="text-[12px] mb-6" style={{ color: "var(--text-3)" }}>

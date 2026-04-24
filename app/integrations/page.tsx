@@ -68,7 +68,7 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-bold text-[14px] text-white truncate">{portal.name}</span>
             <span
-              className="text-[10px] px-2 py-0.5 rounded-full font-semibold flex items-center gap-1"
+              className="text-[11px] px-2 py-0.5 rounded-full font-semibold flex items-center gap-1"
               style={{ background: sc.bg, color: sc.color, border: `1px solid ${sc.border}` }}
             >
               <StatusI size={10} className={portal.status === "syncing" ? "animate-spin" : ""} />
@@ -80,7 +80,7 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
 
         {/* Tier badge */}
         <span
-          className="text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider flex-shrink-0"
+          className="text-[11px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider flex-shrink-0"
           style={{ background: "var(--surface-2)", color: "var(--text-3)" }}
         >
           {portal.tier}
@@ -95,8 +95,8 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
           { label: "This Month", value: fmtNum(portal.totalSyncedThisMonth) },
         ].map(s => (
           <div key={s.label} className="flex flex-col items-center py-2.5 gap-0.5" style={{ background: "var(--bg)" }}>
-            <div className="text-[15px] font-black text-white">{s.value}</div>
-            <div className="text-[10px] text-white/30">{s.label}</div>
+            <div className="text-[14px] font-black text-white">{s.value}</div>
+            <div className="text-[11px] text-white/30">{s.label}</div>
           </div>
         ))}
       </div>
@@ -134,12 +134,12 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
         {/* Features */}
         <div className="flex flex-wrap gap-1 pt-1">
           {portal.features.slice(0, 3).map(f => (
-            <span key={f} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "var(--surface-2)", color: "var(--text-3)" }}>
+            <span key={f} className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "var(--surface-2)", color: "var(--text-3)" }}>
               {f}
             </span>
           ))}
           {portal.webhookEnabled && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}>
+            <span className="text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}>
               <Webhook size={9} /> Webhooks
             </span>
           )}
@@ -147,12 +147,12 @@ function PortalCard({ portal, onSync }: { portal: Portal; onSync: (id: string) =
 
         {/* Connected clients */}
         <div className="pt-1 pb-0.5">
-          <div className="text-[10px] text-white/25 mb-1.5">Connected clients</div>
+          <div className="text-[11px] text-white/25 mb-1.5">Connected clients</div>
           <div className="flex flex-wrap gap-1">
             {connected.map(c => (
               <span
                 key={c.id}
-                className="text-[10px] px-2 py-0.5 rounded-md font-semibold"
+                className="text-[11px] px-2 py-0.5 rounded-md font-semibold"
                 style={{ background: `${c.color}18`, color: c.color }}
               >
                 {c.code}
@@ -206,7 +206,7 @@ function EmailCard() {
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[14px] text-white">Email Inbox Monitor</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: "rgba(75,143,255,0.1)", color: "var(--accent)", border: "1px solid rgba(75,143,255,0.2)" }}>
+            <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold" style={{ background: "rgba(75,143,255,0.1)", color: "var(--accent)", border: "1px solid rgba(75,143,255,0.2)" }}>
               Active
             </span>
           </div>
@@ -222,8 +222,8 @@ function EmailCard() {
           { label: "Check frequency",   value: "5 min", color: "var(--text-2)" },
         ].map(s => (
           <div key={s.label} className="rounded-xl p-3" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
-            <div className="text-[18px] font-black" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-[10px] text-white/30 mt-0.5">{s.label}</div>
+            <div className="text-[16px] font-black" style={{ color: s.color }}>{s.value}</div>
+            <div className="text-[11px] text-white/30 mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
@@ -321,14 +321,14 @@ export default function IntegrationsPage() {
               <div key={portal.id} className="relative">
                 {syncingId === portal.id && (
                   <div className="absolute inset-0 rounded-2xl z-10 flex items-center justify-center" style={{ background: "rgba(9,7,20,0.7)", backdropFilter: "blur(4px)" }}>
-                    <div className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: "#2563EB" }}>
+                    <div className="flex items-center gap-2 text-[14px] font-semibold" style={{ color: "#2563EB" }}>
                       <Loader2 size={16} className="animate-spin" />
                       Syncing {portal.shortName}…
                     </div>
                   </div>
                 )}
                 {synced.has(portal.id) && syncingId !== portal.id && (
-                  <div className="absolute top-3 right-3 z-10 flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full" style={{ background: "rgba(75,143,255,0.15)", color: "var(--accent)" }}>
+                  <div className="absolute top-3 right-3 z-10 flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: "rgba(75,143,255,0.15)", color: "var(--accent)" }}>
                     <CheckCircle2 size={10} /> Synced
                   </div>
                 )}
@@ -339,7 +339,7 @@ export default function IntegrationsPage() {
 
           {/* Email Integration */}
           <div>
-            <h2 className="text-[13px] font-semibold text-white mb-3 flex items-center gap-2">
+            <h2 className="text-[14px] font-semibold text-white mb-3 flex items-center gap-2">
               <Mail size={14} className="text-violet-400" /> Email Ingestion
             </h2>
             <div className="max-w-md">

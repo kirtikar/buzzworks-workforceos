@@ -50,7 +50,7 @@ function FilterDropdown({
         {Icon && <Icon size={12} />}
         {label}
         {active && (
-          <span className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+          <span className="w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center"
             style={{ background: "var(--accent)", color: "#fff" }}>
             {selected.length}
           </span>
@@ -78,7 +78,7 @@ function FilterDropdown({
                 <span className={clsx("w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center",
                   selected.includes(opt.value) ? "border-[color:var(--accent)]" : "border-[color:var(--border-strong)]")}
                   style={{ background: selected.includes(opt.value) ? "var(--accent)" : "transparent" }}>
-                  {selected.includes(opt.value) && <span className="text-white text-[8px] font-bold">✓</span>}
+                  {selected.includes(opt.value) && <span className="text-white text-[11px] font-bold">✓</span>}
                 </span>
                 {opt.label}
               </button>
@@ -107,7 +107,7 @@ function ComplianceBar({ score }: { score: number }) {
       <div className="flex-1 h-1 rounded-full" style={{ background: "var(--border)" }}>
         <div className="h-full rounded-full" style={{ width: `${score}%`, background: color }} />
       </div>
-      <span className="text-[10px] font-bold" style={{ color }}>{score}%</span>
+      <span className="text-[11px] font-bold" style={{ color }}>{score}%</span>
     </div>
   )
 }
@@ -132,18 +132,18 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
         {/* Header */}
         <div className="flex items-start gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-[13px] flex-shrink-0"
+            className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-[14px] flex-shrink-0"
             style={{ background: `${client.color}18`, color: client.color }}
           >
             {client.code.slice(0, 3)}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-bold text-[13px] truncate" style={{ color: "var(--text-1)" }}>{client.name}</div>
+            <div className="font-bold text-[14px] truncate" style={{ color: "var(--text-1)" }}>{client.name}</div>
             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-              <span className="text-[10px]" style={{ color: "var(--text-3)" }}>{client.code}</span>
+              <span className="text-[11px]" style={{ color: "var(--text-3)" }}>{client.code}</span>
               <span style={{ color: "var(--text-3)" }}>·</span>
               <span
-                className="text-[10px] px-2 py-0.5 rounded-full"
+                className="text-[11px] px-2 py-0.5 rounded-full"
                 style={{ background: "var(--surface-2)", color: "var(--text-2)" }}
               >
                 {client.industry}
@@ -152,7 +152,7 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
           </div>
           <div className="flex flex-col items-end gap-1 flex-shrink-0">
             <span
-              className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
+              className="text-[11px] px-1.5 py-0.5 rounded-full font-semibold"
               style={{ background: client.status === "active" ? "rgba(75,143,255,0.1)" : "rgba(192,112,112,0.1)", color: client.status === "active" ? "var(--accent)" : "#c07070" }}
             >
               {client.status}
@@ -160,7 +160,7 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
             {actionCount > 0 && (
               <span
                 onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/compliance` }}
-                className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold transition-opacity hover:opacity-80"
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] font-semibold transition-opacity hover:opacity-80"
                 style={{ background: "var(--warn-bg)", color: "var(--warn)" }}
               >
                 <Bell size={10} />
@@ -206,7 +206,7 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
         {/* Compliance */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px]" style={{ color: "var(--text-3)" }}>Compliance score</span>
+            <span className="text-[11px]" style={{ color: "var(--text-3)" }}>Compliance score</span>
           </div>
           <ComplianceBar score={client.complianceScore} />
         </div>

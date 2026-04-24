@@ -460,10 +460,10 @@ export default function NotifyPanel({
           <Mail size={15} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-semibold" style={{ color: "var(--pink-700)" }}>
+          <div className="text-[14px] font-semibold" style={{ color: "var(--pink-700)" }}>
             {kindLabel}
           </div>
-          <div className="flex items-center gap-1 text-[10px]" style={{ color: "var(--text-3)" }}>
+          <div className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text-3)" }}>
             <Sparkles size={9} /> Pre-filled by RIPLEY · review before sending
           </div>
         </div>
@@ -478,7 +478,7 @@ export default function NotifyPanel({
       <div className="p-4 space-y-3">
         {/* To */}
         <div>
-          <label className="block text-[10px] font-medium uppercase tracking-wider mb-1"
+          <label className="block text-[11px] font-medium uppercase tracking-wider mb-1"
             style={{ color: "var(--text-3)" }}>To</label>
           <input
             type="email"
@@ -491,7 +491,7 @@ export default function NotifyPanel({
 
         {/* CC */}
         <div>
-          <label className="block text-[10px] font-medium uppercase tracking-wider mb-1"
+          <label className="block text-[11px] font-medium uppercase tracking-wider mb-1"
             style={{ color: "var(--text-3)" }}>CC</label>
           <input
             type="email"
@@ -505,7 +505,7 @@ export default function NotifyPanel({
 
         {/* Subject */}
         <div>
-          <label className="block text-[10px] font-medium uppercase tracking-wider mb-1"
+          <label className="block text-[11px] font-medium uppercase tracking-wider mb-1"
             style={{ color: "var(--text-3)" }}>Subject</label>
           <input
             type="text"
@@ -518,7 +518,7 @@ export default function NotifyPanel({
 
         {/* Body */}
         <div>
-          <label className="block text-[10px] font-medium uppercase tracking-wider mb-1"
+          <label className="block text-[11px] font-medium uppercase tracking-wider mb-1"
             style={{ color: "var(--text-3)" }}>Message</label>
           <textarea
             value={body}

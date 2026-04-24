@@ -72,9 +72,9 @@ function BatchCard({ batch, onApprove, onHold }: { batch: PayrollBatch; onApprov
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <span className="font-bold text-[13px] text-white truncate">{client?.name ?? batch.clientId}</span>
+            <span className="font-bold text-[14px] text-white truncate">{client?.name ?? batch.clientId}</span>
             <span
-              className="text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0"
+              className="text-[11px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0"
               style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
             >
               {cfg.label}
@@ -84,7 +84,7 @@ function BatchCard({ batch, onApprove, onHold }: { batch: PayrollBatch; onApprov
         </div>
 
         {batch.onHoldCount > 0 && (
-          <div className="flex items-center gap-1 text-[10px]" style={{ color: "#c89060" }}>
+          <div className="flex items-center gap-1 text-[11px]" style={{ color: "#c89060" }}>
             <AlertTriangle size={10} /> {batch.onHoldCount} hold
           </div>
         )}
@@ -98,15 +98,15 @@ function BatchCard({ batch, onApprove, onHold }: { batch: PayrollBatch; onApprov
           { label: "Amount",     value: fmtINR(batch.totalAmount), color: "var(--accent)" },
         ].map(s => (
           <div key={s.label} className="rounded-lg py-2" style={{ background: "var(--surface-2)" }}>
-            <div className="text-[13px] font-black" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-[9px] text-white/25 mt-0.5">{s.label}</div>
+            <div className="text-[14px] font-black" style={{ color: s.color }}>{s.value}</div>
+            <div className="text-[11px] text-white/25 mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Coverage bar */}
       <div className="mb-3">
-        <div className="flex items-center justify-between text-[10px] mb-1">
+        <div className="flex items-center justify-between text-[11px] mb-1">
           <span className="text-white/25">Timesheet coverage</span>
           <span style={{ color: coverage === 100 ? "var(--accent)" : "#c89060" }}>{coverage}%</span>
         </div>
@@ -234,7 +234,7 @@ export default function PayrollPage() {
                 <div>
                   <div className="text-[11px] text-white/35 mb-0.5">{s.label}</div>
                   <div className="text-[20px] font-black" style={{ color: s.color }}>{s.value}</div>
-                  <div className="text-[10px] text-white/25 mt-0.5">{s.sub}</div>
+                  <div className="text-[11px] text-white/25 mt-0.5">{s.sub}</div>
                 </div>
               </div>
             ))}
@@ -245,7 +245,7 @@ export default function PayrollPage() {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
               {/* Trend chart */}
               <div className="lg:col-span-3 glass p-4">
-                <div className="text-[13px] font-semibold text-white mb-0.5">Monthly Payroll Trend</div>
+                <div className="text-[14px] font-semibold text-white mb-0.5">Monthly Payroll Trend</div>
                 <div className="text-[11px] text-white/35 mb-4">May 2025 – Apr 2026</div>
                 <div style={{ height: 140 }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -256,7 +256,7 @@ export default function PayrollPage() {
                           <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                       <Tooltip
                         formatter={(v: number) => fmtINR(v)}
                         contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
@@ -273,12 +273,12 @@ export default function PayrollPage() {
 
               {/* Client breakdown */}
               <div className="lg:col-span-2 glass p-4">
-                <div className="text-[13px] font-semibold text-white mb-0.5">Top Clients by Payroll</div>
+                <div className="text-[14px] font-semibold text-white mb-0.5">Top Clients by Payroll</div>
                 <div className="text-[11px] text-white/35 mb-4">Monthly (₹ Lakhs)</div>
                 <div style={{ height: 140 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={clientPayrollData} barSize={14}>
-                      <XAxis dataKey="name" tick={{ fontSize: 9, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                       <Tooltip
                         formatter={(v: number) => `₹${v.toFixed(1)}L`}
                         contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
@@ -298,9 +298,9 @@ export default function PayrollPage() {
                   const amt = batchList.reduce((s, b) => s + b.totalAmount, 0)
                   return (
                     <div key={status} className="glass p-3 rounded-xl" style={{ borderLeft: `2px solid ${cfg.color}` }}>
-                      <div className="text-[10px] font-semibold mb-1" style={{ color: cfg.color }}>{cfg.label}</div>
-                      <div className="text-[18px] font-black text-white">{batchList.length}</div>
-                      <div className="text-[10px] text-white/30">{amt > 0 ? fmtINR(amt) : "—"}</div>
+                      <div className="text-[11px] font-semibold mb-1" style={{ color: cfg.color }}>{cfg.label}</div>
+                      <div className="text-[16px] font-black text-white">{batchList.length}</div>
+                      <div className="text-[11px] text-white/30">{amt > 0 ? fmtINR(amt) : "—"}</div>
                     </div>
                   )
                 })}
@@ -337,14 +337,14 @@ export default function PayrollPage() {
           {tab === "history" && (
             <div className="glass overflow-hidden rounded-2xl overflow-x-auto">
               <div className="px-5 py-4 border-b border-white/[0.07]">
-                <div className="text-[13px] font-semibold text-white">Payroll History</div>
+                <div className="text-[14px] font-semibold text-white">Payroll History</div>
                 <div className="text-[11px] text-white/35">All processed and approved batches</div>
               </div>
               <table className="w-full min-w-[600px] text-[12px]">
                 <thead>
                   <tr className="border-b border-white/[0.05]">
                     {["Client", "Period", "Timesheets", "Hours", "Amount", "Status", "Approved by", "Processed"].map(h => (
-                      <th key={h} className="text-left px-5 py-3 text-[10px] text-white/30 font-semibold uppercase tracking-wider">{h}</th>
+                      <th key={h} className="text-left px-5 py-3 text-[11px] text-white/30 font-semibold uppercase tracking-wider">{h}</th>
                     ))}
                   </tr>
                 </thead>

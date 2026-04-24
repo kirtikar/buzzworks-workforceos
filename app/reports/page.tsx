@@ -77,7 +77,7 @@ function KpiCard({ label, value, sub, change, color, icon: Icon }: {
       <div className="flex items-start justify-between mb-2">
         <Icon size={16} style={{ color }} className="mt-0.5" />
         {change !== undefined && (
-          <span className={clsx("flex items-center gap-0.5 text-[10px] font-bold", change >= 0 ? "text-blue-400" : "text-rose-400")}>
+          <span className={clsx("flex items-center gap-0.5 text-[11px] font-bold", change >= 0 ? "text-blue-400" : "text-rose-400")}>
             {change >= 0 ? <ArrowUp size={9} /> : <ArrowDown size={9} />}
             {Math.abs(change)}%
           </span>
@@ -85,7 +85,7 @@ function KpiCard({ label, value, sub, change, color, icon: Icon }: {
       </div>
       <div className="text-[11px] text-white/35 mb-0.5">{label}</div>
       <div className="text-[24px] font-black" style={{ color }}>{value}</div>
-      {sub && <div className="text-[10px] text-white/25 mt-0.5">{sub}</div>}
+      {sub && <div className="text-[11px] text-white/25 mt-0.5">{sub}</div>}
     </div>
   )
 }
@@ -150,10 +150,10 @@ export default function ReportsPage() {
           <div className="glass p-4">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="text-[13px] font-semibold text-white">Weekly Timesheet Volume</div>
+                <div className="text-[14px] font-semibold text-white">Weekly Timesheet Volume</div>
                 <div className="text-[11px] text-white/35">Received · Processed · Auto-Approved</div>
               </div>
-              <div className="flex items-center gap-4 text-[10px]">
+              <div className="flex items-center gap-4 text-[11px]">
                 {[
                   { color: "rgba(75,143,255,0.35)", label: "Received" },
                   { color: "var(--accent)",               label: "Processed" },
@@ -183,7 +183,7 @@ export default function ReportsPage() {
                       <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="week" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="week" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }} />
                   <Area type="monotone" dataKey="received"    stroke="rgba(75,143,255,0.35)" strokeWidth={1.5} fill="url(#recvGrad)" dot={false} name="Received" />
                   <Area type="monotone" dataKey="processed"   stroke="var(--accent)"              strokeWidth={1.5} fill="url(#procGrad)" dot={false} name="Processed" />
@@ -197,7 +197,7 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Status donut */}
             <div className="glass p-4">
-              <div className="text-[13px] font-semibold text-white mb-3">Status Distribution</div>
+              <div className="text-[14px] font-semibold text-white mb-3">Status Distribution</div>
               <div className="flex items-center gap-3">
                 <div style={{ width: 100, height: 100, flexShrink: 0 }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -222,7 +222,7 @@ export default function ReportsPage() {
 
             {/* Source breakdown */}
             <div className="glass p-4">
-              <div className="text-[13px] font-semibold text-white mb-3">Submission Sources</div>
+              <div className="text-[14px] font-semibold text-white mb-3">Submission Sources</div>
               <div className="space-y-3 mt-2">
                 {sourceBreakdown.map(s => (
                   <div key={s.name}>
@@ -243,12 +243,12 @@ export default function ReportsPage() {
 
             {/* Ops health radar */}
             <div className="glass p-4">
-              <div className="text-[13px] font-semibold text-white mb-2">Ops Health Score</div>
+              <div className="text-[14px] font-semibold text-white mb-2">Ops Health Score</div>
               <div style={{ height: 140 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart data={radarData}>
                     <PolarGrid stroke="var(--nav-border)" />
-                    <PolarAngleAxis dataKey="metric" tick={{ fontSize: 9, fill: "var(--text-3)" }} />
+                    <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11, fill: "var(--text-3)" }} />
                     <Radar dataKey="value" stroke="var(--accent)" strokeWidth={1.5} fill="var(--accent)" fillOpacity={0.12} />
                   </RadarChart>
                 </ResponsiveContainer>
@@ -260,7 +260,7 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Violation types */}
             <div className="glass p-4">
-              <div className="text-[13px] font-semibold text-white mb-1">Top Violation Types</div>
+              <div className="text-[14px] font-semibold text-white mb-1">Top Violation Types</div>
               <div className="text-[11px] text-white/35 mb-4">{period} · {violationTypes.reduce((s, v) => s + v.count, 0)} total violations caught</div>
               <div className="space-y-2.5">
                 {violationTypes.map(v => {
@@ -282,7 +282,7 @@ export default function ReportsPage() {
 
             {/* Client compliance leaderboard */}
             <div className="glass p-4">
-              <div className="text-[13px] font-semibold text-white mb-1">Client Compliance Leaderboard</div>
+              <div className="text-[14px] font-semibold text-white mb-1">Client Compliance Leaderboard</div>
               <div className="text-[11px] text-white/35 mb-3">Sorted by compliance score</div>
               <div className="space-y-2">
                 {topClients.map((c, i) => (
@@ -306,7 +306,7 @@ export default function ReportsPage() {
           <div className="glass p-4">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="text-[13px] font-semibold text-white">Avg Turnaround Time</div>
+                <div className="text-[14px] font-semibold text-white">Avg Turnaround Time</div>
                 <div className="text-[11px] text-white/35">Hours from submission to decision · SLA: 48h</div>
               </div>
               <div
@@ -319,7 +319,7 @@ export default function ReportsPage() {
             <div style={{ height: 100 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={turnaroundTrend} barSize={20}>
-                  <XAxis dataKey="week" tick={{ fontSize: 10, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="week" tick={{ fontSize: 11, fill: "var(--text-3)" }} axisLine={false} tickLine={false} />
                   <Tooltip
                     formatter={(v: number) => `${v}h`}
                     contentStyle={{ background: "rgba(12,9,24,0.95)", border: "1px solid var(--border-strong)", borderRadius: 8, fontSize: 11, color: "#f8fafc" }}
