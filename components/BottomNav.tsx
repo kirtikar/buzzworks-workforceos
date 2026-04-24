@@ -56,7 +56,7 @@ export default function BottomNav() {
                 style={{ background: "linear-gradient(135deg,var(--accent),#2563EB)" }}>
                 <ClipboardCheck size={14} className="text-white" />
               </div>
-              <span className="text-[13px] font-bold" style={{ color: "var(--text-1)" }}>OpsDesk</span>
+              <span className="text-[13px] font-bold" style={{ color: "var(--text-1)" }}>Buzz Agent Dash</span>
             </div>
             <button onClick={() => setOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg"
               style={{ color: "var(--text-3)", background: "var(--surface)" }}>

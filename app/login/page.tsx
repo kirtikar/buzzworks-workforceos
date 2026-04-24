@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ClipboardCheck, Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react"
 
-const DEMO_EMAIL = "ops-agentic@buzzworks.com"
+const DEMO_EMAIL = "agentic@buzzworks.com"
 const DEMO_PASSWORD = "buzzworks@123"
 
 export default function LoginPage() {
@@ -47,10 +47,10 @@ export default function LoginPage() {
             <ClipboardCheck size={20} style={{ color: "#ffffff" }} />
           </div>
           <div className="text-[22px] font-black tracking-tight" style={{ color: "var(--text-1)" }}>
-            OpsDesk
+            Buzz Agent Dashboard
           </div>
           <div className="text-[12px] mt-1" style={{ color: "var(--text-3)" }}>
-            Buzzworks · Internal Operations
+            For Buzzworks Agent Managers
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export default function LoginPage() {
             Sign in
           </div>
           <div className="text-[12px] mb-6" style={{ color: "var(--text-3)" }}>
-            Access restricted to Buzzworks ops team
+            Access restricted to Buzzworks Agent Managers
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

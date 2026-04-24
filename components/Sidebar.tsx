@@ -29,10 +29,10 @@ export default function Sidebar() {
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
             style={{ background: "var(--primary-600)" }}>
-            <span className="text-white text-sm font-bold">O</span>
+            <span className="text-white text-sm font-bold">B</span>
           </div>
           <div>
-            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>OpsDesk</div>
+            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>Buzz Agent Dash</div>
             <div className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>Buzzworks</div>
           </div>
         </div>

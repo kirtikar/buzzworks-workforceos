@@ -4,8 +4,8 @@ import { ThemeProvider } from "@/components/ThemeProvider"
 import BottomNav from "@/components/BottomNav"
 
 export const metadata: Metadata = {
-  title: "OpsDesk — Timesheet Operations · Buzzworks",
-  description: "Internal timesheet validation, policy checks, and payroll operations hub.",
+  title: "Buzz Agent Dash — Agent Manager Console · Buzzworks",
+  description: "Buzzworks Agent Managers' console for timesheet validation, policy, onboarding, payroll and compliance ops.",
 }
 
 export const viewport: Viewport = {

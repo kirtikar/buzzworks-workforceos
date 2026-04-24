@@ -2,7 +2,53 @@ import type {
   Client, Employee, Timesheet, AIInsight, PayrollSummary,
   Portal, PolicyRule, PayrollBatch,
   PayGrade, PayBand, PayStep, PayMode,
+  PolicyWorkflow,
 } from "./types"
+
+// ─── Policy workflow metadata (shared with policy page) ──────────────────────
+
+export const WORKFLOW_META: Record<PolicyWorkflow, { label: string; color: string; bg: string; description: string }> = {
+  "timesheet-validation": { label: "Timesheet validation", color: "#2563EB", bg: "rgba(37,99,235,0.10)",  description: "Rules that run when a timesheet is submitted — hours, overtime, attendance, daily caps." },
+  "onboarding":           { label: "Onboarding",           color: "#6366F1", bg: "rgba(99,102,241,0.10)",  description: "Rules for new-joiner completeness — KYC, bank details, documents, first-cycle readiness." },
+  "leave-attendance":     { label: "Leave & attendance",   color: "#0EA5E9", bg: "rgba(14,165,233,0.10)",  description: "Rules for leave applications, approvals, sandwich leave, carry-forward, LOP reconciliation." },
+  "payroll":              { label: "Payroll processing",   color: "#10B981", bg: "rgba(16,185,129,0.10)",  description: "Rules that gate a payroll run — computations, statutory deductions, bonus, disbursement." },
+  "compliance":           { label: "Compliance checks",    color: "#F59E0B", bg: "rgba(245,158,11,0.10)",  description: "Rules for EPF/ESIC/PT/LWF, contract term, statutory filings, workplace safety." },
+  "exit":                 { label: "Exit / separation",    color: "#C2185B", bg: "rgba(194,24,91,0.10)",   description: "Rules for offboarding, notice period, contract expiry, asset recovery." },
+  "fnf":                  { label: "Full & Final (FnF)",   color: "#B76E79", bg: "rgba(183,110,121,0.10)", description: "Rules for final settlement — leave encashment, gratuity, recoverables, clearance." },
+}
+
+// Deterministic workflow inference from rule text so existing seeded rules can
+// be grouped without manually labelling each one. Falls back to timesheet
+// validation (which is the biggest bucket anyway).
+export function deriveWorkflow(rule: Pick<PolicyRule, "category" | "name" | "description" | "triggerCondition" | "actionOnTrigger" | "workflow">): PolicyWorkflow {
+  if (rule.workflow) return rule.workflow
+  const blob = `${rule.name} ${rule.description} ${rule.triggerCondition} ${rule.actionOnTrigger}`.toLowerCase()
+
+  if (blob.includes("fnf") || blob.includes("full and final") || blob.includes("gratuity") ||
+      blob.includes("leave encashment") || blob.includes("final settlement")) return "fnf"
+
+  if (blob.includes("exit") || blob.includes("offboard") || blob.includes("notice period") ||
+      blob.includes("contract_end") || blob.includes("contract expiry") || blob.includes("separation") ||
+      blob.includes("asset recovery")) return "exit"
+
+  if (blob.includes("onboard") || blob.includes("joining") || blob.includes("new joiner") ||
+      blob.includes("kyc") || blob.includes("aadhaar") || blob.includes("pan ") ||
+      (blob.includes("bank") && (blob.includes("ifsc") || blob.includes("proof"))) ||
+      blob.includes("uan")) return "onboarding"
+
+  if (rule.category === "payroll" || blob.includes("payroll") || blob.includes("salary hold") ||
+      blob.includes("bonus") || blob.includes("tds") || blob.includes("disbursement") ||
+      blob.includes("bank details")) return "payroll"
+
+  if (rule.category === "leave" || blob.includes("leave") || blob.includes("sandwich") ||
+      blob.includes("lop") || blob.includes("attendance")) return "leave-attendance"
+
+  if (rule.category === "compliance" || blob.includes("epf") || blob.includes("esic") ||
+      blob.includes("statutory") || blob.includes("compliance") || blob.includes("pt ") ||
+      blob.includes("lwf")) return "compliance"
+
+  return "timesheet-validation"
+}
 
 // ─── Pay grade derivation ────────────────────────────────────────────────────
 //
@@ -707,7 +753,7 @@ export const timesheets: Timesheet[] = [
 
 // ─── Policy Rules (per client sample) ────────────────────────────────────────
 
-export const policyRules: PolicyRule[] = [
+const _policyRuleSeeds: PolicyRule[] = [
 
   // ── GLOBAL / SYSTEM-WIDE POLICIES (applied across all clients) ──────────────
 
@@ -911,7 +957,76 @@ export const policyRules: PolicyRule[] = [
     triggerCondition:"monthlyRegularHours < 160 || monthlyRegularHours > 200",
     actionOnTrigger:"Flag for manager review",
     severity:"warning", enabled:true, createdAt:"2022-04-01", updatedAt:"2024-01-01", createdBy:"ai", aiGenerated:true, appliedCount:200, triggerCount:15 },
+
+  // ── ONBOARDING WORKFLOW ─────────────────────────────────────────────────────
+
+  { id:"pol-onb-001", clientId:"ibp", category:"compliance", workflow:"onboarding",
+    name:"New joiner KYC completeness",
+    description:"Before the first timesheet is accepted, Aadhaar + PAN + bank proof + signed offer letter must be present in HRMS. Missing any field blocks first-cycle payroll.",
+    triggerCondition:"isFirstCycle && (kyc.aadhaar IS NULL || kyc.pan IS NULL || kyc.bankProof IS NULL || kyc.offer IS NULL)",
+    actionOnTrigger:"Block first-cycle payroll · Notify onboarding ops",
+    severity:"violation", enabled:true, createdAt:"2024-01-10", updatedAt:"2026-02-15", createdBy:"system", aiGenerated:false, appliedCount:64, triggerCount:9 },
+
+  { id:"pol-onb-002", clientId:"hex", category:"payroll", workflow:"onboarding",
+    name:"Bank details pre-flight",
+    description:"Within 3 business days of joining, bank_account_no + ifsc_code must be validated via NPCI penny-drop. Unvalidated accounts pause salary disbursement for that employee.",
+    triggerCondition:"daysSinceJoining >= 3 && !bank.npciValidated",
+    actionOnTrigger:"Pause disbursement · Email employee for corrected proof",
+    severity:"violation", enabled:true, createdAt:"2023-06-01", updatedAt:"2026-03-10", createdBy:"ops", aiGenerated:false, appliedCount:180, triggerCount:14 },
+
+  // ── LEAVE & ATTENDANCE WORKFLOW ─────────────────────────────────────────────
+
+  { id:"pol-lvl-001", clientId:"tci", category:"leave", workflow:"leave-attendance",
+    name:"Sandwich leave approval",
+    description:"Leaves that bridge a weekend or holiday (sandwich leave) require manager approval at least 48 hours in advance. Late submissions auto-flag for variance review.",
+    triggerCondition:"isSandwichLeave && hoursBeforeStart < 48",
+    actionOnTrigger:"Flag for manager review · Mark as variance in next payroll",
+    severity:"warning", enabled:true, createdAt:"2023-02-10", updatedAt:"2025-09-01", createdBy:"ops", aiGenerated:false, appliedCount:42, triggerCount:6 },
+
+  { id:"pol-lvl-002", clientId:"lti", category:"leave", workflow:"leave-attendance",
+    name:"LOP reconciliation at cycle close",
+    description:"Loss of pay days from attendance system must be reconciled with line-manager sign-off before payroll cut-off. Unreconciled LOP holds the cycle for the affected cost centre.",
+    triggerCondition:"lop.unsignedCount > 0 && beforeCutoff = false",
+    actionOnTrigger:"Hold cost-centre payroll · Notify manager + HR ops",
+    severity:"violation", enabled:true, createdAt:"2023-11-05", updatedAt:"2026-03-20", createdBy:"system", aiGenerated:false, appliedCount:28, triggerCount:5 },
+
+  // ── EXIT / SEPARATION WORKFLOW ──────────────────────────────────────────────
+
+  { id:"pol-exit-001", clientId:"cgi", category:"compliance", workflow:"exit",
+    name:"Notice period coverage check",
+    description:"When separation is initiated, confirm that resignation + signed notice period intent + handover plan are on file. Missing any blocks clearance and final-cycle payroll.",
+    triggerCondition:"separationInitiated && (resignation IS NULL || notice IS NULL || handover IS NULL)",
+    actionOnTrigger:"Hold clearance · Notify HR BP + line manager",
+    severity:"violation", enabled:true, createdAt:"2022-11-01", updatedAt:"2025-12-15", createdBy:"system", aiGenerated:false, appliedCount:22, triggerCount:3 },
+
+  { id:"pol-exit-002", clientId:"mnd", category:"compliance", workflow:"exit",
+    name:"Asset recovery gate",
+    description:"Laptop, access cards, and confidential asset acknowledgement must be returned or acknowledged by IT + Admin before FnF is released. Missing asset recovery records keep FnF on hold.",
+    triggerCondition:"separationStage = 'fnf' && assetRecovery.complete = false",
+    actionOnTrigger:"Hold FnF · Notify IT ops + Admin + HR",
+    severity:"violation", enabled:true, createdAt:"2023-05-01", updatedAt:"2026-01-18", createdBy:"ops", aiGenerated:false, appliedCount:16, triggerCount:4 },
+
+  // ── FULL & FINAL (FnF) WORKFLOW ─────────────────────────────────────────────
+
+  { id:"pol-fnf-001", clientId:"ibp", category:"payroll", workflow:"fnf",
+    name:"Gratuity eligibility & computation",
+    description:"Employees with ≥ 5 years continuous service are eligible for gratuity in FnF. Computation = (last drawn basic × 15/26) × completed years. Mismatches with HRMS auto-flag for finance ops.",
+    triggerCondition:"tenureYears >= 5 && gratuityAmount != expectedGratuity",
+    actionOnTrigger:"Flag FnF batch · Review with finance ops",
+    severity:"warning", enabled:true, createdAt:"2022-07-01", updatedAt:"2026-02-28", createdBy:"system", aiGenerated:false, appliedCount:11, triggerCount:2 },
+
+  { id:"pol-fnf-002", clientId:"fhl", category:"payroll", workflow:"fnf",
+    name:"Leave encashment cap",
+    description:"Leave encashment in FnF is capped at the sum of available earned leave at separation date. Any excess balance requires explicit HR BP approval and is held until signed off.",
+    triggerCondition:"encashedLeaves > availableEarnedLeaves",
+    actionOnTrigger:"Hold FnF · Require HR BP approval",
+    severity:"violation", enabled:true, createdAt:"2022-10-01", updatedAt:"2026-01-05", createdBy:"system", aiGenerated:false, appliedCount:9, triggerCount:1 },
 ]
+
+export const policyRules: PolicyRule[] = _policyRuleSeeds.map(rule => ({
+  ...rule,
+  workflow: deriveWorkflow(rule),
+}))
 
 // ─── AI Insights ──────────────────────────────────────────────────────────────
 

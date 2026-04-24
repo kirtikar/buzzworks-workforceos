@@ -21,6 +21,18 @@ export type PortalSlug =
 
 export type PolicyRuleCategory = "hours" | "overtime" | "leave" | "attendance" | "payroll" | "compliance"
 
+// Workflow subfunction — what operational workflow the rule belongs to.
+// Orthogonal to category: a "payroll" category rule might belong to the
+// onboarding workflow (e.g., "bank details must exist before first payroll").
+export type PolicyWorkflow =
+  | "timesheet-validation"
+  | "onboarding"
+  | "leave-attendance"
+  | "payroll"
+  | "compliance"
+  | "exit"
+  | "fnf"
+
 export type JobCategory =
   | "Engineering" | "Design" | "Finance" | "Operations" | "Sales"
   | "HR" | "Marketing" | "Analytics" | "Healthcare" | "Legal"
@@ -137,6 +149,7 @@ export interface PolicyRule {
   id: string
   clientId: string
   category: PolicyRuleCategory
+  workflow?: PolicyWorkflow     // enriched at export time via deriveWorkflow()
   name: string
   description: string
   triggerCondition: string

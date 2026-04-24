@@ -476,7 +476,7 @@ export default function SettingsPage() {
           <div className="ml-auto flex items-center gap-2">
             <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--text-3)" }}>
               <Info size={12} />
-              OpsDesk v2.1.0 · JARVIS v2.1
+              Buzz Agent Dash v2.1.0 · JARVIS v2.1
             </div>
           </div>
         </header>
