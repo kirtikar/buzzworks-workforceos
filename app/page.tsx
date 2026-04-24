@@ -158,7 +158,7 @@ export default function DashboardPage() {
               Good morning, Riya
             </h1>
             <p className="text-sm mt-1" style={{ color: "var(--text-3)" }}>
-              April 2026 · {clients.length} clients · {APR_TOTAL_ITEMS.toLocaleString("en-IN")} ops cases resolved
+              April 2026 · {clients.length} clients · {APR_TOTAL_ITEMS.toLocaleString("en-IN")} ops cases auto-resolved
             </p>
           </div>
 

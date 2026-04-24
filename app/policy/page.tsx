@@ -224,11 +224,16 @@ function RuleCard({ rule, clientName, onToggle }: { rule: PolicyRule; clientName
 
       <button
         onClick={() => onToggle(rule.id)}
-        className="flex-shrink-0 mt-1 transition-colors"
-        style={{ color: rule.enabled ? catCfg.color : "var(--text-3)" }}
+        className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-medium transition-colors whitespace-nowrap"
+        style={{
+          background: rule.enabled ? `${catCfg.color}14` : "var(--surface-2)",
+          color:      rule.enabled ? catCfg.color : "var(--text-3)",
+          border:     `1px solid ${rule.enabled ? catCfg.color + "40" : "var(--border)"}`,
+        }}
         title={rule.enabled ? "Disable rule" : "Enable rule"}
       >
-        {rule.enabled ? <ToggleRight size={22} /> : <ToggleLeft size={22} />}
+        {rule.enabled ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+        {rule.enabled ? "Enabled" : "Disabled"}
       </button>
     </div>
   )

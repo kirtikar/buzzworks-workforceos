@@ -4,14 +4,14 @@ import { useState } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import {
-  ClipboardList, Scale, Mail, Send, Database,
+  ClipboardList, Scale, Mail, Send, Database, BookOpen,
   ArrowRight, Inbox, Brain, Zap, CheckCircle2,
   Monitor, BarChart3, Target, RotateCcw,
 } from "lucide-react"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type AgentCategory = "inspector" | "compliance" | "communication" | "data"
+type AgentCategory = "inspector" | "compliance" | "communication" | "data" | "policy"
 
 interface Agent {
   id:          string
@@ -63,19 +63,38 @@ const WORKFLOW_STEPS = [
 
 const AGENTS: Agent[] = [
   {
+    id:       "lexi",
+    name:     "LEXI",
+    initial:  "L",
+    acronym:  "Language Engine for eXecutable policy Interpretation",
+    category: "policy",
+    role:     "Reads policies in plain English and hands a machine-checkable spec to JARVIS",
+    description: "Ingests client policy docs, SOPs, onboarding contracts and ops SLAs in plain English. Classifies each clause into a workflow subfunction (timesheet validation / onboarding / leave & attendance / payroll / compliance / exit / FnF), infers category + severity, compiles trigger expressions and actions into structured rules, and ships them to JARVIS so every timesheet is checked against the latest policy. Ambiguous or contradictory clauses are routed to ops for review instead of silently guessed.",
+    color:    "#9333EA",
+    icon:     BookOpen,
+    capabilities: [
+      "LLM-powered policy parser (GPT-4o)",
+      "Workflow subfunction classification (7 types)",
+      "Category + severity inference",
+      "Trigger expression compilation",
+      "Ambiguity detection with human-in-the-loop queue",
+      "Zero-touch handoff to JARVIS for execution",
+    ],
+  },
+  {
     id:       "jarvis",
     name:     "JARVIS",
     initial:  "J",
     acronym:  "Just-in-time Automated Review & Validation Intelligence System",
     category: "inspector",
     role:     "Timesheet validation with autonomous reasoning and tool use",
-    description: "Validates every submission — portal, email, or manual — against client-specific policy rules. Reasons through edge cases, cross-checks OT pre-approvals, and auto-approves clean submissions without human intervention.",
+    description: "Validates every submission — portal, email, or manual — against the policy pack LEXI compiles for each client. Reasons through edge cases, cross-checks OT pre-approvals, and auto-approves clean submissions without human intervention.",
     color:    "#2563EB",
     icon:     ClipboardList,
     capabilities: [
       "Ingests across 10 HRMS platforms",
       "NLP email parsing (GPT-4o)",
-      "7-check policy validation",
+      "Executes LEXI-compiled policy packs",
       "Anomaly pattern detection",
       "Auto-approve at ≥95% confidence",
     ],
@@ -242,7 +261,7 @@ export default function AgentsPage() {
               Our Agentic System
             </h2>
             <p className="text-[13px] mt-1" style={{ color: "var(--text-3)" }}>
-              5 specialized agents collaborating autonomously across the ops pipeline
+              6 specialized agents collaborating autonomously across the ops pipeline
             </p>
           </div>
 
