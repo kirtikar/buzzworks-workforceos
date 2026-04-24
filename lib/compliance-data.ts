@@ -136,20 +136,22 @@ function weightedRandomDate(rng: () => number): Date {
 // Data pools for generation
 // ---------------------------------------------------------------------------
 
+// Aligned to the 11 managed-workforce clients in lib/mock-data.ts. Short
+// display names (what shows up on chips); full legal names live on the
+// Client record.
 const CLIENT_ROSTER = [
-  "Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company",
-  "TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech", "Wipro GE",
-  "Mindtree", "Capgemini", "MedSure Healthcare", "FinanceHub Ltd",
-  "GlobalStaff Solutions",
+  "Capgemini", "LTIMindtree", "Accenture", "Hexaware", "Virtusa",
+  "Cognizant", "PwC", "Amphenol Omniconnect", "Bahwan Cybertek",
+  "Winomechanic", "HMH Technology",
 ] as const
 
 const CLIENT_CATEGORIES: Record<string, readonly (typeof CLIENT_ROSTER[number])[]> = {
-  food:   ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket"],
-  it:     ["TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech", "Wipro GE", "Mindtree", "Capgemini"],
-  health: ["MedSure Healthcare", "Urban Company"],
-  fin:    ["FinanceHub Ltd", "GlobalStaff Solutions"],
-  gig:    ["Swiggy", "Zomato", "Urban Company", "BigBasket"],
-  all:    CLIENT_ROSTER,
+  it:      ["Capgemini", "LTIMindtree", "Hexaware", "Virtusa", "Cognizant", "Bahwan Cybertek", "HMH Technology"],
+  consult: ["Accenture", "PwC"],
+  mfg:     ["Amphenol Omniconnect", "Winomechanic"],
+  large:   ["Capgemini", "LTIMindtree", "Accenture", "Cognizant", "Hexaware", "Virtusa"],
+  small:   ["Amphenol Omniconnect", "Bahwan Cybertek", "Winomechanic", "HMH Technology"],
+  all:     CLIENT_ROSTER,
 }
 
 const CATEGORY_POOLS: Record<ComplianceCategory, {
@@ -231,7 +233,7 @@ const CATEGORY_POOLS: Record<ComplianceCategory, {
       "workplace ergonomics standards", "bio-medical waste management",
     ],
     impactAreas: ["Workplace Safety", "Compliance Management", "HR Operations", "Legal Documentation"],
-    clientGroup: "food",
+    clientGroup: "small",
     penaltyRange: [100000, 5000000],
     legalRisk: "high",
     operationalImpact: "high",
@@ -257,7 +259,7 @@ const CATEGORY_POOLS: Record<ComplianceCategory, {
       "organic certification framework", "country-of-origin labelling",
     ],
     impactAreas: ["Contract Management", "Compliance Management", "Legal Documentation", "Account Management"],
-    clientGroup: "food",
+    clientGroup: "small",
     penaltyRange: [10000, 200000],
     legalRisk: "medium",
     operationalImpact: "medium",
@@ -282,7 +284,7 @@ const CATEGORY_POOLS: Record<ComplianceCategory, {
       "investor grievance redressal", "listing obligation disclosures",
     ],
     impactAreas: ["Legal Documentation", "Compliance Management", "Account Management", "Contract Management"],
-    clientGroup: "fin",
+    clientGroup: "consult",
     penaltyRange: [50000, 2500000],
     legalRisk: "medium",
     operationalImpact: "low",
@@ -307,7 +309,7 @@ const CATEGORY_POOLS: Record<ComplianceCategory, {
       "NBFC prudential norms", "account aggregator framework",
     ],
     impactAreas: ["Compliance Management", "Legal Documentation", "Contract Management", "HR Operations"],
-    clientGroup: "gig",
+    clientGroup: "mfg",
     penaltyRange: [25000, 1000000],
     legalRisk: "medium",
     operationalImpact: "medium",
@@ -902,7 +904,7 @@ const FEATURED: Regulation[] = [
     actionRequired: true,
     sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
     sourceName: "EPFO Circulars",
-    clientsAffected: ["TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech", "Wipro GE"],
+    clientsAffected: ["Accenture", "Cognizant", "Hexaware", "LTIMindtree", "Virtusa"],
   },
   {
     id: 2,
@@ -926,7 +928,7 @@ const FEATURED: Regulation[] = [
     actionRequired: false,
     sourceUrl: "https://www.incometax.gov.in/iec/foportal/latest-updates",
     sourceName: "Income Tax Portal",
-    clientsAffected: ["TechCorp India", "Infosys BPM", "Hexaware", "L&T Infotech"],
+    clientsAffected: ["Accenture", "Cognizant", "Hexaware", "LTIMindtree"],
   },
   {
     id: 3,
@@ -952,7 +954,7 @@ const FEATURED: Regulation[] = [
     actionRequired: true,
     sourceUrl: "https://labour.karnataka.gov.in/english",
     sourceName: "Karnataka Labour Dept",
-    clientsAffected: ["Dine-In Brands", "Swiggy", "Urban Company", "Infosys BPM"],
+    clientsAffected: ["HMH Technology", "Bahwan Cybertek", "HMH Technology", "Cognizant"],
   },
   {
     id: 4,
@@ -977,7 +979,7 @@ const FEATURED: Regulation[] = [
     actionRequired: true,
     sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
     sourceName: "EPFO Circulars",
-    clientsAffected: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company"],
+    clientsAffected: ["HMH Technology", "Bahwan Cybertek", "Winomechanic", "Amphenol Omniconnect", "HMH Technology"],
   },
   {
     id: 5,
@@ -1002,7 +1004,7 @@ const FEATURED: Regulation[] = [
     actionRequired: true,
     sourceUrl: "https://incometaxindia.gov.in/Pages/communications/notifications.aspx",
     sourceName: "CBDT Notifications",
-    clientsAffected: ["TechCorp India", "Infosys BPM", "Wipro GE", "Hexaware", "L&T Infotech"],
+    clientsAffected: ["Accenture", "Cognizant", "Virtusa", "Hexaware", "LTIMindtree"],
   },
   {
     id: 6,
@@ -1027,7 +1029,7 @@ const FEATURED: Regulation[] = [
     actionRequired: true,
     sourceUrl: "https://mahakamgar.maharashtra.gov.in/",
     sourceName: "Maharashtra Labour Dept",
-    clientsAffected: ["Dine-In Brands", "MedSure Healthcare", "Capgemini"],
+    clientsAffected: ["HMH Technology", "Amphenol Omniconnect", "Capgemini"],
   },
   {
     id: 7,
@@ -1052,7 +1054,7 @@ const FEATURED: Regulation[] = [
     actionRequired: false,
     sourceUrl: "https://www.epfindia.gov.in/site_en/Circulars.php",
     sourceName: "EPFO Circulars",
-    clientsAffected: ["Swiggy", "Zomato", "Urban Company", "BigBasket"],
+    clientsAffected: ["Bahwan Cybertek", "Winomechanic", "HMH Technology", "Amphenol Omniconnect"],
   },
   {
     id: 8,
@@ -1077,7 +1079,7 @@ const FEATURED: Regulation[] = [
     actionRequired: true,
     sourceUrl: "https://labour.delhi.gov.in/content/circulars",
     sourceName: "Delhi Labour Dept",
-    clientsAffected: ["FinanceHub Ltd", "GlobalStaff Solutions"],
+    clientsAffected: ["PwC", "Virtusa"],
   },
   {
     id: 9,
@@ -1102,7 +1104,7 @@ const FEATURED: Regulation[] = [
     actionRequired: true,
     sourceUrl: "https://wcd.nic.in/act/sexual-harassment-women-workplace-prevention-prohibition-and-redressal-act-2013",
     sourceName: "Ministry of WCD",
-    clientsAffected: ["Dine-In Brands", "Swiggy", "Zomato", "BigBasket", "Urban Company", "TechCorp India", "Infosys BPM"],
+    clientsAffected: ["HMH Technology", "Bahwan Cybertek", "Winomechanic", "Amphenol Omniconnect", "HMH Technology", "Accenture", "Cognizant"],
   },
   {
     id: 10,
@@ -1127,7 +1129,7 @@ const FEATURED: Regulation[] = [
     actionRequired: true,
     sourceUrl: "https://labour.karnataka.gov.in/english",
     sourceName: "Karnataka Labour Dept",
-    clientsAffected: ["Infosys BPM", "Wipro GE", "Swiggy", "Urban Company"],
+    clientsAffected: ["Cognizant", "Virtusa", "Bahwan Cybertek", "HMH Technology"],
   },
 ]
 

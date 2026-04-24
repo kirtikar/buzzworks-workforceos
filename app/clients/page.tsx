@@ -193,8 +193,8 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
             <span>{fmtINR(client.monthlyPayroll)}/mo</span>
           </div>
           <div className="flex items-center gap-1.5">
-            {client.emailOnly ? (
-              <span className="flex items-center gap-1" style={{ color: "#A78BFA" }}><Mail size={11} />Email only</span>
+            {client.timesheetMethod === "manual" ? (
+              <span className="flex items-center gap-1" style={{ color: "#A78BFA" }}><Mail size={11} />Manual</span>
             ) : portal ? (
               <span className="flex items-center gap-1" style={{ color: portal.color }}>
                 <Globe size={11} />{portal.shortName}
@@ -246,10 +246,11 @@ export default function ClientsPage() {
     )
     if (selIndustries.length) list = list.filter(c => selIndustries.includes(c.industry as Industry))
     if (selRegions.length)    list = list.filter(c => selRegions.includes(c.state))
-    if (selPortals.length) list = list.filter(c =>
-      selPortals.includes("email") ? c.emailOnly : false ||
-      (c.portalId && selPortals.includes(c.portalId))
-    )
+    if (selPortals.length) list = list.filter(c => {
+      if (selPortals.includes("manual") && c.timesheetMethod === "manual") return true
+      if (c.portalId && selPortals.includes(c.portalId)) return true
+      return false
+    })
     list.sort((a, b) =>
       sortBy === "name"       ? a.name.localeCompare(b.name) :
       sortBy === "employees"  ? b.employeeCount - a.employeeCount :
@@ -264,7 +265,7 @@ export default function ClientsPage() {
   const industryOptions = INDUSTRIES.map(i => ({ value: i, label: i }))
   const portalOptions   = [
     ...portals.map(p => ({ value: p.id, label: p.shortName })),
-    { value: "email", label: "Email only" },
+    { value: "manual", label: "Manual (no portal)" },
   ]
   const regionOptions = useMemo(
     () => Array.from(new Set(clients.map(c => c.state))).sort().map(s => ({ value: s, label: s })),

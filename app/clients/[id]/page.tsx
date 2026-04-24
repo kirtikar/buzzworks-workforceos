@@ -750,8 +750,8 @@ export default function ClientDetailPage() {
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-[16px] font-bold text-white">{client.name}</h1>
                 <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "var(--surface-2)", color: "var(--text-2)" }}>{client.industry}</span>
-                {client.emailOnly ? (
-                  <span className="text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}><Mail size={10} />Email only</span>
+                {client.timesheetMethod === "manual" ? (
+                  <span className="text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB" }}><Mail size={10} />Manual</span>
                 ) : portal ? (
                   <span className="text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${portal.color}15`, color: portal.color }}><Globe size={10} />{portal.shortName}</span>
                 ) : null}

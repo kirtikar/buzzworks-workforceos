@@ -218,31 +218,17 @@ export function generateEmployeesForClient(
 
 export function clientEmailDomain(clientId: string): string {
   const domainMap: Record<string, string> = {
+    cap: "capgemini.com",
+    lmt: "ltimindtree.com",
+    acc: "accenture.com",
     hex: "hexaware.com",
-    ibp: "infosysbpm.com",
-    tci: "techcorp.in",
-    gss: "globalstaff.com",
-    fhl: "financehub.co",
-    msh: "medsure.health",
-    cgi: "capgemini.com",
-    wvl: "wipro.com",
-    cdg: "cognizant.com",
-    hhc: "hclhealthcare.com",
-    tes: "tataelxsi.com",
-    mpc: "mphasis.com",
-    nit: "niit.com",
-    mtd: "mastechdigital.com",
-    psy: "persistent.com",
-    zns: "zensar.com",
-    brl: "birlasoft.com",
-    snt: "sonatasoftware.com",
-    kpt: "kpit.com",
-    lti: "ltimindtree.com",
-    cyn: "cyient.com",
-    mnd: "mindtree.com",
-    ncs: "nucleussoftware.com",
-    ngs: "newgensoft.com",
-    idn: "intellectdesign.com",
+    vir: "virtusa.com",
+    cts: "cognizant.com",
+    pwc: "pwc.com",
+    aoc: "amphenol-omniconnect.com",
+    bct: "bahwancybertek.com",
+    wno: "winomechanic.com",
+    hmh: "hmhtech.com",
   }
   return domainMap[clientId] ?? `${clientId}.in`
 }
@@ -289,10 +275,10 @@ const VALIDATION_RULES = [
   { id: "r-dup",    cat: "Integrity", rule: "No duplicate submission" },
 ] as const
 
-const PORTAL_POOL: PortalSlug[] = [
-  "veltrix", "hrloop", "peoplehive", "orbithcm", "cloudspire",
-  "leafhr", "humanedge", "payaxis", "talentweave", "staffpulse",
-]
+// Only used for generated timesheets that arrive via a portal. For manual
+// clients, the generator picks source:"email" or "manual" elsewhere and
+// never calls this.
+const PORTAL_POOL: PortalSlug[] = ["fieldglass", "beeline"]
 
 function portalForClient(clientId: string): PortalSlug {
   const idx = hashStr(clientId) % PORTAL_POOL.length

@@ -15,9 +15,11 @@ export type Industry =
   | "Retail" | "Consulting" | "Fintech" | "AutoTech" | "IT Products"
   | "IT Design" | "IT Training" | "IT Staffing" | "Engineering"
 
-export type PortalSlug =
-  | "veltrix" | "hrloop" | "peoplehive" | "orbithcm" | "cloudspire"
-  | "leafhr" | "humanedge" | "payaxis" | "talentweave" | "staffpulse"
+export type PortalSlug = "fieldglass" | "beeline"
+
+// How a client's timesheets reach us. "portal" means we pull via a VMS /
+// HRMS sync; "manual" means ops types them in from email / PDF / sheet.
+export type TimesheetMethod = "portal" | "manual"
 
 export type PolicyRuleCategory = "hours" | "overtime" | "leave" | "attendance" | "payroll" | "compliance"
 
@@ -77,6 +79,7 @@ export interface Client {
   state: string
   employeeCount: number
   activeEmployeeCount: number
+  timesheetMethod: TimesheetMethod
   portalId?: PortalSlug
   portalName?: string
   policyVersion: string

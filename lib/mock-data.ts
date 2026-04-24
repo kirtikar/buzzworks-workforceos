@@ -90,282 +90,90 @@ export function derivePayGradeFields(input: {
   return { payGrade: `${band}${step}` as PayGrade, payMode, payRate }
 }
 
-// ─── Portals (10) ─────────────────────────────────────────────────────────────
+// ─── Portals (2, VMS integrations) ───────────────────────────────────────────
 
 export const portals: Portal[] = [
   {
-    id: "veltrix",
-    name: "Veltrix HCM",
-    shortName: "Veltrix",
-    tagline: "Velocity-driven HR lifecycle management",
-    color: "#FF6B35",
-    bgColor: "rgba(255,107,53,0.08)",
+    id: "fieldglass",
+    name: "SAP Fieldglass",
+    shortName: "Fieldglass",
+    tagline: "Enterprise VMS for contingent workforce and services procurement",
+    color: "#0070AD",
+    bgColor: "rgba(0,112,173,0.08)",
     status: "connected",
-    connectedClientIds: ["hex", "wvl", "psy"],
-    totalEmployees: 19800,
-    lastSyncAt: "2026-04-10T07:45:00Z",
-    nextSyncAt: "2026-04-10T08:00:00Z",
+    connectedClientIds: ["cap"],
+    totalEmployees: 8500,
+    lastSyncAt: "2026-04-24T06:30:00Z",
+    nextSyncAt: "2026-04-24T07:00:00Z",
     syncFrequency: "15min",
-    totalSyncedThisMonth: 1840,
+    totalSyncedThisMonth: 7840,
     pendingInQueue: 12,
     errorCount: 0,
-    apiVersion: "v3.1",
+    apiVersion: "v2024.1",
     webhookEnabled: true,
-    features: ["Real-time webhooks", "Bulk export", "Leave sync", "Shift roster", "Payslip push"],
+    features: [
+      "Contingent worker timesheets",
+      "Rate card enforcement",
+      "Statement of work approvals",
+      "Purchase order linkage",
+    ],
+    authMethod: "oauth2",
+    tier: "enterprise",
+    successRate: 99.7,
+    avgSyncMs: 240,
+  },
+  {
+    id: "beeline",
+    name: "BeeLine",
+    shortName: "BeeLine",
+    tagline: "Leading VMS for non-employee workforce management",
+    color: "#F4B400",
+    bgColor: "rgba(244,180,0,0.08)",
+    status: "connected",
+    connectedClientIds: ["acc", "pwc"],
+    totalEmployees: 14400,
+    lastSyncAt: "2026-04-24T06:15:00Z",
+    nextSyncAt: "2026-04-24T07:15:00Z",
+    syncFrequency: "1hr",
+    totalSyncedThisMonth: 13260,
+    pendingInQueue: 23,
+    errorCount: 2,
+    apiVersion: "v12",
+    webhookEnabled: true,
+    features: [
+      "Supplier & worker management",
+      "Approval workflows",
+      "Integrated invoicing",
+      "Assignment & rate governance",
+    ],
     authMethod: "oauth2",
     tier: "enterprise",
     successRate: 99.4,
-    avgSyncMs: 320,
-  },
-  {
-    id: "hrloop",
-    name: "HRLoop",
-    shortName: "HRLoop",
-    tagline: "Closed-loop HR & payroll automation",
-    color: "#00A86B",
-    bgColor: "rgba(0,168,107,0.08)",
-    status: "connected",
-    connectedClientIds: ["gss", "tes", "kpt"],
-    totalEmployees: 6300,
-    lastSyncAt: "2026-04-10T07:30:00Z",
-    nextSyncAt: "2026-04-10T08:30:00Z",
-    syncFrequency: "1hr",
-    totalSyncedThisMonth: 610,
-    pendingInQueue: 4,
-    errorCount: 1,
-    apiVersion: "v2.4",
-    webhookEnabled: true,
-    features: ["Auto-sync", "Leave integration", "Attendance import", "ESS portal"],
-    authMethod: "api_key",
-    tier: "business",
-    successRate: 98.7,
-    avgSyncMs: 480,
-  },
-  {
-    id: "peoplehive",
-    name: "PeopleHive",
-    shortName: "PeopleHive",
-    tagline: "Where teams grow together",
-    color: "#7B68EE",
-    bgColor: "rgba(123,104,238,0.08)",
-    status: "connected",
-    connectedClientIds: ["tci", "hhc", "zns"],
-    totalEmployees: 7200,
-    lastSyncAt: "2026-04-10T07:15:00Z",
-    nextSyncAt: "2026-04-10T08:15:00Z",
-    syncFrequency: "1hr",
-    totalSyncedThisMonth: 720,
-    pendingInQueue: 7,
-    errorCount: 0,
-    apiVersion: "v1.9",
-    webhookEnabled: true,
-    features: ["Smart timesheet", "Leave management", "Geo attendance", "Performance link"],
-    authMethod: "oauth2",
-    tier: "business",
-    successRate: 99.1,
-    avgSyncMs: 410,
-  },
-  {
-    id: "orbithcm",
-    name: "OrbitHCM",
-    shortName: "OrbitHCM",
-    tagline: "Enterprise-grade workforce management in orbit",
-    color: "#0070F3",
-    bgColor: "rgba(0,112,243,0.08)",
-    status: "connected",
-    connectedClientIds: ["ibp", "cdg", "mnd"],
-    totalEmployees: 29600,
-    lastSyncAt: "2026-04-10T07:00:00Z",
-    nextSyncAt: "2026-04-10T11:00:00Z",
-    syncFrequency: "4hr",
-    totalSyncedThisMonth: 2900,
-    pendingInQueue: 24,
-    errorCount: 2,
-    apiVersion: "v4.0",
-    webhookEnabled: false,
-    features: ["OData API", "Workforce analytics", "Global compliance", "EC integration"],
-    authMethod: "saml",
-    tier: "enterprise",
-    successRate: 97.8,
-    avgSyncMs: 1240,
-  },
-  {
-    id: "cloudspire",
-    name: "CloudSpire",
-    shortName: "CloudSpire",
-    tagline: "Cloud-native HCM built for enterprise scale",
-    color: "#F5A623",
-    bgColor: "rgba(245,166,35,0.08)",
-    status: "connected",
-    connectedClientIds: ["cgi", "lti"],
-    totalEmployees: 17700,
-    lastSyncAt: "2026-04-10T04:00:00Z",
-    nextSyncAt: "2026-04-11T04:00:00Z",
-    syncFrequency: "24hr",
-    totalSyncedThisMonth: 1680,
-    pendingInQueue: 30,
-    errorCount: 0,
-    apiVersion: "v38.2",
-    webhookEnabled: false,
-    features: ["SOAP/REST API", "Calculated fields", "Business process", "Reporting cloud"],
-    authMethod: "oauth2",
-    tier: "enterprise",
-    successRate: 99.8,
-    avgSyncMs: 1820,
-  },
-  {
-    id: "leafhr",
-    name: "LeafHR",
-    shortName: "LeafHR",
-    tagline: "Grow your people, naturally",
-    color: "#73C41D",
-    bgColor: "rgba(115,196,29,0.08)",
-    status: "connected",
-    connectedClientIds: ["mpc", "idn"],
-    totalEmployees: 5650,
-    lastSyncAt: "2026-04-10T06:00:00Z",
-    nextSyncAt: "2026-04-10T10:00:00Z",
-    syncFrequency: "4hr",
-    totalSyncedThisMonth: 540,
-    pendingInQueue: 3,
-    errorCount: 0,
-    apiVersion: "v1.0",
-    webhookEnabled: true,
-    features: ["Webhooks", "Open API", "eSignature", "Onboarding flows"],
-    authMethod: "api_key",
-    tier: "business",
-    successRate: 99.3,
-    avgSyncMs: 280,
-  },
-  {
-    id: "humanedge",
-    name: "HumanEdge",
-    shortName: "HumanEdge",
-    tagline: "People-powered productivity platform",
-    color: "#E42527",
-    bgColor: "rgba(228,37,39,0.08)",
-    status: "connected",
-    connectedClientIds: ["fhl", "mtd"],
-    totalEmployees: 1420,
-    lastSyncAt: "2026-04-10T07:00:00Z",
-    nextSyncAt: "2026-04-10T08:00:00Z",
-    syncFrequency: "1hr",
-    totalSyncedThisMonth: 140,
-    pendingInQueue: 2,
-    errorCount: 3,
-    apiVersion: "v2",
-    webhookEnabled: true,
-    features: ["REST API", "Biometric sync", "Leave automation", "Shift scheduling"],
-    authMethod: "oauth2",
-    tier: "starter",
-    successRate: 96.2,
-    avgSyncMs: 390,
-  },
-  {
-    id: "payaxis",
-    name: "PayAxis",
-    shortName: "PayAxis",
-    tagline: "Axis-point for payroll & workforce compliance",
-    color: "#D40000",
-    bgColor: "rgba(212,0,0,0.08)",
-    status: "connected",
-    connectedClientIds: ["brl"],
-    totalEmployees: 1650,
-    lastSyncAt: "2026-04-10T05:00:00Z",
-    nextSyncAt: "2026-04-11T05:00:00Z",
-    syncFrequency: "24hr",
-    totalSyncedThisMonth: 160,
-    pendingInQueue: 1,
-    errorCount: 0,
-    apiVersion: "v2.0",
-    webhookEnabled: false,
-    features: ["Open Marketplace API", "Tax compliance", "Direct deposit", "Labor analytics"],
-    authMethod: "oauth2",
-    tier: "enterprise",
-    successRate: 99.6,
-    avgSyncMs: 950,
-  },
-  {
-    id: "talentweave",
-    name: "TalentWeave",
-    shortName: "TalentWeave",
-    tagline: "AI-native HR woven for Asia-Pacific teams",
-    color: "#6C3AFF",
-    bgColor: "rgba(108,58,255,0.08)",
-    status: "syncing",
-    connectedClientIds: ["msh", "cyn"],
-    totalEmployees: 4120,
-    lastSyncAt: "2026-04-10T07:50:00Z",
-    nextSyncAt: "2026-04-10T08:50:00Z",
-    syncFrequency: "1hr",
-    totalSyncedThisMonth: 400,
-    pendingInQueue: 18,
-    errorCount: 1,
-    apiVersion: "v3.5",
-    webhookEnabled: true,
-    features: ["Multi-country", "Alt Workforce", "AI insights", "Compliance pack"],
-    authMethod: "api_key",
-    tier: "enterprise",
-    successRate: 98.1,
-    avgSyncMs: 560,
-  },
-  {
-    id: "staffpulse",
-    name: "StaffPulse",
-    shortName: "StaffPulse",
-    tagline: "Real-time pulse on your entire workforce",
-    color: "#00C4B4",
-    bgColor: "rgba(0,196,180,0.08)",
-    status: "connected",
-    connectedClientIds: ["nit", "snt", "ngs"],
-    totalEmployees: 2190,
-    lastSyncAt: "2026-04-10T07:00:00Z",
-    nextSyncAt: "2026-04-10T08:00:00Z",
-    syncFrequency: "1hr",
-    totalSyncedThisMonth: 210,
-    pendingInQueue: 5,
-    errorCount: 0,
-    apiVersion: "v1.3",
-    webhookEnabled: true,
-    features: ["Open REST API", "Attendance module", "Expense management", "Mobile app sync"],
-    authMethod: "api_key",
-    tier: "business",
-    successRate: 98.9,
     avgSyncMs: 310,
   },
 ]
 
-// ─── Clients (25) ─────────────────────────────────────────────────────────────
+// ─── Clients (11, real managed-workforce accounts) ───────────────────────────
+//
+// timesheetMethod + portalId match the authoritative client table (see
+// README). Portal clients integrate via Fieldglass or BeeLine VMS; manual
+// clients have no portal and are handled by ops via email / sheets.
 
 export const clients: Client[] = [
-  // ─ Large Enterprise (>5k employees) ────────────────────────────────────────
-  { id:"hex", name:"Hexaware Technologies",   code:"HEX", color:"#FF6B35", industry:"IT Services",  city:"Mumbai",     state:"Maharashtra",  employeeCount:12500, activeEmployeeCount:11800, portalId:"veltrix",   portalName:"Veltrix HCM",    policyVersion:"v4.2", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-04-01", contractEnd:"2027-03-31", accountManager:"Priya Shah",     billingCurrency:"INR", status:"active", monthlyPayroll:31200000, pendingTimesheets:87, complianceScore:94 },
-  { id:"ibp", name:"Infosys BPM",             code:"IBP", color:"#0070F3", industry:"IT Services",  city:"Pune",       state:"Maharashtra",  employeeCount:15000, activeEmployeeCount:14200, portalId:"orbithcm",   portalName:"OrbitHCM", policyVersion:"v5.0", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:24, contractStart:"2021-01-01", contractEnd:"2026-12-31", accountManager:"Rahul Mehta",    billingCurrency:"INR", status:"active", monthlyPayroll:48000000, pendingTimesheets:124, complianceScore:97 },
-  { id:"cgi", name:"Capgemini India",         code:"CGI", color:"#003189", industry:"IT Services",  city:"Chennai",    state:"Tamil Nadu",   employeeCount:8500,  activeEmployeeCount:8100,  portalId:"cloudspire", portalName:"CloudSpire",        policyVersion:"v3.8", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-01-01", contractEnd:"2027-12-31", accountManager:"Deepa Nair",     billingCurrency:"INR", status:"active", monthlyPayroll:24500000, pendingTimesheets:52, complianceScore:92 },
-  { id:"cdg", name:"Cognizant Digital",       code:"CDG", color:"#003DA5", industry:"IT Services",  city:"Chennai",    state:"Tamil Nadu",   employeeCount:6800,  activeEmployeeCount:6500,  portalId:"orbithcm",   portalName:"OrbitHCM", policyVersion:"v3.5", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.25,timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-07-01", contractEnd:"2027-06-30", accountManager:"Vikram Iyer",    billingCurrency:"INR", status:"active", monthlyPayroll:21000000, pendingTimesheets:63, complianceScore:90 },
-  { id:"lti", name:"L&T Infotech",            code:"LTI", color:"#009A44", industry:"IT Services",  city:"Mumbai",     state:"Maharashtra",  employeeCount:9200,  activeEmployeeCount:8900,  portalId:"cloudspire", portalName:"CloudSpire",        policyVersion:"v4.1", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2021-10-01", contractEnd:"2026-09-30", accountManager:"Anita Rao",      billingCurrency:"INR", status:"active", monthlyPayroll:28800000, pendingTimesheets:78, complianceScore:96 },
-  { id:"mnd", name:"Mindtree Ltd",            code:"MND", color:"#E94F37", industry:"IT Services",  city:"Bangalore",  state:"Karnataka",    employeeCount:7800,  activeEmployeeCount:7400,  portalId:"orbithcm",   portalName:"OrbitHCM", policyVersion:"v3.9", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-04-01", contractEnd:"2027-03-31", accountManager:"Arjun Sharma",   billingCurrency:"INR", status:"active", monthlyPayroll:26000000, pendingTimesheets:71, complianceScore:93 },
-  { id:"psy", name:"Persistent Systems",      code:"PSY", color:"#C4122F", industry:"IT Services",  city:"Pune",       state:"Maharashtra",  employeeCount:5100,  activeEmployeeCount:4900,  portalId:"veltrix",  portalName:"Veltrix HCM",    policyVersion:"v3.2", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-07-01", contractEnd:"2028-06-30", accountManager:"Kavya Reddy",    billingCurrency:"INR", status:"active", monthlyPayroll:17000000, pendingTimesheets:38, complianceScore:95 },
-  // ─ Mid-size (1k – 5k) ──────────────────────────────────────────────────────
-  { id:"tci", name:"TechCorp India",          code:"TCI", color:"#00D4A5", industry:"IT Services",  city:"Bangalore",  state:"Karnataka",    employeeCount:3200,  activeEmployeeCount:3050,  portalId:"peoplehive", portalName:"PeopleHive",            policyVersion:"v3.2", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-10-01", contractEnd:"2026-09-30", accountManager:"Siddharth Kirtikar",      billingCurrency:"INR", status:"active", monthlyPayroll:8640000,  pendingTimesheets:23, complianceScore:88 },
-  { id:"tes", name:"Tata Elxsi",              code:"TES", color:"#00358E", industry:"IT Design",    city:"Bangalore",  state:"Karnataka",    employeeCount:3400,  activeEmployeeCount:3250,  portalId:"hrloop",     portalName:"HRLoop",            policyVersion:"v2.8", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-01-01", contractEnd:"2026-12-31", accountManager:"Siddharth Kirtikar",      billingCurrency:"INR", status:"active", monthlyPayroll:9800000,  pendingTimesheets:29, complianceScore:91 },
-  { id:"mpc", name:"Mphasis Corp",            code:"MPC", color:"#CC0033", industry:"IT Services",  city:"Bangalore",  state:"Karnataka",    employeeCount:4200,  activeEmployeeCount:4000,  portalId:"leafhr",     portalName:"LeafHR",           policyVersion:"v2.5", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.25,timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-01-01", contractEnd:"2027-12-31", accountManager:"Deepa Nair",     billingCurrency:"INR", status:"active", monthlyPayroll:11200000, pendingTimesheets:35, complianceScore:89 },
-  { id:"cyn", name:"Cyient Ltd",              code:"CYN", color:"#5B2C8D", industry:"Engineering",  city:"Hyderabad",  state:"Telangana",    employeeCount:3700,  activeEmployeeCount:3550,  portalId:"talentweave",portalName:"TalentWeave",       policyVersion:"v2.1", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-10-01", contractEnd:"2027-09-30", accountManager:"Vikram Iyer",    billingCurrency:"INR", status:"active", monthlyPayroll:10600000, pendingTimesheets:41, complianceScore:87 },
-  { id:"wvl", name:"Wipro VLSI",              code:"WVL", color:"#341E8D", industry:"IT Services",  city:"Bangalore",  state:"Karnataka",    employeeCount:2100,  activeEmployeeCount:2020,  portalId:"veltrix",  portalName:"Veltrix HCM",    policyVersion:"v3.6", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-04-01", contractEnd:"2026-03-31", accountManager:"Anita Rao",      billingCurrency:"INR", status:"active", monthlyPayroll:6300000,  pendingTimesheets:18, complianceScore:93 },
-  { id:"zns", name:"Zensar Tech",             code:"ZNS", color:"#FF5722", industry:"IT Services",  city:"Pune",       state:"Maharashtra",  employeeCount:2800,  activeEmployeeCount:2650,  portalId:"peoplehive", portalName:"PeopleHive",            policyVersion:"v2.9", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-04-01", contractEnd:"2027-03-31", accountManager:"Rahul Mehta",    billingCurrency:"INR", status:"active", monthlyPayroll:7200000,  pendingTimesheets:27, complianceScore:86 },
-  { id:"brl", name:"Birlasoft Ltd",           code:"BRL", color:"#BE1622", industry:"IT Services",  city:"Noida",      state:"Uttar Pradesh",employeeCount:1650,  activeEmployeeCount:1580,  portalId:"payaxis",    portalName:"PayAxis",  policyVersion:"v2.3", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-01-01", contractEnd:"2027-12-31", accountManager:"Priya Shah",     billingCurrency:"INR", status:"active", monthlyPayroll:4800000,  pendingTimesheets:15, complianceScore:91 },
-  { id:"idn", name:"Intellect Design Arena",  code:"IDN", color:"#0099CC", industry:"Fintech",      city:"Chennai",    state:"Tamil Nadu",   employeeCount:1450,  activeEmployeeCount:1390,  portalId:"leafhr",     portalName:"LeafHR",           policyVersion:"v1.8", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-04-01", contractEnd:"2027-03-31", accountManager:"Arjun Sharma",   billingCurrency:"INR", status:"active", monthlyPayroll:4600000,  pendingTimesheets:12, complianceScore:90 },
-  { id:"kpt", name:"KPIT Technologies",       code:"KPT", color:"#009900", industry:"AutoTech",     city:"Pune",       state:"Maharashtra",  employeeCount:1100,  activeEmployeeCount:1060,  portalId:"hrloop",     portalName:"HRLoop",            policyVersion:"v2.0", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-07-01", contractEnd:"2027-06-30", accountManager:"Kavya Reddy",    billingCurrency:"INR", status:"active", monthlyPayroll:3700000,  pendingTimesheets:11, complianceScore:88 },
-  { id:"gss", name:"GlobalStaff Solutions",   code:"GSS", color:"#8B5CF6", industry:"Staffing",     city:"Mumbai",     state:"Maharashtra",  employeeCount:1800,  activeEmployeeCount:1720,  portalId:"hrloop",     portalName:"HRLoop",            policyVersion:"v2.0", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.25,timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-04-01", contractEnd:"2027-03-31", accountManager:"Siddharth Kirtikar",      billingCurrency:"INR", status:"active", monthlyPayroll:5400000,  pendingTimesheets:16, complianceScore:90 },
-  { id:"hhc", name:"HCL Healthcare",          code:"HHC", color:"#0079C1", industry:"Healthcare",   city:"Gurgaon",    state:"Haryana",      employeeCount:1200,  activeEmployeeCount:1150,  portalId:"peoplehive", portalName:"PeopleHive",            policyVersion:"v1.6", weeklyHoursLimit:48, dailyHoursLimit:12, overtimeMultiplier:2.0, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-01-01", contractEnd:"2027-12-31", accountManager:"Deepa Nair",     billingCurrency:"INR", status:"active", monthlyPayroll:4100000,  pendingTimesheets:14, complianceScore:85 },
-  // ─ Small (< 1k employees) ──────────────────────────────────────────────────
-  { id:"ngs", name:"Newgen Software",         code:"NGS", color:"#004990", industry:"IT Products",  city:"Noida",      state:"Uttar Pradesh",employeeCount:820,   activeEmployeeCount:800,   portalId:"staffpulse", portalName:"StaffPulse",              policyVersion:"v1.5", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-04-01", contractEnd:"2027-03-31", accountManager:"Rahul Mehta",    billingCurrency:"INR", status:"active", monthlyPayroll:2500000,  pendingTimesheets:8,  complianceScore:87 },
-  { id:"nit", name:"NIIT Technologies",       code:"NIT", color:"#E31837", industry:"IT Training",  city:"Noida",      state:"Uttar Pradesh",employeeCount:890,   activeEmployeeCount:860,   portalId:"staffpulse", portalName:"StaffPulse",              policyVersion:"v1.4", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-07-01", contractEnd:"2027-06-30", accountManager:"Priya Shah",     billingCurrency:"INR", status:"active", monthlyPayroll:2800000,  pendingTimesheets:9,  complianceScore:86 },
-  { id:"fhl", name:"FinanceHub Ltd",          code:"FHL", color:"#F59E0B", industry:"BFSI",         city:"Mumbai",     state:"Maharashtra",  employeeCount:750,   activeEmployeeCount:730,   portalId:"humanedge",  portalName:"HumanEdge",        policyVersion:"v4.1", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:0,   timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-10-01", contractEnd:"2026-09-30", accountManager:"Siddharth Kirtikar",      billingCurrency:"INR", status:"active", monthlyPayroll:2200000,  pendingTimesheets:6,  complianceScore:82 },
-  { id:"mtd", name:"Mastech Digital",         code:"MTD", color:"#0A84FF", industry:"IT Staffing",  city:"Hyderabad",  state:"Telangana",    employeeCount:670,   activeEmployeeCount:650,   portalId:"humanedge",  portalName:"HumanEdge",        policyVersion:"v1.3", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2025-01-01", contractEnd:"2027-12-31", accountManager:"Vikram Iyer",    billingCurrency:"INR", status:"active", monthlyPayroll:2000000,  pendingTimesheets:7,  complianceScore:89 },
-  { id:"snt", name:"Sonata Software",         code:"SNT", color:"#76B041", industry:"IT Services",  city:"Bangalore",  state:"Karnataka",    employeeCount:480,   activeEmployeeCount:468,   portalId:"staffpulse", portalName:"StaffPulse",              policyVersion:"v1.6", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-10-01", contractEnd:"2027-09-30", accountManager:"Kavya Reddy",    billingCurrency:"INR", status:"active", monthlyPayroll:1500000,  pendingTimesheets:5,  complianceScore:92 },
-  { id:"msh", name:"MedSure Health",          code:"MSH", color:"#FF6B6B", industry:"Healthcare",   city:"Hyderabad",  state:"Telangana",    employeeCount:420,   activeEmployeeCount:410,   portalId:"talentweave",portalName:"TalentWeave",       policyVersion:"v1.5", weeklyHoursLimit:48, dailyHoursLimit:12, overtimeMultiplier:2.0, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-01-01", contractEnd:"2027-12-31", accountManager:"Anita Rao",      billingCurrency:"INR", status:"active", monthlyPayroll:1600000,  pendingTimesheets:5,  complianceScore:84 },
-  { id:"ncs", name:"Nucleus Software",        code:"NCS", color:"#607D8B", industry:"BFSI",         city:"Noida",      state:"Uttar Pradesh",employeeCount:290,   activeEmployeeCount:282,   emailOnly:true, policyVersion:"v1.2",            weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5, timezone:"Asia/Kolkata", slaHours:72, contractStart:"2025-04-01", contractEnd:"2027-03-31", accountManager:"Rahul Mehta",    billingCurrency:"INR", status:"active", monthlyPayroll:920000,   pendingTimesheets:3,  complianceScore:79 },
+  // ─ Portal-integrated (Fieldglass / BeeLine) ────────────────────────────────
+  { id:"cap", name:"Capgemini Technology Services India Ltd.", code:"CAP", color:"#0070AD", industry:"IT Services", city:"Mumbai",    state:"Maharashtra",  employeeCount:8500, activeEmployeeCount:8100, timesheetMethod:"portal", portalId:"fieldglass", portalName:"SAP Fieldglass", policyVersion:"v4.2", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5,  timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-04-01", contractEnd:"2027-03-31", accountManager:"Priya Shah",        billingCurrency:"INR", status:"active", monthlyPayroll:30000000, pendingTimesheets:82, complianceScore:93 },
+  { id:"acc", name:"Accenture Limited",                         code:"ACC", color:"#A100FF", industry:"Consulting",  city:"Bangalore", state:"Karnataka",    employeeCount:12000,activeEmployeeCount:11500,timesheetMethod:"portal", portalId:"beeline",    portalName:"BeeLine VMS",    policyVersion:"v5.0", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.5,  timezone:"Asia/Kolkata", slaHours:24, contractStart:"2021-01-01", contractEnd:"2026-12-31", accountManager:"Rahul Mehta",       billingCurrency:"INR", status:"active", monthlyPayroll:42000000, pendingTimesheets:119,complianceScore:96 },
+  { id:"pwc", name:"PwC India",                                 code:"PWC", color:"#DC6B2F", industry:"Consulting",  city:"Mumbai",    state:"Maharashtra",  employeeCount:2400, activeEmployeeCount:2330, timesheetMethod:"portal", portalId:"beeline",    portalName:"BeeLine VMS",    policyVersion:"v3.5", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5,  timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-10-01", contractEnd:"2026-09-30", accountManager:"Deepa Nair",        billingCurrency:"INR", status:"active", monthlyPayroll:8500000,  pendingTimesheets:28, complianceScore:92 },
+
+  // ─ Manual (timesheets via email / sheet / PDF) ─────────────────────────────
+  { id:"lmt", name:"LTIMindtree Ltd.",                          code:"LMT", color:"#7F4DFF", industry:"IT Services", city:"Mumbai",    state:"Maharashtra",  employeeCount:4800, activeEmployeeCount:4600, timesheetMethod:"manual",                                                              policyVersion:"v4.1", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5,  timezone:"Asia/Kolkata", slaHours:48, contractStart:"2021-10-01", contractEnd:"2026-09-30", accountManager:"Anita Rao",         billingCurrency:"INR", status:"active", monthlyPayroll:15000000, pendingTimesheets:58, complianceScore:94 },
+  { id:"hex", name:"Hexaware Technologies Ltd.",                code:"HEX", color:"#FF6B35", industry:"IT Services", city:"Mumbai",    state:"Maharashtra",  employeeCount:3200, activeEmployeeCount:3080, timesheetMethod:"manual",                                                              policyVersion:"v3.6", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5,  timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-04-01", contractEnd:"2027-03-31", accountManager:"Priya Shah",        billingCurrency:"INR", status:"active", monthlyPayroll:10000000, pendingTimesheets:41, complianceScore:91 },
+  { id:"vir", name:"Virtusa Consulting Services Pvt. Ltd.",     code:"VIR", color:"#00A9E0", industry:"IT Services", city:"Hyderabad", state:"Telangana",    employeeCount:2800, activeEmployeeCount:2680, timesheetMethod:"manual",                                                              policyVersion:"v3.3", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5,  timezone:"Asia/Kolkata", slaHours:48, contractStart:"2023-04-01", contractEnd:"2027-03-31", accountManager:"Arjun Sharma",      billingCurrency:"INR", status:"active", monthlyPayroll:8000000,  pendingTimesheets:36, complianceScore:89 },
+  { id:"cts", name:"Cognizant Technology Solutions India Pvt. Ltd.", code:"CTS", color:"#1A5CA8", industry:"IT Services", city:"Chennai", state:"Tamil Nadu", employeeCount:9500, activeEmployeeCount:9050, timesheetMethod:"manual",                                                          policyVersion:"v4.0", weeklyHoursLimit:40, dailyHoursLimit:8,  overtimeMultiplier:1.25, timezone:"Asia/Kolkata", slaHours:48, contractStart:"2022-07-01", contractEnd:"2027-06-30", accountManager:"Vikram Iyer",       billingCurrency:"INR", status:"active", monthlyPayroll:32000000, pendingTimesheets:95, complianceScore:90 },
+  { id:"aoc", name:"Amphenol Omniconnect India Pvt. Ltd.",      code:"AOC", color:"#6B7280", industry:"Manufacturing",city:"Bangalore", state:"Karnataka",    employeeCount:680,  activeEmployeeCount:660,  timesheetMethod:"manual",                                                              policyVersion:"v2.4", weeklyHoursLimit:48, dailyHoursLimit:9,  overtimeMultiplier:2.0,  timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-01-01", contractEnd:"2027-12-31", accountManager:"Kavya Reddy",       billingCurrency:"INR", status:"active", monthlyPayroll:2500000,  pendingTimesheets:12, complianceScore:88 },
+  { id:"bct", name:"Bahwan Cybertek Pvt. Ltd.",                 code:"BCT", color:"#0A8B8F", industry:"IT Services", city:"Chennai",   state:"Tamil Nadu",   employeeCount:520,  activeEmployeeCount:505,  timesheetMethod:"manual",                                                              policyVersion:"v2.1", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5,  timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-04-01", contractEnd:"2027-03-31", accountManager:"Rahul Mehta",       billingCurrency:"INR", status:"active", monthlyPayroll:2000000,  pendingTimesheets:9,  complianceScore:87 },
+  { id:"wno", name:"Winomechanic Pvt. Ltd.",                    code:"WNO", color:"#7CB342", industry:"Engineering", city:"Pune",      state:"Maharashtra",  employeeCount:220,  activeEmployeeCount:215,  timesheetMethod:"manual",                                                              policyVersion:"v1.6", weeklyHoursLimit:48, dailyHoursLimit:9,  overtimeMultiplier:1.75, timezone:"Asia/Kolkata", slaHours:72, contractStart:"2024-07-01", contractEnd:"2027-06-30", accountManager:"Anita Rao",         billingCurrency:"INR", status:"active", monthlyPayroll:650000,   pendingTimesheets:4,  complianceScore:85 },
+  { id:"hmh", name:"HMH Technology Private Limited",            code:"HMH", color:"#00625F", industry:"IT Services", city:"Pune",      state:"Maharashtra",  employeeCount:310,  activeEmployeeCount:300,  timesheetMethod:"manual",                                                              policyVersion:"v1.8", weeklyHoursLimit:45, dailyHoursLimit:9,  overtimeMultiplier:1.5,  timezone:"Asia/Kolkata", slaHours:48, contractStart:"2024-10-01", contractEnd:"2027-09-30", accountManager:"Vikram Iyer",       billingCurrency:"INR", status:"active", monthlyPayroll:950000,   pendingTimesheets:5,  complianceScore:86 },
 ]
 
 // ─── Seed Employees (spread across key clients) ───────────────────────────────
@@ -374,29 +182,29 @@ type EmployeeSeed = Omit<Employee, "payGrade" | "payMode" | "payRate">
 
 const _employeeSeeds: EmployeeSeed[] = [
   // TCI - TechCorp India
-  { id:"emp001", employeeCode:"TCI0001", name:"Rahul Sharma",    email:"rahul.sharma@techcorp.in",        clientId:"tci", role:"Senior Developer",        jobCategory:"Engineering", department:"Engineering",       city:"Bangalore",  startDate:"2024-01-15", ratePerHour:500,  employmentStatus:"active",  avatarColor:"#00D4A5", managerEmail:"mgr@techcorp.in", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:5,usedSick:2,usedCasual:1} },
-  { id:"emp002", employeeCode:"TCI0002", name:"Priya Menon",     email:"priya.menon@techcorp.in",         clientId:"tci", role:"UX Designer",             jobCategory:"Design",      department:"Product & Design",  city:"Bangalore",  startDate:"2024-03-01", ratePerHour:450,  employmentStatus:"active",  avatarColor:"#8B5CF6", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:8,usedSick:3,usedCasual:2} },
-  { id:"emp003", employeeCode:"TCI0003", name:"Deepa Rao",       email:"deepa.rao@techcorp.in",           clientId:"tci", role:"Project Manager",         jobCategory:"PMO",         department:"PMO",               city:"Bangalore",  startDate:"2023-02-28", ratePerHour:700,  employmentStatus:"active",  avatarColor:"#F59E0B", managerEmail:"vp@techcorp.in", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:3,usedSick:0,usedCasual:1} },
+  { id:"emp001", employeeCode:"TCI0001", name:"Rahul Sharma",    email:"rahul.sharma@techcorp.in",        clientId:"acc", role:"Senior Developer",        jobCategory:"Engineering", department:"Engineering",       city:"Bangalore",  startDate:"2024-01-15", ratePerHour:500,  employmentStatus:"active",  avatarColor:"#00D4A5", managerEmail:"mgr@techcorp.in", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:5,usedSick:2,usedCasual:1} },
+  { id:"emp002", employeeCode:"TCI0002", name:"Priya Menon",     email:"priya.menon@techcorp.in",         clientId:"acc", role:"UX Designer",             jobCategory:"Design",      department:"Product & Design",  city:"Bangalore",  startDate:"2024-03-01", ratePerHour:450,  employmentStatus:"active",  avatarColor:"#8B5CF6", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:8,usedSick:3,usedCasual:2} },
+  { id:"emp003", employeeCode:"TCI0003", name:"Deepa Rao",       email:"deepa.rao@techcorp.in",           clientId:"acc", role:"Project Manager",         jobCategory:"PMO",         department:"PMO",               city:"Bangalore",  startDate:"2023-02-28", ratePerHour:700,  employmentStatus:"active",  avatarColor:"#F59E0B", managerEmail:"vp@techcorp.in", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:3,usedSick:0,usedCasual:1} },
   // GSS - GlobalStaff Solutions
-  { id:"emp004", employeeCode:"GSS0001", name:"Amit Verma",      email:"amit.verma@globalstaff.com",      clientId:"gss", role:"Business Analyst",        jobCategory:"Consulting",  department:"Consulting",        city:"Mumbai",     startDate:"2023-07-01", ratePerHour:600,  employmentStatus:"active",  avatarColor:"#00D4A5", managerEmail:"lead@globalstaff.com", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:12,usedSick:1,usedCasual:3} },
-  { id:"emp005", employeeCode:"GSS0002", name:"Arjun Kumar",     email:"arjun.kumar@globalstaff.com",     clientId:"gss", role:"Full Stack Developer",    jobCategory:"Engineering", department:"Engineering",       city:"Mumbai",     startDate:"2024-04-15", ratePerHour:480,  employmentStatus:"active",  avatarColor:"#3B82F6", managerEmail:"lead@globalstaff.com", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:1,usedSick:0,usedCasual:0} },
+  { id:"emp004", employeeCode:"GSS0001", name:"Amit Verma",      email:"amit.verma@globalstaff.com",      clientId:"vir", role:"Business Analyst",        jobCategory:"Consulting",  department:"Consulting",        city:"Mumbai",     startDate:"2023-07-01", ratePerHour:600,  employmentStatus:"active",  avatarColor:"#00D4A5", managerEmail:"lead@globalstaff.com", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:12,usedSick:1,usedCasual:3} },
+  { id:"emp005", employeeCode:"GSS0002", name:"Arjun Kumar",     email:"arjun.kumar@globalstaff.com",     clientId:"vir", role:"Full Stack Developer",    jobCategory:"Engineering", department:"Engineering",       city:"Mumbai",     startDate:"2024-04-15", ratePerHour:480,  employmentStatus:"active",  avatarColor:"#3B82F6", managerEmail:"lead@globalstaff.com", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:1,usedSick:0,usedCasual:0} },
   // FHL - FinanceHub Ltd
-  { id:"emp006", employeeCode:"FHL0001", name:"Neha Gupta",      email:"neha.gupta@financehub.co",        clientId:"fhl", role:"Financial Analyst",       jobCategory:"Finance",     department:"Finance",           city:"Mumbai",     startDate:"2022-11-15", ratePerHour:550,  employmentStatus:"active",  avatarColor:"#F59E0B", leaveBalance:{annual:24,sick:14,casual:10,usedAnnual:18,usedSick:5,usedCasual:4} },
-  { id:"emp007", employeeCode:"FHL0002", name:"Sonia Das",       email:"sonia.das@financehub.co",         clientId:"fhl", role:"Senior Accountant",       jobCategory:"Finance",     department:"Finance",           city:"Mumbai",     startDate:"2021-08-01", ratePerHour:520,  employmentStatus:"notice",  avatarColor:"#EC4899", leaveBalance:{annual:24,sick:14,casual:10,usedAnnual:22,usedSick:8,usedCasual:7} },
+  { id:"emp006", employeeCode:"FHL0001", name:"Neha Gupta",      email:"neha.gupta@financehub.co",        clientId:"pwc", role:"Financial Analyst",       jobCategory:"Finance",     department:"Finance",           city:"Mumbai",     startDate:"2022-11-15", ratePerHour:550,  employmentStatus:"active",  avatarColor:"#F59E0B", leaveBalance:{annual:24,sick:14,casual:10,usedAnnual:18,usedSick:5,usedCasual:4} },
+  { id:"emp007", employeeCode:"FHL0002", name:"Sonia Das",       email:"sonia.das@financehub.co",         clientId:"pwc", role:"Senior Accountant",       jobCategory:"Finance",     department:"Finance",           city:"Mumbai",     startDate:"2021-08-01", ratePerHour:520,  employmentStatus:"notice",  avatarColor:"#EC4899", leaveBalance:{annual:24,sick:14,casual:10,usedAnnual:22,usedSick:8,usedCasual:7} },
   // MSH - MedSure Health
-  { id:"emp008", employeeCode:"MSH0001", name:"Vikram Singh",    email:"vikram.singh@medsure.health",     clientId:"msh", role:"Healthcare Coordinator",  jobCategory:"Healthcare",  department:"Clinical Services", city:"Hyderabad",  startDate:"2024-06-01", ratePerHour:400,  employmentStatus:"active",  avatarColor:"#FF6B6B", leaveBalance:{annual:18,sick:15,casual:6,usedAnnual:2,usedSick:4,usedCasual:0} },
+  { id:"emp008", employeeCode:"MSH0001", name:"Vikram Singh",    email:"vikram.singh@medsure.health",     clientId:"aoc", role:"Healthcare Coordinator",  jobCategory:"Healthcare",  department:"Clinical Services", city:"Hyderabad",  startDate:"2024-06-01", ratePerHour:400,  employmentStatus:"active",  avatarColor:"#FF6B6B", leaveBalance:{annual:18,sick:15,casual:6,usedAnnual:2,usedSick:4,usedCasual:0} },
   // HEX - Hexaware Technologies
   { id:"emp009", employeeCode:"HEX0001", name:"Kavya Reddy",     email:"kavya.reddy@hexaware.com",        clientId:"hex", role:"Cloud Architect",         jobCategory:"Engineering", department:"Engineering",       city:"Mumbai",     startDate:"2022-06-01", ratePerHour:950,  employmentStatus:"active",  avatarColor:"#FF6B35", managerEmail:"director@hexaware.com", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:6,usedSick:1,usedCasual:2} },
   { id:"emp010", employeeCode:"HEX0002", name:"Suresh Nair",     email:"suresh.nair@hexaware.com",        clientId:"hex", role:"Data Scientist",          jobCategory:"Analytics",   department:"Data & Analytics",  city:"Mumbai",     startDate:"2023-03-15", ratePerHour:800,  employmentStatus:"active",  avatarColor:"#10B981", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:4,usedSick:2,usedCasual:1} },
   // IBP - Infosys BPM
-  { id:"emp011", employeeCode:"IBP0001", name:"Anita Joshi",     email:"anita.joshi@infosysbpm.com",      clientId:"ibp", role:"Operations Manager",      jobCategory:"Operations",  department:"Operations",        city:"Pune",       startDate:"2021-09-01", ratePerHour:650,  employmentStatus:"active",  avatarColor:"#0070F3", managerEmail:"vp@infosysbpm.com", leaveBalance:{annual:24,sick:14,casual:10,usedAnnual:10,usedSick:3,usedCasual:4} },
-  { id:"emp012", employeeCode:"IBP0002", name:"Rajesh Pillai",   email:"rajesh.pillai@infosysbpm.com",    clientId:"ibp", role:"Process Lead",            jobCategory:"Operations",  department:"Operations",        city:"Pune",       startDate:"2022-01-15", ratePerHour:580,  employmentStatus:"active",  avatarColor:"#6366F1", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:7,usedSick:1,usedCasual:2} },
+  { id:"emp011", employeeCode:"IBP0001", name:"Anita Joshi",     email:"anita.joshi@infosysbpm.com",      clientId:"cts", role:"Operations Manager",      jobCategory:"Operations",  department:"Operations",        city:"Pune",       startDate:"2021-09-01", ratePerHour:650,  employmentStatus:"active",  avatarColor:"#0070F3", managerEmail:"vp@infosysbpm.com", leaveBalance:{annual:24,sick:14,casual:10,usedAnnual:10,usedSick:3,usedCasual:4} },
+  { id:"emp012", employeeCode:"IBP0002", name:"Rajesh Pillai",   email:"rajesh.pillai@infosysbpm.com",    clientId:"cts", role:"Process Lead",            jobCategory:"Operations",  department:"Operations",        city:"Pune",       startDate:"2022-01-15", ratePerHour:580,  employmentStatus:"active",  avatarColor:"#6366F1", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:7,usedSick:1,usedCasual:2} },
   // NCS - Nucleus Software (email only)
-  { id:"emp013", employeeCode:"NCS0001", name:"Mohan Tripathi",  email:"mohan.tripathi@nucleussoftware.com", clientId:"ncs", role:"Legal Analyst",       jobCategory:"Legal",       department:"Legal & Compliance",city:"Noida",      startDate:"2023-05-01", ratePerHour:700,  employmentStatus:"active",  avatarColor:"#607D8B", managerEmail:"gm@nucleussoftware.com", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:3,usedSick:1,usedCasual:0} },
+  { id:"emp013", employeeCode:"NCS0001", name:"Mohan Tripathi",  email:"mohan.tripathi@nucleussoftware.com", clientId:"bct", role:"Legal Analyst",       jobCategory:"Legal",       department:"Legal & Compliance",city:"Noida",      startDate:"2023-05-01", ratePerHour:700,  employmentStatus:"active",  avatarColor:"#607D8B", managerEmail:"gm@nucleussoftware.com", leaveBalance:{annual:18,sick:10,casual:6,usedAnnual:3,usedSick:1,usedCasual:0} },
   // CGI - Capgemini India
-  { id:"emp014", employeeCode:"CGI0001", name:"Divya Krishnan",  email:"divya.krishnan@capgemini.com",    clientId:"cgi", role:"Principal Consultant",    jobCategory:"Consulting",  department:"Consulting",        city:"Chennai",    startDate:"2020-11-01", ratePerHour:1100, employmentStatus:"active",  avatarColor:"#003189", managerEmail:"partner@capgemini.com", leaveBalance:{annual:24,sick:14,casual:10,usedAnnual:15,usedSick:2,usedCasual:5} },
+  { id:"emp014", employeeCode:"CGI0001", name:"Divya Krishnan",  email:"divya.krishnan@capgemini.com",    clientId:"cap", role:"Principal Consultant",    jobCategory:"Consulting",  department:"Consulting",        city:"Chennai",    startDate:"2020-11-01", ratePerHour:1100, employmentStatus:"active",  avatarColor:"#003189", managerEmail:"partner@capgemini.com", leaveBalance:{annual:24,sick:14,casual:10,usedAnnual:15,usedSick:2,usedCasual:5} },
   // LTI - L&T Infotech
-  { id:"emp015", employeeCode:"LTI0001", name:"Ravi Menon",      email:"ravi.menon@ltimindtree.com",      clientId:"lti", role:"Tech Lead",               jobCategory:"Engineering", department:"Engineering",       city:"Mumbai",     startDate:"2022-03-01", ratePerHour:850,  employmentStatus:"active",  avatarColor:"#009A44", managerEmail:"mgr@ltimindtree.com", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:8,usedSick:2,usedCasual:3} },
+  { id:"emp015", employeeCode:"LTI0001", name:"Ravi Menon",      email:"ravi.menon@ltimindtree.com",      clientId:"lmt", role:"Tech Lead",               jobCategory:"Engineering", department:"Engineering",       city:"Mumbai",     startDate:"2022-03-01", ratePerHour:850,  employmentStatus:"active",  avatarColor:"#009A44", managerEmail:"mgr@ltimindtree.com", leaveBalance:{annual:21,sick:12,casual:8,usedAnnual:8,usedSick:2,usedCasual:3} },
 ]
 
 export const employees: Employee[] = _employeeSeeds.map(e => ({
@@ -408,9 +216,9 @@ export const employees: Employee[] = _employeeSeeds.map(e => ({
 
 export const timesheets: Timesheet[] = [
   {
-    id:"ts001", employeeId:"emp001", clientId:"tci",
+    id:"ts001", employeeId:"emp001", clientId:"acc",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
-    submittedAt:"2026-04-07T09:23:00Z", source:"portal", sourceDetail:"PeopleHive", portalId:"peoplehive",
+    submittedAt:"2026-04-07T09:23:00Z", source:"portal", sourceDetail:"PeopleHive", portalId:"fieldglass",
     status:"flagged", totalHours:52, regularHours:40, overtimeHours:12, leaveHours:0,
     totalPayable:29000, validationScore:62, aiConfidence:44,
     dailyEntries:[
@@ -431,7 +239,7 @@ export const timesheets: Timesheet[] = [
     flaggedBy:"ai",
   },
   {
-    id:"ts002", employeeId:"emp002", clientId:"tci",
+    id:"ts002", employeeId:"emp002", clientId:"acc",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
     submittedAt:"2026-04-06T14:11:00Z", source:"email",
     sourceDetail:"candidatemanager@buzzworks.com",
@@ -454,9 +262,9 @@ export const timesheets: Timesheet[] = [
     ],
   },
   {
-    id:"ts003", employeeId:"emp004", clientId:"gss",
+    id:"ts003", employeeId:"emp004", clientId:"vir",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
-    submittedAt:"2026-04-07T11:05:00Z", source:"portal", sourceDetail:"HRLoop", portalId:"hrloop",
+    submittedAt:"2026-04-07T11:05:00Z", source:"portal", sourceDetail:"HRLoop", portalId:"beeline",
     status:"approved", totalHours:45, regularHours:45, overtimeHours:0, leaveHours:0,
     totalPayable:27000, validationScore:100, aiConfidence:97,
     dailyEntries:[
@@ -475,7 +283,7 @@ export const timesheets: Timesheet[] = [
     approvedBy:"Siddharth Kirtikar (Ops)", approvedAt:"2026-04-08T10:00:00Z",
   },
   {
-    id:"ts004", employeeId:"emp006", clientId:"fhl",
+    id:"ts004", employeeId:"emp006", clientId:"pwc",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
     submittedAt:"2026-04-05T08:30:00Z", source:"email",
     sourceDetail:"candidatemanager@buzzworks.com",
@@ -500,9 +308,9 @@ export const timesheets: Timesheet[] = [
     flaggedBy:"system",
   },
   {
-    id:"ts005", employeeId:"emp008", clientId:"msh",
+    id:"ts005", employeeId:"emp008", clientId:"aoc",
     period:"Mar 31 – Apr 6, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-06",
-    submittedAt:"2026-04-08T07:15:00Z", source:"portal", sourceDetail:"TalentWeave", portalId:"talentweave",
+    submittedAt:"2026-04-08T07:15:00Z", source:"portal", sourceDetail:"TalentWeave", portalId:"fieldglass",
     status:"pending", totalHours:60, regularHours:48, overtimeHours:12, leaveHours:0,
     totalPayable:33600, validationScore:78, aiConfidence:73,
     dailyEntries:[
@@ -522,7 +330,7 @@ export const timesheets: Timesheet[] = [
     ],
   },
   {
-    id:"ts006", employeeId:"emp003", clientId:"tci",
+    id:"ts006", employeeId:"emp003", clientId:"acc",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
     submittedAt:"2026-04-09T10:30:00Z", source:"email",
     sourceDetail:"candidatemanager@buzzworks.com",
@@ -547,7 +355,7 @@ export const timesheets: Timesheet[] = [
   {
     id:"ts007", employeeId:"emp009", clientId:"hex",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
-    submittedAt:"2026-04-07T12:00:00Z", source:"portal", sourceDetail:"Veltrix HCM", portalId:"veltrix",
+    submittedAt:"2026-04-07T12:00:00Z", source:"portal", sourceDetail:"Veltrix HCM", portalId:"fieldglass",
     status:"approved", totalHours:45, regularHours:45, overtimeHours:0, leaveHours:0,
     totalPayable:42750, validationScore:100, aiConfidence:99,
     dailyEntries:[
@@ -564,7 +372,7 @@ export const timesheets: Timesheet[] = [
     approvedBy:"Siddharth Kirtikar (Ops)", approvedAt:"2026-04-09T09:00:00Z",
   },
   {
-    id:"ts008", employeeId:"emp013", clientId:"ncs",
+    id:"ts008", employeeId:"emp013", clientId:"bct",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
     submittedAt:"2026-04-09T09:00:00Z", source:"email",
     sourceDetail:"candidatemanager@buzzworks.com",
@@ -589,7 +397,7 @@ export const timesheets: Timesheet[] = [
   {
     id:"ts009", employeeId:"emp010", clientId:"hex",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
-    submittedAt:"2026-04-07T08:10:00Z", source:"portal", sourceDetail:"Veltrix HCM", portalId:"veltrix",
+    submittedAt:"2026-04-07T08:10:00Z", source:"portal", sourceDetail:"Veltrix HCM", portalId:"fieldglass",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:32000, validationScore:100, aiConfidence:98,
     approvedBy:"JARVIS", approvedAt:"2026-04-07T08:11:42Z",
@@ -610,9 +418,9 @@ export const timesheets: Timesheet[] = [
     ],
   },
   {
-    id:"ts010", employeeId:"emp012", clientId:"ibp",
+    id:"ts010", employeeId:"emp012", clientId:"cts",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
-    submittedAt:"2026-04-07T09:00:00Z", source:"portal", sourceDetail:"OrbitHCM", portalId:"orbithcm",
+    submittedAt:"2026-04-07T09:00:00Z", source:"portal", sourceDetail:"OrbitHCM", portalId:"beeline",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:23200, validationScore:100, aiConfidence:99,
     approvedBy:"JARVIS", approvedAt:"2026-04-07T09:01:18Z",
@@ -633,9 +441,9 @@ export const timesheets: Timesheet[] = [
     ],
   },
   {
-    id:"ts011", employeeId:"emp003", clientId:"tci",
+    id:"ts011", employeeId:"emp003", clientId:"acc",
     period:"Mar 24 – Mar 28, 2026", periodStart:"2026-03-24", periodEnd:"2026-03-28",
-    submittedAt:"2026-03-31T08:45:00Z", source:"portal", sourceDetail:"PeopleHive", portalId:"peoplehive",
+    submittedAt:"2026-03-31T08:45:00Z", source:"portal", sourceDetail:"PeopleHive", portalId:"fieldglass",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:28000, validationScore:100, aiConfidence:97,
     approvedBy:"JARVIS", approvedAt:"2026-03-31T08:46:55Z",
@@ -656,9 +464,9 @@ export const timesheets: Timesheet[] = [
     ],
   },
   {
-    id:"ts012", employeeId:"emp001", clientId:"tci",
+    id:"ts012", employeeId:"emp001", clientId:"acc",
     period:"Mar 17 – Mar 21, 2026", periodStart:"2026-03-17", periodEnd:"2026-03-21",
-    submittedAt:"2026-03-24T07:58:00Z", source:"portal", sourceDetail:"PeopleHive", portalId:"peoplehive",
+    submittedAt:"2026-03-24T07:58:00Z", source:"portal", sourceDetail:"PeopleHive", portalId:"fieldglass",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:20000, validationScore:100, aiConfidence:99,
     approvedBy:"JARVIS", approvedAt:"2026-03-24T07:59:12Z",
@@ -680,9 +488,9 @@ export const timesheets: Timesheet[] = [
     ],
   },
   {
-    id:"ts013", employeeId:"emp005", clientId:"gss",
+    id:"ts013", employeeId:"emp005", clientId:"vir",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
-    submittedAt:"2026-04-07T08:33:00Z", source:"portal", sourceDetail:"HRLoop", portalId:"hrloop",
+    submittedAt:"2026-04-07T08:33:00Z", source:"portal", sourceDetail:"HRLoop", portalId:"beeline",
     status:"approved", totalHours:45, regularHours:40, overtimeHours:5, leaveHours:0,
     totalPayable:28800, validationScore:98, aiConfidence:97,
     approvedBy:"JARVIS", approvedAt:"2026-04-07T08:34:51Z",
@@ -703,9 +511,9 @@ export const timesheets: Timesheet[] = [
     ],
   },
   {
-    id:"ts014", employeeId:"emp014", clientId:"cgi",
+    id:"ts014", employeeId:"emp014", clientId:"cap",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
-    submittedAt:"2026-04-07T06:15:00Z", source:"portal", sourceDetail:"CloudSpire", portalId:"cloudspire",
+    submittedAt:"2026-04-07T06:15:00Z", source:"portal", sourceDetail:"CloudSpire", portalId:"fieldglass",
     status:"approved", totalHours:40, regularHours:40, overtimeHours:0, leaveHours:0,
     totalPayable:44000, validationScore:100, aiConfidence:100,
     approvedBy:"JARVIS", approvedAt:"2026-04-07T06:15:38Z",
@@ -727,7 +535,7 @@ export const timesheets: Timesheet[] = [
     ],
   },
   {
-    id:"ts015", employeeId:"emp015", clientId:"lti",
+    id:"ts015", employeeId:"emp015", clientId:"lmt",
     period:"Mar 31 – Apr 4, 2026", periodStart:"2026-03-31", periodEnd:"2026-04-04",
     submittedAt:"2026-04-07T09:20:00Z", source:"email", sourceDetail:"candidatemanager@buzzworks.com",
     status:"approved", totalHours:45, regularHours:40, overtimeHours:5, leaveHours:0,
@@ -759,13 +567,13 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // CEE-001 · Contract Expiry Enforcement
   // IF current_date > contract_end_date → Auto-reject timesheet, Salary HOLD, Notify HR + Manager
-  { id:"pol-cee-001", clientId:"tci", category:"compliance", name:"Contract Expiry Enforcement",
+  { id:"pol-cee-001", clientId:"acc", category:"compliance", name:"Contract Expiry Enforcement",
     description:"If the current date exceeds the employee's contract end date, the timesheet is auto-rejected, salary is placed on hold (code EXT-002), and HR + manager are notified immediately. No manual override without a contract renewal confirmation.",
     triggerCondition:"current_date > contract_end_date",
     actionOnTrigger:"Auto-reject timesheet · Salary HOLD (EXT-002) · Notify HR + Manager",
     severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-06-01", createdBy:"system", aiGenerated:false, appliedCount:8, triggerCount:8 },
 
-  { id:"pol-cee-002", clientId:"fhl", category:"compliance", name:"Contract Expiry Enforcement",
+  { id:"pol-cee-002", clientId:"pwc", category:"compliance", name:"Contract Expiry Enforcement",
     description:"Timesheets submitted after contract_end_date are auto-rejected. Salary hold placed (EXT-002). FHL finance team notified within 1 hour.",
     triggerCondition:"current_date > contract_end_date",
     actionOnTrigger:"Auto-reject · Salary HOLD (EXT-002) · Alert finance@financehub.co",
@@ -779,13 +587,13 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // PRP-002 · Payment Readiness Policy
   // IF bank_account_no OR ifsc_code missing → Salary HOLD, Notify employee
-  { id:"pol-prp-001", clientId:"tci", category:"payroll", name:"Payment Readiness — Bank Details",
+  { id:"pol-prp-001", clientId:"acc", category:"payroll", name:"Payment Readiness — Bank Details",
     description:"Payroll cannot be released if bank_account_no or ifsc_code is missing or fails IFSC checksum validation. Salary hold placed (code PRP-002). Employee notified via email to update details in portal.",
     triggerCondition:"bank_account_no IS NULL OR ifsc_code IS NULL OR ifsc_validate(ifsc_code) = false",
     actionOnTrigger:"Salary HOLD (PRP-002) · Email employee to update bank details · Block payroll batch",
     severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2024-09-01", createdBy:"system", aiGenerated:false, appliedCount:24, triggerCount:3 },
 
-  { id:"pol-prp-002", clientId:"gss", category:"payroll", name:"Payment Readiness — Bank Details",
+  { id:"pol-prp-002", clientId:"vir", category:"payroll", name:"Payment Readiness — Bank Details",
     description:"GSS employees must have verified bank account and IFSC on file before the payroll cut-off date. Missing or unverified details trigger hold.",
     triggerCondition:"bank_account_no IS NULL OR ifsc_code IS NULL",
     actionOnTrigger:"Salary HOLD (PRP-002) · Notify employee + GSS HR lead",
@@ -793,7 +601,7 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // WOV-003 · Work Order Validation Policy
   // IF work_order_no is null → Mark as non-billable, Salary HOLD
-  { id:"pol-wov-001", clientId:"lti", category:"payroll", name:"Work Order Validation",
+  { id:"pol-wov-001", clientId:"lmt", category:"payroll", name:"Work Order Validation",
     description:"Every billable employee must have an active, non-expired Work Order number on file. If work_order_no is null or expired, the employee is flagged as non-billable and salary is held pending WO confirmation from the client's procurement team.",
     triggerCondition:"work_order_no IS NULL OR work_order_status = 'expired'",
     actionOnTrigger:"Flag as non-billable · Salary HOLD (WOV-003) · Notify AM + LTI procurement",
@@ -807,13 +615,13 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // PEP-004 · Payroll Eligibility Policy (CORE)
   // Eligible ONLY IF: is_active AND contract active AND work_order exists AND no violations AND manager approved
-  { id:"pol-pep-001", clientId:"tci", category:"payroll", name:"Payroll Eligibility Gate (Core)",
+  { id:"pol-pep-001", clientId:"acc", category:"payroll", name:"Payroll Eligibility Gate (Core)",
     description:"Composite gate: employee must satisfy ALL five conditions before entering payroll queue — (1) is_active = true, (2) contract_end_date ≥ today, (3) work_order is valid and non-expired, (4) no unresolved policy violations on current timesheet, (5) manager has approved or JARVIS has auto-approved.",
     triggerCondition:"is_active = false OR contract_expired OR work_order_invalid OR open_violations > 0 OR !manager_approved",
     actionOnTrigger:"Block payroll entry · Surface failed gate(s) to ops · Salary HOLD until all conditions met",
     severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-03-01", createdBy:"system", aiGenerated:false, appliedCount:156, triggerCount:12 },
 
-  { id:"pol-pep-002", clientId:"ibp", category:"payroll", name:"Payroll Eligibility Gate (Core)",
+  { id:"pol-pep-002", clientId:"cts", category:"payroll", name:"Payroll Eligibility Gate (Core)",
     description:"IBP composite payroll gate: is_active + contract + work_order + zero violations + manager/agent approval. IBP requires 24h SLA on manager approval; auto-escalation if overdue.",
     triggerCondition:"is_active = false OR contract_expired OR work_order_invalid OR open_violations > 0 OR !manager_approved",
     actionOnTrigger:"Block payroll · List failed conditions · Auto-escalate if manager overdue > 24h",
@@ -827,7 +635,7 @@ const _policyRuleSeeds: PolicyRule[] = [
     actionOnTrigger:"Flag discrepancy · Salary HOLD (ICP-005) · Notify ops + account manager for manual ID verification",
     severity:"violation", enabled:true, createdAt:"2022-04-01", updatedAt:"2024-11-01", createdBy:"system", aiGenerated:false, appliedCount:47, triggerCount:2 },
 
-  { id:"pol-icp-002", clientId:"ibp", category:"compliance", name:"Identity Consistency Check",
+  { id:"pol-icp-002", clientId:"cts", category:"compliance", name:"Identity Consistency Check",
     description:"OrbitHCM cross-system identity validation. Buzzworks employee_id vs IBP client_employee_id mismatch triggers immediate freeze on the record.",
     triggerCondition:"employee_id != client_employee_id",
     actionOnTrigger:"Freeze record · Flag ICP-005 · Notify IBP HR + Buzzworks ops within 1h",
@@ -835,7 +643,7 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // BFP-006 · Banking Fraud Prevention
   // IF same bank_account_no used by multiple employees → Flag for review
-  { id:"pol-bfp-001", clientId:"gss", category:"compliance", name:"Banking Fraud Prevention",
+  { id:"pol-bfp-001", clientId:"vir", category:"compliance", name:"Banking Fraud Prevention",
     description:"Agent NEXUS runs a daily cross-employee duplicate account scan. If the same bank_account_no is found against two or more employees — regardless of client — the record is frozen, compliance is notified immediately, and both employees are held pending verification. This is an urgent, out-of-cycle escalation.",
     triggerCondition:"bank_account_no IN (SELECT bank_account_no FROM employees GROUP BY bank_account_no HAVING COUNT(*) > 1)",
     actionOnTrigger:"Freeze both records · Urgent flag BFP-006 · Notify compliance + ops + account managers immediately",
@@ -849,13 +657,13 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // DCM-007 · Data Completeness Policy
   // IF missing PAN, Bank details, or Work Order → Block payroll
-  { id:"pol-dcm-001", clientId:"tci", category:"payroll", name:"Data Completeness Gate",
+  { id:"pol-dcm-001", clientId:"acc", category:"payroll", name:"Data Completeness Gate",
     description:"Before any payroll is released, Agent NEXUS verifies that all three critical data fields are present and valid: (1) PAN number (format validation), (2) bank_account_no + IFSC code, (3) work_order_no (active). Missing any one field blocks payroll entirely for that employee.",
     triggerCondition:"pan IS NULL OR pan_format_invalid OR bank_account_no IS NULL OR ifsc_code IS NULL OR work_order_no IS NULL",
     actionOnTrigger:"Block payroll (DCM-007) · Itemised gap report to HR · Employee email notification",
     severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-01-01", createdBy:"system", aiGenerated:false, appliedCount:156, triggerCount:5 },
 
-  { id:"pol-dcm-002", clientId:"ibp", category:"payroll", name:"Data Completeness Gate",
+  { id:"pol-dcm-002", clientId:"cts", category:"payroll", name:"Data Completeness Gate",
     description:"IBP data completeness enforcement. PAN + bank details + work order must all be valid. IBP additionally requires Aadhar-linked bank account verification.",
     triggerCondition:"pan IS NULL OR bank_account_no IS NULL OR ifsc_code IS NULL OR work_order_no IS NULL OR aadhar_link_verified = false",
     actionOnTrigger:"Block payroll (DCM-007) · Notify IBP HR + Buzzworks ops · Hold until all fields verified",
@@ -864,82 +672,82 @@ const _policyRuleSeeds: PolicyRule[] = [
   // ── CLIENT-SPECIFIC OPERATIONAL POLICIES ────────────────────────────────────
 
   // TCI — operational rules
-  { id:"pol001", clientId:"tci", category:"hours",      name:"Standard Weekly Hours Cap",
+  { id:"pol001", clientId:"acc", category:"hours",      name:"Standard Weekly Hours Cap",
     description:"No employee may log more than 40 regular hours in a single work week.",
     triggerCondition:"regularHours > 40",
     actionOnTrigger:"Flag timesheet for ops review",
     severity:"warning", enabled:true, createdAt:"2023-01-01", updatedAt:"2024-06-15", createdBy:"system", aiGenerated:false, appliedCount:156, triggerCount:8 },
 
-  { id:"pol002", clientId:"tci", category:"overtime",   name:"OT Pre-Approval Mandatory",
+  { id:"pol002", clientId:"acc", category:"overtime",   name:"OT Pre-Approval Mandatory",
     description:"Any overtime hours must have explicit pre-approval from the reporting manager before the work period begins.",
     triggerCondition:"overtimeHours > 0 && !managerApproval",
     actionOnTrigger:"Reject — request manager approval",
     severity:"violation", enabled:true, createdAt:"2023-01-01", updatedAt:"2025-01-10", createdBy:"system", aiGenerated:false, appliedCount:42, triggerCount:15 },
 
-  { id:"pol003", clientId:"tci", category:"overtime",   name:"Daily OT Cap (3 Hours)",
+  { id:"pol003", clientId:"acc", category:"overtime",   name:"Daily OT Cap (3 Hours)",
     description:"Overtime on any single day cannot exceed 3 hours as per TCI policy v3.2.",
     triggerCondition:"dailyOT > 3",
     actionOnTrigger:"Flag for review — OT ceiling hit",
     severity:"warning", enabled:true, createdAt:"2023-06-01", updatedAt:"2024-06-15", createdBy:"ops", aiGenerated:false, appliedCount:28, triggerCount:6 },
 
-  { id:"pol004", clientId:"tci", category:"compliance", name:"Consecutive OT Pattern Alert",
+  { id:"pol004", clientId:"acc", category:"compliance", name:"Consecutive OT Pattern Alert",
     description:"After 2 consecutive weeks of more than 8 overtime hours, manager review is mandatory.",
     triggerCondition:"consecutiveOTWeeks >= 2 && weeklyOT > 8",
     actionOnTrigger:"Escalate to manager + ops team",
     severity:"warning", enabled:true, createdAt:"2024-01-15", updatedAt:"2024-01-15", createdBy:"ai", aiGenerated:true, appliedCount:12, triggerCount:4 },
 
-  { id:"pol005", clientId:"tci", category:"leave",      name:"Sandwich Leave Detection",
+  { id:"pol005", clientId:"acc", category:"leave",      name:"Sandwich Leave Detection",
     description:"Leave taken immediately before or after a public holiday without manager approval is flagged as sandwich leave.",
     triggerCondition:"leaveAdjacentToHoliday && !managerApproval",
     actionOnTrigger:"Flag and request manager confirmation",
     severity:"warning", enabled:true, createdAt:"2024-03-01", updatedAt:"2024-03-01", createdBy:"ai", aiGenerated:true, appliedCount:18, triggerCount:5 },
 
   // FHL — operational rules
-  { id:"pol006", clientId:"fhl", category:"overtime",   name:"Zero Overtime Policy",
+  { id:"pol006", clientId:"pwc", category:"overtime",   name:"Zero Overtime Policy",
     description:"FinanceHub Ltd does not permit overtime under any circumstances. Any overtime claim will be rejected.",
     triggerCondition:"overtimeHours > 0",
     actionOnTrigger:"Auto-reject — no OT permitted",
     severity:"violation", enabled:true, createdAt:"2022-10-01", updatedAt:"2022-10-01", createdBy:"system", aiGenerated:false, appliedCount:34, triggerCount:12 },
 
-  { id:"pol007", clientId:"fhl", category:"hours",      name:"Standard 40-Hour Week",
+  { id:"pol007", clientId:"pwc", category:"hours",      name:"Standard 40-Hour Week",
     description:"All employees must maintain exactly 40 hours per week. Under or over submissions require explanation.",
     triggerCondition:"totalHours < 38 || totalHours > 40",
     actionOnTrigger:"Request explanation from employee",
     severity:"warning", enabled:true, createdAt:"2022-10-01", updatedAt:"2024-08-20", createdBy:"system", aiGenerated:false, appliedCount:67, triggerCount:11 },
 
-  { id:"pol008", clientId:"fhl", category:"compliance", name:"Original Email Required",
+  { id:"pol008", clientId:"pwc", category:"compliance", name:"Original Email Required",
     description:"Forwarded emails are not accepted as timesheet submissions. The original employee-sent email must be attached.",
     triggerCondition:"emailIsForward",
     actionOnTrigger:"Reject — request original submission",
     severity:"violation", enabled:true, createdAt:"2023-04-01", updatedAt:"2023-04-01", createdBy:"system", aiGenerated:false, appliedCount:18, triggerCount:7 },
 
   // MSH — operational rules
-  { id:"pol009", clientId:"msh", category:"hours",      name:"Healthcare Shift Week Cap",
+  { id:"pol009", clientId:"aoc", category:"hours",      name:"Healthcare Shift Week Cap",
     description:"Medical staff may work up to 48 regular hours per week in accordance with healthcare shift norms.",
     triggerCondition:"regularHours > 48",
     actionOnTrigger:"Flag for compliance review",
     severity:"violation", enabled:true, createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:45, triggerCount:3 },
 
-  { id:"pol010", clientId:"msh", category:"attendance", name:"Minimum 1 Rest Day Per Week",
+  { id:"pol010", clientId:"aoc", category:"attendance", name:"Minimum 1 Rest Day Per Week",
     description:"Every employee must have at least one designated rest day in each 7-day period for health and safety compliance.",
     triggerCondition:"restDaysInWeek < 1",
     actionOnTrigger:"Warning — contact employee and manager",
     severity:"warning", enabled:true, createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:60, triggerCount:8 },
 
-  { id:"pol011", clientId:"msh", category:"overtime",   name:"Double-Pay for OT",
+  { id:"pol011", clientId:"aoc", category:"overtime",   name:"Double-Pay for OT",
     description:"All overtime is compensated at 2× the standard hourly rate per MSH healthcare worker agreements.",
     triggerCondition:"overtimeHours > 0",
     actionOnTrigger:"Auto-calculate 2x OT in payroll",
     severity:"info", enabled:true, createdAt:"2024-01-01", updatedAt:"2024-01-01", createdBy:"system", aiGenerated:false, appliedCount:80, triggerCount:30 },
 
   // GSS — operational rules
-  { id:"pol012", clientId:"gss", category:"hours",      name:"45-Hour Weekly Standard",
+  { id:"pol012", clientId:"vir", category:"hours",      name:"45-Hour Weekly Standard",
     description:"GSS employees work a 45-hour standard week (9 hrs × 5 days). Submissions within ±2 hours auto-approve.",
     triggerCondition:"regularHours > 45 || regularHours < 43",
     actionOnTrigger:"Flag for review",
     severity:"warning", enabled:true, createdAt:"2023-04-01", updatedAt:"2024-09-01", createdBy:"system", aiGenerated:false, appliedCount:90, triggerCount:7 },
 
-  { id:"pol013", clientId:"gss", category:"leave",      name:"Manager CC on Email Submissions",
+  { id:"pol013", clientId:"vir", category:"leave",      name:"Manager CC on Email Submissions",
     description:"All email timesheet submissions must CC the reporting manager. Submissions without manager CC are flagged.",
     triggerCondition:"emailSubmission && !managerCC",
     actionOnTrigger:"Warning — notify and log",
@@ -960,7 +768,7 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // ── ONBOARDING WORKFLOW ─────────────────────────────────────────────────────
 
-  { id:"pol-onb-001", clientId:"ibp", category:"compliance", workflow:"onboarding",
+  { id:"pol-onb-001", clientId:"cts", category:"compliance", workflow:"onboarding",
     name:"New joiner KYC completeness",
     description:"Before the first timesheet is accepted, Aadhaar + PAN + bank proof + signed offer letter must be present in HRMS. Missing any field blocks first-cycle payroll.",
     triggerCondition:"isFirstCycle && (kyc.aadhaar IS NULL || kyc.pan IS NULL || kyc.bankProof IS NULL || kyc.offer IS NULL)",
@@ -976,14 +784,14 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // ── LEAVE & ATTENDANCE WORKFLOW ─────────────────────────────────────────────
 
-  { id:"pol-lvl-001", clientId:"tci", category:"leave", workflow:"leave-attendance",
+  { id:"pol-lvl-001", clientId:"acc", category:"leave", workflow:"leave-attendance",
     name:"Sandwich leave approval",
     description:"Leaves that bridge a weekend or holiday (sandwich leave) require manager approval at least 48 hours in advance. Late submissions auto-flag for variance review.",
     triggerCondition:"isSandwichLeave && hoursBeforeStart < 48",
     actionOnTrigger:"Flag for manager review · Mark as variance in next payroll",
     severity:"warning", enabled:true, createdAt:"2023-02-10", updatedAt:"2025-09-01", createdBy:"ops", aiGenerated:false, appliedCount:42, triggerCount:6 },
 
-  { id:"pol-lvl-002", clientId:"lti", category:"leave", workflow:"leave-attendance",
+  { id:"pol-lvl-002", clientId:"lmt", category:"leave", workflow:"leave-attendance",
     name:"LOP reconciliation at cycle close",
     description:"Loss of pay days from attendance system must be reconciled with line-manager sign-off before payroll cut-off. Unreconciled LOP holds the cycle for the affected cost centre.",
     triggerCondition:"lop.unsignedCount > 0 && beforeCutoff = false",
@@ -992,14 +800,14 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // ── EXIT / SEPARATION WORKFLOW ──────────────────────────────────────────────
 
-  { id:"pol-exit-001", clientId:"cgi", category:"compliance", workflow:"exit",
+  { id:"pol-exit-001", clientId:"cap", category:"compliance", workflow:"exit",
     name:"Notice period coverage check",
     description:"When separation is initiated, confirm that resignation + signed notice period intent + handover plan are on file. Missing any blocks clearance and final-cycle payroll.",
     triggerCondition:"separationInitiated && (resignation IS NULL || notice IS NULL || handover IS NULL)",
     actionOnTrigger:"Hold clearance · Notify HR BP + line manager",
     severity:"violation", enabled:true, createdAt:"2022-11-01", updatedAt:"2025-12-15", createdBy:"system", aiGenerated:false, appliedCount:22, triggerCount:3 },
 
-  { id:"pol-exit-002", clientId:"mnd", category:"compliance", workflow:"exit",
+  { id:"pol-exit-002", clientId:"lmt", category:"compliance", workflow:"exit",
     name:"Asset recovery gate",
     description:"Laptop, access cards, and confidential asset acknowledgement must be returned or acknowledged by IT + Admin before FnF is released. Missing asset recovery records keep FnF on hold.",
     triggerCondition:"separationStage = 'fnf' && assetRecovery.complete = false",
@@ -1008,14 +816,14 @@ const _policyRuleSeeds: PolicyRule[] = [
 
   // ── FULL & FINAL (FnF) WORKFLOW ─────────────────────────────────────────────
 
-  { id:"pol-fnf-001", clientId:"ibp", category:"payroll", workflow:"fnf",
+  { id:"pol-fnf-001", clientId:"cts", category:"payroll", workflow:"fnf",
     name:"Gratuity eligibility & computation",
     description:"Employees with ≥ 5 years continuous service are eligible for gratuity in FnF. Computation = (last drawn basic × 15/26) × completed years. Mismatches with HRMS auto-flag for finance ops.",
     triggerCondition:"tenureYears >= 5 && gratuityAmount != expectedGratuity",
     actionOnTrigger:"Flag FnF batch · Review with finance ops",
     severity:"warning", enabled:true, createdAt:"2022-07-01", updatedAt:"2026-02-28", createdBy:"system", aiGenerated:false, appliedCount:11, triggerCount:2 },
 
-  { id:"pol-fnf-002", clientId:"fhl", category:"payroll", workflow:"fnf",
+  { id:"pol-fnf-002", clientId:"pwc", category:"payroll", workflow:"fnf",
     name:"Leave encashment cap",
     description:"Leave encashment in FnF is capped at the sum of available earned leave at separation date. Any excess balance requires explicit HR BP approval and is held until signed off.",
     triggerCondition:"encashedLeaves > availableEarnedLeaves",
@@ -1031,25 +839,25 @@ export const policyRules: PolicyRule[] = _policyRuleSeeds.map(rule => ({
 // ─── AI Insights ──────────────────────────────────────────────────────────────
 
 export const aiInsights: AIInsight[] = [
-  { id:"ai001", type:"anomaly",    title:"3-Week OT Pattern — Rahul Sharma (TCI)",            description:"Rahul logged 10+ OT hours for 3 consecutive weeks. TCI policy v3.2 mandates manager review. Pre-approval missing.",  timesheetIds:["ts001"], employeeIds:["emp001"], clientId:"tci",  priority:"high",   timestamp:"2026-04-09T08:00:00Z", isRead:false, suggestedAction:"Request manager approval email from mgr@techcorp.in before processing." },
-  { id:"ai002", type:"warning",    title:"OT Policy Violation — Neha Gupta (FHL)",             description:"Neha claims 2 OT hours. FinanceHub prohibits overtime under policy v4.1. Will be rejected unless corrected.",           timesheetIds:["ts004"], employeeIds:["emp006"], clientId:"fhl",  priority:"high",   timestamp:"2026-04-09T08:05:00Z", isRead:false, suggestedAction:"Send rejection notice and ask employee to resubmit without OT hours." },
+  { id:"ai001", type:"anomaly",    title:"3-Week OT Pattern — Rahul Sharma (TCI)",            description:"Rahul logged 10+ OT hours for 3 consecutive weeks. TCI policy v3.2 mandates manager review. Pre-approval missing.",  timesheetIds:["ts001"], employeeIds:["emp001"], clientId:"acc",  priority:"high",   timestamp:"2026-04-09T08:00:00Z", isRead:false, suggestedAction:"Request manager approval email from mgr@techcorp.in before processing." },
+  { id:"ai002", type:"warning",    title:"OT Policy Violation — Neha Gupta (FHL)",             description:"Neha claims 2 OT hours. FinanceHub prohibits overtime under policy v4.1. Will be rejected unless corrected.",           timesheetIds:["ts004"], employeeIds:["emp006"], clientId:"pwc",  priority:"high",   timestamp:"2026-04-09T08:05:00Z", isRead:false, suggestedAction:"Send rejection notice and ask employee to resubmit without OT hours." },
   { id:"ai003", type:"suggestion", title:"2 Email Timesheets Unprocessed >48h",                description:"Priya Menon and Deepa Rao submitted via email 2–3 days ago and are still pending. SLA risk: 48h turnaround.",           timesheetIds:["ts002","ts006"],                                    priority:"medium", timestamp:"2026-04-09T08:10:00Z", isRead:false, suggestedAction:"Prioritise both timesheets — they can auto-approve given 91% and 88% validation scores." },
-  { id:"ai004", type:"info",       title:"Payroll Ready: GSS Apr Week 1",                     description:"2 GlobalStaff timesheets approved and verified. Total ₹46,200 ready to process.",                                         clientId:"gss",                                                    priority:"low",    timestamp:"2026-04-09T09:00:00Z", isRead:true },
+  { id:"ai004", type:"info",       title:"Payroll Ready: GSS Apr Week 1",                     description:"2 GlobalStaff timesheets approved and verified. Total ₹46,200 ready to process.",                                         clientId:"vir",                                                    priority:"low",    timestamp:"2026-04-09T09:00:00Z", isRead:true },
   { id:"ai005", type:"anomaly",    title:"Hexaware: 18 timesheets synced, 3 parsing errors",  description:"Darwinbox sync completed at 07:45. 3 timesheets failed parsing due to missing employee codes. Manual review needed.",    clientId:"hex",                                                    priority:"medium", timestamp:"2026-04-10T07:50:00Z", isRead:false, suggestedAction:"Open Hexaware portal and cross-check employee codes HEX8821, HEX8822, HEX8901." },
-  { id:"ai006", type:"warning",    title:"Sonia Das on Notice — FHL payroll hold required",   description:"Sonia Das (FHL0002) is on notice period. Per FHL policy, payroll must be reviewed by finance before release.",           timesheetIds:["ts004"], employeeIds:["emp007"], clientId:"fhl",  priority:"high",   timestamp:"2026-04-09T09:30:00Z", isRead:false, suggestedAction:"Flag FHL payroll batch for manual finance team review." },
+  { id:"ai006", type:"warning",    title:"Sonia Das on Notice — FHL payroll hold required",   description:"Sonia Das (FHL0002) is on notice period. Per FHL policy, payroll must be reviewed by finance before release.",           timesheetIds:["ts004"], employeeIds:["emp007"], clientId:"pwc",  priority:"high",   timestamp:"2026-04-09T09:30:00Z", isRead:false, suggestedAction:"Flag FHL payroll batch for manual finance team review." },
 ]
 
 // ─── Payroll Batches ──────────────────────────────────────────────────────────
 
 export const payrollBatches: PayrollBatch[] = [
   { id:"pay001", clientId:"hex", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:42, totalTimesheets:87, totalHours:1890, regularHours:1760, overtimeHours:130, leaveHours:0,   totalAmount:7840000, regularAmount:7410000, overtimeAmount:430000, currency:"INR", status:"draft",            createdAt:"2026-04-09", onHoldCount:3 },
-  { id:"pay002", clientId:"ibp", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:68, totalTimesheets:124, totalHours:2720, regularHours:2720, overtimeHours:0,   leaveHours:240, totalAmount:9580000, regularAmount:9580000, overtimeAmount:0,       currency:"INR", status:"pending_approval", createdAt:"2026-04-08", onHoldCount:0 },
-  { id:"pay003", clientId:"tci", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:8,  totalTimesheets:23,  totalHours:320,  regularHours:305,  overtimeHours:15,  leaveHours:8,   totalAmount:1240000, regularAmount:1210000, overtimeAmount:30000,   currency:"INR", status:"draft",            createdAt:"2026-04-09", onHoldCount:2 },
-  { id:"pay004", clientId:"gss", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:11, totalTimesheets:16,  totalHours:495,  regularHours:495,  overtimeHours:0,   leaveHours:0,   totalAmount:2020000, regularAmount:2020000, overtimeAmount:0,       currency:"INR", status:"approved",         createdAt:"2026-04-08", approvedBy:"Siddharth Kirtikar", approvedAt:"2026-04-09T11:00:00Z", onHoldCount:0 },
-  { id:"pay005", clientId:"fhl", period:"Mar 2026",            periodStart:"2026-03-01", periodEnd:"2026-03-31", approvedTimesheets:29, totalTimesheets:29,  totalHours:1160, regularHours:1160, overtimeHours:0,   leaveHours:80,  totalAmount:4200000, regularAmount:4200000, overtimeAmount:0,       currency:"INR", status:"processed",        createdAt:"2026-04-01", approvedBy:"Siddharth Kirtikar", approvedAt:"2026-04-02T10:00:00Z", processedAt:"2026-04-03T14:00:00Z", onHoldCount:0 },
-  { id:"pay006", clientId:"msh", period:"Mar 2026",            periodStart:"2026-03-01", periodEnd:"2026-03-31", approvedTimesheets:18, totalTimesheets:20,  totalHours:972,  regularHours:864,  overtimeHours:108, leaveHours:0,   totalAmount:680000, regularAmount:518400,   overtimeAmount:161600,  currency:"INR", status:"processed",        createdAt:"2026-04-01", approvedBy:"Siddharth Kirtikar", approvedAt:"2026-04-02T12:00:00Z", processedAt:"2026-04-03T16:00:00Z", onHoldCount:0 },
-  { id:"pay007", clientId:"cgi", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:35, totalTimesheets:52,  totalHours:1575, regularHours:1485, overtimeHours:90,  leaveHours:0,   totalAmount:6800000, regularAmount:6440000, overtimeAmount:360000,  currency:"INR", status:"pending_approval", createdAt:"2026-04-09", onHoldCount:1 },
-  { id:"pay008", clientId:"lti", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:55, totalTimesheets:78,  totalHours:2475, regularHours:2340, overtimeHours:135, leaveHours:0,   totalAmount:8900000, regularAmount:8380000, overtimeAmount:520000,  currency:"INR", status:"draft",            createdAt:"2026-04-09", onHoldCount:4 },
+  { id:"pay002", clientId:"cts", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:68, totalTimesheets:124, totalHours:2720, regularHours:2720, overtimeHours:0,   leaveHours:240, totalAmount:9580000, regularAmount:9580000, overtimeAmount:0,       currency:"INR", status:"pending_approval", createdAt:"2026-04-08", onHoldCount:0 },
+  { id:"pay003", clientId:"acc", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:8,  totalTimesheets:23,  totalHours:320,  regularHours:305,  overtimeHours:15,  leaveHours:8,   totalAmount:1240000, regularAmount:1210000, overtimeAmount:30000,   currency:"INR", status:"draft",            createdAt:"2026-04-09", onHoldCount:2 },
+  { id:"pay004", clientId:"vir", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:11, totalTimesheets:16,  totalHours:495,  regularHours:495,  overtimeHours:0,   leaveHours:0,   totalAmount:2020000, regularAmount:2020000, overtimeAmount:0,       currency:"INR", status:"approved",         createdAt:"2026-04-08", approvedBy:"Siddharth Kirtikar", approvedAt:"2026-04-09T11:00:00Z", onHoldCount:0 },
+  { id:"pay005", clientId:"pwc", period:"Mar 2026",            periodStart:"2026-03-01", periodEnd:"2026-03-31", approvedTimesheets:29, totalTimesheets:29,  totalHours:1160, regularHours:1160, overtimeHours:0,   leaveHours:80,  totalAmount:4200000, regularAmount:4200000, overtimeAmount:0,       currency:"INR", status:"processed",        createdAt:"2026-04-01", approvedBy:"Siddharth Kirtikar", approvedAt:"2026-04-02T10:00:00Z", processedAt:"2026-04-03T14:00:00Z", onHoldCount:0 },
+  { id:"pay006", clientId:"aoc", period:"Mar 2026",            periodStart:"2026-03-01", periodEnd:"2026-03-31", approvedTimesheets:18, totalTimesheets:20,  totalHours:972,  regularHours:864,  overtimeHours:108, leaveHours:0,   totalAmount:680000, regularAmount:518400,   overtimeAmount:161600,  currency:"INR", status:"processed",        createdAt:"2026-04-01", approvedBy:"Siddharth Kirtikar", approvedAt:"2026-04-02T12:00:00Z", processedAt:"2026-04-03T16:00:00Z", onHoldCount:0 },
+  { id:"pay007", clientId:"cap", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:35, totalTimesheets:52,  totalHours:1575, regularHours:1485, overtimeHours:90,  leaveHours:0,   totalAmount:6800000, regularAmount:6440000, overtimeAmount:360000,  currency:"INR", status:"pending_approval", createdAt:"2026-04-09", onHoldCount:1 },
+  { id:"pay008", clientId:"lmt", period:"Apr 2026 (Week 1)",   periodStart:"2026-03-30", periodEnd:"2026-04-04", approvedTimesheets:55, totalTimesheets:78,  totalHours:2475, regularHours:2340, overtimeHours:135, leaveHours:0,   totalAmount:8900000, regularAmount:8380000, overtimeAmount:520000,  currency:"INR", status:"draft",            createdAt:"2026-04-09", onHoldCount:4 },
 ]
 
 // ─── Weekly Trend ─────────────────────────────────────────────────────────────
