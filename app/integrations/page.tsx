@@ -287,17 +287,20 @@ export default function IntegrationsPage() {
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
-          <div className="flex-1">
-            <h1 className="text-base font-bold text-white">Integrations</h1>
-            <p className="text-[11px] text-white/35">Portal connections &amp; email ingestion</p>
+        {/* Header — matches Inbox / Compliance / Policies pattern */}
+        <header className="px-6 lg:px-8 py-5 flex-shrink-0 flex items-start gap-4"
+          style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Integrations</h1>
+            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+              Portal connections &amp; email ingestion
+            </p>
           </div>
           <button
             onClick={() => portals.forEach(p => handleSync(p.id))}
-            className="btn-teal flex items-center gap-1.5 text-[12px] py-2 px-4"
+            className="btn-teal flex items-center gap-1.5 text-xs py-2 px-4 flex-shrink-0"
           >
-            <RefreshCw size={12} /> Sync All Portals
+            <RefreshCw size={12} /> Sync all portals
           </button>
         </header>
 

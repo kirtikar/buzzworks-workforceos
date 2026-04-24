@@ -6,7 +6,7 @@ import { useTheme } from "@/components/ThemeProvider"
 import {
   Sun, Moon, Bell, Shield, Users, Database, Webhook,
   Mail, Smartphone, Clock, Save, ChevronRight, Check,
-  Globe, Key, AlertTriangle, Info,
+  Key, AlertTriangle, Info,
 } from "lucide-react"
 import clsx from "clsx"
 
@@ -454,20 +454,18 @@ export default function SettingsPage() {
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center gap-3 px-6 py-3.5 flex-shrink-0" style={{ borderBottom: "1px solid var(--border)", background: "var(--glass-bg)" }}>
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "var(--accent-dim)" }}>
-            <Globe size={16} style={{ color: "var(--accent)" }} />
+        {/* Header — matches Inbox / Compliance / Policies pattern */}
+        <header className="px-6 lg:px-8 py-5 flex-shrink-0 flex items-start gap-4"
+          style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Settings</h1>
+            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+              Manage preferences, integrations, and system configuration
+            </p>
           </div>
-          <div>
-            <h1 className="text-[14px] font-bold" style={{ color: "var(--text-1)" }}>Settings</h1>
-            <p className="text-[11px]" style={{ color: "var(--text-3)" }}>Manage preferences, integrations, and system configuration</p>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--text-3)" }}>
-              <Info size={12} />
-              Agent Dashboard v2.1.0 · JARVIS v2.1
-            </div>
+          <div className="flex items-center gap-1.5 text-[11px] flex-shrink-0" style={{ color: "var(--text-3)" }}>
+            <Info size={12} />
+            Agent Dashboard v2.1.0 · JARVIS v2.1
           </div>
         </header>
 

@@ -8,7 +8,7 @@ import { clients, portals } from "@/lib/mock-data"
 import type { Industry } from "@/lib/types"
 import { getActionCountForClient } from "@/lib/compliance-data"
 import {
-  Search, Building2, Users, Clock, ArrowRight, X,
+  Search, Users, Clock, ArrowRight, X,
   ChevronDown, Globe, Mail, CheckCircle2, TrendingUp, Bell,
   Briefcase, ArrowUpDown, MapPin,
 } from "lucide-react"
@@ -278,13 +278,13 @@ export default function ClientsPage() {
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
-          <Building2 size={18} style={{ color: "var(--accent)" }} className="flex-shrink-0" />
-          <div className="flex-1">
-            <h1 className="text-base font-bold" style={{ color: "var(--text-1)" }}>Clients</h1>
-            <p className="text-[11px]" style={{ color: "var(--text-3)" }}>{clients.length} active clients · {fmtNum(totalEmployees)} total employees</p>
-          </div>
+        {/* Header — matches Inbox / Compliance / Policies pattern */}
+        <header className="px-6 lg:px-8 py-5 flex-shrink-0"
+          style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
+          <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Clients</h1>
+          <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+            {clients.length} active clients · {fmtNum(totalEmployees)} total employees
+          </p>
         </header>
 
         <main className="flex-1 overflow-y-auto p-5 space-y-4">

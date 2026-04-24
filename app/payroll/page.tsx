@@ -6,7 +6,7 @@ import AIAgentOrb from "@/components/AIAgentOrb"
 import { payrollBatches, clients, getClient } from "@/lib/mock-data"
 import type { PayrollBatch, PayrollStatus } from "@/lib/types"
 import {
-  CreditCard, CheckCircle2, Clock, AlertTriangle, Download,
+  CheckCircle2, Clock, AlertTriangle, Download,
   ChevronRight, ArrowUpRight, Filter, TrendingUp, TrendingDown,
   DollarSign, Users, FileCheck, Loader2, Check, X,
 } from "lucide-react"
@@ -195,14 +195,16 @@ export default function PayrollPage() {
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3 lg:py-3.5 border-b border-white/[0.07] flex-shrink-0" style={{ background: "var(--surface)", backdropFilter: "blur(20px)" }}>
-          <CreditCard size={18} className="text-blue-400 flex-shrink-0" />
-          <div className="flex-1">
-            <h1 className="text-base font-bold text-white">Payroll</h1>
-            <p className="text-[11px] text-white/35">Apr 2026 · {pendingCount} batch{pendingCount !== 1 ? "es" : ""} need approval</p>
+        {/* Header — matches Inbox / Compliance / Policies pattern */}
+        <header className="px-6 lg:px-8 py-5 flex-shrink-0 flex items-start gap-4"
+          style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Payroll</h1>
+            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
+              Apr 2026 · {pendingCount} batch{pendingCount !== 1 ? "es" : ""} need approval
+            </p>
           </div>
-          <button className="btn-ghost flex items-center gap-1.5 text-[12px] py-2 px-3">
+          <button className="btn-ghost flex items-center gap-1.5 text-xs py-2 px-3 flex-shrink-0">
             <Download size={12} /> Export
           </button>
         </header>

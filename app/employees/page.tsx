@@ -775,17 +775,16 @@ export default function EmployeesPage() {
 
       <div className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Header */}
-        <header className="flex items-center gap-3 px-4 lg:px-6 py-3.5 border-b flex-shrink-0"
-          style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
-          <Users size={16} style={{ color: "var(--accent)" }} className="flex-shrink-0" />
+        {/* Header — matches Inbox / Compliance / Policies pattern */}
+        <header className="px-6 lg:px-8 py-5 flex-shrink-0 flex items-start gap-4"
+          style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
           <div className="flex-1 min-w-0">
-            <h1 className="text-sm font-bold" style={{ color: "var(--text-1)" }}>Employees</h1>
-            <p className="text-[11px]" style={{ color: "var(--text-3)" }}>
+            <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Employees</h1>
+            <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
               {filtered.length.toLocaleString()} of {allEmployees.length.toLocaleString()} employees
             </p>
           </div>
-          <button className="btn-ghost flex items-center gap-1.5 text-xs py-1.5 px-3">
+          <button className="btn-ghost flex items-center gap-1.5 text-xs py-1.5 px-3 flex-shrink-0">
             <Download size={12} /><span className="hidden sm:inline">Export</span>
           </button>
         </header>
