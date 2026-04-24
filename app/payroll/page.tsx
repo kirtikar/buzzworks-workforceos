@@ -168,7 +168,7 @@ export default function PayrollPage() {
   const [filter,  setFilter]  = useState<PayrollStatus | "all">("all")
 
   function approveBatch(id: string) {
-    setBatches(prev => prev.map(b => b.id === id ? { ...b, status: "approved" as PayrollStatus, approvedBy: "Riya Shah", approvedAt: new Date().toISOString() } : b))
+    setBatches(prev => prev.map(b => b.id === id ? { ...b, status: "approved" as PayrollStatus, approvedBy: "Siddharth Kirtikar", approvedAt: new Date().toISOString() } : b))
   }
 
   function holdBatch(id: string) {

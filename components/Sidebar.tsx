@@ -88,11 +88,11 @@ export default function Sidebar() {
         <div className="flex items-center gap-3 px-4 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-semibold"
             style={{ background: "var(--primary-600)", color: "#fff" }}>
-            RS
+            SK
           </div>
           <div>
-            <div className="text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>Riya Shah</div>
-            <div className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>Ops Lead</div>
+            <div className="text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>Siddharth Kirtikar</div>
+            <div className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>Ops Agent</div>
           </div>
         </div>
       </div>

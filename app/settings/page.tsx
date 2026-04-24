@@ -205,13 +205,14 @@ function AccountSection() {
     <div className="space-y-5">
       <SectionCard title="Profile">
         <SettingRow label="Full name">
-          <input className="glass-input text-[12px] py-1.5" defaultValue="Riya Shah" style={{ width: 200 }} />
+          <input className="glass-input text-[12px] py-1.5" defaultValue="Siddharth Kirtikar" style={{ width: 200 }} />
         </SettingRow>
         <SettingRow label="Email">
-          <input className="glass-input text-[12px] py-1.5" defaultValue="riya.shah@buzzworks.com" style={{ width: 220 }} />
+          <input className="glass-input text-[12px] py-1.5" defaultValue="siddharth.k@buzzworks.in" style={{ width: 220 }} />
         </SettingRow>
         <SettingRow label="Role" description="Your role in the Buzzworks ops team">
-          <select className="glass-input text-[12px] py-1.5" style={{ width: 160 }}>
+          <select className="glass-input text-[12px] py-1.5" style={{ width: 160 }} defaultValue="Ops Agent">
+            <option>Ops Agent</option>
             <option>Ops Manager</option>
             <option>Payroll Lead</option>
             <option>Analyst</option>
@@ -430,17 +431,6 @@ function SystemSection() {
         </SettingRow>
       </SectionCard>
 
-      <div className="glass-card p-4 flex items-start gap-3 rounded-xl" style={{ borderColor: "var(--warn-border)", background: "var(--warn-bg)" }}>
-        <AlertTriangle size={16} style={{ color: "var(--warn)", flexShrink: 0, marginTop: 1 }} />
-        <div>
-          <div className="text-[12px] font-semibold" style={{ color: "var(--warn)" }}>Danger Zone</div>
-          <div className="text-[11px] mt-1 mb-3" style={{ color: "var(--text-2)" }}>These actions are irreversible. Proceed with caution.</div>
-          <div className="flex flex-wrap gap-2">
-            <button className="btn-coral text-[12px]">Purge test data</button>
-            <button className="btn-coral text-[12px]">Reset agent learning</button>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

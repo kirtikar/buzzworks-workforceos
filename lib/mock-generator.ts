@@ -419,7 +419,7 @@ export function generateTimesheet(employee: Employee, weekIndex: number): Timesh
     flagReason,
     flaggedBy:         flagReason ? "ai" : undefined,
     approvedBy:        (status === "approved" || status === "processed")
-      ? (rng.next() < 0.6 ? "JARVIS" : "Riya Shah")
+      ? (rng.next() < 0.6 ? "JARVIS" : "Siddharth Kirtikar")
       : undefined,
     approvedAt:        (status === "approved" || status === "processed")
       ? new Date(submitted.getTime() + rng.int(1, 8) * 3600_000).toISOString()

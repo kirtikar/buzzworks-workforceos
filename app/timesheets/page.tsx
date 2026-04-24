@@ -313,15 +313,15 @@ export default function InboxPage() {
 
   // Actions
   function approveTs(id: string) {
-    setLocalTs(prev => prev.map(t => t.id === id ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Riya Shah", approvedAt: new Date().toISOString() } : t))
+    setLocalTs(prev => prev.map(t => t.id === id ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Siddharth Kirtikar", approvedAt: new Date().toISOString() } : t))
   }
 
   function bulkApprove(rule: BulkRule) {
-    setLocalTs(prev => prev.map(t => rule.match(t) ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Riya Shah (Bulk)", approvedAt: new Date().toISOString() } : t))
+    setLocalTs(prev => prev.map(t => rule.match(t) ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Siddharth Kirtikar (Bulk)", approvedAt: new Date().toISOString() } : t))
   }
 
   function approveSelected() {
-    setLocalTs(prev => prev.map(t => selectedIds.has(t.id) && ["pending", "reviewing"].includes(t.status) ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Riya Shah", approvedAt: new Date().toISOString() } : t))
+    setLocalTs(prev => prev.map(t => selectedIds.has(t.id) && ["pending", "reviewing"].includes(t.status) ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Siddharth Kirtikar", approvedAt: new Date().toISOString() } : t))
     setSelectedIds(new Set())
   }
 
