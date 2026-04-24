@@ -4,7 +4,7 @@ import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import { clients } from "@/lib/mock-data"
 import {
-  TrendingUp, TrendingDown, Zap, Target, IndianRupee, FileCheck,
+  TrendingUp, TrendingDown, Zap, Target, IndianRupee, Inbox,
 } from "lucide-react"
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
@@ -20,6 +20,21 @@ function fmtINR(n: number) {
   return `₹${n.toLocaleString("en-IN")}`
 }
 
+// ─── Financial baseline (CFO-style, kept centralized so charts agree) ────────
+//
+// Annual net revenue: ₹60 Cr → monthly net revenue: ₹500 L (₹5 Cr)
+// April monthly ops cost: ₹18 L → April ops/revenue ratio: 3.6%
+//   (industry-typical band for managed HRMS / staffing ops is 1–4%)
+// Without-AI counterfactual ratio in April: ~6.0% → ₹30 L → AI saves ₹12 L/mo
+// All trends, by-client splits, and KPI deltas derive from these constants.
+
+const ANNUAL_NET_REVENUE = 60_00_00_000        // ₹60 Cr
+const MONTHLY_NET_REVENUE = ANNUAL_NET_REVENUE / 12   // ₹5 Cr = ₹500 L
+const APR_OPS_COST = 18_00_000                  // ₹18 L
+const APR_OPS_RATIO = APR_OPS_COST / MONTHLY_NET_REVENUE * 100   // 3.60
+const APR_OPS_RATIO_WITHOUT_AI = 6.0
+const APR_AI_SAVINGS = MONTHLY_NET_REVENUE * (APR_OPS_RATIO_WITHOUT_AI - APR_OPS_RATIO) / 100 // ₹12 L
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 // 4 CEO-level KPIs
@@ -27,17 +42,17 @@ const kpis = [
   {
     label: "Monthly Ops Cost",
     value: "₹18L",
-    delta: "-22% vs without AI",
+    delta: `-₹${(APR_AI_SAVINGS / 100000).toFixed(0)}L vs without AI`,
     trend: "down" as const,
     icon: IndianRupee,
     color: "var(--accent)",
   },
   {
-    label: "Timesheets / team member",
-    value: "636",
-    delta: "+31% vs Mar (478)",
+    label: "Cases resolved / FTE",
+    value: "730",
+    delta: "+31% vs Mar (557)",
     trend: "up" as const,
-    icon: FileCheck,
+    icon: Inbox,
     color: "var(--accent)",
   },
   {
@@ -58,32 +73,35 @@ const kpis = [
   },
 ]
 
-// Ops cost as % of revenue — projected (without AI) vs reality (with AI)
-// Apr 2026 actual: ₹18L cost on ₹85L revenue = 21.2% with AI
-// Without AI projection assumes manual ops scales linearly with revenue
+// Ops cost as % of net revenue — without AI (counterfactual) vs with AI (actual)
+// Apr 2026 actual: ₹18L cost on ₹500L revenue = 3.6% with AI
+// Without-AI counterfactual: manual ops scales linearly with workload, drifts up
+// 6-month trend shows AI savings compounding (5.4% → 3.6% with AI)
 const opsCostTrend = [
-  { month: "Nov",  withoutAI: 28.0, withAI: 27.4 },
-  { month: "Dec",  withoutAI: 28.5, withAI: 26.8 },
-  { month: "Jan",  withoutAI: 29.2, withAI: 25.5 },
-  { month: "Feb",  withoutAI: 29.8, withAI: 24.2 },
-  { month: "Mar",  withoutAI: 30.5, withAI: 22.6 },
-  { month: "Apr",  withoutAI: 31.2, withAI: 21.2 },
+  { month: "Nov",  withoutAI: 5.6, withAI: 5.4 },
+  { month: "Dec",  withoutAI: 5.7, withAI: 5.0 },
+  { month: "Jan",  withoutAI: 5.8, withAI: 4.6 },
+  { month: "Feb",  withoutAI: 5.9, withAI: 4.2 },
+  { month: "Mar",  withoutAI: 5.9, withAI: 3.9 },
+  { month: "Apr",  withoutAI: 6.0, withAI: 3.6 },
 ]
 
-// Ops cost per client + revenue (for efficiency metric)
-// efficiency = ops cost / client revenue (lower is better)
+// Ops cost per client + revenue.
+// Top 8 sums to ₹12.6L (70% of ₹18L); other 19 clients account for ~₹5.4L.
+// Top-8 revenue sums to ~₹383L (77% of ₹500L); rest comes from smaller clients.
+// efficiency = ops cost / client revenue → 3.0–3.9% across the top 8 (1–4% band).
 const clientCost = [
-  { name: "Infosys BPM",  cost: 350000, revenue: 1850000, timesheets: 124 },
-  { name: "Hexaware",     cost: 290000, revenue: 1420000, timesheets: 87  },
-  { name: "L&T Infotech", cost: 265000, revenue: 1280000, timesheets: 78  },
-  { name: "Mindtree",     cost: 230000, revenue: 1050000, timesheets: 71  },
-  { name: "Capgemini",    cost: 205000, revenue: 980000,  timesheets: 52  },
-  { name: "FinanceHub",   cost: 165000, revenue: 620000,  timesheets: 29  },
-  { name: "MedSure",      cost: 95000,  revenue: 390000,  timesheets: 20  },
-  { name: "GlobalStaff",  cost: 60000,  revenue: 220000,  timesheets: 16  },
-].map(c => ({ ...c, efficiency: Math.round((c.cost / c.revenue) * 100 * 10) / 10 }))
+  { name: "Infosys BPM",       cost: 250000, revenue: 8400000, items: 312 },
+  { name: "Hexaware",          cost: 210000, revenue: 6800000, items: 268 },
+  { name: "L&T Infotech",      cost: 170000, revenue: 5200000, items: 198 },
+  { name: "Capgemini India",   cost: 160000, revenue: 4700000, items: 178 },
+  { name: "Mindtree",          cost: 150000, revenue: 4400000, items: 162 },
+  { name: "Cognizant Digital", cost: 140000, revenue: 3700000, items: 148 },
+  { name: "Persistent Systems",cost:  90000, revenue: 2800000, items:  92 },
+  { name: "Mphasis Corp",      cost:  90000, revenue: 2300000, items:  86 },
+].map(c => ({ ...c, efficiency: Math.round((c.cost / c.revenue) * 100 * 100) / 100 }))
 
-// Agent performance trend
+// Agent performance trend (auto-approval %)
 const agentPerformance = [
   { month: "Nov",  autoRate: 57,  manualRate: 43,  errorRate: 5.2 },
   { month: "Dec",  autoRate: 58,  manualRate: 42,  errorRate: 4.8 },
@@ -93,15 +111,19 @@ const agentPerformance = [
   { month: "Apr",  autoRate: 62,  manualRate: 38,  errorRate: 3.1 },
 ]
 
-// Resource utilization — timesheets per ops person
+// Resource utilization — cases resolved per ops FTE / month.
+// "Cases" = unified ops items across timesheets + onboarding + payroll +
+// compliance inboxes. April: 730/FTE × 4 FTE ≈ 2,920 items handled total.
+// Headcount drops as AI absorbs more triage and validation work.
 const resourceUtil = [
-  { month: "Nov",  perPerson: 260,  headcount: 7 },
-  { month: "Dec",  perPerson: 280,  headcount: 6 },
-  { month: "Jan",  perPerson: 340,  headcount: 6 },
-  { month: "Feb",  perPerson: 363,  headcount: 6 },
-  { month: "Mar",  perPerson: 478,  headcount: 5 },
-  { month: "Apr",  perPerson: 636,  headcount: 4 },
+  { month: "Nov",  perPerson: 320,  headcount: 7 },
+  { month: "Dec",  perPerson: 340,  headcount: 6 },
+  { month: "Jan",  perPerson: 410,  headcount: 6 },
+  { month: "Feb",  perPerson: 440,  headcount: 6 },
+  { month: "Mar",  perPerson: 557,  headcount: 5 },
+  { month: "Apr",  perPerson: 730,  headcount: 4 },
 ]
+const APR_TOTAL_ITEMS = 730 * 4  // 2,920
 
 // Ops cost breakup — sub-functions typical for Indian managed HRMS ops
 // service. Total monthly ops cost ₹18L distributed across functions.
@@ -136,7 +158,7 @@ export default function DashboardPage() {
               Good morning, Riya
             </h1>
             <p className="text-sm mt-1" style={{ color: "var(--text-3)" }}>
-              April 2026 · {clients.length} clients · 636 timesheets processed
+              April 2026 · {clients.length} clients · {APR_TOTAL_ITEMS.toLocaleString("en-IN")} ops cases resolved
             </p>
           </div>
 
@@ -168,21 +190,21 @@ export default function DashboardPage() {
           {/* ── Charts grid ──────────────────────────────────────── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-            {/* 1. Ops Cost as % of Revenue — without AI vs with AI */}
+            {/* 1. Ops Cost as % of Net Revenue — without AI vs with AI */}
             <div className="glass p-6">
               <div className="mb-5 flex items-start justify-between gap-3">
                 <div>
                   <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>
-                    Ops Cost as % of Revenue
+                    Ops Cost as % of Net Revenue
                   </div>
                   <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                    AI savings: 10pp lower than projected without AI
+                    Industry band 1–4% · AI saves ₹{(APR_AI_SAVINGS / 100000).toFixed(0)}L/mo (~₹{((APR_AI_SAVINGS * 12) / 10000000).toFixed(2)}Cr/yr)
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs" style={{ color: "var(--text-3)" }}>Apr 2026</div>
                   <div className="text-[15px] font-semibold" style={{ color: "#059669" }}>
-                    21.2%
+                    {APR_OPS_RATIO.toFixed(1)}%
                   </div>
                 </div>
               </div>
@@ -213,7 +235,7 @@ export default function DashboardPage() {
                       tick={{ fontSize: 10, fill: "var(--text-3)" }}
                       axisLine={false} tickLine={false} width={40}
                       tickFormatter={v => `${v}%`}
-                      domain={[15, 35]}
+                      domain={[2, 7]}
                     />
                     <Tooltip
                       contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
@@ -287,7 +309,7 @@ export default function DashboardPage() {
                 <div>
                   <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>Ops Cost by Client</div>
                   <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                    Cost · efficiency (cost ÷ client revenue) — April 2026
+                    Top 8 ≈ ₹12.6L of ₹18L · efficiency = ops cost ÷ client revenue
                   </div>
                 </div>
               </div>
@@ -297,8 +319,8 @@ export default function DashboardPage() {
                 return (
                   <div className="space-y-2.5">
                     {clientCost.map(c => {
-                      const effColor = c.efficiency < 22 ? "#059669"
-                                    : c.efficiency < 28 ? "var(--warn)"
+                      const effColor = c.efficiency < 3.3 ? "#059669"
+                                    : c.efficiency < 4.0 ? "var(--warn)"
                                     : "var(--danger)"
                       return (
                         <div key={c.name} className="flex items-center gap-3 text-[12px]">
@@ -323,9 +345,9 @@ export default function DashboardPage() {
 
               <div className="flex items-center gap-4 mt-4 pt-3 text-[11px]" style={{ color: "var(--text-3)", borderTop: "1px solid var(--border)" }}>
                 <span>Efficiency thresholds:</span>
-                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: "#059669" }} />&lt;22% healthy</span>
-                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--warn)" }} />22–28% watch</span>
-                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--danger)" }} />&gt;28% risk</span>
+                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: "#059669" }} />&lt;3.3% healthy</span>
+                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--warn)" }} />3.3–4.0% watch</span>
+                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--danger)" }} />&gt;4.0% risk</span>
               </div>
             </div>
 
@@ -375,18 +397,18 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* 4. Resource Utilization — single metric, equal bar widths */}
+            {/* 4. Resource Utilization — cases resolved per FTE per month */}
             <div className="glass p-6">
               <div className="mb-5 flex items-start justify-between gap-3">
                 <div>
                   <div className="text-[15px] font-semibold" style={{ color: "var(--text-1)" }}>Resource Utilization</div>
                   <div className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                    Timesheets per ops team member — headcount reducing as AI scales
+                    Cases resolved per FTE — across timesheet, onboarding, payroll &amp; compliance inboxes
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs" style={{ color: "var(--text-3)" }}>Apr headcount</div>
-                  <div className="text-[15px] font-semibold" style={{ color: "var(--lavender)" }}>4 people</div>
+                  <div className="text-[15px] font-semibold" style={{ color: "var(--lavender)" }}>4 FTE</div>
                 </div>
               </div>
               <div style={{ height: 200 }}>
@@ -399,7 +421,7 @@ export default function DashboardPage() {
                       contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }}
                       formatter={(v: number, name: string) => [v, name]}
                     />
-                    <Bar dataKey="perPerson" fill="var(--accent)" radius={[4,4,0,0]} barSize={28} name="Timesheets / person" />
+                    <Bar dataKey="perPerson" fill="var(--accent)" radius={[4,4,0,0]} barSize={28} name="Cases / FTE" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
