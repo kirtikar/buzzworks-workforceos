@@ -1179,3 +1179,125 @@ export function getPenaltyExposureForClient(clientName: string): number {
   return getRegulationsForClient(clientName)
     .reduce((sum, r) => sum + r.penaltyAmount, 0)
 }
+
+/** Look up a single regulation by id. */
+export function getRegulationById(id: number): Regulation | undefined {
+  return REGULATIONS.find(r => r.id === id)
+}
+
+/**
+ * Build a long-form article body for a regulation — sections for context,
+ * compliance requirements, effective date, penalty, and action steps.
+ */
+export function getArticleContent(reg: Regulation): {
+  intro:        string
+  context:      string
+  requirements: string[]
+  deadlines:    string
+  penaltySection: string
+  actionSteps:    string[]
+  affectedScope:  string
+} {
+  const rng = mulberry32(reg.id + 7919)
+
+  const intro = reg.summary
+
+  const contextPhrases = [
+    `This notification is part of the ${reg.authority}'s ongoing effort to modernise and standardise compliance obligations in the ${reg.category.toLowerCase()} domain.`,
+    `The ${reg.authority} issued this update in the wider context of recent statutory reforms affecting the ${reg.category.toLowerCase()} framework applicable to organisations operating in ${reg.region}.`,
+    `This regulatory change was introduced following industry consultation and is expected to reduce ambiguity around existing compliance obligations for affected entities.`,
+    `The issuing authority has positioned this update as a clarification to existing rules, with an emphasis on predictable application across ${reg.region} jurisdictions.`,
+  ]
+  const context = pick(contextPhrases, rng)
+
+  const requirementBases: Record<ComplianceCategory, string[]> = {
+    "Labour": [
+      "Update payroll systems to reflect the revised contribution or wage structure before the effective date.",
+      "Communicate the change to all affected employees via a formal circular or internal portal notice.",
+      "Retain supporting documents and acknowledgement forms for audit purposes for a minimum of seven years.",
+      "File the relevant returns or declarations with the concerned authority within the stipulated timeline.",
+      "Review and update HR policy documents, employee handbooks, and standing orders where applicable.",
+    ],
+    "Finance & Taxation": [
+      "Amend payroll and finance systems to correctly compute the revised tax or duty liabilities.",
+      "Ensure vendor and employee records reflect the updated reference or identification numbers.",
+      "Retain filing acknowledgements and computation sheets for at least eight assessment years.",
+      "Reconcile prior period filings and issue corrective returns if the notification applies retrospectively.",
+      "Update internal accounting manuals and training materials for the finance operations team.",
+    ],
+    "EHS": [
+      "Conduct a site-level risk assessment against the revised standards within 30 days of the effective date.",
+      "Update safety training modules and conduct refresher sessions for all affected workers.",
+      "Maintain inspection registers, incident logs, and environmental test reports as prescribed.",
+      "File the periodic environmental or safety return with the concerned regulator on schedule.",
+      "Display the updated statutory notice in prominent locations accessible to all workers.",
+    ],
+    "Commercial": [
+      "Update product labelling, packaging, or marketing material to reflect the revised standard.",
+      "Obtain or renew the required certification or licence before the stated deadline.",
+      "Maintain records of compliance testing and third-party verification reports.",
+      "Train sales and distribution staff on the revised commercial obligations.",
+      "Review supplier and distributor contracts for alignment with the new standard.",
+    ],
+    "Secretarial": [
+      "File the prescribed form or disclosure with the authority within the stipulated timeline.",
+      "Update statutory registers and board minutes to reflect the new requirement.",
+      "Obtain necessary approvals from the board or shareholders where required.",
+      "Retain filing acknowledgements and supporting documents for at least eight years.",
+      "Brief the company secretary and compliance officer on the revised obligations.",
+    ],
+    "Industry Specific": [
+      "Assess the applicability of the notification to your organisation's specific sector and operations.",
+      "Update internal processes, standard operating procedures, and system configurations as required.",
+      "Communicate the change to relevant internal stakeholders and external partners.",
+      "Maintain records and supporting documentation as may be prescribed.",
+      "Engage with the issuing authority's help desk or grievance portal if clarification is needed.",
+    ],
+    "General": [
+      "Review the notification in light of your organisation's specific circumstances and obligations.",
+      "Take such steps as may be advisable to ensure full compliance within the stated timeline.",
+      "Retain copies of the notification and any internal guidance issued in response.",
+      "Monitor for subsequent clarifications or amendments from the issuing authority.",
+    ],
+  }
+  const requirements = pickN(requirementBases[reg.category], 3 + Math.floor(rng() * 3), rng)
+
+  const deadlines = reg.effectiveDate === "TBD"
+    ? `The effective date has not been finalised. The issuing authority is expected to announce the commencement date through a subsequent notification.`
+    : `This regulation takes effect on ${reg.effectiveDate}. Organisations are expected to have achieved full compliance by this date. Retrospective application has not been indicated.`
+
+  const penaltySection = reg.penaltyAmount > 0
+    ? `Non-compliance may attract a maximum penalty of up to ₹${reg.penaltyAmount.toLocaleString("en-IN")} as prescribed. ${reg.penaltyDescription} Additional consequences may include prosecution, regulatory action, suspension of operations, or reputational impact depending on the severity and nature of the default.`
+    : `No direct monetary penalty has been prescribed for this update. However, non-compliance may result in procedural delays, refusal of subsequent applications, or action under general provisions of the applicable statute.`
+
+  const actionSteps = [
+    "Log the notification in your compliance tracker with the effective date and internal owner.",
+    "Assess applicability to your organisation and the specific locations, employees, or contracts affected.",
+    "Prepare an implementation plan with milestones tracking back from the effective date.",
+    "Engage internal stakeholders — HR, Finance, Legal, IT — as appropriate for execution.",
+    "Document the completion of each action step with evidence for audit readiness.",
+  ]
+
+  const affectedScope = reg.clientsAffected.length === 0
+    ? "Applicability is general and will depend on each organisation's specific circumstances."
+    : reg.clientsAffected.some(c => c.startsWith("All "))
+      ? `This regulation applies to ${reg.clientsAffected[0]}. Operations leads should confirm specific applicability for their individual establishments.`
+      : `Based on current operational footprint, this notification directly affects ${reg.clientsAffected.length} client engagement${reg.clientsAffected.length === 1 ? "" : "s"}: ${reg.clientsAffected.join(", ")}.`
+
+  return { intro, context, requirements, deadlines, penaltySection, actionSteps, affectedScope }
+}
+
+/** Find related regulations — same category or same authority — excluding self. */
+export function getRelatedRegulations(reg: Regulation, limit = 5): Regulation[] {
+  const related = REGULATIONS.filter(r =>
+    r.id !== reg.id &&
+    (r.category === reg.category || r.authority === reg.authority)
+  )
+  // Prefer same authority matches first, then same category
+  related.sort((a, b) => {
+    const aSameAuth = a.authority === reg.authority ? 0 : 1
+    const bSameAuth = b.authority === reg.authority ? 0 : 1
+    return aSameAuth - bSameAuth
+  })
+  return related.slice(0, limit)
+}

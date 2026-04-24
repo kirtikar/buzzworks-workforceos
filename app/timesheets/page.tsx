@@ -4,8 +4,11 @@ import { useState, useMemo, useRef, useEffect } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import ComplianceInbox from "@/components/ComplianceInbox"
+import OnboardingInbox from "@/components/OnboardingInbox"
+import PayrollInbox from "@/components/PayrollInbox"
+import { ONBOARDING_ISSUES, PAYROLL_ISSUES } from "@/lib/onboarding-data"
 import NotifyPanel, {
-  buildTimesheetFlag, buildTimesheetReject, buildTimesheetApprove,
+  buildTimesheetFlag, buildTimesheetReject, buildTimesheetApprove, buildTimesheetNotifyTeam,
   type NotifyContext,
 } from "@/components/NotifyPanel"
 import {
@@ -27,7 +30,7 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ActionCategory = "all" | "timesheets" | "compliance" | "documents" | "payroll"
+type ActionCategory = "all" | "timesheets" | "compliance" | "onboarding" | "payroll"
 
 interface BulkRule {
   label: string
@@ -163,9 +166,10 @@ export default function InboxPage() {
   const [notifyCtx, setNotifyCtx]     = useState<NotifyContext | null>(null)
   const PAGE_SIZE = 50
 
-  function openNotifyFor(ts: Timesheet, kind: "flag" | "reject" | "approve") {
+  function openNotifyFor(ts: Timesheet, kind: "flag" | "reject" | "approve" | "team") {
     const emp = getEmployeeFromPool(ts.employeeId)
     if (!emp) return
+    const client = getClient(ts.clientId)
     const common = {
       employeeName:  emp.name,
       employeeEmail: emp.email,
@@ -181,6 +185,25 @@ export default function InboxPage() {
       setNotifyCtx(buildTimesheetReject({
         ...common,
         reason: ts.flagReason ?? "Submission does not meet policy criteria",
+      }))
+    } else if (kind === "team") {
+      const issues = ts.validationChecks
+        .filter(c => c.result === "fail" || c.result === "warning")
+        .map(c => `${c.rule} — ${c.detail}`)
+      if (ts.flagReason && !issues.some(i => i.includes(ts.flagReason!))) {
+        issues.unshift(`Flag reason: ${ts.flagReason}`)
+      }
+      setNotifyCtx(buildTimesheetNotifyTeam({
+        employeeName:    emp.name,
+        employeeCode:    emp.employeeCode,
+        clientName:      client?.name ?? ts.clientId,
+        period:          ts.period,
+        totalHours:      ts.totalHours,
+        overtimeHours:   ts.overtimeHours,
+        validationScore: ts.validationScore,
+        aiConfidence:    ts.aiConfidence,
+        inconsistencies: issues,
+        managerEmail:    emp.managerEmail,
       }))
     } else {
       setNotifyCtx(buildTimesheetApprove({
@@ -326,12 +349,15 @@ export default function InboxPage() {
   // Compliance count = regulations needing action
   const complianceActionCount = REGULATIONS.filter(r => r.actionRequired).length
 
+  const onboardingCount = ONBOARDING_ISSUES.length
+  const payrollCount    = PAYROLL_ISSUES.length
+
   // Category tabs
   const categories: { value: ActionCategory; label: string; count: number }[] = [
     { value: "timesheets",  label: "Timesheets",  count: actionableCount },
     { value: "compliance",  label: "Compliance",  count: complianceActionCount },
-    { value: "documents",   label: "Documents",   count: 5 },
-    { value: "payroll",     label: "Payroll",     count: 2 },
+    { value: "onboarding",  label: "Onboarding",  count: onboardingCount },
+    { value: "payroll",     label: "Payroll",     count: payrollCount },
   ]
 
   return (
@@ -381,6 +407,10 @@ export default function InboxPage() {
 
           {category === "compliance" ? (
             <ComplianceInbox />
+          ) : category === "onboarding" ? (
+            <OnboardingInbox />
+          ) : category === "payroll" ? (
+            <PayrollInbox />
           ) : category !== "timesheets" ? (
             <div className="flex-1 flex items-center justify-center text-sm" style={{ color: "var(--text-3)" }}>
               {categories.find(c => c.value === category)?.label ?? "Section"} — coming soon
@@ -929,6 +959,12 @@ export default function InboxPage() {
                       onClick={() => approveTs(detail.id)}
                       className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[13px]">
                       <CheckCircle2 size={14} /> Approve timesheet
+                    </button>
+                    <button
+                      onClick={() => openNotifyFor(detail, "team")}
+                      className="w-full btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
+                      style={{ color: "var(--accent)", borderColor: "var(--pink-100)", background: "var(--pink-50)" }}>
+                      <Mail size={12} /> Notify team — flag inconsistencies
                     </button>
                     <div className="grid grid-cols-2 gap-2">
                       <button

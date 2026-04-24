@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ComposedChart, Line } from "recharts"
 import { getRegulationsForClient, CATEGORY_META, RISK_META } from "@/lib/compliance-data"
+import OnboardingInbox from "@/components/OnboardingInbox"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ function fmtINR(n: number) {
 function fmtNum(n: number) { return n.toLocaleString("en-IN") }
 function initials(name: string) { return name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() }
 
-const TABS = ["Overview", "Timesheets", "Employees", "Policy", "Compliance", "Payroll"] as const
+const TABS = ["Overview", "Timesheets", "Employees", "Onboarding", "Policy", "Compliance", "Payroll"] as const
 type Tab = typeof TABS[number]
 
 // ─── Tab: Overview ───────────────────────────────────────────────────────────
@@ -719,6 +720,11 @@ export default function ClientDetailPage() {
           {tab === "Overview"    && <OverviewTab client={client} portal={portal} />}
           {tab === "Timesheets"  && <TimesheetsTab clientId={client.id} />}
           {tab === "Employees"   && <EmployeesTab clientId={client.id} employeeCount={client.employeeCount} />}
+          {tab === "Onboarding"  && (
+            <div className="glass overflow-hidden" style={{ height: "calc(100vh - 220px)" }}>
+              <OnboardingInbox clientId={client.id} />
+            </div>
+          )}
           {tab === "Policy"      && <PolicyTab clientId={client.id} />}
           {tab === "Compliance"  && <ComplianceTab client={client} />}
           {tab === "Payroll"     && <PayrollTab clientId={client.id} />}

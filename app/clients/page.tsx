@@ -10,7 +10,7 @@ import { getActionCountForClient } from "@/lib/compliance-data"
 import {
   Search, Building2, Users, Clock, ArrowRight, X,
   ChevronDown, Globe, Mail, CheckCircle2, TrendingUp, Bell,
-  Briefcase, ArrowUpDown,
+  Briefcase, ArrowUpDown, MapPin,
 } from "lucide-react"
 import clsx from "clsx"
 
@@ -229,6 +229,7 @@ export default function ClientsPage() {
   const [search,        setSearch]        = useState("")
   const [selIndustries, setSelIndustries] = useState<Industry[]>([])
   const [selPortals,    setSelPortals]    = useState<string[]>([])
+  const [selRegions,    setSelRegions]    = useState<string[]>([])
   const [sortBy,        setSortBy]        = useState<"name" | "employees" | "payroll" | "compliance">("employees")
 
   function toggle<T>(arr: T[], set: (v: T[]) => void, val: T) {
@@ -240,9 +241,11 @@ export default function ClientsPage() {
     if (search) list = list.filter(c =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.code.toLowerCase().includes(search.toLowerCase()) ||
-      c.city.toLowerCase().includes(search.toLowerCase())
+      c.city.toLowerCase().includes(search.toLowerCase()) ||
+      c.state.toLowerCase().includes(search.toLowerCase())
     )
     if (selIndustries.length) list = list.filter(c => selIndustries.includes(c.industry as Industry))
+    if (selRegions.length)    list = list.filter(c => selRegions.includes(c.state))
     if (selPortals.length) list = list.filter(c =>
       selPortals.includes("email") ? c.emailOnly : false ||
       (c.portalId && selPortals.includes(c.portalId))
@@ -254,15 +257,19 @@ export default function ClientsPage() {
                                 b.complianceScore - a.complianceScore
     )
     return list
-  }, [search, selIndustries, selPortals, sortBy])
+  }, [search, selIndustries, selPortals, selRegions, sortBy])
 
-  const activeFilterCount = selIndustries.length + selPortals.length
+  const activeFilterCount = selIndustries.length + selPortals.length + selRegions.length
 
   const industryOptions = INDUSTRIES.map(i => ({ value: i, label: i }))
   const portalOptions   = [
     ...portals.map(p => ({ value: p.id, label: p.shortName })),
     { value: "email", label: "Email only" },
   ]
+  const regionOptions = useMemo(
+    () => Array.from(new Set(clients.map(c => c.state))).sort().map(s => ({ value: s, label: s })),
+    []
+  )
 
   const totalEmployees = clients.reduce((s, c) => s + c.employeeCount, 0)
 
@@ -300,6 +307,10 @@ export default function ClientsPage() {
                 selected={selIndustries} onToggle={v => toggle(selIndustries, setSelIndustries, v as Industry)}
                 onClear={() => setSelIndustries([])} />
 
+              <FilterDropdown label="Region" icon={MapPin} options={regionOptions}
+                selected={selRegions} onToggle={v => toggle(selRegions, setSelRegions, v)}
+                onClear={() => setSelRegions([])} />
+
               <FilterDropdown label="Source" icon={Globe} options={portalOptions}
                 selected={selPortals} onToggle={v => toggle(selPortals, setSelPortals, v)}
                 onClear={() => setSelPortals([])} />
@@ -319,7 +330,7 @@ export default function ClientsPage() {
 
               {/* Clear all */}
               {activeFilterCount > 0 && (
-                <button onClick={() => { setSelIndustries([]); setSelPortals([]); setSearch("") }}
+                <button onClick={() => { setSelIndustries([]); setSelPortals([]); setSelRegions([]); setSearch("") }}
                   className="flex items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold flex-shrink-0"
                   style={{ color: "var(--danger)", background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
                   <X size={11} /> Clear ({activeFilterCount})

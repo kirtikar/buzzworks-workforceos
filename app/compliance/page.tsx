@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import {
@@ -120,6 +121,7 @@ function fmtPenalty(n: number) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CompliancePage() {
+  const router = useRouter()
   const [selCategories,   setSelCategories]   = useState<ComplianceCategory[]>([])
   const [selClients,      setSelClients]      = useState<string[]>([])
   const [selRegions,      setSelRegions]      = useState<string[]>([])
@@ -288,7 +290,9 @@ export default function CompliancePage() {
                 const opMeta     = RISK_META[reg.operationalImpact]
 
                 return (
-                  <article key={reg.id} className="glass p-6 transition-shadow hover:shadow-lg">
+                  <article key={reg.id}
+                    onClick={() => router.push(`/compliance/${reg.id}`)}
+                    className="glass p-6 transition-shadow hover:shadow-lg cursor-pointer">
 
                     {/* Top meta row */}
                     <div className="flex items-center gap-2 flex-wrap mb-3">
@@ -392,6 +396,7 @@ export default function CompliancePage() {
                         </span>
                       ))}
                       <a href={reg.sourceUrl} target="_blank" rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
                         className="ml-auto flex items-center gap-1 text-[11px] font-medium transition-opacity hover:opacity-70"
                         style={{ color: "var(--accent)" }}>
                         <ExternalLink size={11} />

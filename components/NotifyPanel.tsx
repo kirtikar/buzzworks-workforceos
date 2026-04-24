@@ -10,7 +10,10 @@ export type NotifyKind =
   | "timesheet-flag"
   | "timesheet-reject"
   | "timesheet-approve"
+  | "timesheet-team"
   | "document-request"
+  | "onboarding-issue"
+  | "payroll-issue"
 
 export interface NotifyContext {
   kind:        NotifyKind
@@ -151,6 +154,153 @@ Buzzworks Ops
   }
 }
 
+// Internal team alert — highlights inconsistencies found on a timesheet.
+// Used when ops wants to raise an issue with the HR/payroll/manager team
+// rather than writing directly to the employee.
+export function buildTimesheetNotifyTeam(input: {
+  employeeName:  string
+  employeeCode?: string
+  clientName:    string
+  period:        string
+  totalHours:    number
+  overtimeHours: number
+  validationScore: number
+  inconsistencies: string[]         // check.rule + check.detail lines
+  aiConfidence?: number
+  managerEmail?: string
+  sourceUrl?:    string
+}): NotifyContext {
+  const issueList = input.inconsistencies.length > 0
+    ? input.inconsistencies.map(i => `• ${i}`).join("\n")
+    : "• Score below threshold — manual review recommended"
+
+  const body = `Team,
+
+Timesheet inconsistencies detected and require review:
+
+Employee: ${input.employeeName}${input.employeeCode ? ` (${input.employeeCode})` : ""}
+Client: ${input.clientName}
+Period: ${input.period}
+Hours: ${input.totalHours}h${input.overtimeHours > 0 ? ` (incl. ${input.overtimeHours}h OT)` : ""}
+Validation score: ${input.validationScore}${input.aiConfidence ? ` · JARVIS confidence ${input.aiConfidence}%` : ""}
+
+Issues flagged:
+${issueList}
+
+Please confirm whether to approve with exceptions, flag the employee, or reject. Ops needs sign-off by EOD to keep payroll on track.
+
+— RIPLEY on behalf of Ops`
+
+  return {
+    kind:        "timesheet-team",
+    to:          "hr-ops@buzzworks.com",
+    cc:          input.managerEmail ?? "payroll@buzzworks.com",
+    subject:     `Timesheet review — ${input.employeeName} · ${input.period}`,
+    body,
+    sourceUrl:   input.sourceUrl,
+    sourceLabel: "Timesheet detail",
+  }
+}
+
+export function buildDocumentRequest(input: {
+  employeeName:  string
+  employeeEmail: string
+  clientName:    string
+  docType:       string
+  reason:        string
+  managerEmail?: string
+}): NotifyContext {
+  const body = `Hi ${input.employeeName.split(" ")[0]},
+
+We need an updated copy of your ${input.docType} on file for ${input.clientName}.
+
+Reason: ${input.reason}
+
+Please upload a valid copy via the employee portal within 3 business days. Reply to this email if you need support or clarification.
+
+Thanks,
+Buzzworks Ops
+— Drafted by RIPLEY`
+
+  return {
+    kind:    "document-request",
+    to:      input.employeeEmail,
+    cc:      input.managerEmail,
+    subject: `Document update required — ${input.docType}`,
+    body,
+  }
+}
+
+// Internal alert about an onboarding validation/reconciliation issue.
+export function buildOnboardingIssue(input: {
+  candidateName: string
+  clientName:    string
+  issueType:     string
+  docs?:         string[]
+  inconsistencies: string[]
+}): NotifyContext {
+  const issueList = input.inconsistencies.length > 0
+    ? input.inconsistencies.map(i => `• ${i}`).join("\n")
+    : "• See candidate file for details"
+
+  const body = `Team,
+
+Onboarding validation issue detected for a new candidate:
+
+Candidate: ${input.candidateName}
+Client: ${input.clientName}
+Issue type: ${input.issueType}
+${input.docs && input.docs.length > 0 ? `Documents: ${input.docs.join(", ")}\n` : ""}
+Findings:
+${issueList}
+
+Onboarding is blocked until this is resolved. Please reconcile the flagged fields or request updated documents. Target resolution: 48 hours.
+
+— RIPLEY on behalf of Onboarding Ops`
+
+  return {
+    kind:        "onboarding-issue",
+    to:          "onboarding-ops@buzzworks.com",
+    cc:          "hr-ops@buzzworks.com",
+    subject:     `Onboarding blocker — ${input.candidateName} · ${input.issueType}`,
+    body,
+  }
+}
+
+// Internal alert about a payroll-run issue that blocks a cycle.
+export function buildPayrollIssue(input: {
+  clientName:  string
+  cycle:       string
+  issueType:   string
+  affectedCount?: number
+  details:     string[]
+}): NotifyContext {
+  const list = input.details.length > 0
+    ? input.details.map(i => `• ${i}`).join("\n")
+    : "• See payroll detail for context"
+
+  const body = `Team,
+
+Payroll issue detected that may block the ${input.cycle} cycle for ${input.clientName}:
+
+Issue type: ${input.issueType}
+${input.affectedCount ? `Affected employees: ${input.affectedCount}\n` : ""}
+Details:
+${list}
+
+Please confirm the correct treatment so the cycle can close on schedule.
+
+— RIPLEY on behalf of Payroll Ops`
+
+  return {
+    kind:        "payroll-issue",
+    to:          "payroll@buzzworks.com",
+    cc:          "finance-ops@buzzworks.com",
+    subject:     `Payroll review — ${input.clientName} · ${input.cycle}`,
+    body,
+  }
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function NotifyPanel({
@@ -197,7 +347,10 @@ export default function NotifyPanel({
     "timesheet-flag":      "Timesheet flag",
     "timesheet-reject":    "Timesheet rejection",
     "timesheet-approve":   "Approval confirmation",
+    "timesheet-team":      "Timesheet team alert",
     "document-request":    "Document request",
+    "onboarding-issue":    "Onboarding issue",
+    "payroll-issue":       "Payroll issue",
   } as const)[context.kind]
 
   return (
