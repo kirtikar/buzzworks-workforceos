@@ -32,7 +32,7 @@ export default function Sidebar() {
             <span className="text-white text-sm font-bold">B</span>
           </div>
           <div>
-            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>Buzz Agent Dash</div>
+            <div className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>Agent Dashboard</div>
             <div className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>Buzzworks</div>
           </div>
         </div>
