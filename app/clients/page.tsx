@@ -290,19 +290,6 @@ export default function ClientsPage() {
           {/* Filters — flex-wrap allows dropdowns to escape without overflow clip */}
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              {/* Search */}
-              <div className="relative flex-shrink-0">
-                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
-                <input
-                  className="glass-input pl-8 text-xs py-2 w-52"
-                  placeholder="Search clients…"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
-              </div>
-
-              <div className="w-px h-5 flex-shrink-0" style={{ background: "var(--border)" }} />
-
               <FilterDropdown label="Industry" icon={Briefcase} options={industryOptions}
                 selected={selIndustries} onToggle={v => toggle(selIndustries, setSelIndustries, v as Industry)}
                 onClear={() => setSelIndustries([])} />
@@ -337,7 +324,18 @@ export default function ClientsPage() {
                 </button>
               )}
 
-              <span className="text-xs ml-auto flex-shrink-0" style={{ color: "var(--text-3)" }}>
+              {/* Search — pinned to the right to match Compliance Inbox */}
+              <div className="relative ml-auto">
+                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+                <input
+                  className="glass-input pl-8 text-xs py-2 w-52"
+                  placeholder="Search clients…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </div>
+
+              <span className="text-xs flex-shrink-0" style={{ color: "var(--text-3)" }}>
                 {filtered.length} of {clients.length}
               </span>
             </div>

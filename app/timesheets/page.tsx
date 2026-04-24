@@ -424,17 +424,6 @@ export default function InboxPage() {
             {/* Filter bar — multi-select dropdowns */}
             <div className="px-6 lg:px-8 py-3 flex-shrink-0" style={{ background: "var(--surface)", boxShadow: "0 1px 0 var(--border)" }}>
               <div className="flex flex-wrap items-center gap-2">
-                {/* Search */}
-                <div className="relative flex-shrink-0">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
-                  <input
-                    className="glass-input pl-9 py-2 text-[13px] w-52"
-                    placeholder="Search employee, client…"
-                    value={search}
-                    onChange={e => { setSearch(e.target.value); setPage(1) }}
-                  />
-                </div>
-
                 {/* Actionable toggle */}
                 <button
                   onClick={() => { setActionableOnly(!actionableOnly); setPage(1) }}
@@ -493,8 +482,19 @@ export default function InboxPage() {
                   </button>
                 )}
 
+                {/* Search — pinned to the right to match Compliance Inbox */}
+                <div className="relative ml-auto">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+                  <input
+                    className="glass-input pl-9 py-2 text-[13px] w-52"
+                    placeholder="Search employee, client…"
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setPage(1) }}
+                  />
+                </div>
+
                 {/* Sort dropdown — matches Compliance Inbox */}
-                <div className="flex items-center gap-2 ml-auto">
+                <div className="flex items-center gap-2">
                   <span className="text-xs whitespace-nowrap" style={{ color: "var(--text-3)" }}>Sort by</span>
                   <div className="relative">
                     <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}

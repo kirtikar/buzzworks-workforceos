@@ -794,18 +794,6 @@ export default function EmployeesPage() {
         <div className="border-b flex-shrink-0"
           style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
         <div className="flex flex-wrap items-center gap-2 px-4 lg:px-6 py-2.5">
-          <div className="relative flex-shrink-0">
-            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
-            <input
-              className="glass-input pl-8 pr-3 py-2 text-xs w-48"
-              placeholder="Name, code, role…"
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(1) }}
-            />
-          </div>
-
-          <div className="w-px h-4 flex-shrink-0" style={{ background: "var(--border)" }} />
-
           <FilterDropdown label="Client" options={clientOptions}
             selected={selClients} onToggle={v => toggle(selClients, setSelClients, v)} onClear={() => setSelClients([])} />
           <FilterDropdown label="Department" icon={Briefcase} options={categoryOptions}
@@ -816,6 +804,25 @@ export default function EmployeesPage() {
             selected={selStatuses} onToggle={v => toggle(selStatuses, setSelStatuses, v as EmploymentStatus)} onClear={() => setSelStatuses([])} />
           <DateRangeFilter fromDate={fromDate} toDate={toDate}
             onChange={(f, t) => { setFromDate(f); setToDate(t); setPage(1) }} />
+
+          {activeFilterCount > 0 && (
+            <button onClick={clearAll}
+              className="flex items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold flex-shrink-0"
+              style={{ color: "var(--danger)", background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
+              <X size={11} /> Clear ({activeFilterCount})
+            </button>
+          )}
+
+          {/* Search — pinned to the right to match Compliance Inbox */}
+          <div className="relative ml-auto">
+            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+            <input
+              className="glass-input pl-8 pr-3 py-2 text-xs w-48"
+              placeholder="Name, code, role…"
+              value={search}
+              onChange={e => { setSearch(e.target.value); setPage(1) }}
+            />
+          </div>
 
           <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs flex-shrink-0"
             style={{ background: "var(--surface)", borderColor: "var(--border)", color: "var(--text-2)" }}>
@@ -828,14 +835,6 @@ export default function EmployeesPage() {
               <option value="leave">Leave</option>
             </select>
           </div>
-
-          {activeFilterCount > 0 && (
-            <button onClick={clearAll}
-              className="flex items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold flex-shrink-0"
-              style={{ color: "var(--danger)", background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
-              <X size={11} /> Clear ({activeFilterCount})
-            </button>
-          )}
         </div>
         </div>
 
