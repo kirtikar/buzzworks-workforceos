@@ -170,29 +170,29 @@ export default function InboxPage() {
     const emp = getEmployeeFromPool(ts.employeeId)
     if (!emp) return
     const client = getClient(ts.clientId)
+
+    // Failed / warning checks become bullet points; the human-set flag
+    // reason (if any) leads the list so it shows up as the subject.
+    const issues = ts.validationChecks
+      .filter(c => c.result === "fail" || c.result === "warning")
+      .map(c => `${c.rule} — ${c.detail}`)
+    if (ts.flagReason && !issues.some(i => i.includes(ts.flagReason!))) {
+      issues.unshift(ts.flagReason)
+    }
+
     const common = {
       employeeName:  emp.name,
+      employeeCode:  emp.employeeCode,
       employeeEmail: emp.email,
       period:        ts.period,
       managerEmail:  emp.managerEmail,
     }
+
     if (kind === "flag") {
-      setNotifyCtx(buildTimesheetFlag({
-        ...common,
-        reason: ts.flagReason ?? "Review required — validation score below threshold",
-      }))
+      setNotifyCtx(buildTimesheetFlag({ ...common, issues }))
     } else if (kind === "reject") {
-      setNotifyCtx(buildTimesheetReject({
-        ...common,
-        reason: ts.flagReason ?? "Submission does not meet policy criteria",
-      }))
+      setNotifyCtx(buildTimesheetReject({ ...common, issues }))
     } else if (kind === "team") {
-      const issues = ts.validationChecks
-        .filter(c => c.result === "fail" || c.result === "warning")
-        .map(c => `${c.rule} — ${c.detail}`)
-      if (ts.flagReason && !issues.some(i => i.includes(ts.flagReason!))) {
-        issues.unshift(`Flag reason: ${ts.flagReason}`)
-      }
       setNotifyCtx(buildTimesheetNotifyTeam({
         employeeName:    emp.name,
         employeeCode:    emp.employeeCode,
@@ -201,7 +201,6 @@ export default function InboxPage() {
         totalHours:      ts.totalHours,
         overtimeHours:   ts.overtimeHours,
         validationScore: ts.validationScore,
-        aiConfidence:    ts.aiConfidence,
         inconsistencies: issues,
         managerEmail:    emp.managerEmail,
       }))

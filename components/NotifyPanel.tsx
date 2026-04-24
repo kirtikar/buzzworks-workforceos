@@ -126,68 +126,101 @@ Please review and confirm action plan by EOD.
   }
 }
 
+// Footnote appended to every timesheet-related email. AI agents are not
+// mentioned anywhere else in these bodies — ops sends this straight to
+// employees / HR, and the footnote is the only attribution.
+const RIPLEY_FOOTNOTE = `— This message was written using RIPLEY.`
+
+// Subject builder: "<prefix> — <employeeCode>: <main issue>[ (N issues)][ · <period>]"
+// Keeps the inbox scannable (code + main issue) while signalling the
+// overall count when there is more than one thing wrong.
+function timesheetSubject(
+  prefix: string,
+  employeeCode: string,
+  issues: string[],
+  period?: string
+): string {
+  const main  = (issues[0] ?? "Review required").trim()
+  const count = issues.length > 1 ? ` (${issues.length} issues)` : ""
+  const per   = period ? ` · ${period}` : ""
+  return `${prefix} — ${employeeCode}: ${main}${count}${per}`
+}
+
 export function buildTimesheetFlag(input: {
-  employeeName: string
+  employeeName:  string
+  employeeCode:  string
   employeeEmail: string
-  period: string
-  reason: string
+  period:        string
+  issues:        string[]
   managerEmail?: string
 }): NotifyContext {
+  const issueList = input.issues.length > 0
+    ? input.issues.map(i => `• ${i}`).join("\n")
+    : "• Manual review required — validation score below threshold"
+
   const body = `Hi ${input.employeeName.split(" ")[0]},
 
-Your timesheet for ${input.period} has been flagged for review:
+Your timesheet for ${input.period} has been flagged for review. Please look at the following and clarify or resubmit within 2 business days:
 
-• ${input.reason}
+${issueList}
 
-Please clarify or resubmit within 2 business days. Reply to this email if you need support.
+Reply to this email if you need help or have questions.
 
 Thanks,
 Buzzworks Ops
-— Drafted by RIPLEY`
+
+${RIPLEY_FOOTNOTE}`
 
   return {
     kind:    "timesheet-flag",
     to:      input.employeeEmail,
     cc:      input.managerEmail,
-    subject: `Timesheet review needed — ${input.period}`,
+    subject: timesheetSubject("Timesheet review", input.employeeCode, input.issues, input.period),
     body,
   }
 }
 
 export function buildTimesheetReject(input: {
-  employeeName: string
+  employeeName:  string
+  employeeCode:  string
   employeeEmail: string
-  period: string
-  reason: string
+  period:        string
+  issues:        string[]
   managerEmail?: string
 }): NotifyContext {
+  const issueList = input.issues.length > 0
+    ? input.issues.map(i => `• ${i}`).join("\n")
+    : "• Submission does not meet policy criteria"
+
   const body = `Hi ${input.employeeName.split(" ")[0]},
 
-Your timesheet for ${input.period} has been rejected:
+Your timesheet for ${input.period} has been rejected. Please correct the following and resubmit via the employee portal:
 
-• ${input.reason}
+${issueList}
 
-Please correct the issue and resubmit via the employee portal. Reach out if you have questions.
+Reach out to your manager or reply here if you have questions.
 
 Thanks,
 Buzzworks Ops
-— Drafted by RIPLEY`
+
+${RIPLEY_FOOTNOTE}`
 
   return {
     kind:    "timesheet-reject",
     to:      input.employeeEmail,
     cc:      input.managerEmail,
-    subject: `Timesheet rejected — ${input.period}`,
+    subject: timesheetSubject("Timesheet rejected", input.employeeCode, input.issues, input.period),
     body,
   }
 }
 
 export function buildTimesheetApprove(input: {
-  employeeName: string
+  employeeName:  string
+  employeeCode:  string
   employeeEmail: string
-  period: string
-  totalHours: number
-  totalPayable: number
+  period:        string
+  totalHours:    number
+  totalPayable:  number
 }): NotifyContext {
   const body = `Hi ${input.employeeName.split(" ")[0]},
 
@@ -200,12 +233,13 @@ The amount will be included in the next payroll cycle.
 
 Thanks,
 Buzzworks Ops
-— Drafted by RIPLEY`
+
+${RIPLEY_FOOTNOTE}`
 
   return {
     kind:    "timesheet-approve",
     to:      input.employeeEmail,
-    subject: `Timesheet approved — ${input.period}`,
+    subject: `Timesheet approved — ${input.employeeCode} · ${input.period}`,
     body,
   }
 }
@@ -214,17 +248,16 @@ Buzzworks Ops
 // Used when ops wants to raise an issue with the HR/payroll/manager team
 // rather than writing directly to the employee.
 export function buildTimesheetNotifyTeam(input: {
-  employeeName:  string
-  employeeCode?: string
-  clientName:    string
-  period:        string
-  totalHours:    number
-  overtimeHours: number
+  employeeName:   string
+  employeeCode:   string
+  clientName:     string
+  period:         string
+  totalHours:     number
+  overtimeHours:  number
   validationScore: number
   inconsistencies: string[]         // check.rule + check.detail lines
-  aiConfidence?: number
-  managerEmail?: string
-  sourceUrl?:    string
+  managerEmail?:  string
+  sourceUrl?:     string
 }): NotifyContext {
   const issueList = input.inconsistencies.length > 0
     ? input.inconsistencies.map(i => `• ${i}`).join("\n")
@@ -234,24 +267,24 @@ export function buildTimesheetNotifyTeam(input: {
 
 Timesheet inconsistencies detected and require review:
 
-Employee: ${input.employeeName}${input.employeeCode ? ` (${input.employeeCode})` : ""}
+Employee: ${input.employeeName} (${input.employeeCode})
 Client: ${input.clientName}
 Period: ${input.period}
 Hours: ${input.totalHours}h${input.overtimeHours > 0 ? ` (incl. ${input.overtimeHours}h OT)` : ""}
-Validation score: ${input.validationScore}${input.aiConfidence ? ` · JARVIS confidence ${input.aiConfidence}%` : ""}
+Validation score: ${input.validationScore}
 
 Issues flagged:
 ${issueList}
 
 Please confirm whether to approve with exceptions, flag the employee, or reject. Ops needs sign-off by EOD to keep payroll on track.
 
-— RIPLEY on behalf of Ops`
+${RIPLEY_FOOTNOTE}`
 
   return {
     kind:        "timesheet-team",
     to:          "hr-ops@buzzworks.com",
     cc:          input.managerEmail ?? "payroll@buzzworks.com",
-    subject:     `Timesheet review — ${input.employeeName} · ${input.period}`,
+    subject:     timesheetSubject("Timesheet review", input.employeeCode, input.inconsistencies, input.period),
     body,
     sourceUrl:   input.sourceUrl,
     sourceLabel: "Timesheet detail",
