@@ -9,11 +9,7 @@ import {
   Key, AlertTriangle, Info, Upload, Download, Trash2, FileText,
 } from "lucide-react"
 import clsx from "clsx"
-import { parseBeelineCsv, generateSampleBeelineCsv } from "@/lib/beeline-import"
-import {
-  loadBeelineImport, saveBeelineImport, clearBeelineImport,
-  emitBeelineImportChange, type BeelineImportSnapshot,
-} from "@/lib/beeline-store"
+import { generateSampleBeelineCsv } from "@/lib/beeline-import"
 
 // ─── Section nav ─────────────────────────────────────────────────────────────
 
@@ -257,48 +253,94 @@ function AccountSection() {
 
 // ─── BeeLine import card (Accenture POC) ─────────────────────────────────────
 
+interface ImportStatus {
+  configured: boolean
+  rowCount:   number
+  empCount:   number
+  importedAt: string | null
+  warnings:   string[]
+  errors:     string[]
+  unmapped:   string[]
+  mgrApprovalCount?: number
+  leaveExceededCount?: number
+}
+
+const EMPTY_STATUS: ImportStatus = {
+  configured: false, rowCount: 0, empCount: 0, importedAt: null,
+  warnings: [], errors: [], unmapped: [],
+}
+
 function BeelineImportCard() {
-  const [snapshot, setSnapshot] = useState<BeelineImportSnapshot | null>(null)
+  const [status,   setStatus]   = useState<ImportStatus>(EMPTY_STATUS)
   const [pending,  setPending]  = useState(false)
-  const [errors,   setErrors]   = useState<string[]>([])
-  const [warnings, setWarnings] = useState<string[]>([])
-  const [unmapped, setUnmapped] = useState<string[]>([])
   const [dragOver, setDragOver] = useState(false)
 
-  // Hydrate from localStorage post-mount
-  useEffect(() => { setSnapshot(loadBeelineImport()) }, [])
+  // Hydrate by hitting the read API. Tells us both configuration state
+  // (DB present?) and current Accenture row counts.
+  useEffect(() => {
+    fetch("/api/timesheets/acc")
+      .then(r => r.json())
+      .then(data => {
+        setStatus({
+          configured: !!data.configured,
+          rowCount:   data.timesheets?.length ?? 0,
+          empCount:   data.employees?.length ?? 0,
+          importedAt: data.lastImport?.imported_at ?? null,
+          warnings: [], errors: [], unmapped: [],
+        })
+      })
+      .catch(() => setStatus(s => ({ ...s, configured: false })))
+  }, [])
 
   async function handleFile(file: File) {
-    setPending(true); setErrors([]); setWarnings([]); setUnmapped([])
+    setPending(true)
     try {
-      const text   = await file.text()
-      const parsed = parseBeelineCsv(text)
-      if (parsed.timesheets.length === 0 && parsed.errors.length > 0) {
-        setErrors(parsed.errors); setUnmapped(parsed.unmappedHeaders); setPending(false); return
+      const fd = new FormData()
+      fd.append("file", file)
+      const res  = await fetch("/api/import/beeline", { method: "POST", body: fd })
+      const data = await res.json()
+      if (!res.ok) {
+        setStatus(s => ({
+          ...s,
+          configured: !data.error?.includes("DATABASE_URL"),
+          errors:   data.details ?? [data.error ?? "Import failed"],
+          unmapped: data.unmappedHeaders ?? [],
+        }))
+        setPending(false); return
       }
-      const next: BeelineImportSnapshot = {
-        importedAt:      new Date().toISOString(),
-        rowCount:        parsed.timesheets.length,
-        errorCount:      parsed.errors.length,
-        warningCount:    parsed.warnings.length,
-        unmappedHeaders: parsed.unmappedHeaders,
-        timesheets:      parsed.timesheets,
-        employees:       parsed.employees,
-      }
-      saveBeelineImport(next)
-      emitBeelineImportChange()
-      setSnapshot(next); setErrors(parsed.errors); setWarnings(parsed.warnings); setUnmapped(parsed.unmappedHeaders)
+      setStatus({
+        configured: true,
+        rowCount:   data.summary.rowCount,
+        empCount:   data.summary.employeeCount,
+        importedAt: new Date().toISOString(),
+        warnings:   data.summary.warnings ?? [],
+        errors:     data.summary.errors ?? [],
+        unmapped:   data.summary.unmappedHeaders ?? [],
+        mgrApprovalCount:   data.summary.mgrApprovalCount,
+        leaveExceededCount: data.summary.leaveExceededCount,
+      })
     } catch (e) {
-      setErrors([`Could not read file: ${(e as Error).message}`])
+      setStatus(s => ({ ...s, errors: [`Upload failed: ${(e as Error).message}`] }))
     } finally {
       setPending(false)
     }
   }
 
-  function handleClear() {
-    clearBeelineImport()
-    emitBeelineImportChange()
-    setSnapshot(null); setErrors([]); setWarnings([]); setUnmapped([])
+  async function handleClear() {
+    setPending(true)
+    try {
+      const res = await fetch("/api/import/beeline", { method: "DELETE" })
+      if (!res.ok) {
+        const data = await res.json()
+        setStatus(s => ({ ...s, errors: [data.error ?? "Clear failed"] }))
+      } else {
+        setStatus({ ...EMPTY_STATUS, configured: true })
+      }
+    } catch (e) {
+      setStatus(s => ({ ...s, errors: [`Clear failed: ${(e as Error).message}`] }))
+    } finally {
+      setPending(false)
+    }
   }
 
   function downloadSample() {
@@ -311,44 +353,61 @@ function BeelineImportCard() {
     URL.revokeObjectURL(url)
   }
 
-  const ago = snapshot ? new Date(snapshot.importedAt).toLocaleString("en-IN", {
+  const ago = status.importedAt ? new Date(status.importedAt).toLocaleString("en-IN", {
     day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
   }) : null
+  const hasImport = status.rowCount > 0
+  const dbMissing = !status.configured
 
   return (
     <SectionCard title="BeeLine · Accenture (POC)">
       <div className="pt-1 pb-2 space-y-3">
+        {/* DB-not-configured banner */}
+        {dbMissing && (
+          <div className="rounded-lg p-3 text-[11px] flex items-start gap-2"
+            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn-border)", color: "var(--warn)" }}>
+            <AlertTriangle size={12} className="mt-0.5 flex-shrink-0" />
+            <div>
+              <div className="font-semibold mb-1">Postgres not connected</div>
+              <div style={{ color: "var(--text-2)" }}>
+                Provision Vercel Postgres in Storage → Create Database, redeploy, then visit
+                <span className="font-mono"> /api/admin/migrate </span> once. See docs/v2/SETUP_DB.md.
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Status strip */}
         <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
-          style={{ background: snapshot ? "var(--accent-dim)" : "var(--surface)", border: `1px solid ${snapshot ? "var(--accent-border)" : "var(--border)"}` }}>
+          style={{ background: hasImport ? "var(--accent-dim)" : "var(--surface)", border: `1px solid ${hasImport ? "var(--accent-border)" : "var(--border)"}` }}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ background: "rgba(244,180,0,0.18)", color: "#F4B400" }}>
             <FileText size={14} />
           </div>
           <div className="flex-1 min-w-0">
-            {snapshot ? (
+            {hasImport ? (
               <>
                 <div className="text-[12px] font-medium" style={{ color: "var(--text-1)" }}>
-                  {snapshot.rowCount} timesheet{snapshot.rowCount !== 1 ? "s" : ""} imported
-                  · {snapshot.employees.length} worker{snapshot.employees.length !== 1 ? "s" : ""}
+                  {status.rowCount} timesheet{status.rowCount !== 1 ? "s" : ""} in database
+                  · {status.empCount} worker{status.empCount !== 1 ? "s" : ""}
                 </div>
                 <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
-                  Last import: {ago}
-                  {snapshot.warningCount > 0 ? ` · ${snapshot.warningCount} warning${snapshot.warningCount !== 1 ? "s" : ""}` : ""}
-                  {snapshot.errorCount > 0 ? ` · ${snapshot.errorCount} skipped row${snapshot.errorCount !== 1 ? "s" : ""}` : ""}
+                  Last import: {ago ?? "—"}
+                  {status.mgrApprovalCount ? ` · ${status.mgrApprovalCount} OT approval${status.mgrApprovalCount !== 1 ? "s" : ""} pending` : ""}
+                  {status.leaveExceededCount ? ` · ${status.leaveExceededCount} leave-balance fail${status.leaveExceededCount !== 1 ? "s" : ""}` : ""}
                 </div>
               </>
             ) : (
               <>
                 <div className="text-[12px] font-medium" style={{ color: "var(--text-1)" }}>No import yet</div>
                 <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
-                  Upload a CSV exported from BeeLine (Reports → Timesheet) to populate the Accenture inbox.
+                  Upload a CSV exported from BeeLine (Reports → Timesheet, last 6 months) to populate the Accenture inbox.
                 </div>
               </>
             )}
           </div>
-          {snapshot && (
-            <button onClick={handleClear} title="Clear imported data"
+          {hasImport && (
+            <button onClick={handleClear} title="Clear all imported Accenture timesheets" disabled={pending}
               className="w-8 h-8 rounded-md flex items-center justify-center transition-colors"
               style={{ color: "var(--text-3)" }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--danger)")}
@@ -394,31 +453,31 @@ function BeelineImportCard() {
         </div>
 
         {/* Errors / warnings / unmapped */}
-        {errors.length > 0 && (
+        {status.errors.length > 0 && (
           <div className="rounded-lg p-3 text-[11px]"
             style={{ background: "var(--danger-bg)", border: "1px solid var(--danger-border)", color: "var(--danger)" }}>
             <div className="font-semibold mb-1 flex items-center gap-1.5">
-              <AlertTriangle size={11} /> {errors.length} error{errors.length !== 1 ? "s" : ""}
+              <AlertTriangle size={11} /> {status.errors.length} error{status.errors.length !== 1 ? "s" : ""}
             </div>
             <ul className="space-y-0.5 max-h-32 overflow-y-auto">
-              {errors.slice(0, 8).map((e, i) => <li key={i}>· {e}</li>)}
-              {errors.length > 8 && <li>· +{errors.length - 8} more…</li>}
+              {status.errors.slice(0, 8).map((e: string, i: number) => <li key={i}>· {e}</li>)}
+              {status.errors.length > 8 && <li>· +{status.errors.length - 8} more…</li>}
             </ul>
           </div>
         )}
-        {warnings.length > 0 && (
+        {status.warnings.length > 0 && (
           <div className="rounded-lg p-3 text-[11px]"
             style={{ background: "var(--warn-bg)", border: "1px solid var(--warn-border)", color: "var(--warn)" }}>
-            <div className="font-semibold mb-1">{warnings.length} warning{warnings.length !== 1 ? "s" : ""}</div>
+            <div className="font-semibold mb-1">{status.warnings.length} warning{status.warnings.length !== 1 ? "s" : ""}</div>
             <ul className="space-y-0.5 max-h-32 overflow-y-auto">
-              {warnings.slice(0, 8).map((w, i) => <li key={i}>· {w}</li>)}
-              {warnings.length > 8 && <li>· +{warnings.length - 8} more…</li>}
+              {status.warnings.slice(0, 8).map((w: string, i: number) => <li key={i}>· {w}</li>)}
+              {status.warnings.length > 8 && <li>· +{status.warnings.length - 8} more…</li>}
             </ul>
           </div>
         )}
-        {unmapped.length > 0 && (
+        {status.unmapped.length > 0 && (
           <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
-            Unmapped columns (ignored): <span className="font-mono">{unmapped.join(", ")}</span>
+            Unmapped columns (ignored): <span className="font-mono">{status.unmapped.join(", ")}</span>
           </div>
         )}
       </div>

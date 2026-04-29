@@ -12,6 +12,7 @@ import type {
   Timesheet, Employee, ValidationCheck, DailyEntry,
 } from "./types"
 import { derivePayGradeFields } from "./mock-data"
+import { validateAccentureWeek, computeEarnedLeaves } from "./accenture-validation"
 
 // ─── CSV tokenizer (RFC 4180 subset) ─────────────────────────────────────────
 //
@@ -162,65 +163,7 @@ function fmtPeriod(start: string, end: string): string {
   return `${months[s.getUTCMonth()]} ${s.getUTCDate()}, ${s.getUTCFullYear()} – ${months[e.getUTCMonth()]} ${e.getUTCDate()}, ${e.getUTCFullYear()}`
 }
 
-function buildValidationChecks(reg: number, ot: number, leave: number, totalDeclared: number, approver: string, status: Timesheet["status"]): ValidationCheck[] {
-  const computedTotal = reg + ot + leave
-  const totalMismatch = Math.abs(computedTotal - totalDeclared) > 0.5
-  return [
-    {
-      id: "total-hours",
-      category: "hours",
-      rule: "Total hours match (regular + OT + leave = total)",
-      result: totalMismatch ? "fail" : "pass",
-      detail: totalMismatch
-        ? `Declared ${totalDeclared}h, computed ${computedTotal}h (${(computedTotal - totalDeclared).toFixed(1)}h delta)`
-        : `${computedTotal}h reconciles with declared total`,
-      autoChecked: true,
-    },
-    {
-      id: "ot-pre-approval",
-      category: "overtime",
-      rule: "OT pre-approval recorded",
-      result: ot > 0 ? (approver ? "pass" : "warning") : "pass",
-      detail: ot > 0
-        ? (approver ? `${ot}h OT approved by ${approver}` : `${ot}h OT without recorded approver`)
-        : "No OT claimed",
-      autoChecked: true,
-    },
-    {
-      id: "weekly-cap",
-      category: "hours",
-      rule: "Weekly hours within Accenture cap (≤ 60h)",
-      result: computedTotal > 60 ? "fail" : computedTotal > 50 ? "warning" : "pass",
-      detail: `Logged ${computedTotal}h (cap 60h, advisory at 50h)`,
-      autoChecked: true,
-    },
-    {
-      id: "status-recognised",
-      category: "policy",
-      rule: "BeeLine status maps to internal taxonomy",
-      result: "pass",
-      detail: `Mapped to '${status}'`,
-      autoChecked: true,
-    },
-    {
-      id: "rate-on-record",
-      category: "policy",
-      rule: "Hourly rate present on assignment",
-      result: "pass",   // BeeLine always carries rate; soft check
-      detail: "Rate carried through from BeeLine assignment record",
-      autoChecked: true,
-    },
-  ]
-}
-
-function computeScore(checks: ValidationCheck[]): number {
-  let score = 100
-  for (const c of checks) {
-    if (c.result === "fail") score -= 20
-    if (c.result === "warning") score -= 8
-  }
-  return Math.max(0, Math.min(100, score))
-}
+// Accenture validation now lives in accenture-validation.ts. Imported above.
 
 // ─── Main parse function ─────────────────────────────────────────────────────
 
@@ -338,11 +281,16 @@ export function parseBeelineCsv(text: string): BeelineImportResult {
     }
     const employee = employeeMap.get(workerId)!
 
-    const checks = buildValidationChecks(regularHours, overtimeHours, leaveHours, totalHours, approver, status)
-    const score  = computeScore(checks)
-    const flagged = score < 60 || checks.some(c => c.result === "fail")
+    // Per-employee earned-leaves accrual: 1.75/month from start_date.
+    // For a fresh import we only know the worker's start from the first
+    // observed period_start; subsequent imports will refine if BeeLine
+    // gives an earlier value. Treat consumedLeaves as 0 for first import
+    // (the API layer overlays prior consumption from DB on re-import).
+    const earnedLeaves = computeEarnedLeaves(employee.startDate, new Date(periodEnd))
 
-    // Generate flat dailyEntries spread (5 working days, even split)
+    // BeeLine doesn't usually expose per-day leave hours in the timesheet
+    // export, so we synthesise daily entries (5 working days, even split)
+    // and park leave_hours on Friday for display.
     const dayCount = 5
     const dailyEntries: DailyEntry[] = []
     const dayNames = ["Mon","Tue","Wed","Thu","Fri"]
@@ -353,10 +301,19 @@ export function parseBeelineCsv(text: string): BeelineImportResult {
         date: d.toISOString().slice(0, 10),
         dayOfWeek: dayNames[i],
         regularHours: Math.round((regularHours / dayCount) * 10) / 10,
-        overtimeHours: i === dayCount - 1 ? overtimeHours : 0,   // park OT on last day for display
-        leaveHours: 0,
+        overtimeHours: i === dayCount - 1 ? overtimeHours : 0,
+        leaveHours:    i === dayCount - 1 ? leaveHours    : 0,
       })
     }
+
+    // Run Accenture-specific validation: 45h cap, leave-balance check,
+    // daily cap, OT approver. Resolves the final status (may bump to
+    // pending_mgr_approval when over 45h cap).
+    const v = validateAccentureWeek({
+      regularHours, overtimeHours, leaveHours, totalHours,
+      dailyEntries, rawStatus: status, approver,
+      earnedLeaves, consumedLeaves: 0,   // overlaid by API at insert time
+    })
 
     const ts: Timesheet = {
       id:            `acc-bl-${workerId}-${periodStart}`,
@@ -369,20 +326,22 @@ export function parseBeelineCsv(text: string): BeelineImportResult {
       source:        "portal",
       sourceDetail:  "BeeLine",
       portalId:      "beeline",
-      status:        flagged && status === "pending" ? "flagged" : status,
+      status:        v.resolvedStatus,
       totalHours,
       regularHours,
-      overtimeHours,
+      overtimeHours: v.resolvedStatus === "pending_mgr_approval"
+                       ? Math.max(overtimeHours, totalHours - 45)
+                       : overtimeHours,
       leaveHours,
       totalPayable,
       dailyEntries,
-      validationChecks: checks,
-      validationScore:  score,
-      flagReason:    flagged ? checks.find(c => c.result === "fail")?.detail : undefined,
-      flaggedBy:     flagged ? "ai" : undefined,
-      approvedBy:    approver || undefined,
+      validationChecks: v.checks,
+      validationScore:  v.validationScore,
+      flagReason:       v.flagReason,
+      flaggedBy:        v.flagReason ? "ai" : undefined,
+      approvedBy:       approver || undefined,
       approvedAt,
-      aiConfidence:  Math.max(50, score - 5),  // confidence trails score slightly
+      aiConfidence:     Math.max(50, v.validationScore - 5),
     }
 
     result.timesheets.push(ts)

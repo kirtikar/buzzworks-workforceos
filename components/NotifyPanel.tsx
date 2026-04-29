@@ -12,6 +12,7 @@ export type NotifyKind =
   | "timesheet-reject"
   | "timesheet-approve"
   | "timesheet-team"
+  | "timesheet-mgr-approval"
   | "document-request"
   | "onboarding-issue"
   | "payroll-issue"
@@ -244,6 +245,60 @@ ${RIPLEY_FOOTNOTE}`
   }
 }
 
+// OT-deferral approval request to the employee's line manager (employee
+// CC'd). Used when Accenture weekly hours exceed 45h: hours over the cap
+// are treated as overtime, pushed to next month's payroll, and require
+// the manager's written approval before they release.
+export function buildTimesheetMgrApproval(input: {
+  employeeName:   string
+  employeeCode:   string
+  employeeEmail:  string
+  managerEmail:   string
+  managerName?:   string
+  period:         string
+  totalHours:     number
+  regularHours:   number
+  overtimeHours:  number
+  cap:            number   // typically 45
+  overCap:        number   // hours above cap (= total - cap)
+  clientName:     string
+  approverHint?:  string
+}): NotifyContext {
+  const mgrFirst = (input.managerName ?? input.managerEmail).split(/[\s@.]/)[0] ?? "team"
+  const subject = `OT approval needed — ${input.employeeCode}: +${input.overCap.toFixed(1)}h above ${input.cap}h cap · ${input.period}`
+
+  const body = `Hi ${mgrFirst[0].toUpperCase() + mgrFirst.slice(1)},
+
+${input.employeeName} (${input.employeeCode}) logged ${input.totalHours.toFixed(1)}h for ${input.period} on ${input.clientName}, which is ${input.overCap.toFixed(1)}h over the standard 45h weekly cap.
+
+Per the contract, hours above the cap are treated as overtime and only release after your written approval. Without approval the OT hours are deferred to next month's payroll cycle.
+
+Summary
+• Regular: ${input.regularHours.toFixed(1)}h
+• Overtime (above cap): ${input.overCap.toFixed(1)}h
+• Status: pending your approval — payout deferred to next month if held
+
+Please reply with one of:
+  Approve — release OT in next month's cycle
+  Approve & expedite — release in current cycle
+  Reject — pay only the regular ${Math.min(input.totalHours, input.cap).toFixed(1)}h
+
+CC'ing ${input.employeeName} for visibility.
+
+Thanks,
+Buzzworks Ops
+
+— This message was written using RIPLEY.`
+
+  return {
+    kind:    "timesheet-mgr-approval",
+    to:      input.managerEmail,
+    cc:      input.employeeEmail,
+    subject,
+    body,
+  }
+}
+
 // Internal team alert — highlights inconsistencies found on a timesheet.
 // Used when ops wants to raise an issue with the HR/payroll/manager team
 // rather than writing directly to the employee.
@@ -441,6 +496,7 @@ export default function NotifyPanel({
     "document-request":    "Document request",
     "onboarding-issue":    "Onboarding issue",
     "payroll-issue":       "Payroll issue",
+    "timesheet-mgr-approval": "OT approval request",
   } as const)[context.kind]
 
   return (

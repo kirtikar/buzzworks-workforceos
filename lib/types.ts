@@ -1,7 +1,7 @@
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 export type TimesheetSource    = "portal" | "email" | "manual"
-export type TimesheetStatus    = "pending" | "reviewing" | "flagged" | "approved" | "processed" | "rejected"
+export type TimesheetStatus    = "pending" | "reviewing" | "flagged" | "pending_mgr_approval" | "approved" | "processed" | "rejected"
 export type ValidationResult   = "pass" | "fail" | "warning" | "pending"
 export type ValidationCategory = "hours" | "overtime" | "leave" | "policy" | "employment"
 export type InsightType        = "anomaly" | "suggestion" | "warning" | "info"

@@ -9,7 +9,7 @@ import PayrollInbox from "@/components/PayrollInbox"
 import { ONBOARDING_ISSUES, PAYROLL_ISSUES } from "@/lib/onboarding-data"
 import NotifyPanel, {
   buildTimesheetFlag, buildTimesheetReject, buildTimesheetApprove, buildTimesheetNotifyTeam,
-  type NotifyContext,
+  buildTimesheetMgrApproval, type NotifyContext,
 } from "@/components/NotifyPanel"
 import {
   timesheets as seedTimesheets,
@@ -20,9 +20,6 @@ import {
 } from "@/lib/mock-data"
 import { generateEmployeesForClient, generateTimesheets } from "@/lib/mock-generator"
 import { REGULATIONS } from "@/lib/compliance-data"
-import {
-  loadBeelineImport, BEELINE_IMPORT_EVENT, type BeelineImportSnapshot,
-} from "@/lib/beeline-store"
 import type { TimesheetStatus, Timesheet, Employee } from "@/lib/types"
 import clsx from "clsx"
 import {
@@ -61,19 +58,25 @@ const _GENERATED_POOL: Timesheet[] = (() => {
   return [...seedTimesheets, ...generated]
 })()
 
-function buildPool(imported: BeelineImportSnapshot | null): Timesheet[] {
-  if (!imported || imported.timesheets.length === 0) return _GENERATED_POOL
+interface AccApiSnapshot {
+  configured: boolean
+  timesheets: Timesheet[]
+  employees:  Employee[]
+}
+
+function buildPool(api: AccApiSnapshot | null): Timesheet[] {
+  if (!api || api.timesheets.length === 0) return _GENERATED_POOL
   const generatedNonAcc = _GENERATED_POOL.filter(t => t.clientId !== "acc")
-  return [...generatedNonAcc, ...imported.timesheets]
+  return [...generatedNonAcc, ...api.timesheets]
 }
 
 // Pool-aware getEmployee. Resolution order:
 //   1. seeded mock employees
-//   2. BeeLine-imported employees (id starts with "acc-bl-")
+//   2. BeeLine-imported employees from /api/timesheets/acc (id starts with "acc-bl-")
 //   3. generator-built employees (id like "<client>-emp-<n>")
-function makeEmployeeResolver(imported: BeelineImportSnapshot | null) {
+function makeEmployeeResolver(api: AccApiSnapshot | null) {
   const importedById = new Map<string, Employee>()
-  if (imported) for (const e of imported.employees) importedById.set(e.id, e)
+  if (api) for (const e of api.employees) importedById.set(e.id, e)
 
   return function getEmployeeFromPool(employeeId: string): Employee | undefined {
     const seeded = seedGetEmployee(employeeId)
@@ -169,22 +172,28 @@ function FilterDropdown({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InboxPage() {
-  // BeeLine import (Accenture POC). Hydrate post-mount so SSR doesn't
-  // touch localStorage; refresh on the BEELINE_IMPORT_EVENT so a Settings
-  // upload reflects in the inbox without a manual reload.
-  const [imported, setImported] = useState<BeelineImportSnapshot | null>(null)
+  // BeeLine import (Accenture POC). Fetch from Postgres-backed API on
+  // mount; window 'focus' refreshes so an upload from /settings reflects
+  // here without a manual reload.
+  const [acc, setAcc] = useState<AccApiSnapshot | null>(null)
   useEffect(() => {
-    setImported(loadBeelineImport())
-    function onChange() { setImported(loadBeelineImport()) }
-    window.addEventListener(BEELINE_IMPORT_EVENT, onChange)
-    return () => window.removeEventListener(BEELINE_IMPORT_EVENT, onChange)
+    let cancelled = false
+    function refresh() {
+      fetch("/api/timesheets/acc")
+        .then(r => r.json())
+        .then(data => { if (!cancelled) setAcc(data) })
+        .catch(() => { if (!cancelled) setAcc({ configured: false, timesheets: [], employees: [] }) })
+    }
+    refresh()
+    window.addEventListener("focus", refresh)
+    return () => { cancelled = true; window.removeEventListener("focus", refresh) }
   }, [])
 
-  const initialPool = useMemo(() => buildPool(imported), [imported])
-  const getEmployeeFromPool = useMemo(() => makeEmployeeResolver(imported), [imported])
+  const initialPool = useMemo(() => buildPool(acc), [acc])
+  const getEmployeeFromPool = useMemo(() => makeEmployeeResolver(acc), [acc])
 
-  const [localTs, setLocalTs]     = useState<Timesheet[]>(initialPool)
-  // Re-seed local state whenever the imported snapshot rebuilds the base pool
+  const [localTs, setLocalTs] = useState<Timesheet[]>(initialPool)
+  // Re-seed local state whenever the API snapshot rebuilds the base pool
   useEffect(() => { setLocalTs(initialPool) }, [initialPool])
 
   const [search, setSearch]       = useState("")
@@ -205,7 +214,7 @@ export default function InboxPage() {
   const [notifyCtx, setNotifyCtx]     = useState<NotifyContext | null>(null)
   const PAGE_SIZE = 50
 
-  function openNotifyFor(ts: Timesheet, kind: "flag" | "reject" | "approve" | "team") {
+  function openNotifyFor(ts: Timesheet, kind: "flag" | "reject" | "approve" | "team" | "mgr-approval") {
     const emp = getEmployeeFromPool(ts.employeeId)
     if (!emp) return
     const client = getClient(ts.clientId)
@@ -243,6 +252,38 @@ export default function InboxPage() {
         inconsistencies: issues,
         managerEmail:    emp.managerEmail,
       }))
+    } else if (kind === "mgr-approval") {
+      // OT > 45h cap → email manager with employee CC'd, asking for
+      // approval before next month's payroll release.
+      const cap = 45
+      const overCap = Math.max(0, ts.totalHours - cap)
+      if (!emp.managerEmail) {
+        // Without a manager on file, fall back to internal team escalation.
+        setNotifyCtx(buildTimesheetNotifyTeam({
+          employeeName:    emp.name,
+          employeeCode:    emp.employeeCode,
+          clientName:      client?.name ?? ts.clientId,
+          period:          ts.period,
+          totalHours:      ts.totalHours,
+          overtimeHours:   ts.overtimeHours,
+          validationScore: ts.validationScore,
+          inconsistencies: [`${overCap.toFixed(1)}h over 45h cap — no manager on file, escalating internally`, ...issues],
+        }))
+        return
+      }
+      setNotifyCtx(buildTimesheetMgrApproval({
+        employeeName:   emp.name,
+        employeeCode:   emp.employeeCode,
+        employeeEmail:  emp.email,
+        managerEmail:   emp.managerEmail,
+        managerName:    emp.managerName,
+        period:         ts.period,
+        totalHours:     ts.totalHours,
+        regularHours:   ts.regularHours,
+        overtimeHours:  ts.overtimeHours,
+        cap, overCap,
+        clientName:     client?.name ?? ts.clientId,
+      }))
     } else {
       setNotifyCtx(buildTimesheetApprove({
         ...common,
@@ -258,9 +299,9 @@ export default function InboxPage() {
   }
 
   // Counts
-  const actionableCount = localTs.filter(t => ["pending", "reviewing", "flagged"].includes(t.status)).length
+  const actionableCount = localTs.filter(t => ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status)).length
   const flaggedCount    = localTs.filter(t => t.status === "flagged").length
-  const otCount         = localTs.filter(t => t.overtimeHours > 0 && ["pending", "reviewing", "flagged"].includes(t.status)).length
+  const otCount         = localTs.filter(t => t.overtimeHours > 0 && ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status)).length
 
   function scoreBand(score: number): "high" | "med" | "low" {
     if (score >= 85) return "high"
@@ -273,7 +314,7 @@ export default function InboxPage() {
     return localTs.filter(ts => {
       const emp    = getEmployeeFromPool(ts.employeeId)
       const client = getClient(ts.clientId)
-      if (actionableOnly && !["pending", "reviewing", "flagged"].includes(ts.status)) return false
+      if (actionableOnly && !["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(ts.status)) return false
       if (selStatuses.length && !selStatuses.includes(ts.status)) return false
       if (selClients.length && !selClients.includes(ts.clientId)) return false
       if (selSources.length && !selSources.includes(ts.source)) return false
@@ -308,12 +349,13 @@ export default function InboxPage() {
     selScoreBands.length + (selOTOnly ? 1 : 0)
 
   const statusOptions = [
-    { value: "pending",    label: "Pending" },
-    { value: "reviewing",  label: "Reviewing" },
-    { value: "flagged",    label: "Flagged" },
-    { value: "approved",   label: "Approved" },
-    { value: "processed",  label: "Processed" },
-    { value: "rejected",   label: "Rejected" },
+    { value: "pending",              label: "Pending" },
+    { value: "reviewing",            label: "Reviewing" },
+    { value: "flagged",              label: "Flagged" },
+    { value: "pending_mgr_approval", label: "Pending OT approval" },
+    { value: "approved",             label: "Approved" },
+    { value: "processed",            label: "Processed" },
+    { value: "rejected",             label: "Rejected" },
   ]
   const sourceOptions = [
     { value: "portal", label: "Portal sync" },
@@ -372,7 +414,7 @@ export default function InboxPage() {
   }
 
   function selectAll() {
-    const actionable = filtered.filter(t => ["pending", "reviewing", "flagged"].includes(t.status))
+    const actionable = filtered.filter(t => ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status))
     if (selectedIds.size === actionable.length) {
       setSelectedIds(new Set())
     } else {
@@ -635,7 +677,7 @@ export default function InboxPage() {
             <div className="flex-1 overflow-y-auto pb-nav lg:pb-0">
 
               {/* Select all */}
-              {filtered.some(t => ["pending", "reviewing", "flagged"].includes(t.status)) && (
+              {filtered.some(t => ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status)) && (
                 <div className="flex items-center gap-3 px-6 lg:px-8 py-2" style={{ borderBottom: "1px solid var(--border)" }}>
                   <button
                     onClick={selectAll}
@@ -657,7 +699,7 @@ export default function InboxPage() {
                 const emp    = getEmployeeFromPool(ts.employeeId)
                 const client = getClient(ts.clientId)
                 if (!emp || !client) return null
-                const isActionable = ["pending", "reviewing", "flagged"].includes(ts.status)
+                const isActionable = ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(ts.status)
                 const isSelected = selectedIds.has(ts.id)
                 const isExpanded = expandedId === ts.id
                 const fails    = ts.validationChecks.filter(c => c.result === "fail").length
@@ -708,6 +750,7 @@ export default function InboxPage() {
                         {ts.status === "pending" && <Clock size={14} style={{ color: "var(--text-3)" }} />}
                         {ts.status === "reviewing" && <Sparkles size={14} style={{ color: "var(--accent)" }} />}
                         {ts.status === "flagged" && <AlertTriangle size={14} style={{ color: "var(--warn)" }} />}
+                        {ts.status === "pending_mgr_approval" && <Mail size={14} style={{ color: "var(--pink-700)" }} />}
                         {ts.status === "approved" && <CheckCircle2 size={14} style={{ color: "#059669" }} />}
                         {ts.status === "processed" && <CheckCircle2 size={14} style={{ color: "var(--accent)" }} />}
                         {ts.status === "rejected" && <XCircle size={14} style={{ color: "var(--danger)" }} />}
@@ -991,12 +1034,24 @@ export default function InboxPage() {
                 </div>
 
                 {/* Actions */}
-                {["pending", "reviewing", "flagged"].includes(detail.status) && (
+                {["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(detail.status) && (
                   <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+                    {/* OT approval flow takes priority when status is pending_mgr_approval */}
+                    {detail.status === "pending_mgr_approval" && (
+                      <button
+                        onClick={() => openNotifyFor(detail, "mgr-approval")}
+                        className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[14px]"
+                        style={{ background: "var(--pink-700)" }}>
+                        <Mail size={14} /> Request OT approval from manager
+                      </button>
+                    )}
                     <button
                       onClick={() => approveTs(detail.id)}
-                      className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[14px]">
-                      <CheckCircle2 size={14} /> Approve timesheet
+                      className={detail.status === "pending_mgr_approval"
+                        ? "w-full btn-ghost flex items-center justify-center gap-2 py-2 text-xs"
+                        : "w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[14px]"}>
+                      <CheckCircle2 size={detail.status === "pending_mgr_approval" ? 12 : 14} />
+                      {detail.status === "pending_mgr_approval" ? "Approve regular hours only (skip OT)" : "Approve timesheet"}
                     </button>
                     <button
                       onClick={() => openNotifyFor(detail, "team")}
