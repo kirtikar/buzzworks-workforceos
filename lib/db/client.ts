@@ -1,7 +1,9 @@
 // Singleton postgres connection used by all API routes.
 //
-// Reads DATABASE_URL from env (Vercel Postgres / Neon both inject it
-// natively). When unset, every call throws — Settings card surfaces
+// Reads from any of: DATABASE_URL (standard PG convention),
+// POSTGRES_URL (Vercel marketplace Supabase / Neon convention),
+// or POSTGRES_PRISMA_URL (also injected by Vercel). First one wins.
+// When all are unset, every call throws — Settings card surfaces
 // this clearly so ops sees the setup gap.
 
 import postgres from "postgres"
@@ -11,12 +13,19 @@ declare global {
   var __sqlClient: ReturnType<typeof postgres> | undefined
 }
 
+function resolveDbUrl(): string | undefined {
+  return process.env.DATABASE_URL
+      ?? process.env.POSTGRES_URL
+      ?? process.env.POSTGRES_PRISMA_URL
+}
+
 export function getSql() {
-  const url = process.env.DATABASE_URL
+  const url = resolveDbUrl()
   if (!url) {
     throw new Error(
-      "DATABASE_URL is not set. Provision Vercel Postgres (Storage tab) " +
-      "and redeploy, then visit /api/admin/migrate once."
+      "No database URL set. Provision a Postgres database from the " +
+      "Vercel marketplace (Supabase / Neon) and redeploy, then visit " +
+      "/api/admin/migrate once."
     )
   }
   if (!globalThis.__sqlClient) {
@@ -31,5 +40,5 @@ export function getSql() {
 }
 
 export function isDbConfigured(): boolean {
-  return Boolean(process.env.DATABASE_URL)
+  return Boolean(resolveDbUrl())
 }
