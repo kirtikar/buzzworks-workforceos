@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
-import { clients, employees as seedEmployees, timesheets } from "@/lib/mock-data"
+import { clients, employees as seedEmployees, timesheets, REAL_DATA_CLIENT_IDS } from "@/lib/mock-data"
 import { generateEmployeesForClient } from "@/lib/mock-generator"
 import type { Employee, JobCategory, EmploymentStatus } from "@/lib/types"
 import {
@@ -40,8 +40,11 @@ type Tab = typeof TABS[number]
 // ─── Pool builder ─────────────────────────────────────────────────────────────
 
 function buildEmployeePool(): Employee[] {
-  const pool: Employee[] = [...seedEmployees]
+  // Exclude real-data clients (Accenture / Capgemini / Hexaware /
+  // LTIMindtree / PwC). They appear empty until portal imports land.
+  const pool: Employee[] = seedEmployees.filter(e => !REAL_DATA_CLIENT_IDS.has(e.clientId))
   for (const client of clients) {
+    if (REAL_DATA_CLIENT_IDS.has(client.id)) continue
     const seedCount = seedEmployees.filter(e => e.clientId === client.id).length
     const need = Math.min(80, client.employeeCount) - seedCount
     if (need > 0) pool.push(...generateEmployeesForClient(client.id, need, seedCount))

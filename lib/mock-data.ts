@@ -50,6 +50,26 @@ export function deriveWorkflow(rule: Pick<PolicyRule, "category" | "name" | "des
   return "timesheet-validation"
 }
 
+// ─── Real-data clients ───────────────────────────────────────────────────────
+//
+// These clients pull from real portal feeds (BeeLine for Accenture today;
+// other portals on the roadmap) instead of synthetic mock data. They are
+// hidden from the generated pool so the Inbox + Employees lists show
+// nothing for them until a real import lands.
+//
+// The exclusion is enforced at consumer level (Inbox _GENERATED_POOL,
+// Employees buildEmployeePool, per-client detail tabs) — seed rows in
+// the in-file employees / timesheets arrays are still safe to keep
+// for type checks; they just don't render.
+
+export const REAL_DATA_CLIENT_IDS = new Set<string>([
+  "acc",   // Accenture     — BeeLine portal (active POC)
+  "cap",   // Capgemini     — Fieldglass portal (planned)
+  "hex",   // Hexaware      — manual import (planned)
+  "lmt",   // LTIMindtree   — manual import (planned)
+  "pwc",   // PwC India     — BeeLine portal (planned)
+])
+
 // ─── Pay grade derivation ────────────────────────────────────────────────────
 //
 // Pay grade is a letter band (A-I) × step (1-9) = 81-cell lattice.

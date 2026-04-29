@@ -17,6 +17,7 @@ import {
   getClient,
   clients,
   employees as seedEmployees,
+  REAL_DATA_CLIENT_IDS,
 } from "@/lib/mock-data"
 import { generateEmployeesForClient, generateTimesheets } from "@/lib/mock-generator"
 import { REGULATIONS } from "@/lib/compliance-data"
@@ -39,23 +40,24 @@ interface BulkRule {
   count: number
 }
 
-// ─── Build pool: 500+ timesheets across all clients & employees ───────────────
+// ─── Build pool: synthetic mock timesheets for non-real-data clients ─────────
 //
-// _GENERATED_POOL is the synthetic mock data, computed once at module
-// eval. The component blends in the BeeLine import (clientId="acc" only)
-// at render time when an import snapshot exists in localStorage. When
-// imports are present, generated 'acc' timesheets are dropped so we
-// don't mix real and synthetic Accenture data.
+// Real-data clients (REAL_DATA_CLIENT_IDS — Accenture / Capgemini / Hexaware
+// / LTIMindtree / PwC) are excluded entirely from the generated pool. They
+// appear empty in the Inbox until a portal import lands. Currently only
+// Accenture has the import path wired (BeeLine via /api/timesheets/acc);
+// the other 4 stay empty as POC for those portals comes online.
 
 const _GENERATED_POOL: Timesheet[] = (() => {
-  const empPool: Employee[] = [...seedEmployees]
+  const empPool: Employee[] = seedEmployees.filter(e => !REAL_DATA_CLIENT_IDS.has(e.clientId))
   for (const client of clients) {
+    if (REAL_DATA_CLIENT_IDS.has(client.id)) continue
     const seedCount = seedEmployees.filter(e => e.clientId === client.id).length
     const need = Math.min(80, client.employeeCount) - seedCount
     if (need > 0) empPool.push(...generateEmployeesForClient(client.id, need, seedCount))
   }
   const generated = generateTimesheets(empPool, 600)
-  return [...seedTimesheets, ...generated]
+  return [...seedTimesheets, ...generated].filter(t => !REAL_DATA_CLIENT_IDS.has(t.clientId))
 })()
 
 interface AccApiSnapshot {
@@ -65,9 +67,11 @@ interface AccApiSnapshot {
 }
 
 function buildPool(api: AccApiSnapshot | null): Timesheet[] {
+  // _GENERATED_POOL already excludes all REAL_DATA_CLIENT_IDS, so we just
+  // overlay real Accenture rows on top when available. The other 4
+  // real-data clients stay empty until their portal imports are wired.
   if (!api || api.timesheets.length === 0) return _GENERATED_POOL
-  const generatedNonAcc = _GENERATED_POOL.filter(t => t.clientId !== "acc")
-  return [...generatedNonAcc, ...api.timesheets]
+  return [..._GENERATED_POOL, ...api.timesheets]
 }
 
 // Pool-aware getEmployee. Resolution order:

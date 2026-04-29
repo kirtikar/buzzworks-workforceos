@@ -5,7 +5,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/components/Sidebar"
 import AIAgentOrb from "@/components/AIAgentOrb"
-import { getClient, getPortal, timesheets, employees, getClientPolicyRules, getClientPayrollBatches, getClientContacts } from "@/lib/mock-data"
+import { getClient, getPortal, timesheets, employees, getClientPolicyRules, getClientPayrollBatches, getClientContacts, REAL_DATA_CLIENT_IDS } from "@/lib/mock-data"
 import NotifyPanel, { buildClientComplianceNotify, type NotifyContext } from "@/components/NotifyPanel"
 import { generateEmployeesForClient } from "@/lib/mock-generator"
 import {
@@ -389,7 +389,12 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
   const [approverFilter, setApproverFilter] = useState("all")
   const [search, setSearch] = useState("")
 
-  const allTs = timesheets.filter(t => t.clientId === clientId)
+  // Real-data clients keep this tab empty until portal imports land
+  // (Accenture sees real data via the global Inbox; per-client timesheet
+  // pull-through is a v3 task once we have a per-client API endpoint).
+  const allTs = REAL_DATA_CLIENT_IDS.has(clientId)
+    ? []
+    : timesheets.filter(t => t.clientId === clientId)
 
   const filtered = useMemo(() => {
     return allTs.filter(t => {
@@ -515,6 +520,9 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
   const [search, setSearch]             = useState("")
 
   const sample = useMemo(() => {
+    // Real-data clients show nothing in the Employees tab until portal
+    // imports land — synthetic data would mislead.
+    if (REAL_DATA_CLIENT_IDS.has(clientId)) return []
     const seed = employees.filter(e => e.clientId === clientId)
     const generated = generateEmployeesForClient(clientId, Math.min(50, employeeCount) - seed.length)
     return [...seed, ...generated].slice(0, Math.min(50, employeeCount))
