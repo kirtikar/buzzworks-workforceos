@@ -1,14 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Sidebar from "@/components/Sidebar"
 import { useTheme } from "@/components/ThemeProvider"
 import {
   Sun, Moon, Bell, Shield, Users, Database, Webhook,
   Mail, Smartphone, Clock, Save, ChevronRight, Check,
-  Key, AlertTriangle, Info,
+  Key, AlertTriangle, Info, Upload, Download, Trash2, FileText,
 } from "lucide-react"
 import clsx from "clsx"
+import { parseBeelineCsv, generateSampleBeelineCsv } from "@/lib/beeline-import"
+import {
+  loadBeelineImport, saveBeelineImport, clearBeelineImport,
+  emitBeelineImportChange, type BeelineImportSnapshot,
+} from "@/lib/beeline-store"
 
 // ─── Section nav ─────────────────────────────────────────────────────────────
 
@@ -250,6 +255,177 @@ function AccountSection() {
   )
 }
 
+// ─── BeeLine import card (Accenture POC) ─────────────────────────────────────
+
+function BeelineImportCard() {
+  const [snapshot, setSnapshot] = useState<BeelineImportSnapshot | null>(null)
+  const [pending,  setPending]  = useState(false)
+  const [errors,   setErrors]   = useState<string[]>([])
+  const [warnings, setWarnings] = useState<string[]>([])
+  const [unmapped, setUnmapped] = useState<string[]>([])
+  const [dragOver, setDragOver] = useState(false)
+
+  // Hydrate from localStorage post-mount
+  useEffect(() => { setSnapshot(loadBeelineImport()) }, [])
+
+  async function handleFile(file: File) {
+    setPending(true); setErrors([]); setWarnings([]); setUnmapped([])
+    try {
+      const text   = await file.text()
+      const parsed = parseBeelineCsv(text)
+      if (parsed.timesheets.length === 0 && parsed.errors.length > 0) {
+        setErrors(parsed.errors); setUnmapped(parsed.unmappedHeaders); setPending(false); return
+      }
+      const next: BeelineImportSnapshot = {
+        importedAt:      new Date().toISOString(),
+        rowCount:        parsed.timesheets.length,
+        errorCount:      parsed.errors.length,
+        warningCount:    parsed.warnings.length,
+        unmappedHeaders: parsed.unmappedHeaders,
+        timesheets:      parsed.timesheets,
+        employees:       parsed.employees,
+      }
+      saveBeelineImport(next)
+      emitBeelineImportChange()
+      setSnapshot(next); setErrors(parsed.errors); setWarnings(parsed.warnings); setUnmapped(parsed.unmappedHeaders)
+    } catch (e) {
+      setErrors([`Could not read file: ${(e as Error).message}`])
+    } finally {
+      setPending(false)
+    }
+  }
+
+  function handleClear() {
+    clearBeelineImport()
+    emitBeelineImportChange()
+    setSnapshot(null); setErrors([]); setWarnings([]); setUnmapped([])
+  }
+
+  function downloadSample() {
+    const csv  = generateSampleBeelineCsv()
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" })
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement("a")
+    a.href = url; a.download = "beeline-sample-accenture.csv"
+    document.body.appendChild(a); a.click(); document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const ago = snapshot ? new Date(snapshot.importedAt).toLocaleString("en-IN", {
+    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+  }) : null
+
+  return (
+    <SectionCard title="BeeLine · Accenture (POC)">
+      <div className="pt-1 pb-2 space-y-3">
+        {/* Status strip */}
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
+          style={{ background: snapshot ? "var(--accent-dim)" : "var(--surface)", border: `1px solid ${snapshot ? "var(--accent-border)" : "var(--border)"}` }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ background: "rgba(244,180,0,0.18)", color: "#F4B400" }}>
+            <FileText size={14} />
+          </div>
+          <div className="flex-1 min-w-0">
+            {snapshot ? (
+              <>
+                <div className="text-[12px] font-medium" style={{ color: "var(--text-1)" }}>
+                  {snapshot.rowCount} timesheet{snapshot.rowCount !== 1 ? "s" : ""} imported
+                  · {snapshot.employees.length} worker{snapshot.employees.length !== 1 ? "s" : ""}
+                </div>
+                <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
+                  Last import: {ago}
+                  {snapshot.warningCount > 0 ? ` · ${snapshot.warningCount} warning${snapshot.warningCount !== 1 ? "s" : ""}` : ""}
+                  {snapshot.errorCount > 0 ? ` · ${snapshot.errorCount} skipped row${snapshot.errorCount !== 1 ? "s" : ""}` : ""}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-[12px] font-medium" style={{ color: "var(--text-1)" }}>No import yet</div>
+                <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
+                  Upload a CSV exported from BeeLine (Reports → Timesheet) to populate the Accenture inbox.
+                </div>
+              </>
+            )}
+          </div>
+          {snapshot && (
+            <button onClick={handleClear} title="Clear imported data"
+              className="w-8 h-8 rounded-md flex items-center justify-center transition-colors"
+              style={{ color: "var(--text-3)" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--danger)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--text-3)")}>
+              <Trash2 size={14} />
+            </button>
+          )}
+        </div>
+
+        {/* Drop zone */}
+        <label
+          onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={e => {
+            e.preventDefault(); setDragOver(false)
+            const f = e.dataTransfer.files?.[0]
+            if (f) handleFile(f)
+          }}
+          className="flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-xl cursor-pointer transition-colors text-center"
+          style={{
+            border: `1px dashed ${dragOver ? "var(--accent)" : "var(--border-strong)"}`,
+            background: dragOver ? "var(--accent-dim)" : "var(--surface)",
+          }}>
+          <Upload size={20} style={{ color: dragOver ? "var(--accent)" : "var(--text-3)" }} />
+          <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>
+            {pending ? "Parsing…" : "Drop CSV here, or click to browse"}
+          </div>
+          <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
+            Accepts a BeeLine timesheet export. Headers are matched permissively.
+          </div>
+          <input type="file" accept=".csv,text/csv" className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
+        </label>
+
+        {/* Sample download */}
+        <div className="flex items-center justify-between text-[11px]" style={{ color: "var(--text-3)" }}>
+          <span>Need a template? Download a sample with the header layout this importer expects.</span>
+          <button onClick={downloadSample}
+            className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-md"
+            style={{ color: "var(--accent)", background: "var(--accent-dim)", border: "1px solid var(--accent-border)" }}>
+            <Download size={11} /> Sample CSV
+          </button>
+        </div>
+
+        {/* Errors / warnings / unmapped */}
+        {errors.length > 0 && (
+          <div className="rounded-lg p-3 text-[11px]"
+            style={{ background: "var(--danger-bg)", border: "1px solid var(--danger-border)", color: "var(--danger)" }}>
+            <div className="font-semibold mb-1 flex items-center gap-1.5">
+              <AlertTriangle size={11} /> {errors.length} error{errors.length !== 1 ? "s" : ""}
+            </div>
+            <ul className="space-y-0.5 max-h-32 overflow-y-auto">
+              {errors.slice(0, 8).map((e, i) => <li key={i}>· {e}</li>)}
+              {errors.length > 8 && <li>· +{errors.length - 8} more…</li>}
+            </ul>
+          </div>
+        )}
+        {warnings.length > 0 && (
+          <div className="rounded-lg p-3 text-[11px]"
+            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn-border)", color: "var(--warn)" }}>
+            <div className="font-semibold mb-1">{warnings.length} warning{warnings.length !== 1 ? "s" : ""}</div>
+            <ul className="space-y-0.5 max-h-32 overflow-y-auto">
+              {warnings.slice(0, 8).map((w, i) => <li key={i}>· {w}</li>)}
+              {warnings.length > 8 && <li>· +{warnings.length - 8} more…</li>}
+            </ul>
+          </div>
+        )}
+        {unmapped.length > 0 && (
+          <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
+            Unmapped columns (ignored): <span className="font-mono">{unmapped.join(", ")}</span>
+          </div>
+        )}
+      </div>
+    </SectionCard>
+  )
+}
+
 function IntegrationsSection() {
   const portals = [
     { name: "Veltrix HCM",   status: "connected", clients: 3, lastSync: "2 min ago",   color: "#2563EB" },
@@ -266,6 +442,8 @@ function IntegrationsSection() {
 
   return (
     <div className="space-y-5">
+      <BeelineImportCard />
+
       <SectionCard title="Portal Connections">
         <div className="space-y-2 pt-1 pb-2">
           {portals.map(p => (

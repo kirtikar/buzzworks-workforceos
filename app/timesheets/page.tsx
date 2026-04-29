@@ -20,6 +20,9 @@ import {
 } from "@/lib/mock-data"
 import { generateEmployeesForClient, generateTimesheets } from "@/lib/mock-generator"
 import { REGULATIONS } from "@/lib/compliance-data"
+import {
+  loadBeelineImport, BEELINE_IMPORT_EVENT, type BeelineImportSnapshot,
+} from "@/lib/beeline-store"
 import type { TimesheetStatus, Timesheet, Employee } from "@/lib/types"
 import clsx from "clsx"
 import {
@@ -40,29 +43,48 @@ interface BulkRule {
 }
 
 // ─── Build pool: 500+ timesheets across all clients & employees ───────────────
+//
+// _GENERATED_POOL is the synthetic mock data, computed once at module
+// eval. The component blends in the BeeLine import (clientId="acc" only)
+// at render time when an import snapshot exists in localStorage. When
+// imports are present, generated 'acc' timesheets are dropped so we
+// don't mix real and synthetic Accenture data.
 
-const TIMESHEET_POOL: Timesheet[] = (() => {
-  // Build a wider employee pool across all clients (mirror of /employees page logic)
+const _GENERATED_POOL: Timesheet[] = (() => {
   const empPool: Employee[] = [...seedEmployees]
   for (const client of clients) {
     const seedCount = seedEmployees.filter(e => e.clientId === client.id).length
     const need = Math.min(80, client.employeeCount) - seedCount
     if (need > 0) empPool.push(...generateEmployeesForClient(client.id, need, seedCount))
   }
-  // Generate ~600 timesheets distributed across the employee pool over 4 weeks
   const generated = generateTimesheets(empPool, 600)
   return [...seedTimesheets, ...generated]
 })()
 
-// Pool-aware getEmployee that falls back to generated employee
-function getEmployeeFromPool(employeeId: string): Employee | undefined {
-  const seeded = seedGetEmployee(employeeId)
-  if (seeded) return seeded
-  // Generated id format: ${clientId}-emp-${index}
-  const m = employeeId.match(/^([a-z]+)-emp-(\d+)$/)
-  if (!m) return undefined
-  const [, clientId, idxStr] = m
-  return generateEmployeesForClient(clientId, 1, parseInt(idxStr))[0]
+function buildPool(imported: BeelineImportSnapshot | null): Timesheet[] {
+  if (!imported || imported.timesheets.length === 0) return _GENERATED_POOL
+  const generatedNonAcc = _GENERATED_POOL.filter(t => t.clientId !== "acc")
+  return [...generatedNonAcc, ...imported.timesheets]
+}
+
+// Pool-aware getEmployee. Resolution order:
+//   1. seeded mock employees
+//   2. BeeLine-imported employees (id starts with "acc-bl-")
+//   3. generator-built employees (id like "<client>-emp-<n>")
+function makeEmployeeResolver(imported: BeelineImportSnapshot | null) {
+  const importedById = new Map<string, Employee>()
+  if (imported) for (const e of imported.employees) importedById.set(e.id, e)
+
+  return function getEmployeeFromPool(employeeId: string): Employee | undefined {
+    const seeded = seedGetEmployee(employeeId)
+    if (seeded) return seeded
+    const importedEmp = importedById.get(employeeId)
+    if (importedEmp) return importedEmp
+    const m = employeeId.match(/^([a-z]+)-emp-(\d+)$/)
+    if (!m) return undefined
+    const [, clientId, idxStr] = m
+    return generateEmployeesForClient(clientId, 1, parseInt(idxStr))[0]
+  }
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -147,7 +169,24 @@ function FilterDropdown({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InboxPage() {
-  const [localTs, setLocalTs]     = useState(TIMESHEET_POOL)
+  // BeeLine import (Accenture POC). Hydrate post-mount so SSR doesn't
+  // touch localStorage; refresh on the BEELINE_IMPORT_EVENT so a Settings
+  // upload reflects in the inbox without a manual reload.
+  const [imported, setImported] = useState<BeelineImportSnapshot | null>(null)
+  useEffect(() => {
+    setImported(loadBeelineImport())
+    function onChange() { setImported(loadBeelineImport()) }
+    window.addEventListener(BEELINE_IMPORT_EVENT, onChange)
+    return () => window.removeEventListener(BEELINE_IMPORT_EVENT, onChange)
+  }, [])
+
+  const initialPool = useMemo(() => buildPool(imported), [imported])
+  const getEmployeeFromPool = useMemo(() => makeEmployeeResolver(imported), [imported])
+
+  const [localTs, setLocalTs]     = useState<Timesheet[]>(initialPool)
+  // Re-seed local state whenever the imported snapshot rebuilds the base pool
+  useEffect(() => { setLocalTs(initialPool) }, [initialPool])
+
   const [search, setSearch]       = useState("")
   const [category, setCategory]   = useState<ActionCategory>("timesheets")
 
