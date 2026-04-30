@@ -253,15 +253,18 @@ export function parseFieldglassCapCsvs(fileContents: string[]): FieldglassCapImp
     const workerKey = workerName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z-]/g, "") || `unknown-${r.id}`
 
     if (!employeeMap.has(workerKey)) {
+      // Employee id derived from the full workerKey so collisions can't
+      // happen via truncation. employeeCode stays short for UI display.
       const empCode = `CAP${workerKey.slice(0, 12).toUpperCase().replace(/-/g, "")}`
+      const empId   = `cap-fg-${workerKey}`
       const role        = "Fieldglass Contractor"
       const jobCategory = "Consulting"
-      const grade = derivePayGradeFields({ id: `cap-${empCode}`, role, jobCategory, ratePerHour: 850 })
+      const grade = derivePayGradeFields({ id: empId, role, jobCategory, ratePerHour: 850 })
       const slug  = workerKey
       const email = `${slug}@capgemini.com`
 
       employeeMap.set(workerKey, {
-        id:               `cap-fg-${empCode}`,
+        id:               empId,
         employeeCode:     empCode,
         name:             workerName || empCode,
         email,
