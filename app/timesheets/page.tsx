@@ -60,27 +60,31 @@ const _GENERATED_POOL: Timesheet[] = (() => {
   return [...seedTimesheets, ...generated].filter(t => !REAL_DATA_CLIENT_IDS.has(t.clientId))
 })()
 
-interface AccApiSnapshot {
+interface ClientApiSnapshot {
   configured: boolean
+  clientId:   string
   timesheets: Timesheet[]
   employees:  Employee[]
 }
 
-function buildPool(api: AccApiSnapshot | null): Timesheet[] {
-  // _GENERATED_POOL already excludes all REAL_DATA_CLIENT_IDS, so we just
-  // overlay real Accenture rows on top when available. The other 4
-  // real-data clients stay empty until their portal imports are wired.
-  if (!api || api.timesheets.length === 0) return _GENERATED_POOL
-  return [..._GENERATED_POOL, ...api.timesheets]
+function buildPool(snapshots: ClientApiSnapshot[]): Timesheet[] {
+  // _GENERATED_POOL already excludes all REAL_DATA_CLIENT_IDS. Overlay
+  // real timesheets from any client snapshot that has data; clients
+  // with no real data stay empty.
+  const real = snapshots.flatMap(s => s.timesheets)
+  return real.length === 0 ? _GENERATED_POOL : [..._GENERATED_POOL, ...real]
 }
 
 // Pool-aware getEmployee. Resolution order:
 //   1. seeded mock employees
-//   2. BeeLine-imported employees from /api/timesheets/acc (id starts with "acc-bl-")
+//   2. portal-imported employees from any /api/timesheets/[clientId]
+//      snapshot (ids like "acc-bl-..." or "cap-fg-...")
 //   3. generator-built employees (id like "<client>-emp-<n>")
-function makeEmployeeResolver(api: AccApiSnapshot | null) {
+function makeEmployeeResolver(snapshots: ClientApiSnapshot[]) {
   const importedById = new Map<string, Employee>()
-  if (api) for (const e of api.employees) importedById.set(e.id, e)
+  for (const s of snapshots) {
+    for (const e of s.employees) importedById.set(e.id, e)
+  }
 
   return function getEmployeeFromPool(employeeId: string): Employee | undefined {
     const seeded = seedGetEmployee(employeeId)
@@ -176,25 +180,32 @@ function FilterDropdown({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InboxPage() {
-  // BeeLine import (Accenture POC). Fetch from Postgres-backed API on
-  // mount; window 'focus' refreshes so an upload from /settings reflects
-  // here without a manual reload.
-  const [acc, setAcc] = useState<AccApiSnapshot | null>(null)
+  // Real-data clients (Accenture via BeeLine, Capgemini via Fieldglass,
+  // others as portals come online) are fetched in parallel from the
+  // generic /api/timesheets/[clientId] route. window 'focus' triggers
+  // a refresh so an upload from /settings reflects here.
+  const [snapshots, setSnapshots] = useState<ClientApiSnapshot[]>([])
   useEffect(() => {
     let cancelled = false
-    function refresh() {
-      fetch("/api/timesheets/acc")
-        .then(r => r.json())
-        .then(data => { if (!cancelled) setAcc(data) })
-        .catch(() => { if (!cancelled) setAcc({ configured: false, timesheets: [], employees: [] }) })
+    async function refresh() {
+      const ids = Array.from(REAL_DATA_CLIENT_IDS)
+      const results = await Promise.all(ids.map(async id => {
+        try {
+          const r = await fetch(`/api/timesheets/${id}`)
+          const data = await r.json()
+          if (data.configured && data.timesheets) return data as ClientApiSnapshot
+        } catch { /* swallow per-client; others may still resolve */ }
+        return null
+      }))
+      if (!cancelled) setSnapshots(results.filter((s): s is ClientApiSnapshot => s !== null))
     }
     refresh()
     window.addEventListener("focus", refresh)
     return () => { cancelled = true; window.removeEventListener("focus", refresh) }
   }, [])
 
-  const initialPool = useMemo(() => buildPool(acc), [acc])
-  const getEmployeeFromPool = useMemo(() => makeEmployeeResolver(acc), [acc])
+  const initialPool = useMemo(() => buildPool(snapshots), [snapshots])
+  const getEmployeeFromPool = useMemo(() => makeEmployeeResolver(snapshots), [snapshots])
 
   const [localTs, setLocalTs] = useState<Timesheet[]>(initialPool)
   // Re-seed local state whenever the API snapshot rebuilds the base pool

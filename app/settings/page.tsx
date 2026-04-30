@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import clsx from "clsx"
 import { generateSampleBeelineCsv } from "@/lib/beeline-import"
+import { generateSampleFieldglassCsv } from "@/lib/fieldglass-import"
 
 // ─── Section nav ─────────────────────────────────────────────────────────────
 
@@ -270,15 +271,29 @@ const EMPTY_STATUS: ImportStatus = {
   warnings: [], errors: [], unmapped: [],
 }
 
-function BeelineImportCard() {
+interface PortalImportConfig {
+  title:           string   // SectionCard heading
+  clientId:        string   // for read endpoint /api/timesheets/[clientId]
+  clientName:      string   // for empty-state copy
+  importEndpoint:  string   // POST + DELETE, e.g. /api/import/beeline
+  sampleGenerator: () => string
+  sampleFilename:  string
+  portalLabel:     string   // "BeeLine" | "Fieldglass"
+  portalIconColor: string   // hex for the file-icon tile
+  portalIconBg:    string
+  emptyHint:       string
+  drawerHint:      string   // text inside drop zone
+}
+
+function PortalImportCard({ config }: { config: PortalImportConfig }) {
   const [status,   setStatus]   = useState<ImportStatus>(EMPTY_STATUS)
   const [pending,  setPending]  = useState(false)
   const [dragOver, setDragOver] = useState(false)
 
   // Hydrate by hitting the read API. Tells us both configuration state
-  // (DB present?) and current Accenture row counts.
+  // (DB present?) and current per-client row counts.
   useEffect(() => {
-    fetch("/api/timesheets/acc")
+    fetch(`/api/timesheets/${config.clientId}`)
       .then(r => r.json())
       .then(data => {
         setStatus({
@@ -297,7 +312,7 @@ function BeelineImportCard() {
     try {
       const fd = new FormData()
       fd.append("file", file)
-      const res  = await fetch("/api/import/beeline", { method: "POST", body: fd })
+      const res  = await fetch(config.importEndpoint, { method: "POST", body: fd })
       const data = await res.json()
       if (!res.ok) {
         setStatus(s => ({
@@ -329,7 +344,7 @@ function BeelineImportCard() {
   async function handleClear() {
     setPending(true)
     try {
-      const res = await fetch("/api/import/beeline", { method: "DELETE" })
+      const res = await fetch(config.importEndpoint, { method: "DELETE" })
       if (!res.ok) {
         const data = await res.json()
         setStatus(s => ({ ...s, errors: [data.error ?? "Clear failed"] }))
@@ -344,11 +359,11 @@ function BeelineImportCard() {
   }
 
   function downloadSample() {
-    const csv  = generateSampleBeelineCsv()
+    const csv  = config.sampleGenerator()
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" })
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement("a")
-    a.href = url; a.download = "beeline-sample-accenture.csv"
+    a.href = url; a.download = config.sampleFilename
     document.body.appendChild(a); a.click(); document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
@@ -360,7 +375,7 @@ function BeelineImportCard() {
   const dbMissing = !status.configured
 
   return (
-    <SectionCard title="BeeLine · Accenture (POC)">
+    <SectionCard title={config.title}>
       <div className="pt-1 pb-2 space-y-3">
         {/* DB-not-configured banner */}
         {dbMissing && (
@@ -381,7 +396,7 @@ function BeelineImportCard() {
         <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
           style={{ background: hasImport ? "var(--accent-dim)" : "var(--surface)", border: `1px solid ${hasImport ? "var(--accent-border)" : "var(--border)"}` }}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(244,180,0,0.18)", color: "#F4B400" }}>
+            style={{ background: config.portalIconBg, color: config.portalIconColor }}>
             <FileText size={14} />
           </div>
           <div className="flex-1 min-w-0">
@@ -401,7 +416,7 @@ function BeelineImportCard() {
               <>
                 <div className="text-[12px] font-medium" style={{ color: "var(--text-1)" }}>No import yet</div>
                 <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
-                  Upload a CSV exported from BeeLine (Reports → Timesheet, last 6 months) to populate the Accenture inbox.
+                  {config.emptyHint}
                 </div>
               </>
             )}
@@ -436,7 +451,7 @@ function BeelineImportCard() {
             {pending ? "Parsing…" : "Drop CSV here, or click to browse"}
           </div>
           <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
-            Accepts a BeeLine timesheet export. Headers are matched permissively.
+            {config.drawerHint}
           </div>
           <input type="file" accept=".csv,text/csv" className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
@@ -496,7 +511,33 @@ function IntegrationsSection() {
 
   return (
     <div className="space-y-5">
-      <BeelineImportCard />
+      <PortalImportCard config={{
+        title:           "BeeLine · Accenture (POC)",
+        clientId:        "acc",
+        clientName:      "Accenture",
+        importEndpoint:  "/api/import/beeline",
+        sampleGenerator: generateSampleBeelineCsv,
+        sampleFilename:  "beeline-sample-accenture.csv",
+        portalLabel:     "BeeLine",
+        portalIconColor: "#F4B400",
+        portalIconBg:    "rgba(244,180,0,0.18)",
+        emptyHint:       "Upload a CSV exported from BeeLine (Reports → Timesheet, last 6 months) to populate the Accenture inbox.",
+        drawerHint:      "Accepts a BeeLine timesheet export. Headers are matched permissively.",
+      }} />
+
+      <PortalImportCard config={{
+        title:           "Fieldglass · Capgemini (POC)",
+        clientId:        "cap",
+        clientName:      "Capgemini",
+        importEndpoint:  "/api/import/fieldglass",
+        sampleGenerator: generateSampleFieldglassCsv,
+        sampleFilename:  "fieldglass-sample-capgemini.csv",
+        portalLabel:     "Fieldglass",
+        portalIconColor: "#0070AD",
+        portalIconBg:    "rgba(0,112,173,0.14)",
+        emptyHint:       "Upload a CSV exported from Fieldglass (Reports → Time Sheet, last 6 months) to populate the Capgemini inbox.",
+        drawerHint:      "Accepts a Fieldglass timesheet export. Headers are matched permissively.",
+      }} />
 
       <SectionCard title="Portal Connections">
         <div className="space-y-2 pt-1 pb-2">

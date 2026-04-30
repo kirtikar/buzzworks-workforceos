@@ -1,15 +1,18 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { getSql, isDbConfigured } from "@/lib/db/client"
+import { getClient } from "@/lib/mock-data"
 import type { Timesheet, Employee, ValidationCheck, DailyEntry } from "@/lib/types"
 
-// GET /api/timesheets/acc
+// GET /api/timesheets/[clientId]
 //
-// Returns the live Accenture timesheet inbox state from Postgres,
+// Returns the live per-client timesheet inbox state from Postgres,
 // shaped exactly like the in-memory Timesheet[] + Employee[] objects
-// the Inbox page already knows how to render.
+// the Inbox page already knows how to render. Same shape as the old
+// /api/timesheets/acc; clientId is now a URL param so any real-data
+// client (acc, cap, hex, lmt, pwc) can be queried.
 //
-// When DATABASE_URL is unset (local dev or deploy without provisioning),
-// returns { configured: false, ... } so the UI can fall back gracefully.
+// When DATABASE_URL is unset, returns { configured: false, ... } so
+// the UI falls back gracefully.
 
 interface DbTimesheetRow {
   id: string
@@ -73,19 +76,27 @@ interface DbDailyRow {
   leave_type: string | null
 }
 
-export async function GET() {
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ clientId: string }> },
+) {
+  const { clientId } = await params
+
   if (!isDbConfigured()) {
     return NextResponse.json({ configured: false, timesheets: [], employees: [] })
   }
 
   try {
-    const sql = getSql()
+    const sql        = getSql()
+    const clientMeta = getClient(clientId)
+    const fallbackColor = clientMeta?.color ?? "#A100FF"
+    const fallbackCity  = clientMeta?.city  ?? "Bangalore"
 
     const employees = await sql<DbEmployeeRow[]>`
-      SELECT * FROM employees WHERE client_id = 'acc'
+      SELECT * FROM employees WHERE client_id = ${clientId}
     `
     const timesheets = await sql<DbTimesheetRow[]>`
-      SELECT * FROM timesheets WHERE client_id = 'acc' ORDER BY period_start DESC
+      SELECT * FROM timesheets WHERE client_id = ${clientId} ORDER BY period_start DESC
     `
     const tsIds = timesheets.map(t => t.id)
     const validations = tsIds.length > 0
@@ -156,12 +167,12 @@ export async function GET() {
       name:             e.name,
       email:            e.email,
       clientId:         e.client_id,
-      role:             e.role ?? "BeeLine Contractor",
+      role:             e.role ?? "Contractor",
       jobCategory:      "Consulting",
       department:       e.department ?? "Consulting",
-      city:             "Bangalore",
+      city:             fallbackCity,
       startDate:        e.start_date ?? "",
-      ratePerHour:      600,            // canonical rate not surfaced in inbox; placeholder
+      ratePerHour:      600,            // not surfaced in inbox; placeholder
       payGrade:         "C5",
       payMode:          "hourly",
       payRate:          600,
@@ -174,16 +185,17 @@ export async function GET() {
       managerEmail:     e.manager_email ?? undefined,
       managerName:      e.manager_name ?? undefined,
       employmentStatus: "active",
-      avatarColor:      e.avatar_color ?? "#A100FF",
+      avatarColor:      e.avatar_color ?? fallbackColor,
     }))
 
     const lastImport = await sql<{ imported_at: string; row_count: number }[]>`
       SELECT imported_at, row_count FROM import_runs
-      WHERE client_id = 'acc' ORDER BY imported_at DESC LIMIT 1
+      WHERE client_id = ${clientId} ORDER BY imported_at DESC LIMIT 1
     `
 
     return NextResponse.json({
       configured: true,
+      clientId,
       timesheets: tsList,
       employees:  empList,
       lastImport: lastImport[0] ?? null,
