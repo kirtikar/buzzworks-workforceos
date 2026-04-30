@@ -138,11 +138,21 @@ export async function POST(req: NextRequest) {
 
     const tsIds = validated.map(x => x.ts.id)
 
+    // Postgres caps bind parameters at 65,534 per statement. With 7-col
+    // daily rows and 6-col validation rows, a 2,000-row chunk = ~14k
+    // params — well under the limit. Employees (19 cols) chunk at 2000
+    // = ~38k; timesheets (24 cols) chunk at 1500 = ~36k.
+    const chunk = <T>(arr: T[], size: number): T[][] => {
+      const out: T[][] = []
+      for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
+      return out
+    }
+
     await sql.begin(async tx => {
-      // Bulk upsert employees
-      if (empRows.length > 0) {
+      // Bulk upsert employees (chunked)
+      for (const part of chunk(empRows, 2000)) {
         await tx`
-          INSERT INTO employees ${tx(empRows,
+          INSERT INTO employees ${tx(part,
             "id","worker_id","client_id","name","employee_code","email",
             "role","department","manager_email","manager_name","avatar_color",
             "start_date","earned_leaves","consumed_leaves",
@@ -166,10 +176,10 @@ export async function POST(req: NextRequest) {
         `
       }
 
-      // Bulk upsert timesheets
-      if (tsRows.length > 0) {
+      // Bulk upsert timesheets (chunked)
+      for (const part of chunk(tsRows, 1500)) {
         await tx`
-          INSERT INTO timesheets ${tx(tsRows,
+          INSERT INTO timesheets ${tx(part,
             "id","employee_id","client_id","period","period_start","period_end",
             "submitted_at","source","source_detail","portal_id","status",
             "total_hours","regular_hours","overtime_hours","leave_hours",
@@ -204,22 +214,22 @@ export async function POST(req: NextRequest) {
         `
       }
 
-      // Replace daily + validation rows for touched timesheets
-      if (tsIds.length > 0) {
-        await tx`DELETE FROM daily_entries        WHERE timesheet_id IN ${tx(tsIds)}`
-        await tx`DELETE FROM timesheet_validations WHERE timesheet_id IN ${tx(tsIds)}`
+      // Replace daily + validation rows for touched timesheets (chunked)
+      for (const part of chunk(tsIds, 5000)) {
+        await tx`DELETE FROM daily_entries        WHERE timesheet_id IN ${tx(part)}`
+        await tx`DELETE FROM timesheet_validations WHERE timesheet_id IN ${tx(part)}`
       }
-      if (dailyRows.length > 0) {
+      for (const part of chunk(dailyRows, 2000)) {
         await tx`
-          INSERT INTO daily_entries ${tx(dailyRows,
+          INSERT INTO daily_entries ${tx(part,
             "timesheet_id","entry_date","day_of_week",
             "regular_hours","overtime_hours","leave_hours","leave_type"
           )}
         `
       }
-      if (valRows.length > 0) {
+      for (const part of chunk(valRows, 2000)) {
         await tx`
-          INSERT INTO timesheet_validations ${tx(valRows,
+          INSERT INTO timesheet_validations ${tx(part,
             "timesheet_id","rule_id","category","rule","result","detail"
           )}
         `
