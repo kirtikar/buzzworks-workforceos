@@ -139,7 +139,7 @@ async function harvestListPage(page: Page): Promise<{ tsn: string; endIso: strin
     for (const a of anchors) {
       const tr = a.closest("[role='row']") || a.closest("tr") || a.parentElement?.parentElement
       const text = (tr?.textContent ?? "").replace(/\s+/g, " ").trim()
-      const tsnMatch = text.match(/CGEMTS\d+/)
+      const tsnMatch = text.match(/CGEMTS\d{8}/)
       if (!tsnMatch || seen.has(tsnMatch[0])) continue
       seen.add(tsnMatch[0])
       const dates = Array.from(text.matchAll(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g))
@@ -166,7 +166,7 @@ async function scrapeDetail(page: Page): Promise<ScrapedTs> {
   return await page.evaluate(`(() => {
     if (!document.body) return { tsn: "", workerId: "", periodStart: "", periodEnd: "", billRate: undefined, totalHours: undefined, daily: [], scrapedAt: "" }
     const all = document.body.innerText
-    const tsn = (all.match(/CGEMTS\\d+/) || [""])[0]
+    const tsn = (all.match(/CGEMTS\\d{8}/) || [""])[0]
     const wid = (all.match(/CGEMWK\\d+/) || [""])[0]
     const periodMatch = all.match(/(\\d{2}\\/\\d{2}\\/\\d{4})\\s+to\\s+(\\d{2}\\/\\d{2}\\/\\d{4})/)
     let periodStart = ""
@@ -296,7 +296,7 @@ async function applyDateFilter(page: Page, startDdmmyyyy: string, endDdmmyyyy: s
   // Track first-row TSN so we can detect a real refresh vs no-op submit.
   const before = await page.evaluate(() => {
     const a = document.querySelector("a[href*='cgem.us'][href*='time_sheet_detail.do']")
-    return (a?.parentElement?.parentElement?.textContent?.match(/CGEMTS\d+/) ?? [""])[0]
+    return (a?.parentElement?.parentElement?.textContent?.match(/CGEMTS\d{8}/) ?? [""])[0]
   })
 
   // Inputs: clear by triple-click + type, then Tab to commit. The form's
@@ -321,7 +321,7 @@ async function applyDateFilter(page: Page, startDdmmyyyy: string, endDdmmyyyy: s
   try {
     await page.waitForFunction((prev) => {
       const a = document.querySelector("a[href*='cgem.us'][href*='time_sheet_detail.do']")
-      const cur = (a?.parentElement?.parentElement?.textContent?.match(/CGEMTS\d+/) ?? [""])[0]
+      const cur = (a?.parentElement?.parentElement?.textContent?.match(/CGEMTS\d{8}/) ?? [""])[0]
       // changed, or grid emptied, or "no rows" message visible
       const empty = !a && /No\s+results|no\s+rows|0\s+items?/i.test(document.body.innerText)
       return (cur && cur !== prev) || empty
@@ -395,7 +395,7 @@ async function run() {
               const anchors = document.querySelectorAll("a[href*='cgem.us'][href*='time_sheet_detail.do']")
               const tsns = new Set<string>()
               anchors.forEach(a => {
-                const t = (a.parentElement?.parentElement?.textContent?.match(/CGEMTS\d+/) ?? [""])[0]
+                const t = (a.parentElement?.parentElement?.textContent?.match(/CGEMTS\d{8}/) ?? [""])[0]
                 if (t) tsns.add(t)
               })
               return Array.from(tsns).sort().join(",") !== prev
