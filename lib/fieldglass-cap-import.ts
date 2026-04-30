@@ -253,9 +253,12 @@ export function parseFieldglassCapCsvs(fileContents: string[]): FieldglassCapImp
     const workerKey = workerName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z-]/g, "") || `unknown-${r.id}`
 
     if (!employeeMap.has(workerKey)) {
-      // Employee id derived from the full workerKey so collisions can't
-      // happen via truncation. employeeCode stays short for UI display.
-      const empCode = `CAP${workerKey.slice(0, 12).toUpperCase().replace(/-/g, "")}`
+      // employee_code is also worker_id in our schema, which has a
+      // UNIQUE (client_id, worker_id). Derive it from the full workerKey
+      // (uppercase, alphanumeric only) so two workers with similar names
+      // don't collide. Real Capgemini Worker IDs (CGEMWK*) live only on
+      // the Fieldglass detail page and aren't in the supplier list export.
+      const empCode = `CAP-${workerKey.toUpperCase().replace(/-/g, "")}`
       const empId   = `cap-fg-${workerKey}`
       const role        = "Fieldglass Contractor"
       const jobCategory = "Consulting"
