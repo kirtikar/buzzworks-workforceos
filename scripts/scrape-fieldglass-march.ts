@@ -31,11 +31,10 @@ const GATEWAY = process.env.FG_GATEWAY ?? "https://www.fieldglass.net/"
 const OUT_DIR  = path.join(process.cwd(), "out")
 const OUT_FILE = path.join(OUT_DIR, "fieldglass-march-daily.jsonl")
 const ERR_FILE = path.join(OUT_DIR, "scrape-errors.log")
-// March 2026 scope: 6 weekly windows covering Feb 23 → Apr 5. The list
-// page filter is two DD/MM/YYYY inputs; using a small window per query
-// keeps results well under the 1000-row cap and avoids pagination.
+// March 2026 scope (calendar 1-31). Timesheets are weekly Mon→Sun, so
+// we cover the 5 weeks that overlap March. Per-window ≤ 1000 rows so
+// the supplier list shows everything matching the date filter.
 const WINDOWS: { start: string; end: string }[] = [
-  { start: "23/02/2026", end: "01/03/2026" },
   { start: "02/03/2026", end: "08/03/2026" },
   { start: "09/03/2026", end: "15/03/2026" },
   { start: "16/03/2026", end: "22/03/2026" },
@@ -50,11 +49,25 @@ interface DailyRow { date: string; hours: number; type?: string }
 interface ScrapedTs {
   tsn:          string         // CGEMTS… (matches our DB column)
   workerId?:    string         // CGEMWK…
-  workerName?:  string
+  workerName?:  string         // "Last, First" from header strip
   periodStart?: string
   periodEnd?:   string
-  billRate?:    number
-  totalHours?:  number
+  status?:      string         // "Pending Approval" | "Invoiced" | "Paid" | …
+  jobPostingId?: string        // CGEMUP… (work order)
+  jobPostingName?: string      // "Altec TC Enhancements" etc.
+  managerName?: string         // "Work Order Revision Owner" name part
+  managerEmail?: string        // email parenthetical
+  approverName?: string        // most recent approver from Comments
+  approverEmail?: string
+  approvedAt?: string          // approval timestamp from Comments
+  legalEntity?: string         // "IN11"
+  site?: string                // full site string
+  businessUnit?: string
+  contingentType?: string      // "Classic" / "ICW" / etc.
+  payRate?: number             // cost to supplier (Pay to Worker / Standard Time)
+  billRate?: number            // bill to buyer
+  totalHours?: number          // weekly total (sum of daily.hours)
+  totalBilled?: number         // INR billed to buyer this week
   daily:        DailyRow[]
   scrapedAt:    string
 }
@@ -70,6 +83,11 @@ function errLog(id: string, err: unknown) {
 function appendJsonl(rec: ScrapedTs) {
   fs.appendFileSync(OUT_FILE, JSON.stringify(rec) + "\n")
 }
+// "Done" = TSN was cleanly scraped: 7 valid day entries with at least
+// one non-zero hours value (a record with all-zero days is suspicious —
+// usually indicates a parse failure on a real timesheet, so re-scrape).
+// Records with empty / partial `daily` are NOT counted as done so the
+// scraper picks them up again on the next run.
 function alreadyDone(): Set<string> {
   if (!fs.existsSync(OUT_FILE)) return new Set()
   const done = new Set<string>()
@@ -77,9 +95,12 @@ function alreadyDone(): Set<string> {
     if (!line.trim()) continue
     try {
       const r = JSON.parse(line)
-      // Tolerate the older `timesheetId` key from prior runs
       const tsn = r.tsn ?? r.timesheetId
-      if (tsn) done.add(tsn)
+      if (!tsn) continue
+      const daily = Array.isArray(r.daily) ? r.daily : []
+      const cleanlyScraped = daily.length === 7 &&
+        daily.some((d: { hours?: number }) => (d.hours ?? 0) > 0)
+      if (cleanlyScraped) done.add(tsn)
     } catch { /* skip */ }
   }
   return done
@@ -177,8 +198,80 @@ async function scrapeDetail(page: Page): Promise<ScrapedTs> {
       if (a) periodStart = a[3] + "-" + a[2] + "-" + a[1]
       if (b) periodEnd   = b[3] + "-" + b[2] + "-" + b[1]
     }
-    const billMatch = all.match(/(?:Bill\\s+Rate|Bill\\s+to\\s+Buyer)[\\s\\S]{0,200}?([\\d,]+\\.\\d{2})/)
-    const billRate = billMatch ? parseFloat(billMatch[1].replace(/,/g, "")) : undefined
+
+    // ── Worker context ──────────────────────────────────────────────
+    // Header strip: "Time Sheets List\\n.., NAME\\nTime Sheet"
+    // Worker name appears just below "Time Sheets List".
+    const allLines = all.split("\\n")
+    let workerName = ""
+    for (let i = 0; i < allLines.length - 1; i++) {
+      if (/^Time Sheets List/.test(allLines[i])) {
+        for (let j = i + 1; j < Math.min(i + 4, allLines.length); j++) {
+          const t = allLines[j].replace(/^[.,\\s]+/, "").trim()
+          if (t && t !== "Time Sheet" && !/^\\(Rev/.test(t)) { workerName = t; break }
+        }
+        break
+      }
+    }
+
+    // Status (e.g., "Pending Approval", "Invoiced") — first known status keyword.
+    const statusMatch = all.match(/\\b(Pending Approval|Invoiced|Paid|Approval Paused|Pending Review|Approved|Rejected)\\b/)
+    const status = statusMatch ? statusMatch[1] : ""
+
+    // Job posting: "<name> CGEMUP\\d+" or "CGEMUP\\d+" alone.
+    const jpMatch = all.match(/([A-Za-z][^\\n\\t]{2,80}?)\\s*[-:\\s]\\s*(CGEMUP\\d+)/)
+    const jobPostingId   = jpMatch ? jpMatch[2] : (all.match(/CGEMUP\\d+/) || [""])[0]
+    const jobPostingName = jpMatch ? jpMatch[1].trim() : ""
+
+    // Manager (Work Order Revision Owner) — line is
+    //   "Work Order/Work Order Revision Owner\\tLast, First(email@…)"
+    const mgrMatch = all.match(/Work Order(?:\\/Work Order)? Revision Owner[\\s\\t]*([^\\n(]+)\\(([^)]+)\\)/)
+    const managerName  = mgrMatch ? mgrMatch[1].trim() : ""
+    const managerEmail = mgrMatch ? mgrMatch[2].trim() : ""
+
+    // Approver from Comments table — most recent "Approved" / "Approve" entry.
+    const approverMatch = all.match(/(\\d{2}\\/\\d{2}\\/\\d{4} \\d{2}:\\d{2} (?:AM|PM))[\\s\\t]+([^\\n(]+)\\(([^)]+)\\)[\\s\\t]+Approved/)
+    const approverName  = approverMatch ? approverMatch[2].trim() : ""
+    const approverEmail = approverMatch ? approverMatch[3].trim() : ""
+    let approvedAt = ""
+    if (approverMatch) {
+      const m = approverMatch[1].match(/(\\d{2})\\/(\\d{2})\\/(\\d{4}) (\\d{2}):(\\d{2}) (AM|PM)/)
+      if (m) {
+        let hh = parseInt(m[4], 10); if (m[6] === "PM" && hh < 12) hh += 12; if (m[6] === "AM" && hh === 12) hh = 0
+        approvedAt = m[3] + "-" + m[2] + "-" + m[1] + "T" + String(hh).padStart(2, "0") + ":" + m[5] + ":00"
+      }
+    }
+
+    // Site / Legal Entity / Business Unit (label\\tvalue layout).
+    const legalEntityMatch = all.match(/Legal Entity\\s*\\n?\\s*\\t?\\s*([A-Z]{2}\\d{2,})/)
+    const legalEntity = legalEntityMatch ? legalEntityMatch[1] : ""
+    const siteMatch = all.match(/Site[\\s\\t]+([^\\n]+CAPGEMINI[^\\n]+)/)
+    const site = siteMatch ? siteMatch[1].trim() : ""
+    const buMatch = all.match(/Business Unit[\\s\\t]+([^\\n]+)/)
+    const businessUnit = buMatch ? buMatch[1].trim() : ""
+    const ctMatch = all.match(/Contingent Type[\\s\\t]+([A-Za-z][^\\n]{0,40})/)
+    const contingentType = ctMatch ? ctMatch[1].trim() : ""
+
+    // ── Rates & amount ───────────────────────────────────────────────
+    // "Bill to Buyer" section sums rates × hours. The "Total\\t<amount>" line
+    // following it is the amount billed for this week (INR).
+    let billRate = undefined
+    let payRate  = undefined
+    let totalBilled = undefined
+    const billSection = all.indexOf("Bill to Buyer")
+    if (billSection > 0) {
+      const seg = all.slice(billSection, billSection + 1500)
+      const rate = seg.match(/Standard Time[^\\n]*\\t([\\d,]+\\.\\d{2})/)
+      if (rate) billRate = parseFloat(rate[1].replace(/,/g, ""))
+      const totalAmt = seg.match(/Total[\\s\\t]+([\\d,]+\\.\\d{2})/)
+      if (totalAmt) totalBilled = parseFloat(totalAmt[1].replace(/,/g, ""))
+    }
+    const paySection = all.indexOf("Pay to Worker")
+    if (paySection > 0) {
+      const seg = all.slice(paySection, paySection + 1500)
+      const rate = seg.match(/Standard Time[^\\n]*\\t([\\d,]+\\.\\d{2})/)
+      if (rate) payRate = parseFloat(rate[1].replace(/,/g, ""))
+    }
 
     // Note: innerText uses TAB to separate cells in the same HTML row.
     // The Time Worked grid renders as:
@@ -240,10 +333,22 @@ async function scrapeDetail(page: Page): Promise<ScrapedTs> {
         }
       }
     }
-    const totalMatch = all.match(/Total\\s+Worked[\\s\\S]{0,80}?(\\d+)h\\s*,?\\s*(\\d+)m/)
-    const totalHours = totalMatch ? parseInt(totalMatch[1], 10) + parseInt(totalMatch[2], 10) / 60 : undefined
+    // Week total = sum of daily.hours (more reliable than scraping the
+    // "Total Worked" cell, which is ambiguous in multi-project rows).
+    const totalHours = daily.reduce(function(s, d){ return s + d.hours }, 0)
 
-    return { tsn: tsn, workerId: wid, periodStart: periodStart, periodEnd: periodEnd, billRate: billRate, totalHours: totalHours, daily: daily, scrapedAt: "" }
+    return {
+      tsn: tsn, workerId: wid, workerName: workerName,
+      periodStart: periodStart, periodEnd: periodEnd, status: status,
+      jobPostingId: jobPostingId, jobPostingName: jobPostingName,
+      managerName: managerName, managerEmail: managerEmail,
+      approverName: approverName, approverEmail: approverEmail, approvedAt: approvedAt,
+      legalEntity: legalEntity, site: site, businessUnit: businessUnit,
+      contingentType: contingentType,
+      payRate: payRate, billRate: billRate,
+      totalHours: totalHours, totalBilled: totalBilled,
+      daily: daily, scrapedAt: "",
+    }
   })()`) as ScrapedTs
 }
 
@@ -336,98 +441,138 @@ async function applyDateFilter(page: Page, startDdmmyyyy: string, endDdmmyyyy: s
   return rows.length
 }
 
-async function run() {
+async function scrapeOneWindow(
+  win: { start: string; end: string },
+  done: Set<string>,
+): Promise<{ scraped: number; failed: number }> {
+  // Each window gets its own browser process. SAP Fieldglass leaks UI
+  // state across windows — after ~30 min the filter input becomes
+  // unreachable. A fresh login per window avoids the degradation entirely.
   const browser: Browser = await chromium.launch({ headless: false, slowMo: 80 })
   const ctx  = await browser.newContext({ viewport: { width: 1400, height: 950 } })
   const page = await ctx.newPage()
+  let scraped = 0, failed = 0
 
   try {
     await login(page)
-
-    log("→ navigating to time_sheet_list.do")
     const supplierBase = `https://${new URL(page.url()).host}`
-    await page.goto(`${supplierBase}/time_sheet_list.do`, { waitUntil: "domcontentloaded", timeout: 60_000 })
-    await page.waitForLoadState("networkidle", { timeout: 20_000 }).catch(() => {})
-    await dismissCookieBanner(page)
 
-    const done = alreadyDone()
-    log(`Resume: ${done.size} TSNs already in JSONL.`)
-
-    let totalScraped = 0, totalFailed = 0
-
-    for (const win of WINDOWS) {
-      log(`── window ${win.start} → ${win.end} ──`)
-      // Always re-navigate to the list page before applying filter — popups
-      // and clicks across previous windows can leave the list in a stale
-      // state where the filter input is no longer visible.
-      await page.goto(`${supplierBase}/time_sheet_list.do`, { waitUntil: "domcontentloaded", timeout: 60_000 })
-      await page.waitForLoadState("networkidle", { timeout: 20_000 }).catch(() => {})
-      await dismissCookieBanner(page)
+    log(`── window ${win.start} → ${win.end} ──`)
+    let filterApplied = false
+    for (const attempt of [1, 2]) {
       try {
+        if (attempt === 2) log(`  retrying after reload...`)
+        await page.goto(`${supplierBase}/time_sheet_list.do`, { waitUntil: "domcontentloaded", timeout: 60_000 })
+        await page.waitForLoadState("networkidle", { timeout: 20_000 }).catch(() => {})
+        await dismissCookieBanner(page)
+        await page.waitForSelector("#filterStartDate", { state: "visible", timeout: 30_000 })
         await applyDateFilter(page, win.start, win.end)
+        filterApplied = true; break
       } catch (e) {
-        errLog(`window-${win.start}`, e)
+        errLog(`window-${win.start}-attempt-${attempt}`, e)
+        await page.screenshot({ path: path.join(OUT_DIR, `window-${win.start.replace(/\//g, "-")}-fail-${attempt}.png`), fullPage: true }).catch(() => {})
+      }
+    }
+    if (!filterApplied) {
+      log(`  ✗ skipping window — filter never applied`)
+      return { scraped, failed }
+    }
+
+    let pageNo = 1
+    const MAX_PAGES_PER_WINDOW = 25
+    const seenPageSigs = new Set<string>()
+    while (true) {
+      let rows: { tsn: string; endIso: string; href: string }[]
+      try {
+        rows = await harvestListPage(page)
+      } catch (e) {
+        errLog(`harvest-${win.start}-page${pageNo}`, e)
+        await page.goto(`${supplierBase}/time_sheet_list.do`, { waitUntil: "domcontentloaded", timeout: 60_000 }).catch(() => {})
+        await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {})
+        await dismissCookieBanner(page)
+        await applyDateFilter(page, win.start, win.end).catch(() => {})
+        await page.waitForTimeout(1000)
+        continue
+      }
+      const target = rows.find(r => !done.has(r.tsn))
+      if (!target) {
+        log(`win ${win.start}→${win.end} page ${pageNo}: ${rows.length} rows / 0 not-yet-scraped`)
+        if (pageNo >= MAX_PAGES_PER_WINDOW) { log(`  hit max-pages cap`); break }
+        const sig = rows.map(r => r.tsn).sort().join(",")
+        if (seenPageSigs.has(sig)) { log(`  page sig seen — stopping`); break }
+        seenPageSigs.add(sig)
+        const next = await page.$("div[role='button'][title='Next']")
+        if (!next) break
+        const disabled = await next.evaluate(el =>
+          el.getAttribute("aria-disabled") === "true"
+          || el.classList.contains("jqx-fill-state-disabled"))
+        if (disabled) break
+        await next.click()
+        await page.waitForTimeout(800)
+        try {
+          await page.waitForFunction((prev: string) => {
+            const anchors = document.querySelectorAll("a[href*='cgem.us'][href*='time_sheet_detail.do']")
+            const tsns = new Set<string>()
+            anchors.forEach(a => {
+              const t = (a.parentElement?.parentElement?.textContent?.match(/CGEMTS\d{8}/) ?? [""])[0]
+              if (t) tsns.add(t)
+            })
+            return tsns.size > 0 && Array.from(tsns).sort().join(",") !== prev
+          }, sig, { timeout: 10_000 })
+          pageNo++
+        } catch { break }
         continue
       }
 
-      let pageNo = 1
-      let winScraped = 0
-      // Per-iteration: harvest fresh, find the next not-yet-done row, click,
-      // scrape, repeat until the whole list page yields no new targets.
-      // This avoids the "anchor not found" issue from caching all hrefs up
-      // front then iterating over them while the page may re-render.
-      while (true) {
-        const rows = await harvestListPage(page)
-        const target = rows.find(r => !done.has(r.tsn))
-        if (!target) {
-          log(`win ${win.start}→${win.end} page ${pageNo}: ${rows.length} rows / 0 not-yet-scraped`)
-          // Try advancing
-          const next = await page.$("div[role='button'][title='Next']")
-          if (!next) break
-          const disabled = await next.evaluate(el =>
-            el.getAttribute("aria-disabled") === "true"
-            || el.classList.contains("jqx-fill-state-disabled"))
-          if (disabled) break
-          const beforeSig = rows.map(r => r.tsn).sort().join(",")
-          await next.click()
-          try {
-            await page.waitForFunction((prev) => {
-              const anchors = document.querySelectorAll("a[href*='cgem.us'][href*='time_sheet_detail.do']")
-              const tsns = new Set<string>()
-              anchors.forEach(a => {
-                const t = (a.parentElement?.parentElement?.textContent?.match(/CGEMTS\d{8}/) ?? [""])[0]
-                if (t) tsns.add(t)
-              })
-              return Array.from(tsns).sort().join(",") !== prev
-            }, beforeSig, { timeout: 15_000 })
-            pageNo++
-          } catch { break }
-          continue
+      try {
+        const rec = await clickThroughList(page, target)
+        if (rec && rec.tsn) {
+          appendJsonl(rec); done.add(rec.tsn); scraped++
+          if (scraped % 10 === 0)
+            log(`progress: ${win.start}→${win.end} scraped=${scraped} failed=${failed} last=${rec.tsn}(${rec.daily.length}d)`)
+        } else {
+          done.add(target.tsn); failed++
         }
-
-        try {
-          const rec = await clickThroughList(page, target)
-          if (rec && rec.tsn) {
-            appendJsonl(rec); done.add(rec.tsn); totalScraped++; winScraped++
-            if (totalScraped % 10 === 0)
-              log(`progress: scraped=${totalScraped} failed=${totalFailed} last=${rec.tsn}(${rec.daily.length}d)`)
-          } else {
-            done.add(target.tsn)   // skip the failed-to-find anchor on next iteration
-            totalFailed++
-          }
-        } catch (e) {
-          done.add(target.tsn)
-          totalFailed++; errLog(target.tsn, e)
-        }
-        await page.waitForTimeout(500)   // light throttle
+      } catch (e) {
+        done.add(target.tsn); failed++; errLog(target.tsn, e)
       }
-      log(`win ${win.start}→${win.end} complete: ${winScraped} scraped this run`)
+      await page.waitForTimeout(500)
     }
-
-    log(`DONE. scraped=${totalScraped} failed=${totalFailed} out=${OUT_FILE}`)
+    log(`win ${win.start}→${win.end} complete: ${scraped} scraped, ${failed} failed`)
+    return { scraped, failed }
+  } catch (e) {
+    errLog(`window-${win.start}-fatal`, e)
+    log(`  ✗ window aborted: ${(e as Error).message?.slice(0, 120) ?? e}`)
+    return { scraped, failed }
   } finally {
-    await browser.close()
+    await browser.close().catch(() => {})
   }
 }
 
-run().catch(e => { console.error(e); process.exit(1) })
+// Append-only structured progress log alongside the JSONL. Captures every
+// window run + pre/post counts so a later session can audit which windows
+// have been "cleanly" completed and skip them entirely.
+function logRun(entry: Record<string, unknown>) {
+  const path = OUT_DIR + "/scrape-progress.log"
+  fs.appendFileSync(path, JSON.stringify({ ...entry, ts: new Date().toISOString() }) + "\n")
+}
+
+async function run() {
+  const done = alreadyDone()
+  log(`Resume: ${done.size} cleanly-scraped TSNs already in JSONL.`)
+  logRun({ event: "run-start", resumeFromTsns: done.size })
+
+  let totalScraped = 0, totalFailed = 0
+  for (const win of WINDOWS) {
+    logRun({ event: "window-start", window: `${win.start}→${win.end}`, doneBefore: done.size })
+    const { scraped, failed } = await scrapeOneWindow(win, done)
+    totalScraped += scraped
+    totalFailed  += failed
+    logRun({ event: "window-end", window: `${win.start}→${win.end}`, scraped, failed, totalDoneAfter: done.size })
+  }
+
+  log(`DONE. totalScraped=${totalScraped} totalFailed=${totalFailed} out=${OUT_FILE}`)
+  logRun({ event: "run-end", totalScraped, totalFailed, finalDone: done.size })
+}
+
+run().catch((e: unknown) => { console.error(e); process.exit(1) })
