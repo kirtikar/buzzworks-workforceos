@@ -219,6 +219,10 @@ export interface Timesheet {
   approvedAt?: string
   notes?: string
   aiConfidence?: number
+  // Deep link to the source portal's detail page (e.g. Fieldglass time-sheet
+  // detail). Day-wise data isn't bulk-exportable from some portals; the UI
+  // surfaces this URL so ops can drill into the real day-wise view.
+  externalUrl?: string
 }
 
 // ─── AI Insight ───────────────────────────────────────────────────────────────

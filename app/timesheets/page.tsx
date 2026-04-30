@@ -104,6 +104,31 @@ function initials(name: string) {
   return name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
 }
 
+// Short label for the tick-mark strip in the validation drawer. Each
+// per-client validator (Accenture, Capgemini, …) emits checks with stable
+// rule_ids — we render compact, glanceable labels here. Unknown ids fall
+// back to the rule_id with hyphens stripped.
+function tickLabelFor(ruleId: string): string {
+  switch (ruleId) {
+    // Capgemini
+    case "weekly-target":         return "45h"
+    case "holiday-fill":          return "Holiday"
+    case "leave-inference":       return "Leave"
+    case "leave-balance":         return "Balance"
+    case "ot-spillover":          return "OT mgr"
+    case "status-recognised":     return "Status"
+    // Accenture (BeeLine)
+    case "weekly-cap":            return "≤45h"
+    case "ot-preapproval":        return "OT pre"
+    case "leave-balance-acc":     return "Balance"
+    case "daily-cap":             return "Day"
+    case "weekend-policy":        return "Weekend"
+    case "status-mapping":        return "Status"
+    default:
+      return ruleId.replace(/-/g, " ")
+  }
+}
+
 // ─── FilterDropdown (multi-select) ────────────────────────────────────────────
 
 function FilterDropdown({
@@ -947,17 +972,48 @@ export default function InboxPage() {
                   </div>
                 </div>
 
-                {/* AI Validation — JARVIS */}
+                {/* AI Validation — JARVIS · per-client policy */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-[11px] font-semibold uppercase tracking-wider"
                       style={{ color: "var(--text-3)" }}>
-                      JARVIS Validation
+                      JARVIS · {detailClient.name} policy
                     </div>
                     <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--pink-700)" }}>
                       <Sparkles size={10} />
                       {detail.aiConfidence ?? detail.validationScore}% confidence
                     </span>
+                  </div>
+
+                  {/* Tick-mark strip — one tile per policy check, ordered as the
+                      validator emits them. Distinct per client because the
+                      check set itself is client-specific. */}
+                  <div className="grid gap-1 mb-2"
+                    style={{ gridTemplateColumns: `repeat(${Math.max(1, detail.validationChecks.length)}, minmax(0, 1fr))` }}>
+                    {detail.validationChecks.map(check => {
+                      const c = check.result === "pass"    ? "#059669"
+                              : check.result === "fail"    ? "var(--danger)"
+                              : check.result === "warning" ? "var(--warn)"
+                              :                              "var(--text-3)"
+                      const bg = check.result === "pass"    ? "rgba(5,150,105,0.08)"
+                               : check.result === "fail"    ? "var(--danger-bg)"
+                               : check.result === "warning" ? "var(--warn-bg)"
+                               :                              "var(--surface-2)"
+                      return (
+                        <div key={`tick-${check.id}`}
+                          title={`${check.rule} — ${check.detail}`}
+                          className="flex flex-col items-center gap-1 px-1 py-2 rounded-md"
+                          style={{ background: bg }}>
+                          {check.result === "pass"    && <CheckCircle2  size={14} style={{ color: c }} />}
+                          {check.result === "fail"    && <XCircle       size={14} style={{ color: c }} />}
+                          {check.result === "warning" && <AlertTriangle size={14} style={{ color: c }} />}
+                          {check.result === "pending" && <Clock         size={14} style={{ color: c }} />}
+                          <span className="text-[9px] font-medium leading-tight text-center" style={{ color: c }}>
+                            {tickLabelFor(check.id)}
+                          </span>
+                        </div>
+                      )
+                    })}
                   </div>
 
                   {/* Score summary */}
@@ -1003,6 +1059,16 @@ export default function InboxPage() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Drill into source portal — Fieldglass detail page exposes
+                      the real day-wise breakdown that isn't bulk-exportable. */}
+                  {detail.externalUrl && (
+                    <a href={detail.externalUrl} target="_blank" rel="noreferrer"
+                      className="mt-2 flex items-center justify-center gap-1.5 py-2 px-3 text-[11px] font-medium rounded-lg"
+                      style={{ color: "var(--accent)", background: "var(--accent-dim)", border: "1px solid var(--accent-border)" }}>
+                      <Globe size={12} /> View day-wise on {detail.portalId === "fieldglass" ? "Fieldglass" : detail.portalId === "beeline" ? "BeeLine" : "portal"} →
+                    </a>
+                  )}
                 </div>
 
                 {/* Flag reason */}

@@ -62,6 +62,11 @@ CREATE TABLE IF NOT EXISTS timesheets (
   UNIQUE (employee_id, period_start)
 );
 
+-- Deep link back to the source portal's detail page (Fieldglass time-sheet
+-- detail, BeeLine timecard view, etc.). Day-wise data not bulk-exportable
+-- from some portals; UI surfaces this URL so ops can drill in directly.
+ALTER TABLE timesheets ADD COLUMN IF NOT EXISTS external_url TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_timesheets_client_status ON timesheets(client_id, status);
 CREATE INDEX IF NOT EXISTS idx_timesheets_period ON timesheets(period_start DESC);
 

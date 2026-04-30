@@ -264,6 +264,9 @@ interface ImportStatus {
   unmapped:   string[]
   mgrApprovalCount?: number
   leaveExceededCount?: number
+  filesProcessed?:  number
+  rawRowsSeen?:     number
+  uniqueIds?:       number
 }
 
 const EMPTY_STATUS: ImportStatus = {
@@ -283,6 +286,7 @@ interface PortalImportConfig {
   portalIconBg:    string
   emptyHint:       string
   drawerHint:      string   // text inside drop zone
+  multiFile?:      boolean  // accept multiple files in one POST (Fieldglass: weekwise reports overlap)
 }
 
 function PortalImportCard({ config }: { config: PortalImportConfig }) {
@@ -307,11 +311,13 @@ function PortalImportCard({ config }: { config: PortalImportConfig }) {
       .catch(() => setStatus(s => ({ ...s, configured: false })))
   }, [])
 
-  async function handleFile(file: File) {
+  async function handleFiles(files: File[] | FileList) {
+    const list = Array.from(files)
+    if (list.length === 0) return
     setPending(true)
     try {
       const fd = new FormData()
-      fd.append("file", file)
+      for (const f of list) fd.append("file", f)
       const res  = await fetch(config.importEndpoint, { method: "POST", body: fd })
       const data = await res.json()
       if (!res.ok) {
@@ -333,6 +339,9 @@ function PortalImportCard({ config }: { config: PortalImportConfig }) {
         unmapped:   data.summary.unmappedHeaders ?? [],
         mgrApprovalCount:   data.summary.mgrApprovalCount,
         leaveExceededCount: data.summary.leaveExceededCount,
+        filesProcessed:     data.summary.filesProcessed,
+        rawRowsSeen:        data.summary.rawRowsSeen,
+        uniqueIds:          data.summary.uniqueIds,
       })
     } catch (e) {
       setStatus(s => ({ ...s, errors: [`Upload failed: ${(e as Error).message}`] }))
@@ -408,6 +417,9 @@ function PortalImportCard({ config }: { config: PortalImportConfig }) {
                 </div>
                 <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
                   Last import: {ago ?? "—"}
+                  {status.filesProcessed ? ` · ${status.filesProcessed} file${status.filesProcessed !== 1 ? "s" : ""}` : ""}
+                  {status.rawRowsSeen && status.uniqueIds && status.rawRowsSeen !== status.uniqueIds
+                    ? ` · ${status.rawRowsSeen} rows → ${status.uniqueIds} after dedup` : ""}
                   {status.mgrApprovalCount ? ` · ${status.mgrApprovalCount} OT approval${status.mgrApprovalCount !== 1 ? "s" : ""} pending` : ""}
                   {status.leaveExceededCount ? ` · ${status.leaveExceededCount} leave-balance fail${status.leaveExceededCount !== 1 ? "s" : ""}` : ""}
                 </div>
@@ -438,8 +450,7 @@ function PortalImportCard({ config }: { config: PortalImportConfig }) {
           onDragLeave={() => setDragOver(false)}
           onDrop={e => {
             e.preventDefault(); setDragOver(false)
-            const f = e.dataTransfer.files?.[0]
-            if (f) handleFile(f)
+            if (e.dataTransfer.files?.length) handleFiles(e.dataTransfer.files)
           }}
           className="flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-xl cursor-pointer transition-colors text-center"
           style={{
@@ -448,13 +459,13 @@ function PortalImportCard({ config }: { config: PortalImportConfig }) {
           }}>
           <Upload size={20} style={{ color: dragOver ? "var(--accent)" : "var(--text-3)" }} />
           <div className="text-[13px] font-medium" style={{ color: "var(--text-1)" }}>
-            {pending ? "Parsing…" : "Drop CSV here, or click to browse"}
+            {pending ? "Parsing…" : config.multiFile ? "Drop CSV(s) here, or click to browse" : "Drop CSV here, or click to browse"}
           </div>
           <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
             {config.drawerHint}
           </div>
-          <input type="file" accept=".csv,text/csv" className="hidden"
-            onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
+          <input type="file" accept=".csv,text/csv" className="hidden" multiple={config.multiFile}
+            onChange={e => { if (e.target.files?.length) handleFiles(e.target.files) }} />
         </label>
 
         {/* Sample download */}
@@ -535,8 +546,9 @@ function IntegrationsSection() {
         portalLabel:     "Fieldglass",
         portalIconColor: "#0070AD",
         portalIconBg:    "rgba(0,112,173,0.14)",
-        emptyHint:       "Upload a CSV exported from Fieldglass (Reports → Time Sheet, last 6 months) to populate the Capgemini inbox.",
-        drawerHint:      "Accepts a Fieldglass timesheet export. Headers are matched permissively.",
+        emptyHint:       "Upload Fieldglass Supplier-List CSVs (Time Sheet Detail → Export). Multiple weekly files OK — overlap is deduped by (id, max revision).",
+        drawerHint:      "Accepts one or more Fieldglass Supplier-List exports. Hierarchical 'Worker :' format expected.",
+        multiFile:       true,
       }} />
 
       <SectionCard title="Portal Connections">

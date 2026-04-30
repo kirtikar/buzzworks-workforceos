@@ -38,6 +38,7 @@ interface DbTimesheetRow {
   approved_at: string | null
   ai_confidence: number | null
   ot_payout_cycle: string | null
+  external_url: string | null
 }
 
 interface DbEmployeeRow {
@@ -159,6 +160,7 @@ export async function GET(
       approvedBy:       t.approved_by ?? undefined,
       approvedAt:       t.approved_at ?? undefined,
       aiConfidence:     t.ai_confidence ?? undefined,
+      externalUrl:      t.external_url ?? undefined,
     }))
 
     const empList: Employee[] = employees.map(e => ({
