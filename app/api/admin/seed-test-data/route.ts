@@ -25,55 +25,58 @@ export async function POST() {
     let inserted = 0
     let perClient: Record<string, number> = {}
 
+    // Build the full insert payload in memory first, then send as one
+    // bulk-insert statement (vs ~480 round-trips which times out on
+    // Vercel Hobby's 30s function limit at Mumbai-DB latency).
+    const rows: Array<{
+      id: string; worker_id: string; client_id: string;
+      name: string; employee_code: string; email: string;
+      role: string | null; department: string | null;
+      manager_email: string | null; manager_name: string | null;
+      avatar_color: string | null; start_date: string | null;
+      earned_leaves: number; consumed_leaves: number;
+      is_test_data: boolean; rate_per_hour: number;
+      pay_mode: string; pay_rate: number; employment_status: string;
+    }> = []
+
+    for (const client of clients) {
+      if (REAL_DATA_CLIENT_IDS.has(client.id)) continue
+      const seedForClient = seedEmployees.filter(e => e.clientId === client.id)
+      const need = Math.min(TEST_POOL_SIZE_PER_CLIENT, client.employeeCount) - seedForClient.length
+      const generated = need > 0
+        ? generateEmployeesForClient(client.id, need, seedForClient.length)
+        : []
+      const all: Employee[] = [...seedForClient, ...generated]
+      for (const e of all) {
+        rows.push({
+          id: e.id, worker_id: e.employeeCode, client_id: e.clientId,
+          name: e.name, employee_code: e.employeeCode, email: e.email,
+          role: e.role ?? null, department: e.department ?? null,
+          manager_email: e.managerEmail ?? null, manager_name: e.managerName ?? null,
+          avatar_color: e.avatarColor ?? null, start_date: e.startDate ?? null,
+          earned_leaves: 0, consumed_leaves: 0,
+          is_test_data: true, rate_per_hour: e.ratePerHour,
+          pay_mode: e.payMode, pay_rate: e.payRate,
+          employment_status: e.employmentStatus,
+        })
+      }
+      perClient[client.id] = all.length
+    }
+
     await sql.begin(async tx => {
-      // Wipe existing test rows (and cascade to their timesheets)
       await tx`DELETE FROM employees WHERE is_test_data = true`
-
-      for (const client of clients) {
-        if (REAL_DATA_CLIENT_IDS.has(client.id)) continue
-
-        const seedForClient = seedEmployees.filter(e => e.clientId === client.id)
-        const need = Math.min(TEST_POOL_SIZE_PER_CLIENT, client.employeeCount) - seedForClient.length
-        const generated = need > 0
-          ? generateEmployeesForClient(client.id, need, seedForClient.length)
-          : []
-
-        const all: Employee[] = [...seedForClient, ...generated]
-        for (const e of all) {
-          await tx`
-            INSERT INTO employees (
-              id, worker_id, client_id, name, employee_code, email,
-              role, department, manager_email, manager_name, avatar_color,
-              start_date, earned_leaves, consumed_leaves,
-              is_test_data, rate_per_hour, pay_mode, pay_rate,
-              employment_status
-            ) VALUES (
-              ${e.id}, ${e.employeeCode}, ${e.clientId}, ${e.name}, ${e.employeeCode}, ${e.email},
-              ${e.role ?? null}, ${e.department ?? null}, ${e.managerEmail ?? null},
-              ${e.managerName ?? null}, ${e.avatarColor ?? null},
-              ${e.startDate ?? null}, 0, 0,
-              true, ${e.ratePerHour}, ${e.payMode}, ${e.payRate},
-              ${e.employmentStatus}
-            )
-            ON CONFLICT (id) DO UPDATE SET
-              name              = EXCLUDED.name,
-              email             = EXCLUDED.email,
-              role              = EXCLUDED.role,
-              department        = EXCLUDED.department,
-              manager_email     = EXCLUDED.manager_email,
-              avatar_color      = EXCLUDED.avatar_color,
-              rate_per_hour     = EXCLUDED.rate_per_hour,
-              pay_mode          = EXCLUDED.pay_mode,
-              pay_rate          = EXCLUDED.pay_rate,
-              employment_status = EXCLUDED.employment_status,
-              is_test_data      = true,
-              updated_at        = NOW()
-          `
-          inserted++
-        }
-        perClient[client.id] = all.length
+      if (rows.length > 0) {
+        await tx`
+          INSERT INTO employees ${tx(rows,
+            "id", "worker_id", "client_id", "name", "employee_code", "email",
+            "role", "department", "manager_email", "manager_name", "avatar_color",
+            "start_date", "earned_leaves", "consumed_leaves",
+            "is_test_data", "rate_per_hour", "pay_mode", "pay_rate", "employment_status"
+          )}
+        `
       }
     })
+    inserted = rows.length
 
     return NextResponse.json({ ok: true, inserted, perClient })
   } catch (e) {
