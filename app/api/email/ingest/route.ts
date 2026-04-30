@@ -8,7 +8,7 @@
  *   3. Run policy validation checks
  *   4. Return structured result with AI confidence
  *
- * In production: candidatemanager@buzzworks.com is polled via IMAP,
+ * In production: workorder.agentic@buzzworks.com is polled via IMAP,
  * each new email is POSTed here, Claude parses it, and the result
  * is written to the Output Results sheet + Timesheet Submission Log.
  */
@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
 
     // Audit trail
     audit: {
-      inboxMonitored: "candidatemanager@buzzworks.com",
+      inboxMonitored: "workorder.agentic@buzzworks.com",
       parsingPipeline: ["imap-fetch", "attachment-ocr", "ai-extraction", "policy-validation", "ops-queue"],
       loggedToSheet:  true,
     },
@@ -273,7 +273,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     status:       "operational",
-    inbox:        "candidatemanager@buzzworks.com",
+    inbox:        "workorder.agentic@buzzworks.com",
     pollInterval: "5 minutes",
     aiModel:      "claude-3-5-sonnet",
     queueDepth:   Math.floor(Math.random() * 5),

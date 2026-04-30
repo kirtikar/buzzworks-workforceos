@@ -486,17 +486,12 @@ function BeelineImportCard() {
 }
 
 function IntegrationsSection() {
+  // Mirrors the actual portal roster on the dashboard: BeeLine (Accenture
+  // + PwC) and SAP Fieldglass (Capgemini). The other 8 clients are on
+  // manual ingest (no portal connection).
   const portals = [
-    { name: "Veltrix HCM",   status: "connected", clients: 3, lastSync: "2 min ago",   color: "#2563EB" },
-    { name: "OrbitHCM",      status: "connected", clients: 3, lastSync: "8 min ago",   color: "#3B82F6" },
-    { name: "PeopleHive",    status: "connected", clients: 3, lastSync: "4 min ago",   color: "#10B981" },
-    { name: "CloudSpire",    status: "connected", clients: 2, lastSync: "12 min ago",  color: "#F59E0B" },
-    { name: "HRLoop",        status: "connected", clients: 3, lastSync: "1 min ago",   color: "#EC4899" },
-    { name: "TalentWeave",   status: "warning",   clients: 2, lastSync: "3 hr ago",    color: "#EF4444" },
-    { name: "StaffPulse",    status: "connected", clients: 3, lastSync: "6 min ago",   color: "#06B6D4" },
-    { name: "LeafHR",        status: "connected", clients: 2, lastSync: "15 min ago",  color: "#84CC16" },
-    { name: "PayAxis",       status: "connected", clients: 1, lastSync: "9 min ago",   color: "#A78BFA" },
-    { name: "HumanEdge",     status: "connected", clients: 2, lastSync: "5 min ago",   color: "#FB923C" },
+    { name: "BeeLine",         status: "connected", clients: 2, lastSync: "live (POC)",  color: "#F4B400" },
+    { name: "SAP Fieldglass",  status: "pending",   clients: 1, lastSync: "not connected", color: "#0070AD" },
   ]
 
   return (
@@ -540,7 +535,7 @@ function IntegrationsSection() {
       <SectionCard title="Email Parser">
         <SettingRow label="Inbound address" description="Timesheets sent to this address are auto-parsed by the AI pipeline">
           <div className="flex items-center gap-2">
-            <span className="text-[12px] font-mono" style={{ color: "var(--accent)" }}>candidatemanager@buzzworks.com</span>
+            <span className="text-[12px] font-mono" style={{ color: "var(--accent)" }}>workorder.agentic@buzzworks.com</span>
             <Mail size={13} style={{ color: "var(--text-3)" }} />
           </div>
         </SettingRow>

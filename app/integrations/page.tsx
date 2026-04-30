@@ -210,7 +210,7 @@ function EmailCard() {
               Active
             </span>
           </div>
-          <div className="text-[11px] text-white/35 mt-0.5">Monitors candidatemanager@buzzworks.com for timesheet submissions</div>
+          <div className="text-[11px] text-white/35 mt-0.5">Monitors workorder.agentic@buzzworks.com for timesheet submissions</div>
         </div>
       </div>
 
@@ -231,7 +231,7 @@ function EmailCard() {
       <div className="space-y-2 text-[11px]">
         {[
           { icon: Shield, label: "IMAP protocol",      value: "TLS 1.3 encrypted" },
-          { icon: Globe,  label: "Inbox",               value: "candidatemanager@buzzworks.com" },
+          { icon: Globe,  label: "Inbox",               value: "workorder.agentic@buzzworks.com" },
           { icon: Zap,    label: "AI parser model",     value: "Claude 3.5 Sonnet" },
           { icon: Clock,  label: "Retention policy",    value: "180 days" },
         ].map(r => (

@@ -22,6 +22,17 @@ CREATE TABLE IF NOT EXISTS employees (
   UNIQUE (client_id, worker_id)
 );
 
+-- Universal-employee additions: test/real flag + canonical pay fields so
+-- /api/clients/stats can compute live activeEmployeeCount + monthlyPayroll
+-- from one query across both synthetic and real-data clients.
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS is_test_data    BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS rate_per_hour   NUMERIC(10,2);
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS pay_mode        TEXT;
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS pay_rate        NUMERIC(12,2);
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS employment_status TEXT NOT NULL DEFAULT 'active';
+
+CREATE INDEX IF NOT EXISTS idx_employees_client_test ON employees(client_id, is_test_data);
+
 CREATE TABLE IF NOT EXISTS timesheets (
   id                TEXT PRIMARY KEY,
   employee_id       TEXT NOT NULL REFERENCES employees(id) ON DELETE CASCADE,

@@ -78,7 +78,9 @@ Thanks,
   return {
     kind:        "client-compliance",
     to:          `${input.clientContact.email}, ${input.amEmail}`,
-    cc:          `${input.buzzworksCc}, ${input.clientCc}`,
+    // compliance.agentic@buzzworks.com always copied so the agentic
+    // compliance mailbox sees every client-facing alert.
+    cc:          `${input.buzzworksCc}, ${input.clientCc}, compliance.agentic@buzzworks.com`,
     subject:     `${input.clientName} · action required: ${input.regulation.title.slice(0, 50)}${input.regulation.title.length > 50 ? "…" : ""}`,
     body,
     sourceUrl:   input.regulation.sourceUrl,
@@ -119,7 +121,9 @@ Please review and confirm action plan by EOD.
   return {
     kind:        "compliance",
     to:          "ops-lead@buzzworks.com",
-    cc:          "compliance@buzzworks.com",
+    // compliance.agentic@buzzworks.com always copied so the agentic
+    // compliance mailbox sees every internal compliance alert.
+    cc:          "compliance@buzzworks.com, compliance.agentic@buzzworks.com",
     subject:     `Action required: ${input.title.slice(0, 60)}${input.title.length > 60 ? "…" : ""}`,
     body,
     sourceUrl:   input.sourceUrl,

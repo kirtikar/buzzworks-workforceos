@@ -119,7 +119,21 @@ const INDUSTRIES: Industry[] = [
 
 // ─── Client Card ─────────────────────────────────────────────────────────────
 
-function ClientCard({ client }: { client: typeof clients[0] }) {
+interface ClientStats {
+  activeEmployees: number
+  totalEmployees:  number
+  monthlyPayroll:  number
+  isTestData:      boolean
+}
+
+function ClientCard({ client, stats }: { client: typeof clients[0]; stats?: ClientStats }) {
+  // Stats from /api/clients/stats override the static mock-data values
+  // when present. Falls back to client.* for clients with zero rows in
+  // DB (e.g. real-data clients before their first import).
+  const activeEmp   = stats?.activeEmployees ?? 0
+  const totalEmp    = stats?.totalEmployees  ?? 0
+  const monthlyPay  = stats?.monthlyPayroll  ?? 0
+  const hasDbData   = totalEmp > 0
   const portal = client.portalId ? portals.find(p => p.id === client.portalId) : null
   const actionCount = getActionCountForClient(client.name)
 
@@ -174,8 +188,8 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
         <div className="grid grid-cols-2 gap-2 text-[11px]">
           <div className="flex items-center gap-1.5" style={{ color: "var(--text-2)" }}>
             <Users size={11} />
-            <span>{fmtNum(client.activeEmployeeCount)} active</span>
-            <span style={{ color: "var(--text-3)" }}>/ {fmtNum(client.employeeCount)}</span>
+            <span>{hasDbData ? fmtNum(activeEmp) : "—"} active</span>
+            <span style={{ color: "var(--text-3)" }}>/ {hasDbData ? fmtNum(totalEmp) : "—"}</span>
           </div>
           <div className="flex items-center gap-1.5">
             {client.pendingTimesheets > 0 ? (
@@ -190,7 +204,7 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
           </div>
           <div className="flex items-center gap-1.5" style={{ color: "var(--text-2)" }}>
             <TrendingUp size={11} />
-            <span>{fmtINR(client.monthlyPayroll)}/mo</span>
+            <span>{hasDbData ? `${fmtINR(monthlyPay)}/mo` : "Awaiting data"}</span>
           </div>
           <div className="flex items-center gap-1.5">
             {client.timesheetMethod === "manual" ? (
@@ -226,6 +240,14 @@ function ClientCard({ client }: { client: typeof clients[0] }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ClientsPage() {
+  const [stats, setStats] = useState<Record<string, ClientStats>>({})
+  useEffect(() => {
+    fetch("/api/clients/stats")
+      .then(r => r.json())
+      .then(data => { if (data.configured) setStats(data.stats ?? {}) })
+      .catch(() => { /* non-fatal: cards just show "—" */ })
+  }, [])
+
   const [search,        setSearch]        = useState("")
   const [selIndustries, setSelIndustries] = useState<Industry[]>([])
   const [selPortals,    setSelPortals]    = useState<string[]>([])
@@ -253,12 +275,12 @@ export default function ClientsPage() {
     })
     list.sort((a, b) =>
       sortBy === "name"       ? a.name.localeCompare(b.name) :
-      sortBy === "employees"  ? b.employeeCount - a.employeeCount :
-      sortBy === "payroll"    ? b.monthlyPayroll - a.monthlyPayroll :
+      sortBy === "employees"  ? (stats[b.id]?.totalEmployees ?? 0) - (stats[a.id]?.totalEmployees ?? 0) :
+      sortBy === "payroll"    ? (stats[b.id]?.monthlyPayroll ?? 0) - (stats[a.id]?.monthlyPayroll ?? 0) :
                                 b.complianceScore - a.complianceScore
     )
     return list
-  }, [search, selIndustries, selPortals, selRegions, sortBy])
+  }, [search, selIndustries, selPortals, selRegions, sortBy, stats])
 
   const activeFilterCount = selIndustries.length + selPortals.length + selRegions.length
 
@@ -272,7 +294,12 @@ export default function ClientsPage() {
     []
   )
 
-  const totalEmployees = clients.reduce((s, c) => s + c.employeeCount, 0)
+  // Header subtitle: totals from the live stats map (covers test + real
+  // clients). Falls back to 0 before stats fetch resolves.
+  const totalEmployees = useMemo(
+    () => Object.values(stats).reduce((s, v) => s + v.totalEmployees, 0),
+    [stats]
+  )
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -345,7 +372,7 @@ export default function ClientsPage() {
           {/* Client grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {filtered.map(client => (
-              <ClientCard key={client.id} client={client} />
+              <ClientCard key={client.id} client={client} stats={stats[client.id]} />
             ))}
           </div>
         </main>

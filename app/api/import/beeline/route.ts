@@ -56,30 +56,38 @@ export async function POST(req: NextRequest) {
       // (they FK on timesheets which FKs employees).
       await tx`DELETE FROM timesheets WHERE client_id = 'acc'`
 
-      // Upsert employees, preserving consumed_leaves
+      // Upsert employees, preserving consumed_leaves. is_test_data=false
+      // marks these as real BeeLine-sourced rows.
       for (const e of parsed.employees) {
         const earned = computeEarnedLeaves(e.startDate ?? new Date().toISOString().slice(0, 10))
         await tx`
           INSERT INTO employees (
             id, worker_id, client_id, name, employee_code, email,
             role, department, manager_email, manager_name, avatar_color,
-            start_date, earned_leaves, consumed_leaves
+            start_date, earned_leaves, consumed_leaves,
+            is_test_data, rate_per_hour, pay_mode, pay_rate, employment_status
           ) VALUES (
             ${e.id}, ${e.employeeCode}, ${e.clientId}, ${e.name}, ${e.employeeCode}, ${e.email},
             ${e.role ?? null}, ${e.department ?? null}, ${e.managerEmail ?? null},
             ${e.managerName ?? null}, ${e.avatarColor ?? null},
-            ${e.startDate ?? null}, ${earned}, ${consumedById.get(e.id) ?? 0}
+            ${e.startDate ?? null}, ${earned}, ${consumedById.get(e.id) ?? 0},
+            false, ${e.ratePerHour}, ${e.payMode}, ${e.payRate}, ${e.employmentStatus}
           )
           ON CONFLICT (id) DO UPDATE SET
-            name           = EXCLUDED.name,
-            email          = EXCLUDED.email,
-            role           = EXCLUDED.role,
-            department     = EXCLUDED.department,
-            manager_email  = EXCLUDED.manager_email,
-            manager_name   = EXCLUDED.manager_name,
-            avatar_color   = EXCLUDED.avatar_color,
-            earned_leaves  = EXCLUDED.earned_leaves,
-            updated_at     = NOW()
+            name              = EXCLUDED.name,
+            email             = EXCLUDED.email,
+            role              = EXCLUDED.role,
+            department        = EXCLUDED.department,
+            manager_email     = EXCLUDED.manager_email,
+            manager_name      = EXCLUDED.manager_name,
+            avatar_color      = EXCLUDED.avatar_color,
+            earned_leaves     = EXCLUDED.earned_leaves,
+            rate_per_hour     = EXCLUDED.rate_per_hour,
+            pay_mode          = EXCLUDED.pay_mode,
+            pay_rate          = EXCLUDED.pay_rate,
+            employment_status = EXCLUDED.employment_status,
+            is_test_data      = false,
+            updated_at        = NOW()
         `
       }
 
