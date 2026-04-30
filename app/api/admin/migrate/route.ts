@@ -15,10 +15,17 @@ export async function GET() {
     // postgres-library sql.unsafe() runs one statement per call; split
     // on semicolons so the full schema (CREATE TABLEs + ALTER TABLEs +
     // CREATE INDEXes) all apply on each migrate.
+    // Split on `;` then strip leading comment-only lines so a statement
+    // preceded by a `-- …` block still runs (the previous `!^--` filter
+    // dropped any statement with leading comments).
     const statements = schema
       .split(/;\s*$/m)
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.match(/^--/))
+      .map(s => s
+        .split("\n")
+        .filter(line => !line.trim().startsWith("--"))
+        .join("\n")
+        .trim())
+      .filter(s => s.length > 0)
     for (const stmt of statements) {
       await sql.unsafe(stmt)
     }
