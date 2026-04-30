@@ -19,6 +19,10 @@ import {
 // re-running the Capgemini validator so the leave-balance check reflects
 // running totals across uploads.
 //
+// All inserts are bulk (single INSERT … VALUES … per table, with
+// ON CONFLICT for upsertable tables) so the function fits in Vercel
+// Hobby's 10s limit even at ~600 timesheets per upload.
+//
 // Persists external_url (Fieldglass time-sheet detail page deep link) so
 // the Inbox UI can drill into real day-wise data — that view isn't bulk-
 // exportable from the supplier list endpoint.
@@ -41,8 +45,8 @@ export async function POST(req: NextRequest) {
       }, { status: 400 })
     }
 
-    // Pre-fetch consumed_leaves per employee so the validator can apply
-    // running balance across imports (not just within this batch).
+    // Pre-fetch consumed_leaves so the validator can apply running balance
+    // across imports (not just within this batch).
     const priorLeaves = parsed.employees.length > 0
       ? await sql<{ id: string; consumed_leaves: string }[]>`
           SELECT id, consumed_leaves FROM employees WHERE id IN ${sql(parsed.employees.map(e => e.id))}
@@ -50,27 +54,100 @@ export async function POST(req: NextRequest) {
       : []
     const consumedById = new Map(priorLeaves.map(r => [r.id, parseFloat(r.consumed_leaves)]))
 
-    let upserted     = 0
-    let mgrApproval  = 0
-    let leaveExceeded = 0
+    // ── Validate every timesheet in JS (no DB round-trips) ─────────────────
+    const today = new Date().toISOString().slice(0, 10)
+    const validated = parsed.timesheets.map(ts => {
+      const consumed = consumedById.get(ts.employeeId) ?? 0
+      const employee = parsed.employees.find(e => e.id === ts.employeeId)!
+      const earned   = computeEarnedLeavesCap(employee.startDate ?? today)
+      const v = validateCapgeminiWeek({
+        totalHours:      ts.totalHours,
+        standardHours:   0,                 // Capgemini tenant: ST always 0
+        overtimeHours:   0,                 // Week split handled by validator
+        doubletimeHours: 0,
+        otherHours:      ts.totalHours,
+        nbHours:         0,
+        rawStatus:       ts.status,
+        earnedLeaves:    earned,
+        consumedLeaves:  consumed,
+        approver:        ts.approvedBy ?? "",
+        dailyEntries:    ts.dailyEntries,
+      })
+      return {
+        ts, v,
+        externalUrl:   fieldglassDetailUrl(ts.id),
+        mgrApproval:   v.resolvedStatus === "pending_mgr_approval",
+        leaveExceeded: v.checks.some(c => c.id === "leave-balance" && c.result === "fail"),
+      }
+    })
+
+    const mgrApproval   = validated.filter(x => x.mgrApproval).length
+    const leaveExceeded = validated.filter(x => x.leaveExceeded).length
+
+    // ── Build row arrays for bulk insert ───────────────────────────────────
+    const empRows = parsed.employees.map(e => {
+      const earned = computeEarnedLeavesCap(e.startDate ?? today)
+      return {
+        id: e.id, worker_id: e.employeeCode, client_id: e.clientId,
+        name: e.name, employee_code: e.employeeCode, email: e.email,
+        role: e.role ?? null, department: e.department ?? null,
+        manager_email: e.managerEmail ?? null, manager_name: e.managerName ?? null,
+        avatar_color: e.avatarColor ?? null,
+        start_date: e.startDate ?? null,
+        earned_leaves: earned,
+        consumed_leaves: consumedById.get(e.id) ?? 0,
+        is_test_data: false,
+        rate_per_hour: e.ratePerHour,
+        pay_mode: e.payMode, pay_rate: e.payRate,
+        employment_status: e.employmentStatus,
+      }
+    })
+
+    const tsRows = validated.map(({ ts, v, externalUrl }) => ({
+      id: ts.id, employee_id: ts.employeeId, client_id: ts.clientId,
+      period: ts.period, period_start: ts.periodStart, period_end: ts.periodEnd,
+      submitted_at: ts.submittedAt, source: ts.source,
+      source_detail: ts.sourceDetail ?? null, portal_id: ts.portalId ?? null,
+      status: v.resolvedStatus,
+      total_hours: ts.totalHours, regular_hours: ts.regularHours,
+      overtime_hours: v.otHours, leave_hours: ts.leaveHours,
+      total_payable: ts.totalPayable ?? null,
+      validation_score: v.validationScore,
+      flag_reason: v.flagReason ?? null,
+      flagged_by: v.flagReason ? "ai" : null,
+      approved_by: ts.approvedBy ?? null, approved_at: ts.approvedAt ?? null,
+      ai_confidence: Math.max(50, v.validationScore - 5),
+      ot_payout_cycle: v.otPayoutCycle,
+      external_url: externalUrl,
+    }))
+
+    const dailyRows = validated.flatMap(({ ts }) =>
+      ts.dailyEntries.map(d => ({
+        timesheet_id: ts.id, entry_date: d.date, day_of_week: d.dayOfWeek,
+        regular_hours: d.regularHours, overtime_hours: d.overtimeHours,
+        leave_hours: d.leaveHours ?? 0, leave_type: d.leaveType ?? null,
+      })),
+    )
+
+    const valRows = validated.flatMap(({ ts, v }) =>
+      v.checks.map(c => ({
+        timesheet_id: ts.id, rule_id: c.id, category: c.category,
+        rule: c.rule, result: c.result, detail: c.detail,
+      })),
+    )
+
+    const tsIds = validated.map(x => x.ts.id)
 
     await sql.begin(async tx => {
-      // Upsert employees. is_test_data=false → real Fieldglass-sourced.
-      for (const e of parsed.employees) {
-        const earned = computeEarnedLeavesCap(e.startDate ?? new Date().toISOString().slice(0, 10))
+      // Bulk upsert employees
+      if (empRows.length > 0) {
         await tx`
-          INSERT INTO employees (
-            id, worker_id, client_id, name, employee_code, email,
-            role, department, manager_email, manager_name, avatar_color,
-            start_date, earned_leaves, consumed_leaves,
-            is_test_data, rate_per_hour, pay_mode, pay_rate, employment_status
-          ) VALUES (
-            ${e.id}, ${e.employeeCode}, ${e.clientId}, ${e.name}, ${e.employeeCode}, ${e.email},
-            ${e.role ?? null}, ${e.department ?? null}, ${e.managerEmail ?? null},
-            ${e.managerName ?? null}, ${e.avatarColor ?? null},
-            ${e.startDate ?? null}, ${earned}, ${consumedById.get(e.id) ?? 0},
-            false, ${e.ratePerHour}, ${e.payMode}, ${e.payRate}, ${e.employmentStatus}
-          )
+          INSERT INTO employees ${tx(empRows,
+            "id","worker_id","client_id","name","employee_code","email",
+            "role","department","manager_email","manager_name","avatar_color",
+            "start_date","earned_leaves","consumed_leaves",
+            "is_test_data","rate_per_hour","pay_mode","pay_rate","employment_status"
+          )}
           ON CONFLICT (id) DO UPDATE SET
             name              = EXCLUDED.name,
             email             = EXCLUDED.email,
@@ -89,58 +166,17 @@ export async function POST(req: NextRequest) {
         `
       }
 
-      // Per-timesheet upsert. Re-run validator with real consumed_leaves
-      // overlay so the leave-balance check reflects DB state, not the
-      // parse-time assumption of 0.
-      for (const ts of parsed.timesheets) {
-        const consumed = consumedById.get(ts.employeeId) ?? 0
-        const employee = parsed.employees.find(e => e.id === ts.employeeId)!
-        const earned   = computeEarnedLeavesCap(employee.startDate ?? new Date().toISOString().slice(0, 10))
-
-        // Recompute the per-week ST/OT/DT/Other split from the parsed
-        // Timesheet. The parser stuffs all "Others" into regularHours
-        // and any over-45 spill into overtimeHours, but for validation
-        // we want the original totalHours and the validator handles
-        // the policy split itself.
-        const v = validateCapgeminiWeek({
-          totalHours:      ts.totalHours,
-          standardHours:   0,                           // Capgemini tenant: ST always 0
-          overtimeHours:   0,                           // Likewise — week split handled by validator
-          doubletimeHours: 0,
-          otherHours:      ts.totalHours,
-          nbHours:         0,
-          rawStatus:       ts.status,
-          earnedLeaves:    earned,
-          consumedLeaves:  consumed,
-          approver:        ts.approvedBy ?? "",
-          dailyEntries:    ts.dailyEntries,
-        })
-
-        if (v.resolvedStatus === "pending_mgr_approval") mgrApproval++
-        if (v.checks.some(c => c.id === "leave-balance" && c.result === "fail")) leaveExceeded++
-
-        const externalUrl = fieldglassDetailUrl(ts.id)
-
+      // Bulk upsert timesheets
+      if (tsRows.length > 0) {
         await tx`
-          INSERT INTO timesheets (
-            id, employee_id, client_id, period, period_start, period_end,
-            submitted_at, source, source_detail, portal_id, status,
-            total_hours, regular_hours, overtime_hours, leave_hours,
-            total_payable, validation_score, flag_reason, flagged_by,
-            approved_by, approved_at, ai_confidence, ot_payout_cycle,
-            external_url
-          ) VALUES (
-            ${ts.id}, ${ts.employeeId}, ${ts.clientId}, ${ts.period},
-            ${ts.periodStart}, ${ts.periodEnd},
-            ${ts.submittedAt}, ${ts.source}, ${ts.sourceDetail ?? null},
-            ${ts.portalId ?? null}, ${v.resolvedStatus},
-            ${ts.totalHours}, ${ts.regularHours}, ${v.otHours}, ${ts.leaveHours},
-            ${ts.totalPayable ?? null}, ${v.validationScore},
-            ${v.flagReason ?? null}, ${v.flagReason ? "ai" : null},
-            ${ts.approvedBy ?? null}, ${ts.approvedAt ?? null},
-            ${Math.max(50, v.validationScore - 5)}, ${v.otPayoutCycle},
-            ${externalUrl}
-          )
+          INSERT INTO timesheets ${tx(tsRows,
+            "id","employee_id","client_id","period","period_start","period_end",
+            "submitted_at","source","source_detail","portal_id","status",
+            "total_hours","regular_hours","overtime_hours","leave_hours",
+            "total_payable","validation_score","flag_reason","flagged_by",
+            "approved_by","approved_at","ai_confidence","ot_payout_cycle",
+            "external_url"
+          )}
           ON CONFLICT (id) DO UPDATE SET
             employee_id      = EXCLUDED.employee_id,
             period           = EXCLUDED.period,
@@ -166,34 +202,27 @@ export async function POST(req: NextRequest) {
             external_url     = EXCLUDED.external_url,
             updated_at       = NOW()
         `
+      }
 
-        // Replace daily + validation rows for this timesheet only.
-        await tx`DELETE FROM daily_entries        WHERE timesheet_id = ${ts.id}`
-        await tx`DELETE FROM timesheet_validations WHERE timesheet_id = ${ts.id}`
-
-        for (const d of ts.dailyEntries) {
-          await tx`
-            INSERT INTO daily_entries (
-              timesheet_id, entry_date, day_of_week,
-              regular_hours, overtime_hours, leave_hours, leave_type
-            ) VALUES (
-              ${ts.id}, ${d.date}, ${d.dayOfWeek},
-              ${d.regularHours}, ${d.overtimeHours}, ${d.leaveHours ?? 0}, ${d.leaveType ?? null}
-            )
-          `
-        }
-
-        for (const c of v.checks) {
-          await tx`
-            INSERT INTO timesheet_validations (
-              timesheet_id, rule_id, category, rule, result, detail
-            ) VALUES (
-              ${ts.id}, ${c.id}, ${c.category}, ${c.rule}, ${c.result}, ${c.detail}
-            )
-          `
-        }
-
-        upserted++
+      // Replace daily + validation rows for touched timesheets
+      if (tsIds.length > 0) {
+        await tx`DELETE FROM daily_entries        WHERE timesheet_id IN ${tx(tsIds)}`
+        await tx`DELETE FROM timesheet_validations WHERE timesheet_id IN ${tx(tsIds)}`
+      }
+      if (dailyRows.length > 0) {
+        await tx`
+          INSERT INTO daily_entries ${tx(dailyRows,
+            "timesheet_id","entry_date","day_of_week",
+            "regular_hours","overtime_hours","leave_hours","leave_type"
+          )}
+        `
+      }
+      if (valRows.length > 0) {
+        await tx`
+          INSERT INTO timesheet_validations ${tx(valRows,
+            "timesheet_id","rule_id","category","rule","result","detail"
+          )}
+        `
       }
 
       await tx`
@@ -201,7 +230,7 @@ export async function POST(req: NextRequest) {
           source, client_id, row_count, error_count, warning_count,
           errors, warnings, unmapped_headers
         ) VALUES (
-          'fieldglass-csv-bulk', 'cap', ${upserted},
+          'fieldglass-csv-bulk', 'cap', ${tsRows.length},
           ${parsed.errors.length}, ${parsed.warnings.length},
           ${sql.json(parsed.errors)}, ${sql.json(parsed.warnings)},
           ${[] as string[]}
@@ -212,7 +241,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       summary: {
-        rowCount:           upserted,
+        rowCount:           tsRows.length,
         employeeCount:      parsed.employees.length,
         filesProcessed:     parsed.filesProcessed,
         rawRowsSeen:        parsed.totalRows,
