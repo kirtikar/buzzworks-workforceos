@@ -357,60 +357,71 @@ async function run() {
 
     for (const win of WINDOWS) {
       log(`── window ${win.start} → ${win.end} ──`)
-      await applyDateFilter(page, win.start, win.end)
+      // Always re-navigate to the list page before applying filter — popups
+      // and clicks across previous windows can leave the list in a stale
+      // state where the filter input is no longer visible.
+      await page.goto(`${supplierBase}/time_sheet_list.do`, { waitUntil: "domcontentloaded", timeout: 60_000 })
+      await page.waitForLoadState("networkidle", { timeout: 20_000 }).catch(() => {})
+      await dismissCookieBanner(page)
+      try {
+        await applyDateFilter(page, win.start, win.end)
+      } catch (e) {
+        errLog(`window-${win.start}`, e)
+        continue
+      }
+
       let pageNo = 1
       let winScraped = 0
-      let prevPageTsns: string[] = []
+      // Per-iteration: harvest fresh, find the next not-yet-done row, click,
+      // scrape, repeat until the whole list page yields no new targets.
+      // This avoids the "anchor not found" issue from caching all hrefs up
+      // front then iterating over them while the page may re-render.
       while (true) {
         const rows = await harvestListPage(page)
-        const targets = rows.filter(r => !done.has(r.tsn))
-        log(`win ${win.start}→${win.end} page ${pageNo}: ${rows.length} rows / ${targets.length} not-yet-scraped`)
-
-        // Stop if Next click left us on the same set of TSNs (jqx-grid
-        // sometimes reports advance falsely when there's only one page).
-        const currentTsns = rows.map(r => r.tsn).sort().join(",")
-        const prevSig    = prevPageTsns.sort().join(",")
-        if (pageNo > 1 && currentTsns === prevSig) {
-          log(`win ${win.start}→${win.end}: page ${pageNo} same as page ${pageNo-1} — stopping pagination`)
-          break
-        }
-        prevPageTsns = rows.map(r => r.tsn)
-
-        for (const target of targets) {
+        const target = rows.find(r => !done.has(r.tsn))
+        if (!target) {
+          log(`win ${win.start}→${win.end} page ${pageNo}: ${rows.length} rows / 0 not-yet-scraped`)
+          // Try advancing
+          const next = await page.$("div[role='button'][title='Next']")
+          if (!next) break
+          const disabled = await next.evaluate(el =>
+            el.getAttribute("aria-disabled") === "true"
+            || el.classList.contains("jqx-fill-state-disabled"))
+          if (disabled) break
+          const beforeSig = rows.map(r => r.tsn).sort().join(",")
+          await next.click()
           try {
-            const rec = await clickThroughList(page, target)
-            if (rec && rec.tsn) {
-              appendJsonl(rec); done.add(rec.tsn); totalScraped++; winScraped++
-              if (totalScraped % 10 === 0)
-                log(`progress: scraped=${totalScraped} failed=${totalFailed} last=${rec.tsn}(${rec.daily.length}d)`)
-            } else {
-              totalFailed++
-            }
-          } catch (e) {
-            totalFailed++; errLog(target.tsn, e)
-          }
-          await page.waitForTimeout(600)   // light throttle (~1.5 req/s)
+            await page.waitForFunction((prev) => {
+              const anchors = document.querySelectorAll("a[href*='cgem.us'][href*='time_sheet_detail.do']")
+              const tsns = new Set<string>()
+              anchors.forEach(a => {
+                const t = (a.parentElement?.parentElement?.textContent?.match(/CGEMTS\d+/) ?? [""])[0]
+                if (t) tsns.add(t)
+              })
+              return Array.from(tsns).sort().join(",") !== prev
+            }, beforeSig, { timeout: 15_000 })
+            pageNo++
+          } catch { break }
+          continue
         }
 
-        // Try advancing to next grid page within this window.
-        const next = await page.$("div[role='button'][title='Next']")
-        if (!next) break
-        const disabled = await next.evaluate(el =>
-          el.getAttribute("aria-disabled") === "true"
-          || el.classList.contains("jqx-fill-state-disabled"))
-        if (disabled) break
-        const before = (await harvestListPage(page))[0]?.tsn ?? ""
-        await next.click()
         try {
-          await page.waitForFunction((prev) => {
-            const a = document.querySelector("a[href*='cgem.us'][href*='time_sheet_detail.do']")
-            const cur = (a?.parentElement?.parentElement?.textContent?.match(/CGEMTS\d+/) ?? [""])[0]
-            return cur && cur !== prev
-          }, before, { timeout: 15_000 })
-        } catch { break }
-        pageNo++
+          const rec = await clickThroughList(page, target)
+          if (rec && rec.tsn) {
+            appendJsonl(rec); done.add(rec.tsn); totalScraped++; winScraped++
+            if (totalScraped % 10 === 0)
+              log(`progress: scraped=${totalScraped} failed=${totalFailed} last=${rec.tsn}(${rec.daily.length}d)`)
+          } else {
+            done.add(target.tsn)   // skip the failed-to-find anchor on next iteration
+            totalFailed++
+          }
+        } catch (e) {
+          done.add(target.tsn)
+          totalFailed++; errLog(target.tsn, e)
+        }
+        await page.waitForTimeout(500)   // light throttle
       }
-      log(`win ${win.start}→${win.end} complete: ${winScraped} scraped`)
+      log(`win ${win.start}→${win.end} complete: ${winScraped} scraped this run`)
     }
 
     log(`DONE. scraped=${totalScraped} failed=${totalFailed} out=${OUT_FILE}`)
