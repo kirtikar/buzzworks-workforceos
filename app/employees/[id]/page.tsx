@@ -1,15 +1,17 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/components/Sidebar"
 import { employees, clients, timesheets } from "@/lib/mock-data"
 import { generateEmployeesForClient } from "@/lib/mock-generator"
+import type { Timesheet, DailyEntry } from "@/lib/types"
 import {
   ArrowLeft, User, Mail, MapPin, Calendar, Clock, TrendingUp,
   CheckCircle2, AlertTriangle, FileText, Shield, Activity,
-  ChevronRight, Eye, Briefcase, Star, BarChart3,
+  ChevronRight, ChevronLeft, Eye, Briefcase, Star, BarChart3,
+  Globe,
 } from "lucide-react"
 import { AreaChart, Area, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts"
 import clsx from "clsx"
@@ -177,19 +179,252 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
   )
 }
 
+// ─── Month Calendar ──────────────────────────────────────────────────────────
+//
+// Builds a Mon-start month grid from a list of timesheet daily-entries.
+// Each cell shows the day number and total hours (regular + overtime +
+// leave). Color: green if ≥9h, amber if 1-8h, gray if 0h on a weekday,
+// muted on weekends. Used in the Timesheets tab to validate at-a-glance
+// that a worker filled the expected pattern across a calendar month.
+
+function startOfMonthMonday(year: number, month0: number): Date {
+  const first = new Date(Date.UTC(year, month0, 1))
+  const dow = first.getUTCDay()             // 0 Sun … 6 Sat
+  const offsetToMon = dow === 0 ? 6 : dow - 1
+  return new Date(Date.UTC(year, month0, 1 - offsetToMon))
+}
+
+function MonthCalendar({ entries, externalUrlByDate }: {
+  entries: { date: string; regular: number; overtime: number; leave: number; leaveType?: string | null }[]
+  externalUrlByDate: Record<string, string | undefined>
+}) {
+  const today = new Date()
+  const [year,  setYear ] = useState(today.getUTCFullYear())
+  const [month, setMonth] = useState(today.getUTCMonth())   // 0-indexed
+
+  // Snap to the most recent month that has data, on first paint.
+  useEffect(() => {
+    if (entries.length === 0) return
+    const latest = entries.map(e => e.date).sort().slice(-1)[0]
+    if (latest) {
+      const d = new Date(latest)
+      setYear(d.getUTCFullYear()); setMonth(d.getUTCMonth())
+    }
+  }, [entries.length])
+
+  const byDate = useMemo(() => {
+    const m = new Map<string, { regular: number; overtime: number; leave: number; leaveType?: string | null }>()
+    for (const e of entries) {
+      const cur = m.get(e.date)
+      if (cur) {
+        cur.regular  += e.regular
+        cur.overtime += e.overtime
+        cur.leave    += e.leave
+      } else {
+        m.set(e.date, { regular: e.regular, overtime: e.overtime, leave: e.leave, leaveType: e.leaveType })
+      }
+    }
+    return m
+  }, [entries])
+
+  const monthLabel = new Date(Date.UTC(year, month, 1)).toLocaleDateString("en-IN", { month: "long", year: "numeric" })
+  const start = startOfMonthMonday(year, month)
+  const cells: { iso: string; inMonth: boolean; weekday: number }[] = []
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start)
+    d.setUTCDate(start.getUTCDate() + i)
+    cells.push({
+      iso: d.toISOString().slice(0, 10),
+      inMonth: d.getUTCMonth() === month,
+      weekday: d.getUTCDay(),
+    })
+  }
+
+  // Monthly summary — only count days inside the month
+  const monthDays   = cells.filter(c => c.inMonth)
+  const monthTotal  = monthDays.reduce((s, c) => s + (byDate.get(c.iso)?.regular ?? 0) + (byDate.get(c.iso)?.overtime ?? 0), 0)
+  const monthLeave  = monthDays.reduce((s, c) => s + (byDate.get(c.iso)?.leave ?? 0), 0)
+  const monthDaysWithHours = monthDays.filter(c => (byDate.get(c.iso)?.regular ?? 0) > 0).length
+
+  function bump(delta: number) {
+    let m = month + delta, y = year
+    if (m < 0)  { m = 11; y -= 1 }
+    if (m > 11) { m = 0;  y += 1 }
+    setMonth(m); setYear(y)
+  }
+
+  return (
+    <div className="glass p-5 rounded-xl">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>
+            {monthLabel}
+          </div>
+          <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
+            {monthTotal}h worked · {monthDaysWithHours} active days
+            {monthLeave > 0 ? ` · ${monthLeave}h leave` : ""}
+          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          <button onClick={() => bump(-1)} className="w-7 h-7 rounded-md flex items-center justify-center"
+            style={{ color: "var(--text-2)", background: "var(--surface)" }}>
+            <ChevronLeft size={14} />
+          </button>
+          <button onClick={() => bump(+1)} className="w-7 h-7 rounded-md flex items-center justify-center"
+            style={{ color: "var(--text-2)", background: "var(--surface)" }}>
+            <ChevronRight size={14} />
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-7 gap-1 mb-1">
+        {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => (
+          <div key={d} className="text-[10px] font-semibold uppercase tracking-wider text-center py-1"
+            style={{ color: "var(--text-3)" }}>{d}</div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7 gap-1">
+        {cells.map(c => {
+          const dat = byDate.get(c.iso)
+          const reg = dat?.regular ?? 0
+          const ot  = dat?.overtime ?? 0
+          const lv  = dat?.leave ?? 0
+          const total = reg + ot
+          const isWeekend = c.weekday === 0 || c.weekday === 6
+          const dayNum = parseInt(c.iso.slice(8, 10), 10)
+          const url = externalUrlByDate[c.iso]
+
+          let bg = "var(--surface)"
+          let txt = "var(--text-2)"
+          if (!c.inMonth) {
+            bg = "transparent"; txt = "var(--text-3)"
+          } else if (lv > 0) {
+            bg = "rgba(244,180,0,0.16)"; txt = "var(--warn)"
+          } else if (total >= 9) {
+            bg = "rgba(5,150,105,0.16)"; txt = "#059669"
+          } else if (total > 0) {
+            bg = "rgba(244,180,0,0.10)"; txt = "var(--warn)"
+          } else if (isWeekend) {
+            bg = "var(--surface-2)"; txt = "var(--text-3)"
+          } else {
+            bg = "var(--surface)"; txt = "var(--text-3)"
+          }
+
+          const cell = (
+            <div className="rounded-md p-2 min-h-[58px] flex flex-col" style={{ background: bg, opacity: c.inMonth ? 1 : 0.35 }}
+              title={c.inMonth
+                ? `${c.iso} — Regular: ${reg}h, OT: ${ot}h${lv > 0 ? `, Leave: ${lv}h${dat?.leaveType ? ` (${dat.leaveType})` : ""}` : ""}`
+                : c.iso}>
+              <div className="text-[10px] font-semibold" style={{ color: txt }}>{dayNum}</div>
+              {c.inMonth && total > 0 && (
+                <div className="text-[12px] font-bold tabular-nums mt-1" style={{ color: txt }}>
+                  {Number.isInteger(total) ? total : total.toFixed(1)}h
+                </div>
+              )}
+              {c.inMonth && lv > 0 && total === 0 && (
+                <div className="text-[11px] font-semibold mt-1" style={{ color: "var(--warn)" }}>L</div>
+              )}
+              {c.inMonth && ot > 0 && (
+                <div className="text-[9px] mt-0.5" style={{ color: "var(--warn)" }}>+{ot}h OT</div>
+              )}
+            </div>
+          )
+          return url ? (
+            <a key={c.iso} href={url} target="_blank" rel="noreferrer" className="block">{cell}</a>
+          ) : <div key={c.iso}>{cell}</div>
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 mt-3 text-[10px]" style={{ color: "var(--text-3)" }}>
+        <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(5,150,105,0.6)" }} /> Full day (≥9h)
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(244,180,0,0.5)" }} /> Partial / leave
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "var(--surface-2)" }} /> Weekend / no entry
+        </span>
+      </div>
+    </div>
+  )
+}
+
 // ─── Tab: Timesheets ─────────────────────────────────────────────────────────
 
-function TimesheetsTab({ empId }: { empId: string }) {
-  const ts = timesheets.filter(t => t.employeeId === empId)
+function TimesheetsTab({ empId, clientId }: { empId: string; clientId: string }) {
+  // Try to fetch real timesheets from Postgres for this employee's client.
+  // Falls back to the synthetic mock if the API has no data (test clients).
+  const [realTs,   setRealTs  ] = useState<Timesheet[] | null>(null)
+  const [loading,  setLoading ] = useState(true)
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    fetch(`/api/timesheets/${clientId}`)
+      .then(r => r.json())
+      .then(d => {
+        if (cancelled) return
+        if (d.configured && Array.isArray(d.timesheets)) {
+          setRealTs(d.timesheets.filter((t: Timesheet) => t.employeeId === empId))
+        } else {
+          setRealTs([])
+        }
+      })
+      .catch(() => { if (!cancelled) setRealTs([]) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [clientId, empId])
+
+  const ts = realTs && realTs.length > 0
+    ? realTs
+    : timesheets.filter(t => t.employeeId === empId)
+
+  // Day-wise rollup for the calendar
+  const calendarEntries = useMemo(() => {
+    const out: { date: string; regular: number; overtime: number; leave: number; leaveType?: string | null }[] = []
+    for (const t of ts) {
+      for (const d of (t.dailyEntries ?? []) as DailyEntry[]) {
+        out.push({
+          date: d.date,
+          regular: d.regularHours ?? 0,
+          overtime: d.overtimeHours ?? 0,
+          leave: d.leaveHours ?? 0,
+          leaveType: d.leaveType ?? null,
+        })
+      }
+    }
+    return out
+  }, [ts])
+
+  // Map each date → external_url of the timesheet covering that date, so
+  // each calendar cell can deep-link into Fieldglass for the real day-wise
+  // breakdown.
+  const externalUrlByDate = useMemo(() => {
+    const m: Record<string, string | undefined> = {}
+    for (const t of ts) {
+      const url = (t as { externalUrl?: string }).externalUrl
+      if (!url) continue
+      for (const d of (t.dailyEntries ?? []) as DailyEntry[]) m[d.date] = url
+    }
+    return m
+  }, [ts])
 
   const statusColor: Record<string, string> = {
     pending: "var(--text-2)", reviewing: "var(--info)", flagged: "var(--warn)",
+    pending_mgr_approval: "var(--pink-700)",
     approved: "var(--accent)", processed: "#00a880", rejected: "var(--danger)",
   }
 
   return (
-    <div className="glass overflow-hidden">
-      {ts.length === 0 ? (
+    <div className="space-y-4">
+      <MonthCalendar entries={calendarEntries} externalUrlByDate={externalUrlByDate} />
+
+      <div className="glass overflow-hidden">
+      {loading ? (
+        <div className="p-10 text-center text-[14px]" style={{ color: "var(--text-3)" }}>Loading timesheets…</div>
+      ) : ts.length === 0 ? (
         <div className="p-10 text-center text-[14px]" style={{ color: "var(--text-3)" }}>No timesheets found for this employee.</div>
       ) : (
         <table className="w-full text-[12px]">
@@ -246,6 +481,7 @@ function TimesheetsTab({ empId }: { empId: string }) {
           </tbody>
         </table>
       )}
+      </div>
     </div>
   )
 }
@@ -520,7 +756,7 @@ export default function EmployeeDetailPage() {
         {/* Tab content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-5 pb-nav lg:pb-5">
           {tab === "Overview"      && <OverviewTab emp={emp} />}
-          {tab === "Timesheets"    && <TimesheetsTab empId={emp.id} />}
+          {tab === "Timesheets"    && <TimesheetsTab empId={emp.id} clientId={emp.clientId} />}
           {tab === "Leave"         && <LeaveTab emp={emp} />}
           {tab === "Risk Profile"  && <RiskProfileTab emp={emp} />}
         </main>
