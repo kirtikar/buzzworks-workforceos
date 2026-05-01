@@ -478,8 +478,19 @@ async function scrapeOneWindow(
       return { scraped, failed }
     }
 
+    // Read the grid footer "X-Y of Z" so we know the TRUE row count for
+    // this filter. expectedPages = ceil(totalRows / 50). We walk EXACTLY
+    // expectedPages with page.goto on the URL fragment — no flaky Next.
+    const totalRows = await page.evaluate(() => {
+      const txt = document.body.innerText
+      const m = txt.match(/(\d+)\s*-\s*(\d+)\s+of\s+(\d+)/)
+      return m ? parseInt(m[3], 10) : -1
+    }).catch(() => -1)
+    log(`  filter result: ${totalRows >= 0 ? totalRows : "unknown"} rows total in grid`)
+
     let pageNo = 1
-    const MAX_PAGES_PER_WINDOW = 25
+    const expectedPages = totalRows > 0 ? Math.ceil(totalRows / 50) : 25
+    const MAX_PAGES_PER_WINDOW = Math.max(expectedPages + 2, 5)
     const seenPageSigs = new Set<string>()
     while (true) {
       let rows: { tsn: string; endIso: string; href: string }[]
@@ -497,30 +508,58 @@ async function scrapeOneWindow(
       const target = rows.find(r => !done.has(r.tsn))
       if (!target) {
         log(`win ${win.start}→${win.end} page ${pageNo}: ${rows.length} rows / 0 not-yet-scraped`)
-        if (pageNo >= MAX_PAGES_PER_WINDOW) { log(`  hit max-pages cap`); break }
+        if (pageNo >= MAX_PAGES_PER_WINDOW) { log(`  hit max-pages cap (${MAX_PAGES_PER_WINDOW})`); break }
+        if (rows.length === 0) { log(`  empty page — stopping`); break }
+        const firstTsn = rows[0]?.tsn ?? ""
         const sig = rows.map(r => r.tsn).sort().join(",")
         if (seenPageSigs.has(sig)) { log(`  page sig seen — stopping`); break }
         seenPageSigs.add(sig)
-        const next = await page.$("div[role='button'][title='Next']")
-        if (!next) break
-        const disabled = await next.evaluate(el =>
-          el.getAttribute("aria-disabled") === "true"
-          || el.classList.contains("jqx-fill-state-disabled"))
-        if (disabled) break
-        await next.click()
-        await page.waitForTimeout(800)
+
+        // Use jqx-grid's `gotopage` API (1-indexed) to jump directly to
+        // the next page — more deterministic than clicking Next.
+        const nextPage = pageNo + 1
+        let advanced = false
         try {
+          await page.evaluate((p: number) => {
+            const w = window as unknown as {
+              jQuery?: (sel: string) => { jqxGrid: (action: string, value?: number) => unknown }
+            }
+            if (w.jQuery) {
+              w.jQuery("#timeSheet_supplier_list").jqxGrid("gotopage", p - 1)   // jqx is 0-indexed
+            }
+          }, nextPage)
           await page.waitForFunction((prev: string) => {
-            const anchors = document.querySelectorAll("a[href*='cgem.us'][href*='time_sheet_detail.do']")
-            const tsns = new Set<string>()
-            anchors.forEach(a => {
-              const t = (a.parentElement?.parentElement?.textContent?.match(/CGEMTS\d{8}/) ?? [""])[0]
-              if (t) tsns.add(t)
-            })
-            return tsns.size > 0 && Array.from(tsns).sort().join(",") !== prev
-          }, sig, { timeout: 10_000 })
-          pageNo++
-        } catch { break }
+            const a = document.querySelector("a[href*='cgem.us'][href*='time_sheet_detail.do']")
+            const cur = (a?.parentElement?.parentElement?.textContent?.match(/CGEMTS\d{8}/) ?? [""])[0]
+            return Boolean(cur) && cur !== prev
+          }, firstTsn, { timeout: 15_000 })
+          await page.waitForTimeout(500)
+          advanced = true
+        } catch { /* fall back to Next button */ }
+
+        if (!advanced) {
+          const next = await page.$("div[role='button'][title='Next']")
+          if (!next) { log(`  no Next button`); break }
+          const disabled = await next.evaluate(el =>
+            el.getAttribute("aria-disabled") === "true"
+            || el.classList.contains("jqx-fill-state-disabled"))
+          if (disabled) { log(`  Next disabled`); break }
+          await next.click()
+          try {
+            await page.waitForFunction((prev: string) => {
+              const a = document.querySelector("a[href*='cgem.us'][href*='time_sheet_detail.do']")
+              const cur = (a?.parentElement?.parentElement?.textContent?.match(/CGEMTS\d{8}/) ?? [""])[0]
+              return Boolean(cur) && cur !== prev
+            }, firstTsn, { timeout: 15_000 })
+            await page.waitForTimeout(500)
+            advanced = true
+          } catch {
+            log(`  Next click did not advance — stopping (got ${pageNo}/${expectedPages} pages)`)
+            break
+          }
+        }
+
+        pageNo = nextPage
         continue
       }
 
