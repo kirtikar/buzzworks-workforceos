@@ -721,7 +721,27 @@ function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function EmployeesPage() {
-  const allEmployees = useMemo(() => buildEmployeePool(), [])
+  const baseEmployees = useMemo(() => buildEmployeePool(), [])
+
+  // Real-data clients (cap, acc, hex, lmt, pwc) are skipped by buildEmployeePool
+  // because their data lives in Postgres. Fetch each one's roster from
+  // /api/timesheets/[clientId] and merge into the displayed pool. Empty
+  // results (DB not yet populated) leave that client's section blank.
+  const [realEmployees, setRealEmployees] = useState<Employee[]>([])
+  useEffect(() => {
+    const ids = Array.from(REAL_DATA_CLIENT_IDS)
+    Promise.all(ids.map(id =>
+      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [] }))
+    )).then(snapshots => {
+      const all: Employee[] = snapshots.flatMap(s => Array.isArray(s.employees) ? s.employees : [])
+      setRealEmployees(all)
+    })
+  }, [])
+
+  const allEmployees = useMemo(
+    () => [...baseEmployees, ...realEmployees],
+    [baseEmployees, realEmployees],
+  )
 
   const [search,        setSearch]        = useState("")
   const [selClients,    setSelClients]    = useState<string[]>([])
