@@ -58,8 +58,10 @@ CREATE TABLE IF NOT EXISTS timesheets (
   ai_confidence     INTEGER,
   ot_payout_cycle   TEXT,                    -- 'current' or 'next'
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (employee_id, period_start)
+  updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  -- Note: UNIQUE (employee_id, period_start) was dropped because
+  -- Fieldglass issues multiple TSNs per worker per week (revisions /
+  -- amendments). Each TSN is its own row; UI dedups by latest revision.
 );
 
 -- Deep link back to the source portal's detail page (Fieldglass time-sheet
@@ -90,6 +92,31 @@ CREATE TABLE IF NOT EXISTS timesheet_validations (
   detail        TEXT NOT NULL,
   PRIMARY KEY (timesheet_id, rule_id)
 );
+
+-- Expense sheets are a separate Fieldglass artifact (CGEMES… ids vs the
+-- CGEMTS… for timesheets). One row per submitted expense; reimbursable
+-- to the worker once invoiced. employee_id FK matches the timesheet
+-- import (Fieldglass uses the same Worker resolution).
+CREATE TABLE IF NOT EXISTS expense_sheets (
+  id              TEXT PRIMARY KEY,
+  employee_id     TEXT NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+  client_id       TEXT NOT NULL,
+  worker_name     TEXT,
+  site            TEXT,
+  buyer           TEXT,
+  submitted_at    DATE,
+  amount          NUMERIC(12,2) NOT NULL DEFAULT 0,
+  currency        TEXT NOT NULL DEFAULT 'INR',
+  status          TEXT NOT NULL,                          -- "Invoiced" | "Pending Approval" | etc
+  revision        INTEGER NOT NULL DEFAULT 0,
+  source_detail   TEXT,                                   -- "Fieldglass · CGEMES…"
+  external_url    TEXT,                                   -- detail-page deep link
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_expense_sheets_client_status ON expense_sheets(client_id, status);
+CREATE INDEX IF NOT EXISTS idx_expense_sheets_employee     ON expense_sheets(employee_id);
+CREATE INDEX IF NOT EXISTS idx_expense_sheets_submitted    ON expense_sheets(submitted_at DESC);
 
 CREATE TABLE IF NOT EXISTS import_runs (
   id               BIGSERIAL PRIMARY KEY,
