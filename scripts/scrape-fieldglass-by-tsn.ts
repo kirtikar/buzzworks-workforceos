@@ -114,13 +114,32 @@ async function login(page: Page) {
   log(`✓ logged in: ${page.url()}`)
 }
 
-// Fetch the authoritative TSN list — every Capgemini timesheet in our DB
-// whose period overlaps [SCOPE_FROM, SCOPE_TO]. Each entry carries its
-// own week (periodStart..periodEnd) so the search can apply a tight
-// 7-day date filter alongside the ID match — avoids the supplier list's
-// 1000-row cap and ensures we don't bring back unrelated TSNs.
+// Fetch the authoritative TSN list. Either:
+//   (a) MISSING_FILE — replay just the missing-TSN log file (one JSON per
+//       line: { tsn, periodStart, periodEnd }). Used to retry the residue
+//       from a prior full-scope run.
+//   (b) default — pull the full scope from /api/timesheets/cap and filter
+//       by [SCOPE_FROM, SCOPE_TO].
+// Each entry carries its own week so the search applies a tight 7-day
+// date filter alongside the ID match.
 interface Target { tsn: string; periodStart: string; periodEnd: string }
 async function fetchTargetTsns(): Promise<Target[]> {
+  const missingFile = process.env.MISSING_FILE
+  if (missingFile && fs.existsSync(missingFile)) {
+    log(`→ loading targets from missing-list ${missingFile}`)
+    const out: Target[] = []
+    for (const line of fs.readFileSync(missingFile, "utf-8").split("\n")) {
+      if (!line.trim()) continue
+      try {
+        const r = JSON.parse(line)
+        if (r.tsn && r.periodStart && r.periodEnd) {
+          out.push({ tsn: r.tsn, periodStart: r.periodStart, periodEnd: r.periodEnd })
+        }
+      } catch { /* skip bad lines */ }
+    }
+    return out
+  }
+
   log(`→ fetching TSN scope from ${API_BASE}`)
   const r = await fetch(`${API_BASE}/api/timesheets/cap`)
   const d = await r.json() as {
