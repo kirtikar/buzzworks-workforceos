@@ -12,14 +12,10 @@ import NotifyPanel, {
   buildTimesheetMgrApproval, type NotifyContext,
 } from "@/components/NotifyPanel"
 import {
-  timesheets as seedTimesheets,
-  getEmployee as seedGetEmployee,
   getClient,
   clients,
-  employees as seedEmployees,
   REAL_DATA_CLIENT_IDS,
 } from "@/lib/mock-data"
-import { generateEmployeesForClient, generateTimesheets } from "@/lib/mock-generator"
 import { REGULATIONS } from "@/lib/compliance-data"
 import type { TimesheetStatus, Timesheet, Employee } from "@/lib/types"
 import clsx from "clsx"
@@ -40,25 +36,13 @@ interface BulkRule {
   count: number
 }
 
-// ─── Build pool: synthetic mock timesheets for non-real-data clients ─────────
+// ─── Build pool: real Postgres data only ──────────────────────────────────────
 //
-// Real-data clients (REAL_DATA_CLIENT_IDS — Accenture / Capgemini / Hexaware
-// / LTIMindtree / PwC) are excluded entirely from the generated pool. They
-// appear empty in the Inbox until a portal import lands. Currently only
-// Accenture has the import path wired (BeeLine via /api/timesheets/acc);
-// the other 4 stay empty as POC for those portals comes online.
-
-const _GENERATED_POOL: Timesheet[] = (() => {
-  const empPool: Employee[] = seedEmployees.filter(e => !REAL_DATA_CLIENT_IDS.has(e.clientId))
-  for (const client of clients) {
-    if (REAL_DATA_CLIENT_IDS.has(client.id)) continue
-    const seedCount = seedEmployees.filter(e => e.clientId === client.id).length
-    const need = Math.min(80, client.employeeCount) - seedCount
-    if (need > 0) empPool.push(...generateEmployeesForClient(client.id, need, seedCount))
-  }
-  const generated = generateTimesheets(empPool, 600)
-  return [...seedTimesheets, ...generated].filter(t => !REAL_DATA_CLIENT_IDS.has(t.clientId))
-})()
+// Synthetic mock generation has been removed. Every client surfaces its
+// real-data roster via /api/timesheets/[clientId]; clients with no
+// imported data appear empty in the Inbox until their portal import
+// lands. This keeps the page latency tied only to Postgres roundtrips
+// instead of generating thousands of fake records on every render.
 
 interface ClientApiSnapshot {
   configured: boolean
@@ -68,34 +52,15 @@ interface ClientApiSnapshot {
 }
 
 function buildPool(snapshots: ClientApiSnapshot[]): Timesheet[] {
-  // _GENERATED_POOL already excludes all REAL_DATA_CLIENT_IDS. Overlay
-  // real timesheets from any client snapshot that has data; clients
-  // with no real data stay empty.
-  const real = snapshots.flatMap(s => s.timesheets)
-  return real.length === 0 ? _GENERATED_POOL : [..._GENERATED_POOL, ...real]
+  return snapshots.flatMap(s => s.timesheets)
 }
 
-// Pool-aware getEmployee. Resolution order:
-//   1. seeded mock employees
-//   2. portal-imported employees from any /api/timesheets/[clientId]
-//      snapshot (ids like "acc-bl-..." or "cap-fg-...")
-//   3. generator-built employees (id like "<client>-emp-<n>")
 function makeEmployeeResolver(snapshots: ClientApiSnapshot[]) {
-  const importedById = new Map<string, Employee>()
+  const byId = new Map<string, Employee>()
   for (const s of snapshots) {
-    for (const e of s.employees) importedById.set(e.id, e)
+    for (const e of s.employees) byId.set(e.id, e)
   }
-
-  return function getEmployeeFromPool(employeeId: string): Employee | undefined {
-    const seeded = seedGetEmployee(employeeId)
-    if (seeded) return seeded
-    const importedEmp = importedById.get(employeeId)
-    if (importedEmp) return importedEmp
-    const m = employeeId.match(/^([a-z]+)-emp-(\d+)$/)
-    if (!m) return undefined
-    const [, clientId, idxStr] = m
-    return generateEmployeesForClient(clientId, 1, parseInt(idxStr))[0]
-  }
+  return (employeeId: string): Employee | undefined => byId.get(employeeId)
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

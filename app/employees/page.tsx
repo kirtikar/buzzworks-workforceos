@@ -38,19 +38,11 @@ const TABS = ["Overview", "Timesheets", "Leave", "Risk"] as const
 type Tab = typeof TABS[number]
 
 // ─── Pool builder ─────────────────────────────────────────────────────────────
-
-function buildEmployeePool(): Employee[] {
-  // Exclude real-data clients (Accenture / Capgemini / Hexaware /
-  // LTIMindtree / PwC). They appear empty until portal imports land.
-  const pool: Employee[] = seedEmployees.filter(e => !REAL_DATA_CLIENT_IDS.has(e.clientId))
-  for (const client of clients) {
-    if (REAL_DATA_CLIENT_IDS.has(client.id)) continue
-    const seedCount = seedEmployees.filter(e => e.clientId === client.id).length
-    const need = Math.min(80, client.employeeCount) - seedCount
-    if (need > 0) pool.push(...generateEmployeesForClient(client.id, need, seedCount))
-  }
-  return pool
-}
+//
+// Synthetic generation removed — every employee is real-data fetched from
+// Postgres (see realEmployees fetch below). This file used to seed ~80
+// fake workers per non-real-data client; that pool is gone now that the
+// inbox is wired to actual data only.
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -721,27 +713,19 @@ function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function EmployeesPage() {
-  const baseEmployees = useMemo(() => buildEmployeePool(), [])
-
-  // Real-data clients (cap, acc, hex, lmt, pwc) are skipped by buildEmployeePool
-  // because their data lives in Postgres. Fetch each one's roster from
-  // /api/timesheets/[clientId] and merge into the displayed pool. Empty
-  // results (DB not yet populated) leave that client's section blank.
-  const [realEmployees, setRealEmployees] = useState<Employee[]>([])
+  // Single source of truth: every employee comes from Postgres via
+  // /api/timesheets/[clientId]. Synthetic generation has been removed —
+  // empty clients stay empty until their portal import lands.
+  const [allEmployees, setAllEmployees] = useState<Employee[]>([])
   useEffect(() => {
-    const ids = Array.from(REAL_DATA_CLIENT_IDS)
+    const ids = clients.map(c => c.id)
     Promise.all(ids.map(id =>
       fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [] }))
     )).then(snapshots => {
       const all: Employee[] = snapshots.flatMap(s => Array.isArray(s.employees) ? s.employees : [])
-      setRealEmployees(all)
+      setAllEmployees(all)
     })
   }, [])
-
-  const allEmployees = useMemo(
-    () => [...baseEmployees, ...realEmployees],
-    [baseEmployees, realEmployees],
-  )
 
   const [search,        setSearch]        = useState("")
   const [selClients,    setSelClients]    = useState<string[]>([])

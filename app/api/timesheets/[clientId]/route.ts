@@ -93,19 +93,20 @@ export async function GET(
     const fallbackColor = clientMeta?.color ?? "#A100FF"
     const fallbackCity  = clientMeta?.city  ?? "Bangalore"
 
-    const employees = await sql<DbEmployeeRow[]>`
-      SELECT * FROM employees WHERE client_id = ${clientId}
-    `
-    const timesheets = await sql<DbTimesheetRow[]>`
-      SELECT * FROM timesheets WHERE client_id = ${clientId} ORDER BY period_start DESC
-    `
+    // Run employees + timesheets in parallel (they're independent).
+    const [employees, timesheets] = await Promise.all([
+      sql<DbEmployeeRow[]>`SELECT * FROM employees WHERE client_id = ${clientId}`,
+      sql<DbTimesheetRow[]>`SELECT * FROM timesheets WHERE client_id = ${clientId} ORDER BY period_start DESC`,
+    ])
     const tsIds = timesheets.map(t => t.id)
-    const validations = tsIds.length > 0
-      ? await sql<DbValidationRow[]>`SELECT * FROM timesheet_validations WHERE timesheet_id IN ${sql(tsIds)}`
-      : []
-    const daily = tsIds.length > 0
-      ? await sql<DbDailyRow[]>`SELECT * FROM daily_entries WHERE timesheet_id IN ${sql(tsIds)} ORDER BY entry_date`
-      : []
+    // Validations + daily-entries depend on tsIds but not on each other —
+    // run in parallel too.
+    const [validations, daily] = tsIds.length > 0
+      ? await Promise.all([
+          sql<DbValidationRow[]>`SELECT * FROM timesheet_validations WHERE timesheet_id IN ${sql(tsIds)}`,
+          sql<DbDailyRow[]>`SELECT * FROM daily_entries WHERE timesheet_id IN ${sql(tsIds)} ORDER BY entry_date`,
+        ])
+      : [[] as DbValidationRow[], [] as DbDailyRow[]]
 
     const validationsByTs = new Map<string, ValidationCheck[]>()
     for (const v of validations) {
