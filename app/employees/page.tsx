@@ -3,9 +3,8 @@
 import { useState, useMemo, useRef, useEffect } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
-import { clients, employees as seedEmployees, timesheets, REAL_DATA_CLIENT_IDS } from "@/lib/mock-data"
-import { generateEmployeesForClient } from "@/lib/mock-generator"
-import type { Employee, JobCategory, EmploymentStatus } from "@/lib/types"
+import { clients } from "@/lib/mock-data"
+import type { Employee, JobCategory, EmploymentStatus, Timesheet } from "@/lib/types"
 import {
   Search, Users, Download, ChevronDown, X, ChevronLeft, ChevronRight,
   ArrowUpDown, MapPin, Briefcase, Calendar, Mail, FileText,
@@ -236,8 +235,8 @@ const monthlyEarnings = [
   { month: "Apr", amount: 20000 },
 ]
 
-function OverviewTab({ emp }: { emp: Employee }) {
-  const empTs      = timesheets.filter(t => t.employeeId === emp.id)
+function OverviewTab({ emp, allTimesheets }: { emp: Employee; allTimesheets: Timesheet[] }) {
+  const empTs      = allTimesheets.filter(t => t.employeeId === emp.id)
   const approved   = empTs.filter(t => t.status === "approved").length
   const flagged    = empTs.filter(t => t.status === "flagged").length
   const totalHours = empTs.reduce((s, t) => s + t.totalHours, 0)
@@ -416,8 +415,8 @@ function PayGradeCard({ emp }: { emp: Employee }) {
 
 // ─── Drawer Tab: Timesheets ───────────────────────────────────────────────────
 
-function TimesheetsTab({ empId }: { empId: string }) {
-  const ts = timesheets.filter(t => t.employeeId === empId)
+function TimesheetsTab({ empId, allTimesheets }: { empId: string; allTimesheets: Timesheet[] }) {
+  const ts = allTimesheets.filter(t => t.employeeId === empId)
   const statusColor: Record<string, string> = {
     pending: "var(--text-2)", reviewing: "var(--info)", flagged: "var(--warn)",
     approved: "var(--accent)", processed: "var(--accent)", rejected: "var(--danger)",
@@ -500,8 +499,8 @@ function LeaveTab({ emp }: { emp: Employee }) {
 
 // ─── Drawer Tab: Risk ─────────────────────────────────────────────────────────
 
-function RiskTab({ emp }: { emp: Employee }) {
-  const empTs      = timesheets.filter(t => t.employeeId === emp.id)
+function RiskTab({ emp, allTimesheets }: { emp: Employee; allTimesheets: Timesheet[] }) {
+  const empTs      = allTimesheets.filter(t => t.employeeId === emp.id)
   const flaggedCount = empTs.filter(t => t.status === "flagged").length
   const otCount    = empTs.filter(t => t.overtimeHours > 0).length
   const avgScore   = empTs.length
@@ -583,7 +582,7 @@ function RiskTab({ emp }: { emp: Employee }) {
 
 // ─── Employee Drawer ──────────────────────────────────────────────────────────
 
-function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }) {
+function EmployeeDrawer({ emp, onClose, allTimesheets }: { emp: Employee; onClose: () => void; allTimesheets: Timesheet[] }) {
   const [tab, setTab] = useState<Tab>("Overview")
   const client = clients.find(c => c.id === emp.clientId)
   const statusColor: Record<EmploymentStatus, string> = {
@@ -700,10 +699,10 @@ function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-5">
-          {tab === "Overview"   && <OverviewTab emp={emp} />}
-          {tab === "Timesheets" && <TimesheetsTab empId={emp.id} />}
+          {tab === "Overview"   && <OverviewTab emp={emp} allTimesheets={allTimesheets} />}
+          {tab === "Timesheets" && <TimesheetsTab empId={emp.id} allTimesheets={allTimesheets} />}
           {tab === "Leave"      && <LeaveTab emp={emp} />}
-          {tab === "Risk"       && <RiskTab emp={emp} />}
+          {tab === "Risk"       && <RiskTab emp={emp} allTimesheets={allTimesheets} />}
         </div>
       </div>
     </>
@@ -713,17 +712,19 @@ function EmployeeDrawer({ emp, onClose }: { emp: Employee; onClose: () => void }
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function EmployeesPage() {
-  // Single source of truth: every employee comes from Postgres via
-  // /api/timesheets/[clientId]. Synthetic generation has been removed —
-  // empty clients stay empty until their portal import lands.
-  const [allEmployees, setAllEmployees] = useState<Employee[]>([])
+  // Single source of truth: every employee + timesheet comes from
+  // Postgres via /api/timesheets/[clientId]. Synthetic generation has
+  // been removed — empty clients stay empty until their portal import
+  // lands.
+  const [allEmployees,  setAllEmployees ] = useState<Employee[]>([])
+  const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([])
   useEffect(() => {
     const ids = clients.map(c => c.id)
     Promise.all(ids.map(id =>
-      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [] }))
+      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [], timesheets: [] }))
     )).then(snapshots => {
-      const all: Employee[] = snapshots.flatMap(s => Array.isArray(s.employees) ? s.employees : [])
-      setAllEmployees(all)
+      setAllEmployees(snapshots.flatMap(s => Array.isArray(s.employees)  ? s.employees  : []))
+      setAllTimesheets(snapshots.flatMap(s => Array.isArray(s.timesheets) ? s.timesheets : []))
     })
   }, [])
 
@@ -953,7 +954,7 @@ export default function EmployeesPage() {
 
       {/* Employee Drawer */}
       {selectedEmp && (
-        <EmployeeDrawer emp={selectedEmp} onClose={() => setSelectedEmp(null)} />
+        <EmployeeDrawer emp={selectedEmp} onClose={() => setSelectedEmp(null)} allTimesheets={allTimesheets} />
       )}
 
       <BottomNav />

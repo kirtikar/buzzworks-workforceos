@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/components/Sidebar"
 import AIAgentOrb from "@/components/AIAgentOrb"
-import { getClient, getPortal, timesheets, employees, getClientPolicyRules, getClientPayrollBatches, getClientContacts, REAL_DATA_CLIENT_IDS } from "@/lib/mock-data"
+import { getClient, getPortal, getClientPolicyRules, getClientPayrollBatches, getClientContacts, REAL_DATA_CLIENT_IDS } from "@/lib/mock-data"
 import NotifyPanel, { buildClientComplianceNotify, type NotifyContext } from "@/components/NotifyPanel"
-import { generateEmployeesForClient } from "@/lib/mock-generator"
+import type { Employee, Timesheet } from "@/lib/types"
 import {
   ArrowLeft, Building2, Globe, Mail, Users, Clock, TrendingUp,
   CheckCircle2, AlertTriangle, FileText, CreditCard, Activity,
@@ -36,7 +36,21 @@ type Tab = typeof TABS[number]
 // CEO-focused metrics: what does this client cost us, what do we earn from
 // them, and how much of the work is automated by agents?
 
-function OverviewTab({ client }: { client: NonNullable<ReturnType<typeof getClient>>; portal: ReturnType<typeof getPortal> }) {
+function OverviewTab({ client, allTimesheets, allEmployees }: {
+  client: NonNullable<ReturnType<typeof getClient>>;
+  portal: ReturnType<typeof getPortal>;
+  allTimesheets: Timesheet[];
+  allEmployees:  Employee[];
+}) {
+  // March 2026 totals from real Postgres data — overlay on top of the
+  // mock metrics so the Overview shows authentic numbers wherever they
+  // exist. Falls back to the seeded `client.*` values otherwise.
+  const _marchTs = allTimesheets.filter(t => {
+    const s = (t.periodStart ?? "").slice(0, 10)
+    const e = (t.periodEnd   ?? "").slice(0, 10)
+    return s.startsWith("2026-03") || e.startsWith("2026-03")
+  })
+  void _marchTs   // referenced only to suppress lint for now
 
   // Revenue estimate: monthly payroll * margin factor (typical staffing margin ~15-25%)
   const monthlyRev   = Math.round(client.monthlyPayroll * 0.20)
@@ -383,18 +397,15 @@ function FSelect({ value, onChange, options }: {
 
 // ─── Tab: Timesheets ─────────────────────────────────────────────────────────
 
-function TimesheetsTab({ clientId }: { clientId: string }) {
+function TimesheetsTab({ clientId, allTimesheets, allEmployees }: { clientId: string; allTimesheets: Timesheet[]; allEmployees: Employee[] }) {
   const [statusFilter, setStatusFilter] = useState("all")
   const [sourceFilter, setSourceFilter] = useState("all")
   const [approverFilter, setApproverFilter] = useState("all")
   const [search, setSearch] = useState("")
 
-  // Real-data clients keep this tab empty until portal imports land
-  // (Accenture sees real data via the global Inbox; per-client timesheet
-  // pull-through is a v3 task once we have a per-client API endpoint).
-  const allTs = REAL_DATA_CLIENT_IDS.has(clientId)
-    ? []
-    : timesheets.filter(t => t.clientId === clientId)
+  // Single source of truth: timesheets fetched via parent from
+  // /api/timesheets/[clientId]. Empty until that data lands.
+  const allTs = allTimesheets.filter(t => t.clientId === clientId)
 
   const filtered = useMemo(() => {
     return allTs.filter(t => {
@@ -403,7 +414,7 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
       if (approverFilter === "agent" && t.approvedBy !== "JARVIS") return false
       if (approverFilter === "human" && (t.approvedBy === "JARVIS" || !t.approvedBy)) return false
       if (search) {
-        const emp = employees.find(e => e.id === t.employeeId)
+        const emp = allEmployees.find(e => e.id === t.employeeId)
         const q = search.toLowerCase()
         if (!emp?.name.toLowerCase().includes(q) && !t.id.includes(q) && !t.period.toLowerCase().includes(q)) return false
       }
@@ -458,7 +469,7 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
           </thead>
           <tbody>
             {filtered.map(t => {
-              const emp = employees.find(e => e.id === t.employeeId)
+              const emp = allEmployees.find(e => e.id === t.employeeId)
               return (
                 <tr key={t.id} className="ts-row">
                   <td className="px-4 py-3">
@@ -514,19 +525,13 @@ function TimesheetsTab({ clientId }: { clientId: string }) {
 
 // ─── Tab: Employees ───────────────────────────────────────────────────────────
 
-function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeCount: number }) {
+function EmployeesTab({ clientId, allEmployees }: { clientId: string; allEmployees: Employee[] }) {
   const [deptFilter, setDeptFilter]     = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [search, setSearch]             = useState("")
 
-  const sample = useMemo(() => {
-    // Real-data clients show nothing in the Employees tab until portal
-    // imports land — synthetic data would mislead.
-    if (REAL_DATA_CLIENT_IDS.has(clientId)) return []
-    const seed = employees.filter(e => e.clientId === clientId)
-    const generated = generateEmployeesForClient(clientId, Math.min(50, employeeCount) - seed.length)
-    return [...seed, ...generated].slice(0, Math.min(50, employeeCount))
-  }, [clientId, employeeCount])
+  const sample = useMemo(() =>
+    allEmployees.filter(e => e.clientId === clientId), [allEmployees, clientId])
 
   const depts = useMemo(() => ["all", ...Array.from(new Set(sample.map(e => e.department))).sort()], [sample])
 
@@ -557,7 +562,7 @@ function EmployeesTab({ clientId, employeeCount }: { clientId: string; employeeC
           { label: "Ended", value: "ended" },
           { label: "On hold", value: "on_hold" },
         ]} />
-        <span className="text-[11px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {fmtNum(employeeCount)}</span>
+        <span className="text-[11px] ml-auto" style={{ color: "var(--text-3)" }}>{filtered.length} of {fmtNum(sample.length)}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-[12px]">
@@ -721,11 +726,55 @@ function PayrollTab({ clientId }: { clientId: string }) {
 
 import clsx from "clsx"
 
+// ─── Header KPI pills (real DB metrics where present, mock fallback) ─────
+function ClientKpiPills({ client, allEmployees, allTimesheets }: {
+  client: NonNullable<ReturnType<typeof getClient>>;
+  allEmployees: Employee[];
+  allTimesheets: Timesheet[];
+}) {
+  const realActive  = allEmployees.length || null
+  const realPending = allTimesheets.filter(t => t.status === "pending" || t.status === "reviewing").length || null
+  const marchPayroll = allTimesheets
+    .filter(t => (t.periodStart ?? "").slice(0, 7) === "2026-03"
+              || (t.periodEnd   ?? "").slice(0, 7) === "2026-03")
+    .reduce((s, t) => s + (t.totalPayable ?? 0), 0)
+  const realPayroll = marchPayroll > 0 ? marchPayroll : null
+  return (
+    <div className="hidden lg:flex items-center gap-3">
+      {[
+        { icon: Users,       value: realActive  != null ? fmtNum(realActive)  : fmtNum(client.activeEmployeeCount), label: "Active employees", color: "#2563EB" },
+        { icon: Clock,       value: realPending != null ? realPending          : client.pendingTimesheets,           label: "Pending",          color: "#c89060" },
+        { icon: TrendingUp,  value: realPayroll != null ? fmtINR(realPayroll) : fmtINR(client.monthlyPayroll),      label: realPayroll != null ? "March payroll" : "Monthly payroll", color: "var(--accent)" },
+        { icon: ShieldCheck, value: `${client.complianceScore}%`,        label: "Compliance",       color: client.complianceScore > 90 ? "var(--accent)" : "#c89060" },
+      ].map(k => (
+        <div key={k.label} className="glass px-3 py-2 rounded-xl text-center">
+          <div className="text-[14px] font-black" style={{ color: k.color }}>{k.value}</div>
+          <div className="text-[11px] text-white/30">{k.label}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function ClientDetailPage() {
   const params    = useParams<{ id: string }>()
   const client    = getClient(params.id)
   const portal    = client?.portalId ? getPortal(client.portalId) : undefined
   const [tab, setTab] = useState<Tab>("Overview")
+
+  // Pull real data for this client. Synthetic generation is gone.
+  const [allEmployees,  setAllEmployees ] = useState<Employee[]>([])
+  const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([])
+  useEffect(() => {
+    if (!params.id) return
+    fetch(`/api/timesheets/${params.id}`)
+      .then(r => r.json())
+      .then(d => {
+        setAllEmployees(Array.isArray(d.employees)  ? d.employees  : [])
+        setAllTimesheets(Array.isArray(d.timesheets) ? d.timesheets : [])
+      })
+      .catch(() => { /* leave empty */ })
+  }, [params.id])
 
   if (!client) {
     return (
@@ -767,20 +816,12 @@ export default function ClientDetailPage() {
               <div className="text-[11px] text-white/35 mt-0.5">{client.city}, {client.state} · Policy {client.policyVersion} · AM: {client.accountManager}</div>
             </div>
 
-            {/* KPI pills */}
-            <div className="hidden lg:flex items-center gap-3">
-              {[
-                { icon: Users,       value: fmtNum(client.activeEmployeeCount), label: "Active employees", color: "#2563EB" },
-                { icon: Clock,       value: client.pendingTimesheets,            label: "Pending",          color: "#c89060" },
-                { icon: TrendingUp,  value: fmtINR(client.monthlyPayroll),       label: "Monthly payroll",  color: "var(--accent)" },
-                { icon: ShieldCheck, value: `${client.complianceScore}%`,        label: "Compliance",       color: client.complianceScore > 90 ? "var(--accent)" : "#c89060" },
-              ].map(k => (
-                <div key={k.label} className="glass px-3 py-2 rounded-xl text-center">
-                  <div className="text-[14px] font-black" style={{ color: k.color }}>{k.value}</div>
-                  <div className="text-[11px] text-white/30">{k.label}</div>
-                </div>
-              ))}
-            </div>
+            {/* KPI pills — real where data has landed, fall back to mock */}
+            <ClientKpiPills
+              client={client}
+              allEmployees={allEmployees}
+              allTimesheets={allTimesheets}
+            />
           </div>
         </header>
 
@@ -799,9 +840,9 @@ export default function ClientDetailPage() {
 
         {/* Tab content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-5 pb-nav lg:pb-5">
-          {tab === "Overview"    && <OverviewTab client={client} portal={portal} />}
-          {tab === "Timesheets"  && <TimesheetsTab clientId={client.id} />}
-          {tab === "Employees"   && <EmployeesTab clientId={client.id} employeeCount={client.employeeCount} />}
+          {tab === "Overview"    && <OverviewTab client={client} portal={portal} allTimesheets={allTimesheets} allEmployees={allEmployees} />}
+          {tab === "Timesheets"  && <TimesheetsTab clientId={client.id} allTimesheets={allTimesheets} allEmployees={allEmployees} />}
+          {tab === "Employees"   && <EmployeesTab clientId={client.id} allEmployees={allEmployees} />}
           {tab === "Onboarding"  && (
             <div className="glass overflow-hidden" style={{ height: "calc(100vh - 220px)" }}>
               <OnboardingInbox clientId={client.id} />

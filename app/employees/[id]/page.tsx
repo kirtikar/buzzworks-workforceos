@@ -4,9 +4,8 @@ import { useState, useMemo, useEffect } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/components/Sidebar"
-import { employees, clients, timesheets } from "@/lib/mock-data"
-import { generateEmployeesForClient } from "@/lib/mock-generator"
-import type { Timesheet, DailyEntry } from "@/lib/types"
+import { clients } from "@/lib/mock-data"
+import type { Timesheet, DailyEntry, Employee } from "@/lib/types"
 import {
   ArrowLeft, User, Mail, MapPin, Calendar, Clock, TrendingUp,
   CheckCircle2, AlertTriangle, FileText, Shield, Activity,
@@ -30,28 +29,48 @@ function fmtDate(iso: string) {
 const TABS = ["Overview", "Timesheets", "Leave", "Risk Profile"] as const
 type Tab = typeof TABS[number]
 
-// Mock weekly hours trend for the employee
-const weeklyTrend = [
-  { week: "Feb W3", hours: 40, ot: 0 },
-  { week: "Feb W4", hours: 40, ot: 2 },
-  { week: "Mar W1", hours: 38, ot: 0 },
-  { week: "Mar W2", hours: 40, ot: 0 },
-  { week: "Mar W3", hours: 40, ot: 0 },
-  { week: "Mar W4", hours: 40, ot: 0 },
-  { week: "Apr W1", hours: 40, ot: 0 },
-]
+// ─── Last 6 months (rolling) — pads months with no data as NA so the
+// employee detail Overview tab is honest about partial coverage. ──────
+function buildLast6MonthsEarnings(empTs: Timesheet[]) {
+  const today = new Date()
+  const months: { month: string; amount: number | null; iso: string }[] = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - i, 1))
+    const iso = d.toISOString().slice(0, 7)            // YYYY-MM
+    const label = d.toLocaleString("en-IN", { month: "short" })
+    const amount = empTs
+      .filter(t => (t.periodStart ?? "").slice(0, 7) === iso)
+      .reduce((s, t) => s + (t.totalPayable ?? 0), 0)
+    // null when no timesheets at all touch that month — UI renders "NA"
+    const hasAny = empTs.some(t => (t.periodStart ?? "").slice(0, 7) === iso)
+    months.push({ month: label, amount: hasAny ? amount : null, iso })
+  }
+  return months
+}
 
-const monthlyEarnings = [
-  { month: "Jan", amount: 85000 },
-  { month: "Feb", amount: 87200 },
-  { month: "Mar", amount: 88000 },
-  { month: "Apr", amount: 20000 }, // partial
-]
+function buildWeeklyTrend(empTs: Timesheet[]) {
+  // Take the most recent 7 weeks of data (by periodStart desc).
+  return [...empTs]
+    .sort((a, b) => (a.periodStart ?? "").localeCompare(b.periodStart ?? ""))
+    .slice(-7)
+    .map(t => {
+      const d = new Date(t.periodStart ?? "")
+      const wk = Math.ceil(d.getUTCDate() / 7)
+      const m = d.toLocaleString("en-IN", { month: "short" })
+      return {
+        week: `${m} W${wk}`,
+        hours: (t.regularHours ?? t.totalHours ?? 0),
+        ot:    (t.overtimeHours ?? 0),
+      }
+    })
+}
 
 // ─── Tab: Overview ───────────────────────────────────────────────────────────
 
-function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
-  const empTimesheets = timesheets.filter(t => t.employeeId === emp.id)
+function OverviewTab({ emp, allTimesheets }: { emp: Employee; allTimesheets: Timesheet[] }) {
+  const empTimesheets = allTimesheets.filter(t => t.employeeId === emp.id)
+  const monthlyEarnings = useMemo(() => buildLast6MonthsEarnings(empTimesheets), [empTimesheets])
+  const weeklyTrend     = useMemo(() => buildWeeklyTrend(empTimesheets),       [empTimesheets])
   const approved = empTimesheets.filter(t => t.status === "approved").length
   const flagged  = empTimesheets.filter(t => t.status === "flagged").length
   const totalHours = empTimesheets.reduce((s, t) => s + t.totalHours, 0)
@@ -103,25 +122,24 @@ function OverviewTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Monthly earnings */}
+        {/* Monthly earnings — last 6 months with NA for months without data */}
         <div className="glass p-4">
-          <div className="text-[14px] font-semibold mb-1" style={{ color: "var(--text-1)" }}>Monthly Earnings (YTD)</div>
-          <div className="text-[11px] mb-3" style={{ color: "var(--text-3)" }}>Based on approved timesheets</div>
+          <div className="text-[14px] font-semibold mb-1" style={{ color: "var(--text-1)" }}>Monthly Earnings — Last 6 months</div>
+          <div className="text-[11px] mb-3" style={{ color: "var(--text-3)" }}>From processed Fieldglass timesheets · NA where no data has landed yet</div>
           <div className="text-[24px] font-black" style={{ color: "var(--accent)" }}>{fmtINR(totalEarned)}</div>
           <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>{totalHours}h logged across {empTimesheets.length} periods</div>
-          <div style={{ height: 60, marginTop: 12 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={monthlyEarnings}>
-                <defs>
-                  <linearGradient id="earnGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11, color: "var(--text-1)" }} formatter={(v: number) => fmtINR(v)} />
-                <Area type="monotone" dataKey="amount" stroke="var(--accent)" strokeWidth={1.5} fill="url(#earnGrad)" dot={false} />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="grid grid-cols-6 gap-1.5 mt-3">
+            {monthlyEarnings.map(m => (
+              <div key={m.iso} className="rounded-md p-2 text-center"
+                style={{ background: m.amount === null ? "var(--surface-2)" : "var(--accent-dim)",
+                         border: "1px solid var(--border)" }}>
+                <div className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>{m.month}</div>
+                <div className="text-[12px] font-bold tabular-nums mt-1"
+                  style={{ color: m.amount === null ? "var(--text-3)" : "var(--accent)" }}>
+                  {m.amount === null ? "NA" : fmtINR(m.amount)}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -377,9 +395,7 @@ function TimesheetsTab({ empId, clientId }: { empId: string; clientId: string })
     return () => { cancelled = true }
   }, [clientId, empId])
 
-  const ts = realTs && realTs.length > 0
-    ? realTs
-    : timesheets.filter(t => t.employeeId === empId)
+  const ts = realTs ?? []
 
   // Day-wise rollup for the calendar
   const calendarEntries = useMemo(() => {
@@ -488,7 +504,7 @@ function TimesheetsTab({ empId, clientId }: { empId: string; clientId: string })
 
 // ─── Tab: Leave ───────────────────────────────────────────────────────────────
 
-function LeaveTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
+function LeaveTab({ emp }: { emp: Employee }) {
   const lb = emp.leaveBalance
   const leaveTypes = [
     { label: "Annual Leave",  total: lb.annual,  used: lb.usedAnnual,  color: "var(--accent)",  icon: Calendar },
@@ -562,8 +578,8 @@ function LeaveTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
 
 // ─── Tab: Risk Profile ────────────────────────────────────────────────────────
 
-function RiskProfileTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
-  const empTimesheets = timesheets.filter(t => t.employeeId === emp.id)
+function RiskProfileTab({ emp, allTimesheets }: { emp: Employee; allTimesheets: Timesheet[] }) {
+  const empTimesheets = allTimesheets.filter(t => t.employeeId === emp.id)
   const flaggedCount  = empTimesheets.filter(t => t.status === "flagged").length
   const otCount       = empTimesheets.filter(t => t.overtimeHours > 0).length
   const avgScore      = empTimesheets.length
@@ -651,24 +667,40 @@ function RiskProfileTab({ emp }: { emp: NonNullable<typeof employees[0]> }) {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-
-function buildPool() {
-  const pool = [...employees]
-  for (const client of clients) {
-    const seedCount = employees.filter(e => e.clientId === client.id).length
-    const need = Math.min(80, client.employeeCount) - seedCount
-    if (need > 0) pool.push(...generateEmployeesForClient(client.id, need, seedCount))
-  }
-  return pool
-}
-
-const allEmployees = buildPool()
+// Single source of truth: every employee + their timesheets come from
+// /api/timesheets/[clientId]. Synthetic generation has been removed.
 
 export default function EmployeeDetailPage() {
   const params = useParams<{ id: string }>()
-  const emp    = allEmployees.find(e => e.id === params.id)
   const [tab, setTab] = useState<Tab>("Overview")
+  const [emp,  setEmp]            = useState<Employee | null | undefined>(undefined)
+  const [allTimesheets, setAllTs] = useState<Timesheet[]>([])
 
+  useEffect(() => {
+    let cancelled = false
+    const ids = clients.map(c => c.id)
+    Promise.all(ids.map(id =>
+      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [], timesheets: [] }))
+    )).then(snapshots => {
+      if (cancelled) return
+      const employees: Employee[]    = snapshots.flatMap(s => Array.isArray(s.employees)  ? s.employees  : [])
+      const timesheets: Timesheet[]  = snapshots.flatMap(s => Array.isArray(s.timesheets) ? s.timesheets : [])
+      setAllTs(timesheets)
+      setEmp(employees.find(e => e.id === params.id) ?? null)
+    })
+    return () => { cancelled = true }
+  }, [params.id])
+
+  if (emp === undefined) {
+    return (
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center text-[14px]" style={{ color: "var(--text-3)" }}>
+          Loading…
+        </div>
+      </div>
+    )
+  }
   if (!emp) {
     return (
       <div className="flex h-screen overflow-hidden">
@@ -755,10 +787,10 @@ export default function EmployeeDetailPage() {
 
         {/* Tab content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-5 pb-nav lg:pb-5">
-          {tab === "Overview"      && <OverviewTab emp={emp} />}
+          {tab === "Overview"      && <OverviewTab emp={emp} allTimesheets={allTimesheets} />}
           {tab === "Timesheets"    && <TimesheetsTab empId={emp.id} clientId={emp.clientId} />}
           {tab === "Leave"         && <LeaveTab emp={emp} />}
-          {tab === "Risk Profile"  && <RiskProfileTab emp={emp} />}
+          {tab === "Risk Profile"  && <RiskProfileTab emp={emp} allTimesheets={allTimesheets} />}
         </main>
       </div>
     </div>
