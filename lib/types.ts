@@ -225,6 +225,24 @@ export interface Timesheet {
   externalUrl?: string
 }
 
+// ─── Expense Sheet (Fieldglass) ───────────────────────────────────────────────
+
+export interface ExpenseSheet {
+  id:           string             // "cap-fg-CGEMES…"
+  employeeId:   string             // FK to employees.id
+  clientId:     string
+  workerName:   string
+  site:         string
+  buyer:        string
+  submittedAt:  string             // YYYY-MM-DD
+  amount:       number
+  currency:     string             // "INR"
+  status:       string             // "Invoiced" | "Pending Approval" | …
+  revision:     number
+  sourceDetail: string
+  externalUrl:  string             // Fieldglass detail-page deep link
+}
+
 // ─── AI Insight ───────────────────────────────────────────────────────────────
 
 export interface AIInsight {

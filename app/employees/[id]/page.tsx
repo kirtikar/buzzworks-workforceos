@@ -5,7 +5,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import Sidebar from "@/components/Sidebar"
 import { clients } from "@/lib/mock-data"
-import type { Timesheet, DailyEntry, Employee } from "@/lib/types"
+import type { Timesheet, DailyEntry, Employee, ExpenseSheet } from "@/lib/types"
 import {
   ArrowLeft, User, Mail, MapPin, Calendar, Clock, TrendingUp,
   CheckCircle2, AlertTriangle, FileText, Shield, Activity,
@@ -67,10 +67,13 @@ function buildWeeklyTrend(empTs: Timesheet[]) {
 
 // ─── Tab: Overview ───────────────────────────────────────────────────────────
 
-function OverviewTab({ emp, allTimesheets }: { emp: Employee; allTimesheets: Timesheet[] }) {
+function OverviewTab({ emp, allTimesheets, allExpenses }: { emp: Employee; allTimesheets: Timesheet[]; allExpenses: ExpenseSheet[] }) {
   const empTimesheets = allTimesheets.filter(t => t.employeeId === emp.id)
+  const empExpenses   = allExpenses.filter(x => x.employeeId === emp.id)
   const monthlyEarnings = useMemo(() => buildLast6MonthsEarnings(empTimesheets), [empTimesheets])
   const weeklyTrend     = useMemo(() => buildWeeklyTrend(empTimesheets),       [empTimesheets])
+  const expenseInvoiced = empExpenses.filter(x => x.status.toLowerCase() === "invoiced").reduce((s, x) => s + x.amount, 0)
+  const expensePending  = empExpenses.filter(x => x.status.toLowerCase().includes("pending")).reduce((s, x) => s + x.amount, 0)
   const approved = empTimesheets.filter(t => t.status === "approved").length
   const flagged  = empTimesheets.filter(t => t.status === "flagged").length
   const totalHours = empTimesheets.reduce((s, t) => s + t.totalHours, 0)
@@ -122,7 +125,49 @@ function OverviewTab({ emp, allTimesheets }: { emp: Employee; allTimesheets: Tim
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Monthly earnings — last 6 months with NA for months without data */}
+        {/* Expenses card — invoiced + pending totals from Fieldglass expense_sheets */}
+        {empExpenses.length > 0 && (
+          <div className="glass p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <div className="text-[14px] font-semibold" style={{ color: "var(--text-1)" }}>Expense Sheets</div>
+                <div className="text-[11px]" style={{ color: "var(--text-3)" }}>{empExpenses.length} sheets · Fieldglass</div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Invoiced</div>
+                  <div className="text-[14px] font-bold tabular-nums" style={{ color: "var(--accent)" }}>{fmtINR(expenseInvoiced)}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>Pending</div>
+                  <div className="text-[14px] font-bold tabular-nums" style={{ color: "var(--warn)" }}>{fmtINR(expensePending)}</div>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {empExpenses.slice(0, 8).map(x => (
+                <a key={x.id} href={x.externalUrl} target="_blank" rel="noreferrer"
+                   className="flex items-center justify-between text-[12px] px-2.5 py-1.5 rounded-md"
+                   style={{ background: "var(--surface-2)" }}>
+                  <span style={{ color: "var(--text-2)" }}>{x.submittedAt}</span>
+                  <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded"
+                        style={{ background: x.status.toLowerCase() === "invoiced" ? "rgba(5,150,105,0.10)" : "var(--warn-bg)",
+                                 color:      x.status.toLowerCase() === "invoiced" ? "#059669" : "var(--warn)" }}>
+                    {x.status}
+                  </span>
+                  <span className="font-bold tabular-nums" style={{ color: "var(--text-1)" }}>{fmtINR(x.amount)}</span>
+                </a>
+              ))}
+              {empExpenses.length > 8 && (
+                <div className="text-[11px] text-center pt-1" style={{ color: "var(--text-3)" }}>
+                  + {empExpenses.length - 8} more
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+      {/* Monthly earnings — last 6 months with NA for months without data */}
         <div className="glass p-4">
           <div className="text-[14px] font-semibold mb-1" style={{ color: "var(--text-1)" }}>Monthly Earnings — Last 6 months</div>
           <div className="text-[11px] mb-3" style={{ color: "var(--text-3)" }}>From processed Fieldglass timesheets · NA where no data has landed yet</div>
@@ -675,17 +720,20 @@ export default function EmployeeDetailPage() {
   const [tab, setTab] = useState<Tab>("Overview")
   const [emp,  setEmp]            = useState<Employee | null | undefined>(undefined)
   const [allTimesheets, setAllTs] = useState<Timesheet[]>([])
+  const [allExpenses,   setAllEx] = useState<ExpenseSheet[]>([])
 
   useEffect(() => {
     let cancelled = false
     const ids = clients.map(c => c.id)
     Promise.all(ids.map(id =>
-      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [], timesheets: [] }))
+      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [], timesheets: [], expenses: [] }))
     )).then(snapshots => {
       if (cancelled) return
       const employees: Employee[]    = snapshots.flatMap(s => Array.isArray(s.employees)  ? s.employees  : [])
       const timesheets: Timesheet[]  = snapshots.flatMap(s => Array.isArray(s.timesheets) ? s.timesheets : [])
+      const expenses: ExpenseSheet[] = snapshots.flatMap(s => Array.isArray(s.expenses)   ? s.expenses   : [])
       setAllTs(timesheets)
+      setAllEx(expenses)
       setEmp(employees.find(e => e.id === params.id) ?? null)
     })
     return () => { cancelled = true }
@@ -787,7 +835,7 @@ export default function EmployeeDetailPage() {
 
         {/* Tab content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-5 pb-nav lg:pb-5">
-          {tab === "Overview"      && <OverviewTab emp={emp} allTimesheets={allTimesheets} />}
+          {tab === "Overview"      && <OverviewTab emp={emp} allTimesheets={allTimesheets} allExpenses={allExpenses} />}
           {tab === "Timesheets"    && <TimesheetsTab empId={emp.id} clientId={emp.clientId} />}
           {tab === "Leave"         && <LeaveTab emp={emp} />}
           {tab === "Risk Profile"  && <RiskProfileTab emp={emp} allTimesheets={allTimesheets} />}

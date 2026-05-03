@@ -93,10 +93,19 @@ export async function GET(
     const fallbackColor = clientMeta?.color ?? "#A100FF"
     const fallbackCity  = clientMeta?.city  ?? "Bangalore"
 
-    // Run employees + timesheets in parallel (they're independent).
-    const [employees, timesheets] = await Promise.all([
+    // Run employees + timesheets + expenses in parallel.
+    const [employees, timesheets, expenses] = await Promise.all([
       sql<DbEmployeeRow[]>`SELECT * FROM employees WHERE client_id = ${clientId}`,
       sql<DbTimesheetRow[]>`SELECT * FROM timesheets WHERE client_id = ${clientId} ORDER BY period_start DESC`,
+      sql<{
+        id: string; employee_id: string; client_id: string;
+        worker_name: string | null; site: string | null; buyer: string | null;
+        submitted_at: Date | string | null;
+        amount: string; currency: string; status: string; revision: number;
+        source_detail: string | null; external_url: string | null;
+      }[]>`
+        SELECT * FROM expense_sheets WHERE client_id = ${clientId} ORDER BY submitted_at DESC
+      `.catch(() => []),
     ])
     const tsIds = timesheets.map(t => t.id)
     // Validations + daily-entries depend on tsIds but not on each other —
@@ -196,11 +205,28 @@ export async function GET(
       WHERE client_id = ${clientId} ORDER BY imported_at DESC LIMIT 1
     `
 
+    const expenseList = expenses.map(x => ({
+      id:           x.id,
+      employeeId:   x.employee_id,
+      clientId:     x.client_id,
+      workerName:   x.worker_name ?? "",
+      site:         x.site ?? "",
+      buyer:        x.buyer ?? "",
+      submittedAt:  x.submitted_at instanceof Date ? x.submitted_at.toISOString().slice(0, 10) : (x.submitted_at ?? ""),
+      amount:       parseFloat(x.amount),
+      currency:     x.currency,
+      status:       x.status,
+      revision:     x.revision,
+      sourceDetail: x.source_detail ?? "",
+      externalUrl:  x.external_url ?? "",
+    }))
+
     return NextResponse.json({
       configured: true,
       clientId,
       timesheets: tsList,
       employees:  empList,
+      expenses:   expenseList,
       lastImport: lastImport[0] ?? null,
     })
   } catch (e) {
