@@ -712,21 +712,33 @@ function EmployeeDrawer({ emp, onClose, allTimesheets }: { emp: Employee; onClos
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function EmployeesPage() {
-  // Single source of truth: every employee + timesheet comes from
-  // Postgres via /api/timesheets/[clientId]. Synthetic generation has
-  // been removed — empty clients stay empty until their portal import
-  // lands.
+  // Two-tier fetch: roster first (cheap, ~5 KB per client) for the list
+  // and KPIs; defer the heavy timesheets payload until the drawer opens
+  // a worker's tab that actually needs them.
   const [allEmployees,  setAllEmployees ] = useState<Employee[]>([])
   const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([])
+  const [tsLoaded, setTsLoaded] = useState(false)
   useEffect(() => {
     const ids = clients.map(c => c.id)
+    // 1) Roster — quick paint
     Promise.all(ids.map(id =>
-      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [], timesheets: [] }))
+      fetch(`/api/employees/${id}`).then(r => r.json()).catch(() => ({ employees: [] }))
     )).then(snapshots => {
-      setAllEmployees(snapshots.flatMap(s => Array.isArray(s.employees)  ? s.employees  : []))
-      setAllTimesheets(snapshots.flatMap(s => Array.isArray(s.timesheets) ? s.timesheets : []))
+      setAllEmployees(snapshots.flatMap(s => Array.isArray(s.employees) ? s.employees : []))
     })
   }, [])
+
+  // 2) Timesheets lazy-load — kicked off when the drawer opens.
+  function ensureTimesheetsLoaded() {
+    if (tsLoaded) return
+    setTsLoaded(true)
+    const ids = clients.map(c => c.id)
+    Promise.all(ids.map(id =>
+      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ timesheets: [] }))
+    )).then(snapshots => {
+      setAllTimesheets(snapshots.flatMap(s => Array.isArray(s.timesheets) ? s.timesheets : []))
+    })
+  }
 
   const [search,        setSearch]        = useState("")
   const [selClients,    setSelClients]    = useState<string[]>([])
@@ -861,7 +873,7 @@ export default function EmployeesPage() {
                 const client = clients.find(c => c.id === emp.clientId)
                 return (
                   <tr key={emp.id}
-                    onClick={() => setSelectedEmp(emp)}
+                    onClick={() => { ensureTimesheetsLoaded(); setSelectedEmp(emp) }}
                     className="ts-row border-b cursor-pointer"
                     style={{ borderColor: "var(--border)" }}>
 

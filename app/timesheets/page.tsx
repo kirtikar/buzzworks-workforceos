@@ -210,7 +210,10 @@ export default function InboxPage() {
   const [selSources,  setSelSources]        = useState<string[]>([])
   const [selScoreBands, setSelScoreBands]   = useState<string[]>([])  // "high" "med" "low"
   const [selOTOnly, setSelOTOnly]           = useState<boolean>(false)
-  const [actionableOnly, setActionableOnly] = useState<boolean>(true)
+  // Default OFF so approved/processed timesheets remain visible in the
+  // inbox alongside actionable ones — ops asked to keep historical
+  // status visible. Toggle still narrows when needed.
+  const [actionableOnly, setActionableOnly] = useState<boolean>(false)
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [expandedId, setExpandedId]   = useState<string | null>(null)

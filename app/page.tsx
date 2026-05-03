@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Sidebar from "@/components/Sidebar"
 import BottomNav from "@/components/BottomNav"
 import { clients } from "@/lib/mock-data"
@@ -86,20 +87,80 @@ const opsCostTrend = [
   { month: "Apr",  withoutAI: 6.0, withAI: 3.6 },
 ]
 
-// Ops cost per client + revenue.
-// Top 8 sums to ₹12.6L (70% of ₹18L); other 19 clients account for ~₹5.4L.
-// Top-8 revenue sums to ~₹383L (77% of ₹500L); rest comes from smaller clients.
-// efficiency = ops cost / client revenue → 3.0–3.9% across the top 8 (1–4% band).
-const clientCost = [
-  { name: "Infosys BPM",       cost: 250000, revenue: 8400000, items: 312 },
-  { name: "Hexaware",          cost: 210000, revenue: 6800000, items: 268 },
-  { name: "L&T Infotech",      cost: 170000, revenue: 5200000, items: 198 },
-  { name: "Capgemini India",   cost: 160000, revenue: 4700000, items: 178 },
-  { name: "Mindtree",          cost: 150000, revenue: 4400000, items: 162 },
-  { name: "Cognizant Digital", cost: 140000, revenue: 3700000, items: 148 },
-  { name: "Persistent Systems",cost:  90000, revenue: 2800000, items:  92 },
-  { name: "Mphasis Corp",      cost:  90000, revenue: 2300000, items:  86 },
-].map(c => ({ ...c, efficiency: Math.round((c.cost / c.revenue) * 100 * 100) / 100 }))
+function OpsCostByClient() {
+  const rows = useClientCost()
+  if (rows.length === 0) {
+    return <div className="text-[12px]" style={{ color: "var(--text-3)" }}>Loading clients…</div>
+  }
+  const maxCost = Math.max(...rows.map(c => c.cost))
+  return (
+    <div className="space-y-2.5">
+      {rows.map(c => {
+        const effColor = c.efficiency < 3.3 ? "#059669"
+                      : c.efficiency < 4.0 ? "var(--warn)"
+                      : "var(--danger)"
+        return (
+          <div key={c.name} className="flex items-center gap-3 text-[12px]">
+            <span className="w-[110px] truncate flex-shrink-0" style={{ color: "var(--text-1)" }}>{c.name}</span>
+            <div className="flex-1 h-5 rounded-md relative overflow-hidden" style={{ background: "var(--surface-2)" }}>
+              <div className="h-full rounded-md" style={{ width: `${(c.cost / maxCost) * 100}%`, background: "var(--accent)", opacity: 0.85 }} />
+            </div>
+            <span className="w-14 text-right tabular-nums font-medium" style={{ color: "var(--text-1)" }}>
+              ₹{(c.cost/100000).toFixed(1)}L
+            </span>
+            <span className="w-12 text-right tabular-nums font-semibold" style={{ color: effColor }}>
+              {c.efficiency}%
+            </span>
+            <span className="w-10 text-right text-[11px] tabular-nums" style={{ color: "var(--text-3)" }}>
+              {c.items}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Hook: fetches the lightweight per-client summary in parallel and
+// returns the Ops Cost rows ranked by employee count. Falls back to the
+// seeded `clients` activeEmployeeCount when the API has no DB data yet.
+//
+// Cost model: ops cost ≈ employees × ₹350/worker/month (back-of-envelope
+// from Buzzworks managed-services pricing). Revenue ≈ employees × ₹9000.
+// Efficiency = cost ÷ revenue (target: 1-4% band).
+const COST_PER_EMP_MO    = 350
+const REVENUE_PER_EMP_MO = 9000
+function useClientCost() {
+  const [rows, setRows] = useState<{ name: string; cost: number; revenue: number; items: number; efficiency: number }[]>([])
+  useEffect(() => {
+    Promise.all(clients.map(c =>
+      fetch(`/api/employees/${c.id}`)
+        .then(r => r.json())
+        .then(d => ({
+          client: c,
+          empCount: d?.summary?.employeeCount ?? c.activeEmployeeCount ?? 0,
+        }))
+        .catch(() => ({ client: c, empCount: c.activeEmployeeCount ?? 0 }))
+    )).then(results => {
+      const top8 = results
+        .sort((a, b) => b.empCount - a.empCount)
+        .slice(0, 8)
+        .map(({ client, empCount }) => {
+          const cost     = empCount * COST_PER_EMP_MO
+          const revenue  = empCount * REVENUE_PER_EMP_MO
+          return {
+            name: client.name,
+            cost,
+            revenue,
+            items: empCount,
+            efficiency: Math.round((cost / Math.max(revenue, 1)) * 100 * 100) / 100,
+          }
+        })
+      setRows(top8)
+    })
+  }, [])
+  return rows
+}
 
 // Agent performance trend (auto-approval %)
 const agentPerformance = [
@@ -314,34 +375,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {(() => {
-                const maxCost = Math.max(...clientCost.map(c => c.cost))
-                return (
-                  <div className="space-y-2.5">
-                    {clientCost.map(c => {
-                      const effColor = c.efficiency < 3.3 ? "#059669"
-                                    : c.efficiency < 4.0 ? "var(--warn)"
-                                    : "var(--danger)"
-                      return (
-                        <div key={c.name} className="flex items-center gap-3 text-[12px]">
-                          <span className="w-[110px] truncate flex-shrink-0" style={{ color: "var(--text-1)" }}>
-                            {c.name}
-                          </span>
-                          <div className="flex-1 h-5 rounded-md relative overflow-hidden" style={{ background: "var(--surface-2)" }}>
-                            <div className="h-full rounded-md" style={{ width: `${(c.cost / maxCost) * 100}%`, background: "var(--accent)", opacity: 0.85 }} />
-                          </div>
-                          <span className="w-14 text-right tabular-nums font-medium" style={{ color: "var(--text-1)" }}>
-                            ₹{(c.cost/100000).toFixed(1)}L
-                          </span>
-                          <span className="w-12 text-right tabular-nums font-semibold" style={{ color: effColor }}>
-                            {c.efficiency}%
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              })()}
+              <OpsCostByClient />
 
               <div className="flex items-center gap-4 mt-4 pt-3 text-[11px]" style={{ color: "var(--text-3)", borderTop: "1px solid var(--border)" }}>
                 <span>Efficiency thresholds:</span>

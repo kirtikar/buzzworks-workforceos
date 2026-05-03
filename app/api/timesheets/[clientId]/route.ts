@@ -78,13 +78,18 @@ interface DbDailyRow {
 }
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ clientId: string }> },
 ) {
   const { clientId } = await params
+  // ?include=daily — opt-in to the heavy daily_entries join. Skipped by
+  // default so the Inbox payload stays small (Capgemini drops from ~10
+  // MB to ~3 MB when daily is excluded).
+  const includeParam = req.nextUrl.searchParams.get("include") ?? ""
+  const includeDaily = includeParam.split(",").includes("daily")
 
   if (!isDbConfigured()) {
-    return NextResponse.json({ configured: false, timesheets: [], employees: [] })
+    return NextResponse.json({ configured: false, timesheets: [], employees: [], expenses: [] })
   }
 
   try {
@@ -108,12 +113,15 @@ export async function GET(
       `.catch(() => []),
     ])
     const tsIds = timesheets.map(t => t.id)
-    // Validations + daily-entries depend on tsIds but not on each other —
-    // run in parallel too.
+    // Validations are needed by the Inbox drawer's JARVIS card (~6 rows
+    // per timesheet). Daily entries (~7/ts) are only needed by the
+    // Employee Detail calendar — opt-in via ?include=daily.
     const [validations, daily] = tsIds.length > 0
       ? await Promise.all([
           sql<DbValidationRow[]>`SELECT * FROM timesheet_validations WHERE timesheet_id IN ${sql(tsIds)}`,
-          sql<DbDailyRow[]>`SELECT * FROM daily_entries WHERE timesheet_id IN ${sql(tsIds)} ORDER BY entry_date`,
+          includeDaily
+            ? sql<DbDailyRow[]>`SELECT * FROM daily_entries WHERE timesheet_id IN ${sql(tsIds)} ORDER BY entry_date`
+            : Promise.resolve([] as DbDailyRow[]),
         ])
       : [[] as DbValidationRow[], [] as DbDailyRow[]]
 

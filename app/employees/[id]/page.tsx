@@ -726,7 +726,7 @@ export default function EmployeeDetailPage() {
     let cancelled = false
     const ids = clients.map(c => c.id)
     Promise.all(ids.map(id =>
-      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ employees: [], timesheets: [], expenses: [] }))
+      fetch(`/api/timesheets/${id}?include=daily`).then(r => r.json()).catch(() => ({ employees: [], timesheets: [], expenses: [] }))
     )).then(snapshots => {
       if (cancelled) return
       const employees: Employee[]    = snapshots.flatMap(s => Array.isArray(s.employees)  ? s.employees  : [])

@@ -762,19 +762,31 @@ export default function ClientDetailPage() {
   const portal    = client?.portalId ? getPortal(client.portalId) : undefined
   const [tab, setTab] = useState<Tab>("Overview")
 
-  // Pull real data for this client. Synthetic generation is gone.
+  // Two-tier fetch — light roster + summary first (for header KPIs and
+  // Employees tab), then heavy timesheets only when the Timesheets tab
+  // is opened. Capgemini's full payload is ~3 MB; the lightweight
+  // endpoint is ~50 KB.
   const [allEmployees,  setAllEmployees ] = useState<Employee[]>([])
   const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([])
+  const [tsLoaded,      setTsLoaded     ] = useState(false)
   useEffect(() => {
     if (!params.id) return
-    fetch(`/api/timesheets/${params.id}`)
+    fetch(`/api/employees/${params.id}`)
       .then(r => r.json())
-      .then(d => {
-        setAllEmployees(Array.isArray(d.employees)  ? d.employees  : [])
-        setAllTimesheets(Array.isArray(d.timesheets) ? d.timesheets : [])
-      })
+      .then(d => setAllEmployees(Array.isArray(d.employees) ? d.employees : []))
       .catch(() => { /* leave empty */ })
   }, [params.id])
+
+  // Lazy-load timesheets when Timesheets or Overview tab needs them.
+  useEffect(() => {
+    if (tsLoaded || !params.id) return
+    if (tab !== "Timesheets" && tab !== "Overview") return
+    setTsLoaded(true)
+    fetch(`/api/timesheets/${params.id}`)
+      .then(r => r.json())
+      .then(d => setAllTimesheets(Array.isArray(d.timesheets) ? d.timesheets : []))
+      .catch(() => { /* leave empty */ })
+  }, [params.id, tab, tsLoaded])
 
   if (!client) {
     return (
