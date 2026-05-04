@@ -131,6 +131,186 @@ CREATE INDEX IF NOT EXISTS idx_expense_sheets_client_status ON expense_sheets(cl
 CREATE INDEX IF NOT EXISTS idx_expense_sheets_employee     ON expense_sheets(employee_id);
 CREATE INDEX IF NOT EXISTS idx_expense_sheets_submitted    ON expense_sheets(submitted_at DESC);
 
+-- ─── Worker profile (Fieldglass Worker page snapshot) ───────────────────────
+--
+-- Canonical "who is this worker" data sourced from the Fieldglass Worker
+-- detail page. Child tables capture per-tab collections (assignments,
+-- documents, tasks, compliance, equipment, approvers). Each table has a
+-- `raw JSONB` safety net so newly-added FG fields land somewhere even
+-- before we promote them to columns. `worker_profile_snapshots` stores
+-- the full per-scrape capture for audit / SCD-style change tracking.
+
+CREATE TABLE IF NOT EXISTS worker_profiles (
+  worker_id        TEXT PRIMARY KEY,
+  client_id        TEXT NOT NULL,
+  -- Identity
+  name             TEXT,
+  email            TEXT,
+  phone            TEXT,
+  alt_phone        TEXT,
+  -- Address (current)
+  address_line1    TEXT,
+  address_line2    TEXT,
+  city             TEXT,
+  state            TEXT,
+  postal_code      TEXT,
+  country          TEXT,
+  -- Personal (privacy-sensitive — store only what we surface)
+  date_of_birth    DATE,
+  gender           TEXT,
+  emergency_contact_name  TEXT,
+  emergency_contact_phone TEXT,
+  -- Lifecycle
+  start_date       DATE,                                   -- canonical DOJ
+  end_date         DATE,
+  status           TEXT,                                   -- "Active" | "Ended" | "On Hold"
+  employment_type  TEXT,
+  -- Reporting hierarchy
+  manager_name     TEXT,
+  manager_email    TEXT,
+  alt_approver_name  TEXT,
+  alt_approver_email TEXT,
+  -- Job
+  job_title        TEXT,
+  job_category     TEXT,
+  job_seniority    TEXT,
+  cost_center      TEXT,
+  department       TEXT,
+  -- Site
+  site             TEXT,
+  site_address     TEXT,
+  -- Rates
+  bill_rate        NUMERIC(10,2),
+  pay_rate         NUMERIC(10,2),
+  currency         TEXT,
+  rate_unit        TEXT,                                   -- "hour" | "day" | "month"
+  -- Buyer
+  buyer            TEXT,
+  buyer_contact    TEXT,
+  -- Provenance
+  external_url     TEXT,
+  raw_overview     JSONB,                                  -- last scraped Overview tab K/V
+  scraped_at       TIMESTAMPTZ NOT NULL,
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_worker_profiles_client        ON worker_profiles(client_id);
+CREATE INDEX IF NOT EXISTS idx_worker_profiles_client_status ON worker_profiles(client_id, status);
+CREATE INDEX IF NOT EXISTS idx_worker_profiles_manager       ON worker_profiles(manager_email);
+
+CREATE TABLE IF NOT EXISTS worker_assignments (
+  id               BIGSERIAL PRIMARY KEY,
+  worker_id        TEXT NOT NULL REFERENCES worker_profiles(worker_id) ON DELETE CASCADE,
+  client_id        TEXT NOT NULL,
+  job_posting_id   TEXT,                                   -- FG job posting / requisition ID
+  job_title        TEXT,
+  start_date       DATE,
+  end_date         DATE,
+  bill_rate        NUMERIC(10,2),
+  pay_rate         NUMERIC(10,2),
+  currency         TEXT,
+  cost_center      TEXT,
+  manager_name     TEXT,
+  manager_email    TEXT,
+  site             TEXT,
+  status           TEXT,
+  raw              JSONB,
+  scraped_at       TIMESTAMPTZ NOT NULL,
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (worker_id, job_posting_id, start_date)
+);
+CREATE INDEX IF NOT EXISTS idx_worker_assignments_worker  ON worker_assignments(worker_id);
+CREATE INDEX IF NOT EXISTS idx_worker_assignments_active  ON worker_assignments(client_id, status);
+
+CREATE TABLE IF NOT EXISTS worker_documents (
+  id               BIGSERIAL PRIMARY KEY,
+  worker_id        TEXT NOT NULL REFERENCES worker_profiles(worker_id) ON DELETE CASCADE,
+  document_id      TEXT,                                   -- FG document ID
+  name             TEXT,
+  category         TEXT,                                   -- "Contract" | "ID Proof" | …
+  status           TEXT,                                   -- "Approved" | "Pending Review"
+  uploaded_at      DATE,
+  expiry_date      DATE,
+  uploaded_by      TEXT,
+  external_url     TEXT,
+  raw              JSONB,
+  scraped_at       TIMESTAMPTZ NOT NULL,
+  UNIQUE (worker_id, document_id)
+);
+CREATE INDEX IF NOT EXISTS idx_worker_documents_worker  ON worker_documents(worker_id);
+CREATE INDEX IF NOT EXISTS idx_worker_documents_expiry  ON worker_documents(expiry_date) WHERE expiry_date IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS worker_tasks (
+  id               BIGSERIAL PRIMARY KEY,
+  worker_id        TEXT NOT NULL REFERENCES worker_profiles(worker_id) ON DELETE CASCADE,
+  task_id          TEXT,                                   -- FG task ID
+  category         TEXT,                                   -- "Onboarding" | "Offboarding" | "Compliance"
+  name             TEXT,
+  description      TEXT,
+  status           TEXT,                                   -- "Pending" | "Completed" | "Overdue"
+  due_date         DATE,
+  completed_at     TIMESTAMPTZ,
+  assigned_to      TEXT,
+  raw              JSONB,
+  scraped_at       TIMESTAMPTZ NOT NULL,
+  UNIQUE (worker_id, task_id)
+);
+CREATE INDEX IF NOT EXISTS idx_worker_tasks_status ON worker_tasks(worker_id, status);
+CREATE INDEX IF NOT EXISTS idx_worker_tasks_due    ON worker_tasks(due_date) WHERE due_date IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS worker_compliance (
+  id               BIGSERIAL PRIMARY KEY,
+  worker_id        TEXT NOT NULL REFERENCES worker_profiles(worker_id) ON DELETE CASCADE,
+  check_id         TEXT,
+  name             TEXT,                                   -- "Background Check", "Drug Test", …
+  status           TEXT,                                   -- "Cleared" | "Pending" | "Failed"
+  result_date      DATE,
+  expiry_date      DATE,
+  external_url     TEXT,
+  raw              JSONB,
+  scraped_at       TIMESTAMPTZ NOT NULL,
+  UNIQUE (worker_id, check_id)
+);
+CREATE INDEX IF NOT EXISTS idx_worker_compliance_expiry ON worker_compliance(expiry_date) WHERE expiry_date IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS worker_equipment (
+  id               BIGSERIAL PRIMARY KEY,
+  worker_id        TEXT NOT NULL REFERENCES worker_profiles(worker_id) ON DELETE CASCADE,
+  asset_id         TEXT,
+  asset_type       TEXT,                                   -- "Laptop" | "Phone" | "Badge"
+  asset_name       TEXT,
+  serial_number    TEXT,
+  issued_at        DATE,
+  returned_at      DATE,
+  status           TEXT,
+  raw              JSONB,
+  scraped_at       TIMESTAMPTZ NOT NULL,
+  UNIQUE (worker_id, asset_id)
+);
+
+CREATE TABLE IF NOT EXISTS worker_approvers (
+  id               BIGSERIAL PRIMARY KEY,
+  worker_id        TEXT NOT NULL REFERENCES worker_profiles(worker_id) ON DELETE CASCADE,
+  role             TEXT,                                   -- "Primary" | "Backup" | "Cost Center Owner"
+  name             TEXT,
+  email            TEXT,
+  scraped_at       TIMESTAMPTZ NOT NULL,
+  UNIQUE (worker_id, role, email)
+);
+
+-- Snapshot history: full JSONB capture per scrape for audit + change tracking.
+-- Lets us answer "how did this worker's rate / manager change over time?"
+-- without bloating the canonical row tables.
+CREATE TABLE IF NOT EXISTS worker_profile_snapshots (
+  id               BIGSERIAL PRIMARY KEY,
+  worker_id        TEXT NOT NULL,
+  snapshot_at      TIMESTAMPTZ NOT NULL,
+  raw              JSONB NOT NULL,
+  raw_html         TEXT,
+  UNIQUE (worker_id, snapshot_at)
+);
+CREATE INDEX IF NOT EXISTS idx_worker_snapshots_worker ON worker_profile_snapshots(worker_id, snapshot_at DESC);
+
 CREATE TABLE IF NOT EXISTS import_runs (
   id               BIGSERIAL PRIMARY KEY,
   source           TEXT NOT NULL,

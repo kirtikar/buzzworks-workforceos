@@ -83,7 +83,18 @@ async function main() {
     }
   }
 
-  console.log(`Will upsert ${dailyRows.length} daily rows across ${touched.size} timesheets ` +
+  // Dedupe by (timesheet_id, entry_date) — last write wins. The JSONL
+  // can contain the same TSN twice (re-scraped during a residue pass);
+  // ON CONFLICT DO UPDATE rejects same-row updates within one batch, so
+  // we collapse here before the INSERT.
+  const dedup = new Map<string, typeof dailyRows[number]>()
+  for (const r of dailyRows) dedup.set(`${r.timesheet_id}|${r.entry_date}`, r)
+  const dailyRowsDedup = [...dedup.values()]
+  if (dailyRowsDedup.length !== dailyRows.length) {
+    console.log(`Deduped ${dailyRows.length - dailyRowsDedup.length} duplicate (timesheet_id, entry_date) rows`)
+  }
+
+  console.log(`Will upsert ${dailyRowsDedup.length} daily rows across ${touched.size} timesheets ` +
               `(skip ${skipMissing.length} unknown TSNs)`)
 
   // Chunk under PG 65k bind-param cap. 7 cols → 9k row safe.
@@ -96,7 +107,7 @@ async function main() {
     for (const part of chunk(tsIdList, 5000)) {
       await tx`DELETE FROM daily_entries WHERE timesheet_id IN ${tx(part)}`
     }
-    for (const part of chunk(dailyRows, 2000)) {
+    for (const part of chunk(dailyRowsDedup, 2000)) {
       if (part.length === 0) continue
       await tx`
         INSERT INTO daily_entries ${tx(part,
