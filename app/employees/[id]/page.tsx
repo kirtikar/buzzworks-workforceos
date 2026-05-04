@@ -242,28 +242,55 @@ function OverviewTab({ emp, allTimesheets, allExpenses }: { emp: Employee; allTi
   )
 }
 
-// ─── Month Calendar ──────────────────────────────────────────────────────────
+// ─── Month Calendar (Google-Calendar style) ─────────────────────────────────
 //
-// Builds a Mon-start month grid from a list of timesheet daily-entries.
-// Each cell shows the day number and total hours (regular + overtime +
-// leave). Color: green if ≥9h, amber if 1-8h, gray if 0h on a weekday,
-// muted on weekends. Used in the Timesheets tab to validate at-a-glance
-// that a worker filled the expected pattern across a calendar month.
+// Mon-start month grid coloured by timesheet approval status:
+//   • green  — approved or processed
+//   • orange — pending / reviewing / flagged / pending_mgr_approval
+//   • red    — rejected
+//   • muted  — in-month days with no submission yet
+//   • greyed — days outside the current month (prev / next spillover)
+//
+// Layout matches Google Calendar: 5 rows when the month fits, 6 rows when
+// it spills (e.g. a 31-day month starting Saturday). Today's cell carries
+// a small accent ring. Month-nav slides the grid horizontally so the
+// motion mirrors Google Calendar's swipe.
+
+type CalEntry = {
+  date:      string                                       // "YYYY-MM-DD"
+  regular:   number
+  overtime:  number
+  leave:     number
+  status:    string                                       // timesheet status — drives colour
+  leaveType?: string | null
+}
 
 function startOfMonthMonday(year: number, month0: number): Date {
   const first = new Date(Date.UTC(year, month0, 1))
-  const dow = first.getUTCDay()             // 0 Sun … 6 Sat
+  const dow   = first.getUTCDay()                         // 0 Sun … 6 Sat
   const offsetToMon = dow === 0 ? 6 : dow - 1
   return new Date(Date.UTC(year, month0, 1 - offsetToMon))
 }
 
+// Group statuses into the three buckets the calendar paints.
+function statusBucket(status: string | null | undefined): "approved" | "pending" | "rejected" | "none" {
+  if (!status) return "none"
+  if (status === "approved" || status === "processed") return "approved"
+  if (status === "rejected") return "rejected"
+  if (["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(status)) return "pending"
+  return "none"
+}
+
 function MonthCalendar({ entries, externalUrlByDate }: {
-  entries: { date: string; regular: number; overtime: number; leave: number; leaveType?: string | null }[]
+  entries: CalEntry[]
   externalUrlByDate: Record<string, string | undefined>
 }) {
   const today = new Date()
+  const todayIso = today.toISOString().slice(0, 10)
   const [year,  setYear ] = useState(today.getUTCFullYear())
-  const [month, setMonth] = useState(today.getUTCMonth())   // 0-indexed
+  const [month, setMonth] = useState(today.getUTCMonth())  // 0-indexed
+  // Slide direction so the grid animates in from the correct side.
+  const [slideDir, setSlideDir] = useState<"left" | "right" | "none">("none")
 
   // Snap to the most recent month that has data, on first paint.
   useEffect(() => {
@@ -275,16 +302,22 @@ function MonthCalendar({ entries, externalUrlByDate }: {
     }
   }, [entries.length])
 
+  // Per-day rollup. When two timesheets cover the same date (rare —
+  // revisions), the one with the "better" status wins so the cell
+  // shows the most-up-to-date approval state.
   const byDate = useMemo(() => {
-    const m = new Map<string, { regular: number; overtime: number; leave: number; leaveType?: string | null }>()
+    const rank = (b: ReturnType<typeof statusBucket>) =>
+      b === "approved" ? 3 : b === "pending" ? 2 : b === "rejected" ? 1 : 0
+    const m = new Map<string, { regular: number; overtime: number; leave: number; status: string; leaveType?: string | null }>()
     for (const e of entries) {
       const cur = m.get(e.date)
-      if (cur) {
+      if (!cur) {
+        m.set(e.date, { regular: e.regular, overtime: e.overtime, leave: e.leave, status: e.status, leaveType: e.leaveType })
+      } else {
         cur.regular  += e.regular
         cur.overtime += e.overtime
         cur.leave    += e.leave
-      } else {
-        m.set(e.date, { regular: e.regular, overtime: e.overtime, leave: e.leave, leaveType: e.leaveType })
+        if (rank(statusBucket(e.status)) > rank(statusBucket(cur.status))) cur.status = e.status
       }
     }
     return m
@@ -292,28 +325,38 @@ function MonthCalendar({ entries, externalUrlByDate }: {
 
   const monthLabel = new Date(Date.UTC(year, month, 1)).toLocaleDateString("en-IN", { month: "long", year: "numeric" })
   const start = startOfMonthMonday(year, month)
-  const cells: { iso: string; inMonth: boolean; weekday: number }[] = []
+  // Build cells, then trim trailing rows that are entirely outside the
+  // month — Google Calendar shrinks to 5 rows when the 6th is unused.
+  const allCells: { iso: string; inMonth: boolean; weekday: number }[] = []
   for (let i = 0; i < 42; i++) {
-    const d = new Date(start)
-    d.setUTCDate(start.getUTCDate() + i)
-    cells.push({
+    const d = new Date(start); d.setUTCDate(start.getUTCDate() + i)
+    allCells.push({
       iso: d.toISOString().slice(0, 10),
       inMonth: d.getUTCMonth() === month,
       weekday: d.getUTCDay(),
     })
   }
+  const lastInMonthRow = Math.max(...allCells.map((c, i) => c.inMonth ? Math.floor(i / 7) : -1))
+  const cells = allCells.slice(0, (lastInMonthRow + 1) * 7)
+  const rowCount = cells.length / 7
 
-  // Monthly summary — only count days inside the month
-  const monthDays   = cells.filter(c => c.inMonth)
-  const monthTotal  = monthDays.reduce((s, c) => s + (byDate.get(c.iso)?.regular ?? 0) + (byDate.get(c.iso)?.overtime ?? 0), 0)
-  const monthLeave  = monthDays.reduce((s, c) => s + (byDate.get(c.iso)?.leave ?? 0), 0)
-  const monthDaysWithHours = monthDays.filter(c => (byDate.get(c.iso)?.regular ?? 0) > 0).length
+  // Monthly summary (in-month days only).
+  const monthDays    = cells.filter(c => c.inMonth)
+  const monthTotal   = monthDays.reduce((s, c) => s + (byDate.get(c.iso)?.regular ?? 0) + (byDate.get(c.iso)?.overtime ?? 0), 0)
+  const monthLeave   = monthDays.reduce((s, c) => s + (byDate.get(c.iso)?.leave ?? 0), 0)
+  const approvedDays = monthDays.filter(c => statusBucket(byDate.get(c.iso)?.status) === "approved").length
+  const pendingDays  = monthDays.filter(c => statusBucket(byDate.get(c.iso)?.status) === "pending").length
 
   function bump(delta: number) {
+    setSlideDir(delta > 0 ? "left" : "right")
     let m = month + delta, y = year
     if (m < 0)  { m = 11; y -= 1 }
     if (m > 11) { m = 0;  y += 1 }
     setMonth(m); setYear(y)
+  }
+  function jumpToToday() {
+    setSlideDir("none")
+    setYear(today.getUTCFullYear()); setMonth(today.getUTCMonth())
   }
 
   return (
@@ -324,16 +367,24 @@ function MonthCalendar({ entries, externalUrlByDate }: {
             {monthLabel}
           </div>
           <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
-            {monthTotal}h worked · {monthDaysWithHours} active days
+            {monthTotal}h worked · <span style={{ color: "#059669" }}>{approvedDays} approved</span>
+            {pendingDays > 0 && <> · <span style={{ color: "var(--warn)" }}>{pendingDays} pending</span></>}
             {monthLeave > 0 ? ` · ${monthLeave}h leave` : ""}
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => bump(-1)} className="w-7 h-7 rounded-md flex items-center justify-center"
+          <button onClick={() => bump(-1)} title="Previous month"
+            className="w-7 h-7 rounded-md flex items-center justify-center transition-colors"
             style={{ color: "var(--text-2)", background: "var(--surface)" }}>
             <ChevronLeft size={14} />
           </button>
-          <button onClick={() => bump(+1)} className="w-7 h-7 rounded-md flex items-center justify-center"
+          <button onClick={jumpToToday} title="Jump to today"
+            className="px-2.5 h-7 rounded-md text-[11px] font-medium transition-colors"
+            style={{ color: "var(--text-2)", background: "var(--surface)" }}>
+            Today
+          </button>
+          <button onClick={() => bump(+1)} title="Next month"
+            className="w-7 h-7 rounded-md flex items-center justify-center transition-colors"
             style={{ color: "var(--text-2)", background: "var(--surface)" }}>
             <ChevronRight size={14} />
           </button>
@@ -347,70 +398,103 @@ function MonthCalendar({ entries, externalUrlByDate }: {
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
-        {cells.map(c => {
-          const dat = byDate.get(c.iso)
-          const reg = dat?.regular ?? 0
-          const ot  = dat?.overtime ?? 0
-          const lv  = dat?.leave ?? 0
-          const total = reg + ot
-          const isWeekend = c.weekday === 0 || c.weekday === 6
-          const dayNum = parseInt(c.iso.slice(8, 10), 10)
-          const url = externalUrlByDate[c.iso]
+      <div className="overflow-hidden">
+        <div
+          key={`${year}-${month}`}
+          className="grid grid-cols-7 gap-1"
+          style={{
+            animation: slideDir === "left"  ? "cal-slide-in-left 220ms ease-out"
+                     : slideDir === "right" ? "cal-slide-in-right 220ms ease-out"
+                     : undefined,
+          }}>
+          {cells.map(c => {
+            const dat = byDate.get(c.iso)
+            const reg = dat?.regular ?? 0
+            const ot  = dat?.overtime ?? 0
+            const lv  = dat?.leave ?? 0
+            const total = reg + ot
+            const dayNum = parseInt(c.iso.slice(8, 10), 10)
+            const url = externalUrlByDate[c.iso]
+            const bucket = statusBucket(dat?.status)
+            const isToday = c.iso === todayIso && c.inMonth
 
-          let bg = "var(--surface)"
-          let txt = "var(--text-2)"
-          if (!c.inMonth) {
-            bg = "transparent"; txt = "var(--text-3)"
-          } else if (lv > 0) {
-            bg = "rgba(244,180,0,0.16)"; txt = "var(--warn)"
-          } else if (total >= 9) {
-            bg = "rgba(5,150,105,0.16)"; txt = "#059669"
-          } else if (total > 0) {
-            bg = "rgba(244,180,0,0.10)"; txt = "var(--warn)"
-          } else if (isWeekend) {
-            bg = "var(--surface-2)"; txt = "var(--text-3)"
-          } else {
-            bg = "var(--surface)"; txt = "var(--text-3)"
-          }
+            // Approval-driven palette. Out-of-month cells are flat grey.
+            let bg = "var(--surface)"
+            let txt = "var(--text-2)"
+            let ring: string | undefined
+            if (!c.inMonth) {
+              bg = "transparent"; txt = "var(--text-3)"
+            } else if (bucket === "approved") {
+              bg = "rgba(5,150,105,0.18)"; txt = "#059669"
+            } else if (bucket === "pending") {
+              bg = "rgba(244,180,0,0.18)"; txt = "var(--warn)"
+            } else if (bucket === "rejected") {
+              bg = "var(--danger-bg)"; txt = "var(--danger)"
+            } else if (lv > 0) {
+              bg = "rgba(99,102,241,0.10)"; txt = "var(--info)"
+            } else {
+              bg = "var(--surface-2)"; txt = "var(--text-3)"
+            }
+            if (isToday) ring = "var(--accent)"
 
-          const cell = (
-            <div className="rounded-md p-2 min-h-[58px] flex flex-col" style={{ background: bg, opacity: c.inMonth ? 1 : 0.35 }}
-              title={c.inMonth
-                ? `${c.iso} — Regular: ${reg}h, OT: ${ot}h${lv > 0 ? `, Leave: ${lv}h${dat?.leaveType ? ` (${dat.leaveType})` : ""}` : ""}`
-                : c.iso}>
-              <div className="text-[10px] font-semibold" style={{ color: txt }}>{dayNum}</div>
-              {c.inMonth && total > 0 && (
-                <div className="text-[12px] font-bold tabular-nums mt-1" style={{ color: txt }}>
-                  {Number.isInteger(total) ? total : total.toFixed(1)}h
-                </div>
-              )}
-              {c.inMonth && lv > 0 && total === 0 && (
-                <div className="text-[11px] font-semibold mt-1" style={{ color: "var(--warn)" }}>L</div>
-              )}
-              {c.inMonth && ot > 0 && (
-                <div className="text-[9px] mt-0.5" style={{ color: "var(--warn)" }}>+{ot}h OT</div>
-              )}
-            </div>
-          )
-          return url ? (
-            <a key={c.iso} href={url} target="_blank" rel="noreferrer" className="block">{cell}</a>
-          ) : <div key={c.iso}>{cell}</div>
-        })}
+            const cell = (
+              <div
+                className="rounded-md p-2 min-h-[58px] flex flex-col transition-transform hover:scale-[1.02]"
+                style={{
+                  background: bg,
+                  opacity: c.inMonth ? 1 : 0.45,
+                  outline: ring ? `1.5px solid ${ring}` : undefined,
+                  outlineOffset: ring ? "-1.5px" : undefined,
+                }}
+                title={c.inMonth
+                  ? `${c.iso}${dat?.status ? ` — ${dat.status}` : " — no submission"}` +
+                    (total > 0 ? ` · ${total}h` : "") +
+                    (lv > 0 ? ` · leave ${lv}h${dat?.leaveType ? ` (${dat.leaveType})` : ""}` : "")
+                  : c.iso}>
+                <div className="text-[10px] font-semibold" style={{ color: txt }}>{dayNum}</div>
+                {c.inMonth && total > 0 && (
+                  <div className="text-[12px] font-bold tabular-nums mt-1" style={{ color: txt }}>
+                    {Number.isInteger(total) ? total : total.toFixed(1)}h
+                  </div>
+                )}
+                {c.inMonth && lv > 0 && total === 0 && (
+                  <div className="text-[11px] font-semibold mt-1" style={{ color: "var(--info)" }}>L</div>
+                )}
+                {c.inMonth && ot > 0 && (
+                  <div className="text-[9px] mt-0.5" style={{ color: "var(--warn)" }}>+{ot}h OT</div>
+                )}
+              </div>
+            )
+            return url ? (
+              <a key={c.iso} href={url} target="_blank" rel="noreferrer" className="block">{cell}</a>
+            ) : <div key={c.iso}>{cell}</div>
+          })}
+        </div>
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-3 text-[10px]" style={{ color: "var(--text-3)" }}>
+      <div className="flex items-center flex-wrap gap-4 mt-3 text-[10px]" style={{ color: "var(--text-3)" }}>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(5,150,105,0.6)" }} /> Full day (≥9h)
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(5,150,105,0.7)" }} /> Approved
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(244,180,0,0.5)" }} /> Partial / leave
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(244,180,0,0.7)" }} /> Pending
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "var(--surface-2)" }} /> Weekend / no entry
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(99,102,241,0.5)" }} /> Leave
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ background: "var(--surface-2)" }} /> No submission
+        </span>
+        <span className="ml-auto text-[10px]" style={{ color: "var(--text-3)" }}>
+          Showing {rowCount}-week view
         </span>
       </div>
+
+      <style jsx>{`
+        @keyframes cal-slide-in-left  { from { opacity: 0; transform: translateX(24px);  } to { opacity: 1; transform: translateX(0); } }
+        @keyframes cal-slide-in-right { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: translateX(0); } }
+      `}</style>
     </div>
   )
 }
@@ -439,17 +523,20 @@ function TimesheetsTab({ empId, clientId: _clientId }: { empId: string; clientId
 
   const ts = realTs ?? []
 
-  // Day-wise rollup for the calendar
+  // Day-wise rollup for the calendar — each daily entry inherits its
+  // parent timesheet's status so the calendar can paint approved
+  // (green) vs pending (orange) at a glance.
   const calendarEntries = useMemo(() => {
-    const out: { date: string; regular: number; overtime: number; leave: number; leaveType?: string | null }[] = []
+    const out: CalEntry[] = []
     for (const t of ts) {
       for (const d of (t.dailyEntries ?? []) as DailyEntry[]) {
         out.push({
-          date: d.date,
-          regular: d.regularHours ?? 0,
-          overtime: d.overtimeHours ?? 0,
-          leave: d.leaveHours ?? 0,
+          date:      d.date,
+          regular:   d.regularHours ?? 0,
+          overtime:  d.overtimeHours ?? 0,
+          leave:     d.leaveHours ?? 0,
           leaveType: d.leaveType ?? null,
+          status:    t.status,
         })
       }
     }
