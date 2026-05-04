@@ -33,6 +33,12 @@ ALTER TABLE employees ADD COLUMN IF NOT EXISTS employment_status TEXT NOT NULL D
 
 CREATE INDEX IF NOT EXISTS idx_employees_client_test ON employees(client_id, is_test_data);
 
+-- Trigram search on employee name + email — used by the Employees and Inbox
+-- pages' search box (server-side ILIKE %q% becomes index-eligible).
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX IF NOT EXISTS idx_employees_name_trgm  ON employees USING gin (name  gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_employees_email_trgm ON employees USING gin (email gin_trgm_ops);
+
 CREATE TABLE IF NOT EXISTS timesheets (
   id                TEXT PRIMARY KEY,
   employee_id       TEXT NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
@@ -71,6 +77,13 @@ ALTER TABLE timesheets ADD COLUMN IF NOT EXISTS external_url TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_timesheets_client_status ON timesheets(client_id, status);
 CREATE INDEX IF NOT EXISTS idx_timesheets_period ON timesheets(period_start DESC);
+-- Inbox sort+filter path: ORDER BY period_start DESC scoped by client_id (and
+-- often filtered by status). Composite covers the common case efficiently.
+CREATE INDEX IF NOT EXISTS idx_timesheets_client_period_status ON timesheets(client_id, period_start DESC, status);
+-- Employee detail page: per-employee history sorted by period.
+CREATE INDEX IF NOT EXISTS idx_timesheets_employee_period ON timesheets(employee_id, period_start DESC);
+-- OT-only filter selectivity (~10% of rows) — partial index keeps it small.
+CREATE INDEX IF NOT EXISTS idx_timesheets_ot ON timesheets(client_id) WHERE overtime_hours > 0;
 
 CREATE TABLE IF NOT EXISTS daily_entries (
   timesheet_id   TEXT NOT NULL REFERENCES timesheets(id) ON DELETE CASCADE,

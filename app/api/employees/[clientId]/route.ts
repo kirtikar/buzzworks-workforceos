@@ -119,20 +119,23 @@ export async function GET(
     }))
 
     const s = summary[0]
-    return NextResponse.json({
-      configured: true,
-      clientId,
-      employees:  empList,
-      summary: {
-        employeeCount:   empList.length,
-        timesheetCount:  parseInt(s?.ts_count ?? "0", 10),
-        pendingCount:    parseInt(s?.ts_pending ?? "0", 10),
-        marchPayroll:    parseFloat(s?.march_payroll ?? "0"),
-        aprilPayroll:    parseFloat(s?.april_payroll ?? "0"),
-        expenseInvoiced: parseFloat(s?.expense_invoiced ?? "0"),
-        expensePending:  parseFloat(s?.expense_pending  ?? "0"),
+    return NextResponse.json(
+      {
+        configured: true,
+        clientId,
+        employees:  empList,
+        summary: {
+          employeeCount:   empList.length,
+          timesheetCount:  parseInt(s?.ts_count ?? "0", 10),
+          pendingCount:    parseInt(s?.ts_pending ?? "0", 10),
+          marchPayroll:    parseFloat(s?.march_payroll ?? "0"),
+          aprilPayroll:    parseFloat(s?.april_payroll ?? "0"),
+          expenseInvoiced: parseFloat(s?.expense_invoiced ?? "0"),
+          expensePending:  parseFloat(s?.expense_pending  ?? "0"),
+        },
       },
-    })
+      { headers: { "Cache-Control": "private, max-age=15, stale-while-revalidate=120" } },
+    )
   } catch (e) {
     return NextResponse.json({ ok: false, error: (e as Error).message }, { status: 500 })
   }

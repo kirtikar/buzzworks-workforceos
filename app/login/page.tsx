@@ -2,15 +2,15 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ClipboardCheck, Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react"
+import { ClipboardCheck, Eye, EyeOff, ArrowRight, Lock } from "lucide-react"
 
-const DEMO_EMAIL = "agentic@buzzworks.com"
-const DEMO_PASSWORD = "buzzworks@123"
+const ACCESS_EMAIL    = "agentic@buzzworks.com"
+const ACCESS_PASSWORD = "gyanbhavan14"
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState(DEMO_EMAIL)
-  const [password, setPassword] = useState(DEMO_PASSWORD)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -22,11 +22,11 @@ export default function LoginPage() {
 
     await new Promise((r) => setTimeout(r, 600))
 
-    if (email.trim() === DEMO_EMAIL && password === DEMO_PASSWORD) {
+    if (email.trim().toLowerCase() === ACCESS_EMAIL && password === ACCESS_PASSWORD) {
       document.cookie = "ops_session=active; path=/; max-age=28800; SameSite=Strict"
       router.push("/")
     } else {
-      setError("Invalid credentials. Check the prefilled values.")
+      setError("Invalid credentials.")
       setLoading(false)
     }
   }
@@ -134,24 +134,26 @@ export default function LoginPage() {
           {/* Divider */}
           <div className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
-            <span className="text-[11px]" style={{ color: "var(--text-3)" }}>prefilled for evaluation</span>
+            <span className="text-[11px]" style={{ color: "var(--text-3)" }}>access hint</span>
             <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
           </div>
 
-          {/* Prefilled hint */}
+          {/* Access hint — show the email but keep the password private. */}
           <div
             className="p-3 rounded-xl space-y-1.5"
             style={{ background: "var(--accent-dim)", border: "1px solid var(--accent-border)" }}
           >
             <div className="flex items-center gap-2">
-              <Sparkles size={11} style={{ color: "var(--accent)" }} />
-              <span className="text-[11px] font-medium" style={{ color: "var(--accent)" }}>Dev access credentials</span>
+              <Lock size={11} style={{ color: "var(--accent)" }} />
+              <span className="text-[11px] font-medium" style={{ color: "var(--accent)" }}>
+                Use the email below — password protected
+              </span>
             </div>
             <div className="text-[11px] font-mono" style={{ color: "var(--text-2)" }}>
-              {DEMO_EMAIL}
+              {ACCESS_EMAIL}
             </div>
-            <div className="text-[11px] font-mono" style={{ color: "var(--text-2)" }}>
-              {DEMO_PASSWORD}
+            <div className="text-[11px]" style={{ color: "var(--text-3)" }}>
+              Contact ops for the password.
             </div>
           </div>
         </div>

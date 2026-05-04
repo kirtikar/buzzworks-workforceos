@@ -14,10 +14,9 @@ import NotifyPanel, {
 import {
   getClient,
   clients,
-  REAL_DATA_CLIENT_IDS,
 } from "@/lib/mock-data"
 import { REGULATIONS } from "@/lib/compliance-data"
-import type { TimesheetStatus, Timesheet, Employee } from "@/lib/types"
+import type { TimesheetStatus, Timesheet, Employee, ValidationCheck, DailyEntry } from "@/lib/types"
 import clsx from "clsx"
 import {
   Search, Check, Flag, X, CheckCircle2, XCircle,
@@ -32,35 +31,76 @@ type ActionCategory = "all" | "timesheets" | "compliance" | "onboarding" | "payr
 interface BulkRule {
   label: string
   description: string
-  match: (ts: Timesheet) => boolean
+  match: (ts: InboxRow) => boolean
   count: number
 }
 
-// ─── Build pool: real Postgres data only ──────────────────────────────────────
+// ─── Server-paginated inbox data ──────────────────────────────────────────────
 //
-// Synthetic mock generation has been removed. Every client surfaces its
-// real-data roster via /api/timesheets/[clientId]; clients with no
-// imported data appear empty in the Inbox until their portal import
-// lands. This keeps the page latency tied only to Postgres roundtrips
-// instead of generating thousands of fake records on every render.
+// /api/inbox returns slim rows (one timesheet + its embedded slim
+// employee + validation aggregates) plus client-scoped totals for the
+// sidebar. Heavy fields — validationChecks list, dailyEntries — are
+// pulled on demand by /api/timesheet/[id] when the drawer opens.
+//
+// This replaces the old pattern of fetching every client's full
+// timesheet payload and doing pagination + filtering in the browser.
 
-interface ClientApiSnapshot {
+interface InboxEmployee {
+  id: string
+  name: string
+  email: string
+  employeeCode: string
+  role: string
+  department: string
+  managerEmail: string | null
+  managerName:  string | null
+  avatarColor:  string
+  earnedLeaves:   number
+  consumedLeaves: number
+}
+
+interface InboxRow {
+  id: string
+  employeeId: string
+  clientId: string
+  period: string
+  periodStart: string
+  periodEnd: string
+  submittedAt: string
+  source: string
+  sourceDetail?: string | null
+  portalId?: string | null
+  status: TimesheetStatus
+  totalHours: number
+  regularHours: number
+  overtimeHours: number
+  leaveHours: number
+  totalPayable: number
+  validationScore: number
+  flagReason?: string
+  flaggedBy?: string
+  approvedBy?: string
+  approvedAt?: string
+  aiConfidence?: number
+  externalUrl?: string
+  checkFail: number
+  checkWarn: number
+  checkTotal: number
+  employee: InboxEmployee
+}
+
+interface InboxApiResponse {
   configured: boolean
-  clientId:   string
-  timesheets: Timesheet[]
-  employees:  Employee[]
-}
-
-function buildPool(snapshots: ClientApiSnapshot[]): Timesheet[] {
-  return snapshots.flatMap(s => s.timesheets)
-}
-
-function makeEmployeeResolver(snapshots: ClientApiSnapshot[]) {
-  const byId = new Map<string, Employee>()
-  for (const s of snapshots) {
-    for (const e of s.employees) byId.set(e.id, e)
+  rows: InboxRow[]
+  total: number
+  page: number
+  size: number
+  totals: {
+    actionable: number
+    flagged: number
+    ot: number
+    byStatus: Record<string, number>
   }
-  return (employeeId: string): Employee | undefined => byId.get(employeeId)
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -170,49 +210,17 @@ function FilterDropdown({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InboxPage() {
-  // Real-data clients (Accenture via BeeLine, Capgemini via Fieldglass,
-  // others as portals come online) are fetched in parallel from the
-  // generic /api/timesheets/[clientId] route. window 'focus' triggers
-  // a refresh so an upload from /settings reflects here.
-  const [snapshots, setSnapshots] = useState<ClientApiSnapshot[]>([])
-  useEffect(() => {
-    let cancelled = false
-    async function refresh() {
-      const ids = Array.from(REAL_DATA_CLIENT_IDS)
-      const results = await Promise.all(ids.map(async id => {
-        try {
-          const r = await fetch(`/api/timesheets/${id}`)
-          const data = await r.json()
-          if (data.configured && data.timesheets) return data as ClientApiSnapshot
-        } catch { /* swallow per-client; others may still resolve */ }
-        return null
-      }))
-      if (!cancelled) setSnapshots(results.filter((s): s is ClientApiSnapshot => s !== null))
-    }
-    refresh()
-    window.addEventListener("focus", refresh)
-    return () => { cancelled = true; window.removeEventListener("focus", refresh) }
-  }, [])
-
-  const initialPool = useMemo(() => buildPool(snapshots), [snapshots])
-  const getEmployeeFromPool = useMemo(() => makeEmployeeResolver(snapshots), [snapshots])
-
-  const [localTs, setLocalTs] = useState<Timesheet[]>(initialPool)
-  // Re-seed local state whenever the API snapshot rebuilds the base pool
-  useEffect(() => { setLocalTs(initialPool) }, [initialPool])
-
-  const [search, setSearch]       = useState("")
   const [category, setCategory]   = useState<ActionCategory>("timesheets")
 
-  // Multi-select filters
+  // Filters and sort live as page state; on change we refetch from the
+  // server. Search is debounced. Pagination is server-side.
+  const [search, setSearch]       = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
   const [selStatuses, setSelStatuses]       = useState<TimesheetStatus[]>([])
   const [selClients,  setSelClients]        = useState<string[]>([])
   const [selSources,  setSelSources]        = useState<string[]>([])
-  const [selScoreBands, setSelScoreBands]   = useState<string[]>([])  // "high" "med" "low"
+  const [selScoreBands, setSelScoreBands]   = useState<string[]>([])
   const [selOTOnly, setSelOTOnly]           = useState<boolean>(false)
-  // Default OFF so approved/processed timesheets remain visible in the
-  // inbox alongside actionable ones — ops asked to keep historical
-  // status visible. Toggle still narrows when needed.
   const [actionableOnly, setActionableOnly] = useState<boolean>(false)
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -222,14 +230,88 @@ export default function InboxPage() {
   const [notifyCtx, setNotifyCtx]     = useState<NotifyContext | null>(null)
   const PAGE_SIZE = 50
 
-  function openNotifyFor(ts: Timesheet, kind: "flag" | "reject" | "approve" | "team" | "mgr-approval") {
-    const emp = getEmployeeFromPool(ts.employeeId)
-    if (!emp) return
+  // Debounce search input so we don't fire a fetch on every keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => { setDebouncedSearch(search); setPage(1) }, 250)
+    return () => clearTimeout(t)
+  }, [search])
+
+  // Server-paginated rows + client-scoped totals.
+  const [rows, setRows]       = useState<InboxRow[]>([])
+  const [total, setTotal]     = useState<number>(0)
+  const [totals, setTotals]   = useState<{ actionable: number; flagged: number; ot: number; byStatus: Record<string, number> }>(
+    { actionable: 0, flagged: 0, ot: 0, byStatus: {} }
+  )
+  const [loading, setLoading] = useState<boolean>(false)
+  // Tick increments after a mutation (approve, etc) to force a refetch.
+  const [refreshTick, setRefreshTick] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+    const sp = new URLSearchParams()
+    if (selClients.length)    sp.set("clients",        selClients.join(","))
+    if (selStatuses.length)   sp.set("statuses",       selStatuses.join(","))
+    if (selSources.length)    sp.set("sources",        selSources.join(","))
+    if (selScoreBands.length) sp.set("scoreBands",     selScoreBands.join(","))
+    if (selOTOnly)            sp.set("otOnly",         "1")
+    if (actionableOnly)       sp.set("actionableOnly", "1")
+    if (debouncedSearch)      sp.set("q",              debouncedSearch)
+    sp.set("sort", sortBy)
+    sp.set("page", String(page))
+    sp.set("size", String(PAGE_SIZE))
+    setLoading(true)
+    fetch(`/api/inbox?${sp.toString()}`)
+      .then(r => r.json() as Promise<InboxApiResponse>)
+      .then(d => {
+        if (cancelled) return
+        setRows(d.rows ?? [])
+        setTotal(d.total ?? 0)
+        setTotals(d.totals ?? { actionable: 0, flagged: 0, ot: 0, byStatus: {} })
+      })
+      .catch(() => { /* swallow; UI shows empty state */ })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [selClients, selStatuses, selSources, selScoreBands, selOTOnly, actionableOnly, debouncedSearch, sortBy, page, refreshTick])
+
+  // Refetch when window gains focus (so an upload elsewhere reflects).
+  useEffect(() => {
+    const onFocus = () => setRefreshTick(t => t + 1)
+    window.addEventListener("focus", onFocus)
+    return () => window.removeEventListener("focus", onFocus)
+  }, [])
+
+  // Drawer detail — fetched on demand when a row is expanded. Carries
+  // the heavy fields (validationChecks, dailyEntries) the row doesn't.
+  const [detail, setDetail] = useState<{
+    timesheet: Timesheet & { validationChecks: ValidationCheck[]; dailyEntries: DailyEntry[] }
+    employee: Employee
+  } | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+
+  useEffect(() => {
+    if (!expandedId) { setDetail(null); return }
+    let cancelled = false
+    setDetailLoading(true)
+    fetch(`/api/timesheet/${expandedId}?include=daily,validations,employee`)
+      .then(r => r.json())
+      .then(d => {
+        if (cancelled || !d.configured || !d.timesheet) return
+        setDetail({ timesheet: d.timesheet, employee: d.employee })
+      })
+      .catch(() => { /* swallow */ })
+      .finally(() => { if (!cancelled) setDetailLoading(false) })
+    return () => { cancelled = true }
+  }, [expandedId])
+
+  function openNotifyFor(ts: InboxRow, kind: "flag" | "reject" | "approve" | "team" | "mgr-approval") {
+    const emp = ts.employee
     const client = getClient(ts.clientId)
 
-    // Failed / warning checks become bullet points; the human-set flag
-    // reason (if any) leads the list so it shows up as the subject.
-    const issues = ts.validationChecks
+    // The slim row only carries aggregate counts; if the drawer's detail
+    // is loaded, mine its validations for human-readable issue strings,
+    // else fall back to the flag reason alone.
+    const checks = detail && detail.timesheet.id === ts.id ? detail.timesheet.validationChecks : []
+    const issues = checks
       .filter(c => c.result === "fail" || c.result === "warning")
       .map(c => `${c.rule} — ${c.detail}`)
     if (ts.flagReason && !issues.some(i => i.includes(ts.flagReason!))) {
@@ -241,7 +323,7 @@ export default function InboxPage() {
       employeeCode:  emp.employeeCode,
       employeeEmail: emp.email,
       period:        ts.period,
-      managerEmail:  emp.managerEmail,
+      managerEmail:  emp.managerEmail ?? undefined,
     }
 
     if (kind === "flag") {
@@ -258,7 +340,7 @@ export default function InboxPage() {
         overtimeHours:   ts.overtimeHours,
         validationScore: ts.validationScore,
         inconsistencies: issues,
-        managerEmail:    emp.managerEmail,
+        managerEmail:    emp.managerEmail ?? undefined,
       }))
     } else if (kind === "mgr-approval") {
       // OT > 45h cap → email manager with employee CC'd, asking for
@@ -284,7 +366,7 @@ export default function InboxPage() {
         employeeCode:   emp.employeeCode,
         employeeEmail:  emp.email,
         managerEmail:   emp.managerEmail,
-        managerName:    emp.managerName,
+        managerName:    emp.managerName ?? undefined,
         period:         ts.period,
         totalHours:     ts.totalHours,
         regularHours:   ts.regularHours,
@@ -306,51 +388,15 @@ export default function InboxPage() {
     setPage(1)
   }
 
-  // Counts
-  const actionableCount = localTs.filter(t => ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status)).length
-  const flaggedCount    = localTs.filter(t => t.status === "flagged").length
-  const otCount         = localTs.filter(t => t.overtimeHours > 0 && ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status)).length
+  // Counts come from the server's totals payload (client-scoped, not
+  // filter-scoped) so the pills/header always reflect the workload.
+  const actionableCount = totals.actionable
+  const flaggedCount    = totals.flagged
+  const otCount         = totals.ot
 
-  function scoreBand(score: number): "high" | "med" | "low" {
-    if (score >= 85) return "high"
-    if (score >= 60) return "med"
-    return "low"
-  }
-
-  // Filtered list
-  const filtered = useMemo(() => {
-    return localTs.filter(ts => {
-      const emp    = getEmployeeFromPool(ts.employeeId)
-      const client = getClient(ts.clientId)
-      if (actionableOnly && !["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(ts.status)) return false
-      if (selStatuses.length && !selStatuses.includes(ts.status)) return false
-      if (selClients.length && !selClients.includes(ts.clientId)) return false
-      if (selSources.length && !selSources.includes(ts.source)) return false
-      if (selScoreBands.length && !selScoreBands.includes(scoreBand(ts.validationScore))) return false
-      if (selOTOnly && ts.overtimeHours === 0) return false
-      if (search) {
-        const q = search.toLowerCase()
-        if (!emp?.name.toLowerCase().includes(q) && !client?.name.toLowerCase().includes(q) && !ts.period.toLowerCase().includes(q)) return false
-      }
-      return true
-    })
-  }, [localTs, search, selStatuses, selClients, selSources, selScoreBands, selOTOnly, actionableOnly])
-
-  const sorted = useMemo(() => {
-    const list = [...filtered]
-    if (sortBy === "score-asc")  list.sort((a, b) => a.validationScore - b.validationScore)
-    if (sortBy === "score-desc") list.sort((a, b) => b.validationScore - a.validationScore)
-    if (sortBy === "client")     list.sort((a, b) => a.clientId.localeCompare(b.clientId))
-    if (sortBy === "hours")      list.sort((a, b) => b.totalHours - a.totalHours)
-    if (sortBy === "date")       list.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
-    return list
-  }, [filtered, sortBy])
-
-  const paginated = useMemo(
-    () => sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [sorted, page]
-  )
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
+  // Server returns the page already filtered + sorted; the UI just renders.
+  const paginated  = rows
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   const activeFilterCount =
     selStatuses.length + selClients.length + selSources.length +
@@ -377,39 +423,60 @@ export default function InboxPage() {
   ]
   const clientOptions = clients.map(c => ({ value: c.id, label: c.name }))
 
-  // Bulk rules
-  const bulkRules: BulkRule[] = useMemo(() => [
-    {
-      label: "Score ≥ 95, all checks pass",
-      description: "Auto-approve clean submissions",
-      match: ts => ts.validationScore >= 95 && ts.validationChecks.every(c => c.result === "pass") && ["pending", "reviewing"].includes(ts.status),
-      count: localTs.filter(ts => ts.validationScore >= 95 && ts.validationChecks.every(c => c.result === "pass") && ["pending", "reviewing"].includes(ts.status)).length,
-    },
-    {
-      label: "Portal source, no flags",
-      description: "Approve portal-synced, zero warnings",
-      match: ts => ts.source === "portal" && ts.validationChecks.every(c => c.result !== "fail") && ["pending", "reviewing"].includes(ts.status),
-      count: localTs.filter(ts => ts.source === "portal" && ts.validationChecks.every(c => c.result !== "fail") && ["pending", "reviewing"].includes(ts.status)).length,
-    },
-    {
-      label: "Under 40h, single client",
-      description: "Standard week, no overtime",
-      match: ts => ts.totalHours <= 40 && ts.overtimeHours === 0 && ["pending", "reviewing"].includes(ts.status),
-      count: localTs.filter(ts => ts.totalHours <= 40 && ts.overtimeHours === 0 && ["pending", "reviewing"].includes(ts.status)).length,
-    },
-  ], [localTs])
+  // Bulk rules — operate on the loaded page only. Counts shown reflect
+  // what would be approved on the current page; ops applies the rule
+  // explicitly and pages through if they want broader scope.
+  const bulkRules: BulkRule[] = useMemo(() => {
+    const isActionable = (s: string) => ["pending", "reviewing"].includes(s)
+    const cleanCheck = (r: InboxRow) => r.checkFail === 0 && r.checkWarn === 0
+    return [
+      {
+        label: "Score ≥ 95, all checks pass",
+        description: "Auto-approve clean submissions",
+        match: (ts: InboxRow) => ts.validationScore >= 95 && cleanCheck(ts) && isActionable(ts.status),
+        count: rows.filter(ts => ts.validationScore >= 95 && cleanCheck(ts) && isActionable(ts.status)).length,
+      },
+      {
+        label: "Portal source, no flags",
+        description: "Approve portal-synced, zero warnings",
+        match: (ts: InboxRow) => ts.source === "portal" && ts.checkFail === 0 && isActionable(ts.status),
+        count: rows.filter(ts => ts.source === "portal" && ts.checkFail === 0 && isActionable(ts.status)).length,
+      },
+      {
+        label: "Under 40h, single client",
+        description: "Standard week, no overtime",
+        match: (ts: InboxRow) => ts.totalHours <= 40 && ts.overtimeHours === 0 && isActionable(ts.status),
+        count: rows.filter(ts => ts.totalHours <= 40 && ts.overtimeHours === 0 && isActionable(ts.status)).length,
+      },
+    ]
+  }, [rows])
 
-  // Actions
+  // Actions — optimistic local update, then a refetch so totals stay
+  // consistent. (A real backend would wire these to a PATCH endpoint;
+  // for now the optimistic path gives ops instant feedback.)
+  function applyOptimistic(predicate: (r: InboxRow) => boolean, patch: Partial<InboxRow>) {
+    setRows(prev => prev.map(r => predicate(r) ? { ...r, ...patch } : r))
+    setRefreshTick(t => t + 1)
+  }
   function approveTs(id: string) {
-    setLocalTs(prev => prev.map(t => t.id === id ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Siddharth Kirtikar", approvedAt: new Date().toISOString() } : t))
+    applyOptimistic(r => r.id === id, {
+      status: "approved" as TimesheetStatus,
+      approvedBy: "Siddharth Kirtikar",
+      approvedAt: new Date().toISOString(),
+    })
   }
-
   function bulkApprove(rule: BulkRule) {
-    setLocalTs(prev => prev.map(t => rule.match(t) ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Siddharth Kirtikar (Bulk)", approvedAt: new Date().toISOString() } : t))
+    applyOptimistic(rule.match, {
+      status: "approved" as TimesheetStatus,
+      approvedBy: "Siddharth Kirtikar (Bulk)",
+      approvedAt: new Date().toISOString(),
+    })
   }
-
   function approveSelected() {
-    setLocalTs(prev => prev.map(t => selectedIds.has(t.id) && ["pending", "reviewing"].includes(t.status) ? { ...t, status: "approved" as TimesheetStatus, approvedBy: "Siddharth Kirtikar", approvedAt: new Date().toISOString() } : t))
+    applyOptimistic(
+      r => selectedIds.has(r.id) && ["pending", "reviewing"].includes(r.status),
+      { status: "approved" as TimesheetStatus, approvedBy: "Siddharth Kirtikar", approvedAt: new Date().toISOString() },
+    )
     setSelectedIds(new Set())
   }
 
@@ -422,7 +489,7 @@ export default function InboxPage() {
   }
 
   function selectAll() {
-    const actionable = filtered.filter(t => ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status))
+    const actionable = rows.filter(t => ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status))
     if (selectedIds.size === actionable.length) {
       setSelectedIds(new Set())
     } else {
@@ -430,9 +497,12 @@ export default function InboxPage() {
     }
   }
 
-  const detail = expandedId ? localTs.find(t => t.id === expandedId) : null
-  const detailEmp = detail ? getEmployeeFromPool(detail.employeeId) : null
-  const detailClient = detail ? getClient(detail.clientId) : null
+  // The drawer's `detail` (timesheet + employee with full validations
+  // and daily entries) is fetched from /api/timesheet/[id] in an effect
+  // above; the slim row sits in `expandedId`.
+  const detailTs     = detail?.timesheet ?? null
+  const detailEmp    = detail?.employee ?? null
+  const detailClient = detailTs ? getClient(detailTs.clientId) : null
 
   // Compliance count = regulations needing action
   const complianceActionCount = REGULATIONS.filter(r => r.actionRequired).length
@@ -604,7 +674,7 @@ export default function InboxPage() {
             <div className="flex items-center gap-6 px-6 lg:px-8 py-2.5 flex-shrink-0 text-xs"
               style={{ background: "var(--bg)", color: "var(--text-3)" }}>
               <span>
-                <span style={{ color: "var(--text-1)", fontWeight: 600 }}>{sorted.length.toLocaleString()}</span> items
+                <span style={{ color: "var(--text-1)", fontWeight: 600 }}>{total.toLocaleString()}</span> items{loading && <span className="ml-1.5" style={{ color: "var(--text-3)" }}>· refreshing…</span>}
               </span>
               <span>
                 <span style={{ color: "var(--warn)", fontWeight: 600 }}>{flaggedCount}</span> flagged
@@ -632,7 +702,7 @@ export default function InboxPage() {
                 <button
                   onClick={() => {
                     const firstId = Array.from(selectedIds)[0]
-                    const ts = localTs.find(t => t.id === firstId)
+                    const ts = rows.find(t => t.id === firstId)
                     if (ts) openNotifyFor(ts, "flag")
                   }}
                   className="btn-ghost flex items-center gap-1.5 text-xs"
@@ -642,7 +712,7 @@ export default function InboxPage() {
                 <button
                   onClick={() => {
                     const firstId = Array.from(selectedIds)[0]
-                    const ts = localTs.find(t => t.id === firstId)
+                    const ts = rows.find(t => t.id === firstId)
                     if (ts) openNotifyFor(ts, "reject")
                   }}
                   className="btn-ghost flex items-center gap-1.5 text-xs"
@@ -685,7 +755,7 @@ export default function InboxPage() {
             <div className="flex-1 overflow-y-auto pb-nav lg:pb-0">
 
               {/* Select all */}
-              {filtered.some(t => ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status)) && (
+              {rows.some(t => ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(t.status)) && (
                 <div className="flex items-center gap-3 px-6 lg:px-8 py-2" style={{ borderBottom: "1px solid var(--border)" }}>
                   <button
                     onClick={selectAll}
@@ -704,14 +774,14 @@ export default function InboxPage() {
               )}
 
               {paginated.map(ts => {
-                const emp    = getEmployeeFromPool(ts.employeeId)
+                const emp    = ts.employee
                 const client = getClient(ts.clientId)
                 if (!emp || !client) return null
                 const isActionable = ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(ts.status)
                 const isSelected = selectedIds.has(ts.id)
                 const isExpanded = expandedId === ts.id
-                const fails    = ts.validationChecks.filter(c => c.result === "fail").length
-                const warnings = ts.validationChecks.filter(c => c.result === "warning").length
+                const fails    = ts.checkFail
+                const warnings = ts.checkWarn
 
                 const scoreColor = ts.validationScore >= 85 ? "#059669" : ts.validationScore >= 60 ? "var(--warn)" : "var(--danger)"
 
@@ -817,7 +887,7 @@ export default function InboxPage() {
                 )
               })}
 
-              {filtered.length === 0 && (
+              {rows.length === 0 && !loading && (
                 <div className="text-center py-20 text-sm" style={{ color: "var(--text-3)" }}>
                   No items match current filters
                 </div>
@@ -859,7 +929,13 @@ export default function InboxPage() {
           </div>
 
           {/* ── Detail side panel (slide in from right) ────────────── */}
-          {detail && detailEmp && detailClient && (
+          {expandedId && !detailTs && detailLoading && (
+            <div className="hidden lg:flex flex-col w-[420px] flex-shrink-0 items-center justify-center text-xs"
+              style={{ background: "var(--surface)", color: "var(--text-3)", boxShadow: "-4px 0 16px rgba(0,0,0,0.06)" }}>
+              Loading detail…
+            </div>
+          )}
+          {detailTs && detailEmp && detailClient && (
             <div
               className="hidden lg:flex flex-col w-[420px] flex-shrink-0 overflow-y-auto animate-slide-in-right"
               style={{ background: "var(--surface)", boxShadow: "-4px 0 16px rgba(0,0,0,0.06)" }}
@@ -876,7 +952,7 @@ export default function InboxPage() {
                       style={{ background: `${detailClient.color}12`, color: detailClient.color }}>
                       {detailClient.code}
                     </span>
-                    <span>{detail.period}</span>
+                    <span>{detailTs.period}</span>
                   </div>
                 </div>
                 <button onClick={() => setExpandedId(null)}
@@ -914,19 +990,19 @@ export default function InboxPage() {
                   <div className="grid grid-cols-3 gap-2">
                     <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
                       <div className="text-base font-semibold tabular-nums" style={{ color: "var(--accent)" }}>
-                        {detail.regularHours}h
+                        {detailTs.regularHours}h
                       </div>
                       <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Regular</div>
                     </div>
                     <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
                       <div className="text-base font-semibold tabular-nums" style={{ color: "var(--warn)" }}>
-                        {detail.overtimeHours}h
+                        {detailTs.overtimeHours}h
                       </div>
                       <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Overtime</div>
                     </div>
                     <div className="rounded-lg p-3 text-center" style={{ background: "var(--surface-2)" }}>
                       <div className="text-base font-semibold tabular-nums" style={{ color: "var(--info)" }}>
-                        {detail.leaveHours}h
+                        {detailTs.leaveHours}h
                       </div>
                       <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>Leave</div>
                     </div>
@@ -935,7 +1011,7 @@ export default function InboxPage() {
                     style={{ background: "var(--pink-50)", border: "1px solid var(--pink-100)" }}>
                     <span className="text-xs" style={{ color: "var(--pink-700)" }}>Total payable</span>
                     <span className="text-sm font-semibold tabular-nums" style={{ color: "var(--pink-700)" }}>
-                      ₹{detail.totalPayable.toLocaleString("en-IN")}
+                      ₹{detailTs.totalPayable.toLocaleString("en-IN")}
                     </span>
                   </div>
                 </div>
@@ -949,7 +1025,7 @@ export default function InboxPage() {
                     </div>
                     <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--pink-700)" }}>
                       <Sparkles size={10} />
-                      {detail.aiConfidence ?? detail.validationScore}% confidence
+                      {detailTs.aiConfidence ?? detailTs.validationScore}% confidence
                     </span>
                   </div>
 
@@ -957,8 +1033,8 @@ export default function InboxPage() {
                       validator emits them. Distinct per client because the
                       check set itself is client-specific. */}
                   <div className="grid gap-1 mb-2"
-                    style={{ gridTemplateColumns: `repeat(${Math.max(1, detail.validationChecks.length)}, minmax(0, 1fr))` }}>
-                    {detail.validationChecks.map(check => {
+                    style={{ gridTemplateColumns: `repeat(${Math.max(1, detailTs.validationChecks.length)}, minmax(0, 1fr))` }}>
+                    {detailTs.validationChecks.map(check => {
                       const c = check.result === "pass"    ? "#059669"
                               : check.result === "fail"    ? "var(--danger)"
                               : check.result === "warning" ? "var(--warn)"
@@ -986,22 +1062,22 @@ export default function InboxPage() {
 
                   {/* Score summary */}
                   <div className="p-3 rounded-lg mb-2" style={{
-                    background: detail.validationScore >= 85 ? "rgba(5,150,105,0.06)"
-                              : detail.validationScore >= 60 ? "var(--warn-bg)"
+                    background: detailTs.validationScore >= 85 ? "rgba(5,150,105,0.06)"
+                              : detailTs.validationScore >= 60 ? "var(--warn-bg)"
                               : "var(--danger-bg)"
                   }}>
                     <div className="flex items-center justify-between">
                       <span className="text-xs" style={{ color: "var(--text-2)" }}>Validation score</span>
                       <span className="text-2xl font-bold tabular-nums"
-                        style={{ color: detail.validationScore >= 85 ? "#059669" : detail.validationScore >= 60 ? "var(--warn)" : "var(--danger)" }}>
-                        {detail.validationScore}
+                        style={{ color: detailTs.validationScore >= 85 ? "#059669" : detailTs.validationScore >= 60 ? "var(--warn)" : "var(--danger)" }}>
+                        {detailTs.validationScore}
                       </span>
                     </div>
                   </div>
 
                   {/* Individual checks */}
                   <div className="space-y-1.5">
-                    {detail.validationChecks.map(check => (
+                    {detailTs.validationChecks.map(check => (
                       <div key={check.id}
                         className="flex items-start gap-2.5 p-2.5 rounded-lg"
                         style={{
@@ -1030,25 +1106,25 @@ export default function InboxPage() {
 
                   {/* Drill into source portal — Fieldglass detail page exposes
                       the real day-wise breakdown that isn't bulk-exportable. */}
-                  {detail.externalUrl && (
-                    <a href={detail.externalUrl} target="_blank" rel="noreferrer"
+                  {detailTs.externalUrl && (
+                    <a href={detailTs.externalUrl} target="_blank" rel="noreferrer"
                       className="mt-2 flex items-center justify-center gap-1.5 py-2 px-3 text-[11px] font-medium rounded-lg"
                       style={{ color: "var(--accent)", background: "var(--accent-dim)", border: "1px solid var(--accent-border)" }}>
-                      <Globe size={12} /> View day-wise on {detail.portalId === "fieldglass" ? "Fieldglass" : detail.portalId === "beeline" ? "BeeLine" : "portal"} →
+                      <Globe size={12} /> View day-wise on {detailTs.portalId === "fieldglass" ? "Fieldglass" : detailTs.portalId === "beeline" ? "BeeLine" : "portal"} →
                     </a>
                   )}
                 </div>
 
                 {/* Flag reason */}
-                {detail.flagReason && (
+                {detailTs.flagReason && (
                   <div className="p-3 rounded-lg" style={{ background: "var(--warn-bg)" }}>
                     <div className="flex items-center gap-1.5 text-xs font-medium mb-1" style={{ color: "var(--warn)" }}>
                       <Flag size={12} /> Flagged
-                      {detail.flaggedBy && <span className="font-normal" style={{ color: "var(--text-3)" }}>
-                        by {detail.flaggedBy === "ai" ? "JARVIS" : detail.flaggedBy === "ops" ? "Ops" : "System"}
+                      {detailTs.flaggedBy && <span className="font-normal" style={{ color: "var(--text-3)" }}>
+                        by {detailTs.flaggedBy === "ai" ? "JARVIS" : detailTs.flaggedBy === "ops" ? "Ops" : "System"}
                       </span>}
                     </div>
-                    <div className="text-xs" style={{ color: "var(--text-2)" }}>{detail.flagReason}</div>
+                    <div className="text-xs" style={{ color: "var(--text-2)" }}>{detailTs.flagReason}</div>
                   </div>
                 )}
 
@@ -1083,66 +1159,95 @@ export default function InboxPage() {
                 </div>
 
                 {/* Actions */}
-                {["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(detail.status) && (
-                  <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
-                    {/* OT approval flow takes priority when status is pending_mgr_approval */}
-                    {detail.status === "pending_mgr_approval" && (
+                {(() => {
+                  // Reconstruct an InboxRow-shaped object so the existing
+                  // openNotifyFor signature (which expects `.employee`)
+                  // can be reused as-is from the drawer.
+                  const detailRow: InboxRow = {
+                    id: detailTs.id, employeeId: detailTs.employeeId, clientId: detailTs.clientId,
+                    period: detailTs.period, periodStart: detailTs.periodStart, periodEnd: detailTs.periodEnd,
+                    submittedAt: detailTs.submittedAt, source: detailTs.source,
+                    sourceDetail: detailTs.sourceDetail, portalId: detailTs.portalId,
+                    status: detailTs.status,
+                    totalHours: detailTs.totalHours, regularHours: detailTs.regularHours,
+                    overtimeHours: detailTs.overtimeHours, leaveHours: detailTs.leaveHours,
+                    totalPayable: detailTs.totalPayable,
+                    validationScore: detailTs.validationScore,
+                    flagReason: detailTs.flagReason, flaggedBy: detailTs.flaggedBy,
+                    approvedBy: detailTs.approvedBy, approvedAt: detailTs.approvedAt,
+                    aiConfidence: detailTs.aiConfidence, externalUrl: detailTs.externalUrl,
+                    checkFail: 0, checkWarn: 0, checkTotal: 0,
+                    employee: {
+                      id: detailEmp.id, name: detailEmp.name, email: detailEmp.email,
+                      employeeCode: detailEmp.employeeCode, role: detailEmp.role,
+                      department: detailEmp.department,
+                      managerEmail: detailEmp.managerEmail ?? null,
+                      managerName:  detailEmp.managerName  ?? null,
+                      avatarColor:  detailEmp.avatarColor,
+                      earnedLeaves:   detailEmp.leaveBalance.annual,
+                      consumedLeaves: detailEmp.leaveBalance.usedAnnual,
+                    },
+                  }
+                  return ["pending", "reviewing", "flagged", "pending_mgr_approval"].includes(detailTs.status) ? (
+                    <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+                      {detailTs.status === "pending_mgr_approval" && (
+                        <button
+                          onClick={() => openNotifyFor(detailRow, "mgr-approval")}
+                          className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[14px]"
+                          style={{ background: "var(--pink-700)" }}>
+                          <Mail size={14} /> Request OT approval from manager
+                        </button>
+                      )}
                       <button
-                        onClick={() => openNotifyFor(detail, "mgr-approval")}
-                        className="w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[14px]"
-                        style={{ background: "var(--pink-700)" }}>
-                        <Mail size={14} /> Request OT approval from manager
-                      </button>
-                    )}
-                    <button
-                      onClick={() => approveTs(detail.id)}
-                      className={detail.status === "pending_mgr_approval"
-                        ? "w-full btn-ghost flex items-center justify-center gap-2 py-2 text-xs"
-                        : "w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[14px]"}>
-                      <CheckCircle2 size={detail.status === "pending_mgr_approval" ? 12 : 14} />
-                      {detail.status === "pending_mgr_approval" ? "Approve regular hours only (skip OT)" : "Approve timesheet"}
-                    </button>
-                    <button
-                      onClick={() => openNotifyFor(detail, "team")}
-                      className="w-full btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
-                      style={{ color: "var(--accent)", borderColor: "var(--pink-100)", background: "var(--pink-50)" }}>
-                      <Mail size={12} /> Notify team — flag inconsistencies
-                    </button>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => openNotifyFor(detail, "flag")}
-                        className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
-                        style={{ color: "var(--warn)" }}>
-                        <Flag size={12} /> Flag
+                        onClick={() => approveTs(detailTs.id)}
+                        className={detailTs.status === "pending_mgr_approval"
+                          ? "w-full btn-ghost flex items-center justify-center gap-2 py-2 text-xs"
+                          : "w-full btn-primary flex items-center justify-center gap-2 py-2.5 text-[14px]"}>
+                        <CheckCircle2 size={detailTs.status === "pending_mgr_approval" ? 12 : 14} />
+                        {detailTs.status === "pending_mgr_approval" ? "Approve regular hours only (skip OT)" : "Approve timesheet"}
                       </button>
                       <button
-                        onClick={() => openNotifyFor(detail, "reject")}
-                        className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
-                        style={{ color: "var(--danger)" }}>
-                        <XCircle size={12} /> Reject
+                        onClick={() => openNotifyFor(detailRow, "team")}
+                        className="w-full btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
+                        style={{ color: "var(--accent)", borderColor: "var(--pink-100)", background: "var(--pink-50)" }}>
+                        <Mail size={12} /> Notify team — flag inconsistencies
                       </button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => openNotifyFor(detailRow, "flag")}
+                          className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
+                          style={{ color: "var(--warn)" }}>
+                          <Flag size={12} /> Flag
+                        </button>
+                        <button
+                          onClick={() => openNotifyFor(detailRow, "reject")}
+                          className="btn-ghost flex items-center justify-center gap-1.5 py-2 text-xs"
+                          style={{ color: "var(--danger)" }}>
+                          <XCircle size={12} /> Reject
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ) : null
+                })()}
 
                 {/* Status confirmations */}
-                {detail.status === "approved" && (
+                {detailTs.status === "approved" && (
                   <div className="text-center py-3 rounded-lg" style={{ background: "rgba(5,150,105,0.06)" }}>
                     <CheckCircle2 size={18} className="mx-auto mb-1" style={{ color: "#059669" }} />
                     <div className="text-[14px] font-medium" style={{ color: "#059669" }}>Approved</div>
-                    {detail.approvedBy && (
+                    {detailTs.approvedBy && (
                       <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                        by {detail.approvedBy}
+                        by {detailTs.approvedBy}
                       </div>
                     )}
                   </div>
                 )}
-                {detail.status === "processed" && (
+                {detailTs.status === "processed" && (
                   <div className="text-center py-3 rounded-lg" style={{ background: "var(--accent-dim)" }}>
                     <CheckCircle2 size={18} className="mx-auto mb-1" style={{ color: "var(--accent)" }} />
                     <div className="text-[14px] font-medium" style={{ color: "var(--accent)" }}>Processed & Paid</div>
                     <div className="text-[11px] mt-0.5" style={{ color: "var(--text-3)" }}>
-                      ₹{detail.totalPayable.toLocaleString("en-IN")}
+                      ₹{detailTs.totalPayable.toLocaleString("en-IN")}
                     </div>
                   </div>
                 )}

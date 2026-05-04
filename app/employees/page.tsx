@@ -712,35 +712,14 @@ function EmployeeDrawer({ emp, onClose, allTimesheets }: { emp: Employee; onClos
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function EmployeesPage() {
-  // Two-tier fetch: roster first (cheap, ~5 KB per client) for the list
-  // and KPIs; defer the heavy timesheets payload until the drawer opens
-  // a worker's tab that actually needs them.
-  const [allEmployees,  setAllEmployees ] = useState<Employee[]>([])
-  const [allTimesheets, setAllTimesheets] = useState<Timesheet[]>([])
-  const [tsLoaded, setTsLoaded] = useState(false)
-  useEffect(() => {
-    const ids = clients.map(c => c.id)
-    // 1) Roster — quick paint
-    Promise.all(ids.map(id =>
-      fetch(`/api/employees/${id}`).then(r => r.json()).catch(() => ({ employees: [] }))
-    )).then(snapshots => {
-      setAllEmployees(snapshots.flatMap(s => Array.isArray(s.employees) ? s.employees : []))
-    })
-  }, [])
-
-  // 2) Timesheets lazy-load — kicked off when the drawer opens.
-  function ensureTimesheetsLoaded() {
-    if (tsLoaded) return
-    setTsLoaded(true)
-    const ids = clients.map(c => c.id)
-    Promise.all(ids.map(id =>
-      fetch(`/api/timesheets/${id}`).then(r => r.json()).catch(() => ({ timesheets: [] }))
-    )).then(snapshots => {
-      setAllTimesheets(snapshots.flatMap(s => Array.isArray(s.timesheets) ? s.timesheets : []))
-    })
-  }
-
+  // Server-paginated employee directory. /api/employees does the
+  // filter/search/sort/page in SQL so the browser never holds the
+  // full roster (~700 rows across all clients today, growing). When
+  // the drawer opens we fetch *that* employee's timesheet history
+  // via /api/employees/[id]/timesheets instead of pulling every
+  // client's payload.
   const [search,        setSearch]        = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
   const [selClients,    setSelClients]    = useState<string[]>([])
   const [selCategories, setSelCategories] = useState<JobCategory[]>([])
   const [selCities,     setSelCities]     = useState<string[]>([])
@@ -749,34 +728,69 @@ export default function EmployeesPage() {
   const [toDate,        setToDate]        = useState("")
   const [sortBy,        setSortBy]        = useState<"name"|"rate"|"startDate"|"leave">("name")
   const [page,          setPage]          = useState(1)
-  const [selectedEmp,   setSelectedEmp]  = useState<Employee | null>(null)
+  const [selectedEmp,   setSelectedEmp]   = useState<Employee | null>(null)
+  const [selectedEmpTs, setSelectedEmpTs] = useState<Timesheet[]>([])
   const PAGE_SIZE = 50
+
+  // Debounced search — avoids firing a fetch per keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => { setDebouncedSearch(search); setPage(1) }, 250)
+    return () => clearTimeout(t)
+  }, [search])
+
+  // Page state.
+  const [paginated, setPaginated] = useState<Employee[]>([])
+  const [totalRows, setTotalRows] = useState<number>(0)
+  const [loading,   setLoading]   = useState<boolean>(false)
+
+  // category/city/date filters are applied client-side on the loaded
+  // page — these are non-DB columns (jobCategory) or low-cardinality
+  // ranges that don't justify a server-side filter today. Server-side
+  // filters: clients, statuses, q, sort, page.
+  useEffect(() => {
+    let cancelled = false
+    const sp = new URLSearchParams()
+    if (selClients.length)  sp.set("clients",  selClients.join(","))
+    if (selStatuses.length) sp.set("statuses", selStatuses.join(","))
+    if (selCities.length)   sp.set("cities",   selCities.join(","))
+    if (debouncedSearch)    sp.set("q",        debouncedSearch)
+    sp.set("sort", sortBy); sp.set("page", String(page)); sp.set("size", String(PAGE_SIZE))
+    setLoading(true)
+    fetch(`/api/employees?${sp.toString()}`)
+      .then(r => r.json())
+      .then(d => {
+        if (cancelled) return
+        const rows = (Array.isArray(d.rows) ? d.rows : []) as Employee[]
+        const filtered = rows.filter(e =>
+          (selCategories.length === 0 || selCategories.includes(e.jobCategory)) &&
+          (!fromDate || e.startDate >= fromDate) &&
+          (!toDate   || e.startDate <= toDate)
+        )
+        setPaginated(filtered)
+        setTotalRows(d.total ?? 0)
+      })
+      .catch(() => { /* swallow; UI shows empty state */ })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [selClients, selStatuses, selCities, selCategories, fromDate, toDate, debouncedSearch, sortBy, page])
+
+  // Drawer — fetch only this employee's timesheets when opened.
+  useEffect(() => {
+    if (!selectedEmp) { setSelectedEmpTs([]); return }
+    let cancelled = false
+    fetch(`/api/employees/${selectedEmp.id}/timesheets?include=daily,validations`)
+      .then(r => r.json())
+      .then(d => { if (!cancelled) setSelectedEmpTs(d.timesheets ?? []) })
+      .catch(() => { /* swallow */ })
+    return () => { cancelled = true }
+  }, [selectedEmp])
 
   function toggle<T>(arr: T[], set: (v: T[]) => void, val: T) {
     set(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val])
     setPage(1)
   }
 
-  const filtered = useMemo(() => {
-    let list = [...allEmployees]
-    if (search)              list = list.filter(e => [e.name,e.email,e.role,e.employeeCode].some(f => f.toLowerCase().includes(search.toLowerCase())))
-    if (selClients.length)   list = list.filter(e => selClients.includes(e.clientId))
-    if (selCategories.length)list = list.filter(e => selCategories.includes(e.jobCategory))
-    if (selCities.length)    list = list.filter(e => selCities.includes(e.city))
-    if (selStatuses.length)  list = list.filter(e => selStatuses.includes(e.employmentStatus))
-    if (fromDate)            list = list.filter(e => e.startDate >= fromDate)
-    if (toDate)              list = list.filter(e => e.startDate <= toDate)
-    list.sort((a, b) =>
-      sortBy === "name"      ? a.name.localeCompare(b.name) :
-      sortBy === "rate"      ? b.ratePerHour - a.ratePerHour :
-      sortBy === "startDate" ? new Date(b.startDate).getTime() - new Date(a.startDate).getTime() :
-                               (b.leaveBalance.annual - b.leaveBalance.usedAnnual) - (a.leaveBalance.annual - a.leaveBalance.usedAnnual)
-    )
-    return list
-  }, [allEmployees,search,selClients,selCategories,selCities,selStatuses,fromDate,toDate,sortBy])
-
-  const paginated  = filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE)
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const totalPages = Math.max(1, Math.ceil(totalRows / PAGE_SIZE))
   const activeFilterCount = selClients.length + selCategories.length + selCities.length + selStatuses.length + (fromDate ? 1 : 0) + (toDate ? 1 : 0)
 
   const clientOptions   = clients.map(c => ({ value: c.id, label: c.name }))
@@ -801,7 +815,7 @@ export default function EmployeesPage() {
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-semibold" style={{ color: "var(--text-1)" }}>Employees</h1>
             <p className="text-[13px] mt-0.5" style={{ color: "var(--text-3)" }}>
-              {filtered.length.toLocaleString()} of {allEmployees.length.toLocaleString()} employees
+              {totalRows.toLocaleString()} employees{loading && <span className="ml-1.5">· refreshing…</span>}
             </p>
           </div>
           <button className="btn-ghost flex items-center gap-1.5 text-xs py-1.5 px-3 flex-shrink-0">
@@ -873,7 +887,7 @@ export default function EmployeesPage() {
                 const client = clients.find(c => c.id === emp.clientId)
                 return (
                   <tr key={emp.id}
-                    onClick={() => { ensureTimesheetsLoaded(); setSelectedEmp(emp) }}
+                    onClick={() => { setSelectedEmp(emp) }}
                     className="ts-row border-b cursor-pointer"
                     style={{ borderColor: "var(--border)" }}>
 
@@ -938,7 +952,7 @@ export default function EmployeesPage() {
           <div className="flex items-center justify-between px-6 py-3 border-t flex-shrink-0"
             style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
             <span className="text-xs" style={{ color: "var(--text-3)" }}>
-              Page {page} of {totalPages} · {filtered.length} employees
+              Page {page} of {totalPages} · {totalRows.toLocaleString()} employees
             </span>
             <div className="flex items-center gap-1">
               <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1}
@@ -966,7 +980,7 @@ export default function EmployeesPage() {
 
       {/* Employee Drawer */}
       {selectedEmp && (
-        <EmployeeDrawer emp={selectedEmp} onClose={() => setSelectedEmp(null)} allTimesheets={allTimesheets} />
+        <EmployeeDrawer emp={selectedEmp} onClose={() => setSelectedEmp(null)} allTimesheets={selectedEmpTs} />
       )}
 
       <BottomNav />

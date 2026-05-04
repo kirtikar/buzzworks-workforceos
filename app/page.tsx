@@ -133,31 +133,36 @@ const REVENUE_PER_EMP_MO = 9000
 function useClientCost() {
   const [rows, setRows] = useState<{ name: string; cost: number; revenue: number; items: number; efficiency: number }[]>([])
   useEffect(() => {
-    Promise.all(clients.map(c =>
-      fetch(`/api/employees/${c.id}`)
-        .then(r => r.json())
-        .then(d => ({
-          client: c,
-          empCount: d?.summary?.employeeCount ?? c.activeEmployeeCount ?? 0,
-        }))
-        .catch(() => ({ client: c, empCount: c.activeEmployeeCount ?? 0 }))
-    )).then(results => {
-      const top8 = results
-        .sort((a, b) => b.empCount - a.empCount)
-        .slice(0, 8)
-        .map(({ client, empCount }) => {
-          const cost     = empCount * COST_PER_EMP_MO
-          const revenue  = empCount * REVENUE_PER_EMP_MO
-          return {
-            name: client.name,
-            cost,
-            revenue,
-            items: empCount,
-            efficiency: Math.round((cost / Math.max(revenue, 1)) * 100 * 100) / 100,
-          }
-        })
-      setRows(top8)
-    })
+    // One round trip — /api/clients/summary GROUPs by client_id in a
+    // single query. Replaces the old fan-out of N parallel fetches.
+    fetch(`/api/clients/summary`)
+      .then(r => r.json())
+      .then(d => {
+        const summaryByClient = new Map<string, number>()
+        for (const r of (d.rows ?? []) as { clientId: string; employeeCount: number }[]) {
+          summaryByClient.set(r.clientId, r.employeeCount)
+        }
+        const top8 = clients
+          .map(c => ({
+            client: c,
+            empCount: summaryByClient.get(c.id) ?? c.activeEmployeeCount ?? 0,
+          }))
+          .sort((a, b) => b.empCount - a.empCount)
+          .slice(0, 8)
+          .map(({ client, empCount }) => {
+            const cost    = empCount * COST_PER_EMP_MO
+            const revenue = empCount * REVENUE_PER_EMP_MO
+            return {
+              name: client.name,
+              cost,
+              revenue,
+              items: empCount,
+              efficiency: Math.round((cost / Math.max(revenue, 1)) * 100 * 100) / 100,
+            }
+          })
+        setRows(top8)
+      })
+      .catch(() => { /* leave empty */ })
   }, [])
   return rows
 }

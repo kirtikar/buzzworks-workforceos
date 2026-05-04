@@ -229,14 +229,17 @@ export async function GET(
       externalUrl:  x.external_url ?? "",
     }))
 
-    return NextResponse.json({
-      configured: true,
-      clientId,
-      timesheets: tsList,
-      employees:  empList,
-      expenses:   expenseList,
-      lastImport: lastImport[0] ?? null,
-    })
+    return NextResponse.json(
+      {
+        configured: true,
+        clientId,
+        timesheets: tsList,
+        employees:  empList,
+        expenses:   expenseList,
+        lastImport: lastImport[0] ?? null,
+      },
+      { headers: { "Cache-Control": "private, max-age=15, stale-while-revalidate=120" } },
+    )
   } catch (e) {
     return NextResponse.json({ ok: false, error: (e as Error).message }, { status: 500 })
   }

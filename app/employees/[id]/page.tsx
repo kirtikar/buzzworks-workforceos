@@ -417,28 +417,25 @@ function MonthCalendar({ entries, externalUrlByDate }: {
 
 // ─── Tab: Timesheets ─────────────────────────────────────────────────────────
 
-function TimesheetsTab({ empId, clientId }: { empId: string; clientId: string }) {
-  // Try to fetch real timesheets from Postgres for this employee's client.
-  // Falls back to the synthetic mock if the API has no data (test clients).
+function TimesheetsTab({ empId, clientId: _clientId }: { empId: string; clientId: string }) {
+  // Fetch only this employee's timesheet history (with daily entries)
+  // via the per-employee endpoint instead of pulling every worker's
+  // timesheets for this client just to filter to one row.
   const [realTs,   setRealTs  ] = useState<Timesheet[] | null>(null)
   const [loading,  setLoading ] = useState(true)
   useEffect(() => {
     let cancelled = false
     setLoading(true)
-    fetch(`/api/timesheets/${clientId}`)
+    fetch(`/api/employees/${empId}/timesheets?include=daily,validations`)
       .then(r => r.json())
       .then(d => {
         if (cancelled) return
-        if (d.configured && Array.isArray(d.timesheets)) {
-          setRealTs(d.timesheets.filter((t: Timesheet) => t.employeeId === empId))
-        } else {
-          setRealTs([])
-        }
+        setRealTs(Array.isArray(d.timesheets) ? d.timesheets : [])
       })
       .catch(() => { if (!cancelled) setRealTs([]) })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [clientId, empId])
+  }, [empId])
 
   const ts = realTs ?? []
 
@@ -724,18 +721,18 @@ export default function EmployeeDetailPage() {
 
   useEffect(() => {
     let cancelled = false
-    const ids = clients.map(c => c.id)
-    Promise.all(ids.map(id =>
-      fetch(`/api/timesheets/${id}?include=daily`).then(r => r.json()).catch(() => ({ employees: [], timesheets: [], expenses: [] }))
-    )).then(snapshots => {
-      if (cancelled) return
-      const employees: Employee[]    = snapshots.flatMap(s => Array.isArray(s.employees)  ? s.employees  : [])
-      const timesheets: Timesheet[]  = snapshots.flatMap(s => Array.isArray(s.timesheets) ? s.timesheets : [])
-      const expenses: ExpenseSheet[] = snapshots.flatMap(s => Array.isArray(s.expenses)   ? s.expenses   : [])
-      setAllTs(timesheets)
-      setAllEx(expenses)
-      setEmp(employees.find(e => e.id === params.id) ?? null)
-    })
+    // Single round trip: per-employee endpoint returns the employee
+    // record alongside their timesheets + expenses. No more cross-
+    // client roster pull just to render one worker's profile.
+    fetch(`/api/employees/${params.id}/timesheets?include=daily,validations,expenses`)
+      .then(r => r.json())
+      .then(d => {
+        if (cancelled) return
+        setAllTs(Array.isArray(d.timesheets) ? d.timesheets : [])
+        setAllEx(Array.isArray(d.expenses)   ? d.expenses   : [])
+        setEmp(d.employee ?? null)
+      })
+      .catch(() => { if (!cancelled) { setAllTs([]); setAllEx([]); setEmp(null) } })
     return () => { cancelled = true }
   }, [params.id])
 
