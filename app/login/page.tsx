@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { ClipboardCheck, Eye, EyeOff, ArrowRight, Lock } from "lucide-react"
 
 const ACCESS_EMAIL    = "agentic@buzzworks.com"
-const ACCESS_PASSWORD = "gyanbhavan14"
+const ACCESS_PASSWORD = "agenticops@123"
 
 export default function LoginPage() {
   const router = useRouter()
