@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getSql } from "@/lib/db/client"
+import { getSqlChecked } from "@/lib/db/client"
 import { clients, employees as seedEmployees, REAL_DATA_CLIENT_IDS } from "@/lib/mock-data"
 import { generateEmployeesForClient } from "@/lib/mock-generator"
 import type { Employee } from "@/lib/types"
@@ -21,7 +21,7 @@ const TEST_POOL_SIZE_PER_CLIENT = 80
 
 export async function POST() {
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     let inserted = 0
     let perClient: Record<string, number> = {}
 

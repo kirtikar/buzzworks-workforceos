@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql } from "@/lib/db/client"
+import { getSqlChecked } from "@/lib/db/client"
 import { parseBeelineCsv } from "@/lib/beeline-import"
 import { validateAccentureWeek, computeEarnedLeaves } from "@/lib/accenture-validation"
 
@@ -25,7 +25,7 @@ import { validateAccentureWeek, computeEarnedLeaves } from "@/lib/accenture-vali
 
 export async function POST(req: NextRequest) {
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     const form = await req.formData()
     const file = form.get("file") as File | null
     if (!file) return NextResponse.json({ ok: false, error: "Missing file" }, { status: 400 })
@@ -190,7 +190,7 @@ export async function POST(req: NextRequest) {
 // button so ops can revert to an empty inbox without re-importing.
 export async function DELETE() {
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     await sql.begin(async tx => {
       await tx`DELETE FROM timesheets WHERE client_id = 'acc'`
       await tx`DELETE FROM employees WHERE client_id = 'acc'`

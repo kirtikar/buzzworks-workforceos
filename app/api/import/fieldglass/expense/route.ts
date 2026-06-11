@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql } from "@/lib/db/client"
+import { getSqlChecked } from "@/lib/db/client"
 import { parseFieldglassExpenseCsvs } from "@/lib/fieldglass-expense-import"
 import { computeEarnedLeavesCap } from "@/lib/capgemini-validation"
 
@@ -15,7 +15,7 @@ import { computeEarnedLeavesCap } from "@/lib/capgemini-validation"
 
 export async function POST(req: NextRequest) {
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     const form = await req.formData()
     const files = form.getAll("file") as File[]
     if (!files || files.length === 0) {
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
 // DELETE wipes all Capgemini expense sheets — quick reset.
 export async function DELETE() {
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     await sql`DELETE FROM expense_sheets WHERE client_id = 'cap'`
     return NextResponse.json({ ok: true })
   } catch (e) {

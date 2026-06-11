@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql, isDbConfigured } from "@/lib/db/client"
+import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 import { getClient } from "@/lib/mock-data"
 import type { Timesheet, Employee, ValidationCheck, DailyEntry } from "@/lib/types"
 
@@ -93,7 +93,7 @@ export async function GET(
   }
 
   try {
-    const sql        = getSql()
+    const sql        = await getSqlChecked()
     const clientMeta = getClient(clientId)
     const fallbackColor = clientMeta?.color ?? "#A100FF"
     const fallbackCity  = clientMeta?.city  ?? "Bangalore"

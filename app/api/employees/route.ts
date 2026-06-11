@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql, isDbConfigured } from "@/lib/db/client"
+import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 import { getClient } from "@/lib/mock-data"
 
 // GET /api/employees
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
   const size     = Math.min(200, Math.max(1, parseInt(sp.get("size") ?? "50", 10)))
   const offset   = (page - 1) * size
 
-  const sql = getSql()
+  const sql = await getSqlChecked()
 
   const where: string[] = ["e.is_test_data = false"]
   const params: unknown[] = []

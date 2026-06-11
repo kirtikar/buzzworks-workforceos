@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql, isDbConfigured } from "@/lib/db/client"
+import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 
 // GET /api/clients/summary
 //
@@ -16,7 +16,7 @@ export async function GET(_req: NextRequest) {
   if (!isDbConfigured()) {
     return NextResponse.json({ configured: false, rows: [] })
   }
-  const sql = getSql()
+  const sql = await getSqlChecked()
   try {
     // Three GROUP BY queries in parallel keeps each query tight on its
     // own composite index. A single mega-CTE would force a sequential

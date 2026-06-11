@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
-import { getSql } from "@/lib/db/client"
+import { getSqlChecked } from "@/lib/db/client"
 
 // One-shot migration runner. Visit GET /api/admin/migrate after the
 // first deploy with DATABASE_URL set. Idempotent (CREATE TABLE IF NOT
@@ -9,7 +9,7 @@ import { getSql } from "@/lib/db/client"
 
 export async function GET() {
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     const schemaPath = path.join(process.cwd(), "lib", "db", "schema.sql")
     const schema = await fs.readFile(schemaPath, "utf-8")
     // postgres-library sql.unsafe() runs one statement per call; split

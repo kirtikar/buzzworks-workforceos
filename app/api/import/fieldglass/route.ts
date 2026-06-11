@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql } from "@/lib/db/client"
+import { getSqlChecked } from "@/lib/db/client"
 import {
   parseFieldglassCapCsvs, fieldglassDetailUrl,
 } from "@/lib/fieldglass-cap-import"
@@ -29,7 +29,7 @@ import {
 
 export async function POST(req: NextRequest) {
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     const form = await req.formData()
     const files = form.getAll("file") as File[]
     if (!files || files.length === 0) {
@@ -271,7 +271,7 @@ export async function POST(req: NextRequest) {
 // reverts the Inbox to empty for that client without re-import.
 export async function DELETE() {
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     await sql.begin(async tx => {
       await tx`DELETE FROM timesheets WHERE client_id = 'cap'`
       await tx`DELETE FROM employees WHERE client_id = 'cap'`

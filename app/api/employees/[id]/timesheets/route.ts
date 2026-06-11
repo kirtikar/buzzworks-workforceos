@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql, isDbConfigured } from "@/lib/db/client"
+import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 import { getClient } from "@/lib/mock-data"
 import type { Timesheet, ValidationCheck, DailyEntry, ExpenseSheet, Employee } from "@/lib/types"
 
@@ -34,7 +34,7 @@ export async function GET(
   if (!isDbConfigured()) {
     return NextResponse.json({ configured: false, timesheets: [] })
   }
-  const sql = getSql()
+  const sql = await getSqlChecked()
   try {
     const [empRows, timesheets] = await Promise.all([
       sql<{

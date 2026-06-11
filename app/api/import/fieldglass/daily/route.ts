@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql } from "@/lib/db/client"
+import { getSqlChecked } from "@/lib/db/client"
 
 // POST /api/import/fieldglass/daily
 //
@@ -74,7 +74,7 @@ function dayOfWeek(iso: string): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const sql  = getSql()
+    const sql  = await getSqlChecked()
     const body = await req.text()
     const lines = body.split("\n").map(l => l.trim()).filter(Boolean)
 

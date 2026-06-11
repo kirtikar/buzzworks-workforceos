@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getSql, isDbConfigured } from "@/lib/db/client"
+import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 
 // GET /api/clients/stats
 //
@@ -29,7 +29,7 @@ export async function GET() {
     return NextResponse.json({ configured: false, stats: {} })
   }
   try {
-    const sql = getSql()
+    const sql = await getSqlChecked()
     const rows = await sql<StatsRow[]>`
       SELECT
         client_id,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql, isDbConfigured } from "@/lib/db/client"
+import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 import type { Timesheet, ValidationCheck, DailyEntry, Employee } from "@/lib/types"
 
 // GET /api/timesheet/[id]?include=daily,validations,employee
@@ -33,7 +33,7 @@ export async function GET(
   if (!isDbConfigured()) {
     return NextResponse.json({ configured: false })
   }
-  const sql = getSql()
+  const sql = await getSqlChecked()
   try {
     const [tsRows, validations, daily, empRows] = await Promise.all([
       sql<Row[]>`SELECT * FROM timesheets WHERE id = ${id} LIMIT 1`,

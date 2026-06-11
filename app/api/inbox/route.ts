@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSql, isDbConfigured } from "@/lib/db/client"
+import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 
 // GET /api/inbox
 //
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
   const size      = Math.min(200, Math.max(1, parseInt(sp.get("size") ?? "50", 10)))
   const offset    = (page - 1) * size
 
-  const sql = getSql()
+  const sql = await getSqlChecked()
 
   // Build dynamic WHERE — postgres-js's sql.unsafe() with positional params
   // gives us safe parameter binding while keeping the SQL composable.
