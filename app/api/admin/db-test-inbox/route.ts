@@ -53,6 +53,34 @@ export async function GET() {
       out.rows_error = (e as Error).message
     }
 
+    // 3) BOTH queries via Promise.all — mimics what /api/inbox does
+    const totalsSqlForPar = `
+      SELECT
+        SUM(CASE WHEN status = ANY($2::text[]) THEN 1 ELSE 0 END)::int AS actionable,
+        SUM(CASE WHEN status = 'flagged' THEN 1 ELSE 0 END)::int AS flagged,
+        status, COUNT(*)::int AS n
+      FROM timesheets
+      WHERE client_id = ANY($1::text[])
+      GROUP BY ROLLUP (status)
+    `
+    const tPar = Date.now()
+    try {
+      const [pr1, pr2] = await withTimeout(
+        "parallel",
+        Promise.all([
+          sql.unsafe<Record<string, unknown>[]>(rowsSqlText, [["cap"], 2, 0] as never[]),
+          sql.unsafe<Record<string, unknown>[]>(totalsSqlForPar, [["cap"], ACTIONABLE_STATUSES] as never[]),
+        ]),
+        15_000,
+      )
+      out.ms_parallel = Date.now() - tPar
+      out.parallel_rows = pr1.length
+      out.parallel_totals_rows = pr2.length
+    } catch (e) {
+      out.ms_parallel = Date.now() - tPar
+      out.parallel_error = (e as Error).message
+    }
+
     // 2) totalsSql — ROLLUP query
     const totalsSqlText = `
       SELECT
