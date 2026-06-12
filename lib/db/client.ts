@@ -37,6 +37,11 @@ function resolveDbUrl(): string | undefined {
 }
 
 function buildPool(url: string) {
+  // Supabase's transaction-mode pooler runs on port 6543 (vs 5432 for
+  // session mode). Transaction mode does NOT support prepared statements
+  // across transactions — without `prepare: false`, postgres-js will
+  // either error or, worse, silently hang on any non-trivial query.
+  const isTxnPooler = url.includes(":6543")
   return postgres(url, {
     ssl: "require",
     connection: { application_name: "agent-dashboard" },
@@ -44,6 +49,7 @@ function buildPool(url: string) {
     idle_timeout: 10,
     max_lifetime: 60,        // recycle every 60s — second line of defence
     connect_timeout: 10,
+    prepare: !isTxnPooler,   // critical for Supabase :6543 pooler
     onnotice: () => {},
   })
 }
