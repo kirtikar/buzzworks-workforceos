@@ -44,9 +44,13 @@ interface DbEmployeeRow {
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ clientId: string }> },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { clientId } = await params
+  // Folder must be [id] to match the sibling [id]/timesheets/ —
+  // Next.js requires the same slug name at the same dynamic
+  // position, or cold-start route loading crashes. The value is
+  // semantically a client ID, so we alias it locally.
+  const { id: clientId } = await params
 
   if (!isDbConfigured()) {
     return NextResponse.json({
