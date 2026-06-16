@@ -23,6 +23,12 @@ import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 // Response:
 //   { rows: SlimInboxRow[], total, page, size, totals: { actionable, flagged, ot, byStatus } }
 
+// Vercel function execution budget. Without this, the platform default
+// (10s on Hobby, etc) silently kills slow requests and returns no body —
+// which is exactly what was happening to /api/inbox during the post-
+// Supabase-restore window.
+export const maxDuration = 30
+
 const ACTIONABLE_STATUSES = ["pending", "reviewing", "flagged", "pending_mgr_approval"]
 
 function csv(s: string | null): string[] {
