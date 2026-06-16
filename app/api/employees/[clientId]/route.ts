@@ -3,6 +3,11 @@ import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 import { getClient } from "@/lib/mock-data"
 import type { Employee } from "@/lib/types"
 
+// Vercel default function timeout (10s) silently kills slow queries with no body.
+// Override so cold-start + first-query latency has headroom.
+export const maxDuration = 30
+
+
 // GET /api/employees/[clientId]
 //
 // Lightweight roster endpoint — returns just the employee list plus a

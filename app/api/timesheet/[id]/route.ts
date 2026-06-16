@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 import type { Timesheet, ValidationCheck, DailyEntry, Employee } from "@/lib/types"
 
+// Vercel default function timeout (10s) silently kills slow queries with no body.
+// Override so cold-start + first-query latency has headroom.
+export const maxDuration = 30
+
+
 // GET /api/timesheet/[id]?include=daily,validations,employee
 //
 // Detail-on-demand. The Inbox row carries only what the row renders;

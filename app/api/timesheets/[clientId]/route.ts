@@ -3,6 +3,11 @@ import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 import { getClient } from "@/lib/mock-data"
 import type { Timesheet, Employee, ValidationCheck, DailyEntry } from "@/lib/types"
 
+// Vercel default function timeout (10s) silently kills slow queries with no body.
+// Override so cold-start + first-query latency has headroom.
+export const maxDuration = 30
+
+
 // GET /api/timesheets/[clientId]
 //
 // Returns the live per-client timesheet inbox state from Postgres,

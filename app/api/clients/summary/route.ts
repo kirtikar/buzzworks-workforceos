@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getSqlChecked, isDbConfigured } from "@/lib/db/client"
 
+// Vercel default function timeout (10s) silently kills slow queries with no body.
+// Override so cold-start + first-query latency has headroom.
+export const maxDuration = 30
+
+
 // GET /api/clients/summary
 //
 // All-clients KPI rollup in a single round trip. Replaces the home
