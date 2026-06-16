@@ -1016,6 +1016,88 @@ export default function InboxPage() {
                   </div>
                 </div>
 
+                {/* Weekly day-by-day breakdown — appears right after the
+                    Hours block. Renders the 7 days of the timesheet
+                    period with regular / OT / leave per day so ops can
+                    spot pattern anomalies (skipped weekday, weekend
+                    work, leave clustering) at a glance.            */}
+                {detailTs.dailyEntries.length > 0 && (
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--text-3)" }}>
+                      Weekly breakdown · {detailTs.period}
+                    </div>
+                    <div className="grid grid-cols-7 gap-1">
+                      {detailTs.dailyEntries.map(d => {
+                        const reg   = d.regularHours ?? 0
+                        const ot    = d.overtimeHours ?? 0
+                        const lv    = d.leaveHours ?? 0
+                        const total = reg + ot
+                        const isWeekend = d.dayOfWeek === "Sat" || d.dayOfWeek === "Sun"
+                        // Colour intent — same palette as the Employee
+                        // Detail calendar so the two views feel consistent.
+                        const tone = lv > 0     ? { bg: "rgba(99,102,241,0.10)", fg: "var(--info)"   }
+                                   : total >= 9 ? { bg: "rgba(5,150,105,0.16)",  fg: "#059669"        }
+                                   : total > 0  ? { bg: "rgba(244,180,0,0.16)",  fg: "var(--warn)"    }
+                                   : isWeekend  ? { bg: "var(--surface-2)",      fg: "var(--text-3)" }
+                                   :              { bg: "var(--surface)",        fg: "var(--text-3)" }
+                        const dayNum = parseInt(d.date.slice(8, 10), 10)
+                        const fmtHrs = (n: number) => Number.isInteger(n) ? `${n}` : n.toFixed(1)
+                        return (
+                          <div key={d.date} className="rounded-md py-1.5 px-1 flex flex-col items-center"
+                            style={{ background: tone.bg }}
+                            title={`${d.dayOfWeek} ${d.date}${lv > 0 ? ` · Leave ${lv}h${d.leaveType ? ` (${d.leaveType})` : ""}` : ""}${total > 0 ? ` · Reg ${reg}h${ot > 0 ? ` · OT ${ot}h` : ""}` : ""}`}
+                          >
+                            <span className="text-[9px] uppercase tracking-wider" style={{ color: "var(--text-3)" }}>
+                              {d.dayOfWeek.slice(0, 3)}
+                            </span>
+                            <span className="text-[10px] font-semibold" style={{ color: tone.fg }}>
+                              {dayNum}
+                            </span>
+                            {total > 0 ? (
+                              <span className="text-[11px] font-bold tabular-nums mt-0.5" style={{ color: tone.fg }}>
+                                {fmtHrs(total)}h
+                              </span>
+                            ) : lv > 0 ? (
+                              <span className="text-[10px] font-bold mt-0.5" style={{ color: "var(--info)" }}>L</span>
+                            ) : (
+                              <span className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>—</span>
+                            )}
+                            {ot > 0 && (
+                              <span className="text-[8px] mt-0.5" style={{ color: "var(--warn)" }}>+{fmtHrs(ot)} OT</span>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                    {/* Summary footer — totals for the week + leave type if any */}
+                    <div className="flex items-center justify-between mt-2 text-[11px]" style={{ color: "var(--text-3)" }}>
+                      <span>
+                        Worked <span style={{ color: "var(--text-1)", fontWeight: 600 }}>
+                          {detailTs.dailyEntries.filter(d => (d.regularHours ?? 0) + (d.overtimeHours ?? 0) > 0).length}
+                        </span> / 7 days
+                      </span>
+                      {detailTs.dailyEntries.some(d => (d.leaveHours ?? 0) > 0) && (
+                        <span>
+                          <span style={{ color: "var(--info)", fontWeight: 600 }}>
+                            {detailTs.dailyEntries.reduce((s, d) => s + (d.leaveHours ?? 0), 0)}h
+                          </span> leave
+                        </span>
+                      )}
+                      <span>
+                        Avg <span style={{ color: "var(--text-1)", fontWeight: 600 }}>
+                          {(() => {
+                            const w = detailTs.dailyEntries.filter(d => (d.regularHours ?? 0) + (d.overtimeHours ?? 0) > 0)
+                            if (w.length === 0) return "—"
+                            const avg = w.reduce((s, d) => s + (d.regularHours ?? 0) + (d.overtimeHours ?? 0), 0) / w.length
+                            return `${avg.toFixed(1)}h/day`
+                          })()}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* AI Validation — JARVIS · per-client policy */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
