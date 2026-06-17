@@ -19,7 +19,9 @@ import * as path from "path"
 
 const FG_USER  = process.env.FG_USER
 const FG_PASS  = process.env.FG_PASS
-const GATEWAY  = process.env.FG_GATEWAY ?? "https://www.fieldglass.net/"
+// 2026-06: SAP retired www.fieldglass.net. New URL is the SAP-branded
+// gateway. Override via FG_GATEWAY env var if needed.
+const GATEWAY  = process.env.FG_GATEWAY ?? "https://www.us.fieldglass.cloud.sap/"
 const API_BASE = process.env.API_BASE ?? "https://dev.era.ai"
 const SCOPE_FROM = process.env.SCOPE_FROM ?? "2026-03-01"
 const SCOPE_TO   = process.env.SCOPE_TO   ?? "2026-04-05"
@@ -362,7 +364,14 @@ async function run() {
     let lastErr: unknown = null
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        browser = await chromium.launch({ headless: false, slowMo: 60 })
+        // Reuse the cached chromium-1217 — avoids re-downloading hundreds
+        // of MB every time playwright is re-installed.
+        const chromiumPath = "/Users/kirtikar/Library/Caches/ms-playwright/chromium-1217/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+        browser = await chromium.launch({
+          headless: false,
+          slowMo: 60,
+          executablePath: fs.existsSync(chromiumPath) ? chromiumPath : undefined,
+        })
         const ctx = await browser.newContext({ viewport: { width: 1400, height: 950 } })
         page = await ctx.newPage()
         await login(page)
