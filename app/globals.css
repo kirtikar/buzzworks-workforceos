@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,300..600&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -12,49 +12,72 @@
 .touch-target { min-height: 44px; min-width: 44px; }
 
 /* ═══════════════════════════════════════════════════════════
-   LIGHT THEME (default)
-   Pink primary · neutral text · accent colors reserved for charts
+   LIGHT THEME — "Petal Pink × Soft Navy"
+   ─────────────────────────────────────────────────────────
+   Refined pink primary stack (Petal → Rosewood → Dusty Plum)
+   anchored against Soft Navy text and a warm parchment canvas.
+   Status colours moved into the same family (Sage green for
+   approved, Antique gold for pending, Plum-Rose for rejected)
+   so the whole interface feels cohesive — no jarring system
+   reds or fluorescent greens.
    ═══════════════════════════════════════════════════════════ */
 :root {
-  /* ── Primary (pink scale) ─────────────── */
-  --primary-50:   #FFF1F6;
-  --primary-100:  #FFE4EC;
-  --primary-200:  #FFC7D8;
-  --primary-300:  #FF9FBC;
-  --primary-400:  #FF6F9F;
-  --primary-500:  #FF3D7F;
-  --primary-600:  #E62E6D;
-  --primary-700:  #BF255A;
-  --primary-800:  #991D47;
-  --primary-900:  #66122F;
+  /* ── Primary — refined pink (Dior/Chanel-tier elegance) ──
+     Builds from a near-white blush up to Dusty Plum. Petal
+     Pink is the brand surface; Rosewood is the action colour
+     (confident enough to anchor CTAs without screaming). */
+  --primary-50:   #FDF5F6;  /* nearly-white blush */
+  --primary-100:  #FCEAEF;  /* shell wash */
+  --primary-200:  #F9D6E1;  /* PETAL PINK — brand surface */
+  --primary-300:  #F4B6C2;  /* rose ballet */
+  --primary-400:  #ECA5B5;  /* blush pink */
+  --primary-500:  #C77B8A;  /* ROSEWOOD — primary action */
+  --primary-600:  #B65A6E;  /* vintage rose — hover/active */
+  --primary-700:  #7D4A5B;  /* DUSTY PLUM — deep accents */
+  --primary-800:  #4D2D38;
+  --primary-900:  #2A1820;
 
-  /* ── Neutral ──────────────────────────── */
-  --neutral-50:   #FAFAFB;
-  --neutral-100:  #F4F4F6;
-  --neutral-200:  #E5E7EB;
-  --neutral-300:  #D1D5DB;
-  --neutral-400:  #9CA3AF;
-  --neutral-500:  #6B7280;
-  --neutral-600:  #4B5563;
-  --neutral-700:  #374151;
-  --neutral-800:  #1F2937;
-  --neutral-900:  #111827;
+  /* ── Neutral — warm navy-grays ──
+     Warm parchment at the light end so the canvas glows
+     against pure-white cards. Soft Navy (#1C2A44) at the
+     dark end gives body text a confident, editorial weight
+     without the cold blue cast of slate. Mid greys are
+     warm-leaning so they pair with the pink scale. */
+  --neutral-50:   #FBF7F4;  /* SOFT PARCHMENT — page bg */
+  --neutral-100:  #F5EFEC;  /* recessed wells */
+  --neutral-200:  #EDE5E2;  /* hairline borders */
+  --neutral-300:  #D8CFCB;  /* visible borders */
+  --neutral-400:  #8A8580;  /* tertiary text — warm */
+  --neutral-500:  #6B6862;
+  --neutral-600:  #4A5870;  /* secondary text — navy-tinted */
+  --neutral-700:  #334155;
+  --neutral-800:  #1C2A44;  /* SOFT NAVY — primary text */
+  --neutral-900:  #0F1A2E;
 
-  /* ── Accent (CHARTS / HIGHLIGHTS ONLY) ── */
-  --accent-mint:     #2DD4BF;
-  --accent-lavender: #A78BFA;
-  --accent-peach:    #FFB4A2;
-  --accent-yellow:   #FACC15;
+  /* ── Accent (CHARTS / HIGHLIGHTS ONLY) ──
+     Replaces the previous neon mint/lavender/peach/yellow
+     with the muted, harmonised tones from the reference
+     palette. They still read as distinct hues in charts
+     but never compete with the brand pink. */
+  --accent-mint:     #A6B39A;  /* sage green */
+  --accent-lavender: #C5B9D6;  /* dusty lavender */
+  --accent-peach:    #F4C9B5;  /* warm peach */
+  --accent-yellow:   #D4AF37;  /* champagne gold */
 
-  /* ── Semantic ─────────────────────────── */
-  --success: #22C55E;
-  --success-bg: rgba(34, 197, 94, 0.08);
-  --error:   #EF4444;
-  --error-bg: rgba(239, 68, 68, 0.08);
-  --warning: #F59E0B;
-  --warning-bg: rgba(245, 158, 11, 0.08);
-  --info:    #3B82F6;
-  --info-bg: rgba(59, 130, 246, 0.08);
+  /* ── Semantic ──
+     All four pulled INTO the elegant palette so status
+     colours never break the visual identity. Sage for
+     success, antique gold for warning, plum-rose for
+     error (still legible as "red" but stays in family),
+     soft navy for info. */
+  --success: #6A8C5F;
+  --success-bg: rgba(106, 140, 95, 0.10);
+  --error:   #9C4458;
+  --error-bg: rgba(156, 68, 88, 0.10);
+  --warning: #B8851A;
+  --warning-bg: rgba(184, 133, 26, 0.10);
+  --info:    #1C2A44;
+  --info-bg: rgba(28, 42, 68, 0.08);
 
   /* ── Theme tokens ─────────────────────── */
   --bg:             var(--neutral-50);
@@ -208,9 +231,25 @@ body {
 .t-meta    { font-size: 12px; font-weight: 500; line-height: 16px; }
 .t-body    { font-size: 14px; font-weight: 400; line-height: 20px; }
 .t-heading { font-size: 16px; font-weight: 600; line-height: 22px; }
-.t-title   { font-size: 20px; font-weight: 600; line-height: 26px; }
-.t-stat    { font-size: 24px; font-weight: 600; line-height: 28px; }
-.t-display { font-size: 28px; font-weight: 700; line-height: 32px; }
+.t-title   { font-size: 20px; font-weight: 600; line-height: 26px; letter-spacing: -0.012em; }
+.t-stat    { font-size: 24px; font-weight: 600; line-height: 28px; letter-spacing: -0.018em; font-variant-numeric: tabular-nums; }
+.t-display { font-size: 28px; font-weight: 700; line-height: 32px; letter-spacing: -0.022em; }
+
+/* Editorial display — Fraunces variable serif. Use sparingly:
+   brand wordmark, login title, single hero stat. Keeps the rest
+   of the dashboard tight and dense (Inter) while letting a few
+   landmark moments breathe with editorial weight. */
+.t-serif {
+  font-family: 'Fraunces', 'Inter', Georgia, serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.012em;
+}
+.t-serif-display {
+  font-family: 'Fraunces', 'Inter', Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  letter-spacing: -0.018em;
+}
 
 /* Back-compat — retained so existing .text-display / .text-title / .text-body /
    .text-caption usages keep working while we migrate. Prefer the .t-* tokens
@@ -339,7 +378,7 @@ select.glass-input option { background: var(--card); color: var(--text-primary);
 }
 .btn-primary:hover, .btn-teal:hover {
   background: var(--primary-600);
-  box-shadow: 0 4px 12px rgba(255, 61, 127, 0.25);
+  box-shadow: 0 4px 12px rgba(199, 123, 138, 0.28);
 }
 .btn-primary:disabled, .btn-teal:disabled {
   background: var(--primary-200);

@@ -46,11 +46,11 @@ export default function LoginPage() {
           >
             <ClipboardCheck size={20} style={{ color: "#ffffff" }} />
           </div>
-          <div className="text-[24px] font-black tracking-tight" style={{ color: "var(--text-1)" }}>
+          <div className="t-serif-display text-[26px] font-medium tracking-tight" style={{ color: "var(--text-1)" }}>
             Agent Dashboard
           </div>
-          <div className="text-[12px] mt-1" style={{ color: "var(--text-3)" }}>
-            For Buzzworks Agent Managers
+          <div className="text-[12px] mt-1.5" style={{ color: "var(--text-3)", letterSpacing: "0.04em" }}>
+            FOR BUZZWORKS AGENT MANAGERS
           </div>
         </div>
 
