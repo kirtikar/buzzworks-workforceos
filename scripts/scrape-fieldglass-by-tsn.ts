@@ -362,7 +362,11 @@ async function run() {
   async function startSession() {
     if (browser) await browser.close().catch(() => {})
     let lastErr: unknown = null
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    // Exponential backoff: 10s, 30s, 60s, 120s, 240s, 480s.  SAP
+    // sometimes rate-limits the gateway for several minutes — we want
+    // to ride it out rather than crashing the whole crawl.
+    const BACKOFFS_MS = [10_000, 30_000, 60_000, 120_000, 240_000, 480_000]
+    for (let attempt = 1; attempt <= BACKOFFS_MS.length + 1; attempt++) {
       try {
         // Reuse the cached chromium-1217 — avoids re-downloading hundreds
         // of MB every time playwright is re-installed.
@@ -379,9 +383,11 @@ async function run() {
         return
       } catch (e) {
         lastErr = e
-        log(`  login attempt ${attempt} failed: ${(e as Error).message?.slice(0, 80)}`)
+        const wait = BACKOFFS_MS[attempt - 1] ?? 0
+        log(`  login attempt ${attempt} failed: ${(e as Error).message?.slice(0, 80)} — retrying in ${Math.round(wait / 1000)}s`)
         if (browser) await browser.close().catch(() => {})
-        await new Promise(r => setTimeout(r, 5000))
+        if (wait === 0) break
+        await new Promise(r => setTimeout(r, wait))
       }
     }
     throw lastErr
